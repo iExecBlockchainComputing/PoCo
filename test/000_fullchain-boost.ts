@@ -190,7 +190,13 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(dealId, hashOrder(domain, appOrder), hashOrder(domain, datasetOrder));
+                .withArgs(
+                    dealId,
+                    hashOrder(domain, appOrder),
+                    hashOrder(domain, datasetOrder),
+                    hashOrder(domain, workerpoolOrder),
+                    hashOrder(domain, requestOrder),
+                );
         });
     });
 
@@ -238,7 +244,13 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 requestOrder.params,
             )
             .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-            .withArgs(dealId, hashOrder(domain, appOrder), hashOrder(domain, datasetOrder));
+            .withArgs(
+                dealId,
+                hashOrder(domain, appOrder),
+                hashOrder(domain, datasetOrder),
+                hashOrder(domain, workerpoolOrder),
+                hashOrder(domain, requestOrder),
+            );
     });
 
     describe('PushResult', function () {

@@ -29,7 +29,13 @@ interface IexecPocoBoost {
         uint256 category,
         string params
     );
-    event OrdersMatchedBoost(bytes32 dealid, bytes32 appHash, bytes32 datasetHash);
+    event OrdersMatchedBoost(
+        bytes32 dealid,
+        bytes32 appHash,
+        bytes32 datasetHash,
+        bytes32 workerpoolHash,
+        bytes32 requestHash
+    );
     event ResultPushedBoost(bytes32 dealId, uint index, bytes results);
 
     function matchOrdersBoost(

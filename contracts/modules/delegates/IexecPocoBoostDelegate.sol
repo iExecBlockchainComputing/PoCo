@@ -195,9 +195,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.category,
             _requestorder.params
         );
-        // TODO: Emit all hashes
         // Broadcast consumption of orders.
-        emit OrdersMatchedBoost(dealid, vars.appOrderTypedDataHash, vars.datasetOrderTypedDataHash);
+        emit OrdersMatchedBoost(
+            dealid,
+            vars.appOrderTypedDataHash,
+            vars.datasetOrderTypedDataHash,
+            vars.workerpoolOrderTypedDataHash,
+            vars.requestOrderTypedDataHash
+        );
     }
 
     // TODO: Move to IexecAccessorsBoost

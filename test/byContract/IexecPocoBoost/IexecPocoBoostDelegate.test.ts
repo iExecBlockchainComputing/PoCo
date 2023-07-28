@@ -189,7 +189,13 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(dealIdTee, hashOrder(domain, appOrder), hashOrder(domain, datasetOrder));
+                .withArgs(
+                    dealIdTee,
+                    hashOrder(domain, appOrder),
+                    hashOrder(domain, datasetOrder),
+                    hashOrder(domain, workerpoolOrder),
+                    hashOrder(domain, requestOrder),
+                );
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
             // Check addresses.
             expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
@@ -250,7 +256,13 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(dealIdTee, appOrderHash, datasetOrderHash);
+                .withArgs(
+                    dealIdTee,
+                    hashOrder(domain, appOrder),
+                    hashOrder(domain, datasetOrder),
+                    hashOrder(domain, workerpoolOrder),
+                    hashOrder(domain, requestOrder),
+                );
         });
 
         it('Should match orders without dataset', async function () {
@@ -304,7 +316,13 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
-                .withArgs(dealIdTee, hashOrder(domain, appOrder), constants.NULL.BYTES32);
+                .withArgs(
+                    dealIdTee,
+                    hashOrder(domain, appOrder),
+                    constants.NULL.BYTES32,
+                    hashOrder(domain, workerpoolOrder),
+                    hashOrder(domain, requestOrder),
+                );
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
             expect(deal.datasetPrice).to.be.equal(0);
         });
