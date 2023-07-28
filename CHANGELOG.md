@@ -25,21 +25,21 @@
 - Clean files related to docker build of a test blockchain. (#164, #165)
 - Migrate `IexecPocoBoost` linking to hardhat deploy script. (#166)
 - Update prettier rules and reformat. (#167, #168, #169, #170)
-- Implement `matchOrdersBoost`. 
+- Implement `matchOrdersBoost`:
     - Verify compatibility of orders
         - trust (#171)
-        - category  (#172)
+        - category (#172)
         - price (175)
         - tag (#187)
         - restrictions (#189, #190)
-    - Verify signatures or presignatures of orders (#185, #186, #191)
-    - Store deal (#174)
-    - Emit events (#182, #184)
-- Implement `pushResultBoost`.
+    - Verify signatures or presignatures of orders. (#185, #186, #191, #192)
+    - Store deal. (#174)
+    - Emit events. (#182, #184)
+- Implement `pushResultBoost`:
     - Verify signatures
         - scheduler (#173)
         - enclave (#176)
-    - Handle callback (#183)
+    - Handle callback. (#183)
 - Refactor tests. (#177, #178, #179, #181, #188)
 - Add mocha to use test explorer. (#180)
 
