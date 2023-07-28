@@ -31,6 +31,18 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     using ECDSA for bytes32;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
+    using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
+    using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
+
+    struct Vars {
+        address appOwner;
+        bytes32 appOrderTypedDataHash;
+        address datasetOwner;
+        bytes32 datasetOrderTypedDataHash;
+        address workerpoolOwner;
+        bytes32 workerpoolOrderTypedDataHash;
+        bytes32 requestOrderTypedDataHash;
+    }
 
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _apporder The order signed by the application developer
@@ -112,36 +124,59 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Requester restricted by workerpool order"
         );
 
-        address appOwner = Ownable(_apporder.app).owner();
-        bytes32 appOrderTypedDataHash = _toTypedDataHash(_apporder.hash());
+        // Save local variables in memory with a structure to fix `Stack too deep`.
+        Vars memory vars;
+        vars.appOwner = Ownable(_apporder.app).owner();
+        vars.appOrderTypedDataHash = _toTypedDataHash(_apporder.hash());
         require(
-            _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, _apporder.sign),
+            _verifySignatureOrPresignature(
+                vars.appOwner,
+                vars.appOrderTypedDataHash,
+                _apporder.sign
+            ),
             "PocoBoost: Invalid app order signature"
         );
         bool hasDataset = _requestorder.dataset != address(0);
-        address datasetOwner;
-        bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
-            datasetOwner = Ownable(_datasetorder.dataset).owner();
-            datasetOrderTypedDataHash = _toTypedDataHash(_datasetorder.hash());
+            vars.datasetOwner = Ownable(_datasetorder.dataset).owner();
+            vars.datasetOrderTypedDataHash = _toTypedDataHash(_datasetorder.hash());
             require(
                 _verifySignatureOrPresignature(
-                    datasetOwner,
-                    datasetOrderTypedDataHash,
+                    vars.datasetOwner,
+                    vars.datasetOrderTypedDataHash,
                     _datasetorder.sign
                 ),
                 "PocoBoost: Invalid dataset order signature"
             );
         }
+        vars.workerpoolOwner = Ownable(_workerpoolorder.workerpool).owner();
+        vars.workerpoolOrderTypedDataHash = _toTypedDataHash(_workerpoolorder.hash());
+        require(
+            _verifySignatureOrPresignature(
+                vars.workerpoolOwner,
+                vars.workerpoolOrderTypedDataHash,
+                _workerpoolorder.sign
+            ),
+            "PocoBoost: Invalid workerpool order signature"
+        );
+        vars.requestOrderTypedDataHash = _toTypedDataHash(_requestorder.hash());
+        require(
+            _verifySignatureOrPresignature(
+                _requestorder.requester,
+                vars.requestOrderTypedDataHash,
+                _requestorder.sign
+            ),
+            "PocoBoost: Invalid request order signature"
+        );
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = Ownable(_workerpoolorder.workerpool).owner();
         deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
-        deal.appOwner = appOwner;
+        deal.appOwner = vars.appOwner;
         deal.appPrice = uint96(_apporder.appprice); // TODO check overflow
         if (hasDataset) {
-            deal.datasetOwner = datasetOwner;
+            deal.datasetOwner = vars.datasetOwner;
             deal.datasetPrice = uint96(_datasetorder.datasetprice); // TODO check overflow
         }
         // deal.workerReward = ;
@@ -160,8 +195,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.category,
             _requestorder.params
         );
+        // TODO: Emit all hashes
         // Broadcast consumption of orders.
-        emit OrdersMatchedBoost(dealid, appOrderTypedDataHash, datasetOrderTypedDataHash);
+        emit OrdersMatchedBoost(dealid, vars.appOrderTypedDataHash, vars.datasetOrderTypedDataHash);
     }
 
     // TODO: Move to IexecAccessorsBoost

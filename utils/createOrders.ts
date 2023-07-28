@@ -6,7 +6,7 @@ import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
 
-interface Iexec<T> {
+export interface Iexec<T> {
     app: T;
     dataset: T;
     workerpool: T;
@@ -87,25 +87,22 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
     };
 }
 
-export function buildCompatibleOrders(
-    app: string,
-    workerpool: string,
-    dataset: string,
-    tag: string,
-) {
+export function buildCompatibleOrders(addresses: Iexec<string>, tag: string) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
     let datasetOrder = createEmptyDatasetOrder();
     // Set app
-    appOrder.app = app;
-    requestOrder.app = app;
+    appOrder.app = addresses.app;
+    requestOrder.app = addresses.app;
     // Set workerpool
-    workerpoolOrder.workerpool = workerpool;
-    requestOrder.workerpool = workerpool;
+    workerpoolOrder.workerpool = addresses.workerpool;
+    requestOrder.workerpool = addresses.workerpool;
     // Set dataset
-    datasetOrder.dataset = dataset;
-    requestOrder.dataset = dataset;
+    datasetOrder.dataset = addresses.dataset;
+    requestOrder.dataset = addresses.dataset;
+    // Set requester
+    requestOrder.requester = addresses.requester;
     // Set tag
     appOrder.tag = tag;
     requestOrder.tag = tag;
