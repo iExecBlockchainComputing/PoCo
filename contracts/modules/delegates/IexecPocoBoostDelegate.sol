@@ -34,16 +34,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
-    struct Vars {
-        address appOwner;
-        bytes32 appOrderTypedDataHash;
-        address datasetOwner;
-        bytes32 datasetOrderTypedDataHash;
-        address workerpoolOwner;
-        bytes32 workerpoolOrderTypedDataHash;
-        bytes32 requestOrderTypedDataHash;
-    }
-
     /// @notice This boost match orders is only compatible with trust = 0.
     /// @param _apporder The order signed by the application developer
     /// @param _datasetorder The order signed by the dataset provider
@@ -69,14 +59,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
             "PocoBoost: Overpriced workerpool"
         );
-
-        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+        // Save some local variables in memory with a structure to fix `Stack too deep`.
+        IexecLibCore_v5.DealBoost memory vars;
+        vars.tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
         require(
-            tag & ~_workerpoolorder.tag == 0x0,
+            vars.tag & ~_workerpoolorder.tag == 0x0,
             "PocoBoost: Workerpool tag does not match demand"
         );
         require(
-            (tag ^ _apporder.tag)[31] & 0x01 == 0x0,
+            (vars.tag ^ _apporder.tag)[31] & 0x01 == 0x0,
             "PocoBoost: App tag does not match demand"
         );
 
@@ -124,46 +115,41 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Requester restricted by workerpool order"
         );
 
-        // Save local variables in memory with a structure to fix `Stack too deep`.
-        Vars memory vars;
         vars.appOwner = Ownable(_apporder.app).owner();
-        vars.appOrderTypedDataHash = _toTypedDataHash(_apporder.hash());
+        bytes32 appOrderTypedDataHash = _toTypedDataHash(_apporder.hash());
         require(
-            _verifySignatureOrPresignature(
-                vars.appOwner,
-                vars.appOrderTypedDataHash,
-                _apporder.sign
-            ),
+            _verifySignatureOrPresignature(vars.appOwner, appOrderTypedDataHash, _apporder.sign),
             "PocoBoost: Invalid app order signature"
         );
         bool hasDataset = _requestorder.dataset != address(0);
+        bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
             vars.datasetOwner = Ownable(_datasetorder.dataset).owner();
-            vars.datasetOrderTypedDataHash = _toTypedDataHash(_datasetorder.hash());
+            datasetOrderTypedDataHash = _toTypedDataHash(_datasetorder.hash());
             require(
                 _verifySignatureOrPresignature(
                     vars.datasetOwner,
-                    vars.datasetOrderTypedDataHash,
+                    datasetOrderTypedDataHash,
                     _datasetorder.sign
                 ),
                 "PocoBoost: Invalid dataset order signature"
             );
         }
         vars.workerpoolOwner = Ownable(_workerpoolorder.workerpool).owner();
-        vars.workerpoolOrderTypedDataHash = _toTypedDataHash(_workerpoolorder.hash());
+        bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(_workerpoolorder.hash());
         require(
             _verifySignatureOrPresignature(
                 vars.workerpoolOwner,
-                vars.workerpoolOrderTypedDataHash,
+                workerpoolOrderTypedDataHash,
                 _workerpoolorder.sign
             ),
             "PocoBoost: Invalid workerpool order signature"
         );
-        vars.requestOrderTypedDataHash = _toTypedDataHash(_requestorder.hash());
+        bytes32 requestOrderTypedDataHash = _toTypedDataHash(_requestorder.hash());
         require(
             _verifySignatureOrPresignature(
                 _requestorder.requester,
-                vars.requestOrderTypedDataHash,
+                requestOrderTypedDataHash,
                 _requestorder.sign
             ),
             "PocoBoost: Invalid request order signature"
@@ -186,7 +172,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // deal.deadline = ;
         // deal.botFirst = ;
         // deal.botSize = ;
-        deal.tag = tag;
+        deal.tag = vars.tag;
         deal.callback = _requestorder.callback;
         // Notify workerpool.
         emit SchedulerNoticeBoost(
@@ -200,10 +186,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // Broadcast consumption of orders.
         emit OrdersMatched(
             dealid,
-            vars.appOrderTypedDataHash,
-            vars.datasetOrderTypedDataHash,
-            vars.workerpoolOrderTypedDataHash,
-            vars.requestOrderTypedDataHash,
+            appOrderTypedDataHash,
+            datasetOrderTypedDataHash,
+            workerpoolOrderTypedDataHash,
+            requestOrderTypedDataHash,
             volume
         );
     }
