@@ -168,6 +168,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             ),
             "PocoBoost: Invalid request order signature"
         );
+        // TODO: Compute volume and assert value
+        uint256 volume = 1;
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
         deal.requester = _requestorder.requester;
@@ -196,12 +198,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.params
         );
         // Broadcast consumption of orders.
-        emit OrdersMatchedBoost(
+        emit OrdersMatched(
             dealid,
             vars.appOrderTypedDataHash,
             vars.datasetOrderTypedDataHash,
             vars.workerpoolOrderTypedDataHash,
-            vars.requestOrderTypedDataHash
+            vars.requestOrderTypedDataHash,
+            volume
         );
     }
 

@@ -52,6 +52,7 @@ import {
 const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
 const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
+const volume = taskIndex + 1;
 const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
@@ -189,13 +190,14 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     requestOrder.category,
                     requestOrder.params,
                 )
-                .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
                     dealId,
                     hashOrder(domain, appOrder),
                     hashOrder(domain, datasetOrder),
                     hashOrder(domain, workerpoolOrder),
                     hashOrder(domain, requestOrder),
+                    volume,
                 );
         });
     });
@@ -243,13 +245,14 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 requestOrder.category,
                 requestOrder.params,
             )
-            .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
+            .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
             .withArgs(
                 dealId,
                 hashOrder(domain, appOrder),
                 hashOrder(domain, datasetOrder),
                 hashOrder(domain, workerpoolOrder),
                 hashOrder(domain, requestOrder),
+                volume,
             );
     });
 

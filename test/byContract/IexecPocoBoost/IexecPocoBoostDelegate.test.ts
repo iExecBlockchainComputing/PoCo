@@ -42,6 +42,7 @@ chai.use(smock.matchers);
 const dealIdTee = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
 const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
+const volume = taskIndex + 1;
 const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
@@ -188,13 +189,14 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     requestOrder.params,
                 )
-                .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
                     dealIdTee,
                     hashOrder(domain, appOrder),
                     hashOrder(domain, datasetOrder),
                     hashOrder(domain, workerpoolOrder),
                     hashOrder(domain, requestOrder),
+                    volume,
                 );
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
             // Check addresses.
@@ -255,13 +257,14 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     requestOrder.params,
                 )
-                .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
                     dealIdTee,
                     hashOrder(domain, appOrder),
                     hashOrder(domain, datasetOrder),
                     hashOrder(domain, workerpoolOrder),
                     hashOrder(domain, requestOrder),
+                    volume,
                 );
         });
 
@@ -315,13 +318,14 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     requestOrder.params,
                 )
-                .to.emit(iexecPocoBoostInstance, 'OrdersMatchedBoost')
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
                     dealIdTee,
                     hashOrder(domain, appOrder),
                     constants.NULL.BYTES32,
                     hashOrder(domain, workerpoolOrder),
                     hashOrder(domain, requestOrder),
+                    volume,
                 );
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
             expect(deal.datasetPrice).to.be.equal(0);
