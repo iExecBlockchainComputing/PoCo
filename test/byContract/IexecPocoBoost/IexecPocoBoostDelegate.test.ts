@@ -80,6 +80,14 @@ async function deployBoostFixture() {
     // A global domain separator needs to be set since current contract is being
     // unit tested here (hence no proxy)
     await iexecPocoBoostInstance.setVariable(EIP712DOMAIN_SEPARATOR, domainSeparator);
+    await iexecPocoBoostInstance.setVariable('m_categories', [
+        {
+            // Category 0
+            name: 'some-name',
+            description: 'some-description',
+            workClockTimeRef: 60,
+        },
+    ]);
     return {
         iexecPocoBoostInstance,
         admin,
@@ -366,6 +374,25 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.be.revertedWith('PocoBoost: Category mismatch');
+        });
+
+        it('Should fail when category unknown', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                entriesAndRequester,
+                dealTagTee,
+            );
+            // Unknown category
+            requestOrder.category = 1;
+            workerpoolOrder.category = 1;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Unknown category');
         });
 
         it('Should fail when app max price is less than app price', async function () {

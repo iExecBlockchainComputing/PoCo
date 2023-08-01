@@ -38,7 +38,7 @@ interface IexecPocoBoost {
         bytes32 requestHash,
         uint256 volume
     );
-    event ResultPushedBoost(bytes32 dealId, uint index, bytes results);
+    event ResultPushedBoost(bytes32 dealId, uint256 index, bytes results);
 
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,
@@ -49,7 +49,7 @@ interface IexecPocoBoost {
 
     function pushResultBoost(
         bytes32 dealId,
-        uint index,
+        uint256 index,
         bytes calldata results,
         bytes calldata resultsCallback,
         bytes calldata authorizationSign,

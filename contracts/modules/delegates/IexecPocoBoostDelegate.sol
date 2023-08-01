@@ -50,6 +50,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.category == _workerpoolorder.category,
             "PocoBoost: Category mismatch"
         );
+        require(_requestorder.category < m_categories.length, "PocoBoost: Unknown category");
         require(_requestorder.appmaxprice >= _apporder.appprice, "PocoBoost: Overpriced app");
         require(
             _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
@@ -215,7 +216,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
      */
     function pushResultBoost(
         bytes32 dealId,
-        uint index,
+        uint256 index,
         bytes calldata results,
         bytes calldata resultsCallback,
         bytes calldata authorizationSign,
