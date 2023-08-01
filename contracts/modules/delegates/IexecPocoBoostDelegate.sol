@@ -246,7 +246,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         address target = deal.callback;
         bytes32 resultDigest = target == address(0)
-            ? keccak256(abi.encodePacked(results))
+            ? keccak256(results)
             : keccak256(resultsCallback);
         // Check enclave signature
         require(
