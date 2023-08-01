@@ -116,6 +116,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Requester restricted by workerpool order"
         );
 
+        require(m_appregistry.isRegistered(_apporder.app), "PocoBoost: App not registered");
         vars.appOwner = IERC5313(_apporder.app).owner();
         bytes32 appOrderTypedDataHash = _toTypedDataHash(_apporder.hash());
         require(
@@ -125,6 +126,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         bool hasDataset = _requestorder.dataset != address(0);
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
+            require(
+                m_datasetregistry.isRegistered(_datasetorder.dataset),
+                "PocoBoost: Dataset not registered"
+            );
             vars.datasetOwner = IERC5313(_datasetorder.dataset).owner();
             datasetOrderTypedDataHash = _toTypedDataHash(_datasetorder.hash());
             require(
@@ -136,6 +141,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 "PocoBoost: Invalid dataset order signature"
             );
         }
+        require(
+            m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),
+            "PocoBoost: Workerpool not registered"
+        );
         vars.workerpoolOwner = IERC5313(_workerpoolorder.workerpool).owner();
         bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(_workerpoolorder.hash());
         require(

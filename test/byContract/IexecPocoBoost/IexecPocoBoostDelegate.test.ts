@@ -1,4 +1,4 @@
-import { MockContract, smock } from '@defi-wonderland/smock';
+import { FakeContract, MockContract, smock } from '@defi-wonderland/smock';
 import { FactoryOptions } from '@nomiclabs/hardhat-ethers/types';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import chai, { expect } from 'chai';
@@ -17,7 +17,12 @@ import {
     App,
     Workerpool,
     Dataset,
-    IexecLibOrders_v5,
+    AppRegistry,
+    AppRegistry__factory,
+    DatasetRegistry,
+    DatasetRegistry__factory,
+    WorkerpoolRegistry,
+    WorkerpoolRegistry__factory,
 } from '../../../typechain';
 import constants from '../../../utils/constants';
 import {
@@ -120,6 +125,9 @@ describe('IexecPocoBoostDelegate', function () {
     let appInstance: MockContract<App>;
     let workerpoolInstance: MockContract<Workerpool>;
     let datasetInstance: MockContract<Dataset>;
+    let appRegistry: FakeContract<AppRegistry>;
+    let datasetRegistry: FakeContract<DatasetRegistry>;
+    let workerpoolRegistry: FakeContract<WorkerpoolRegistry>;
     let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
         [] as SignerWithAddress[];
     let accounts: IexecAccounts;
@@ -151,6 +159,19 @@ describe('IexecPocoBoostDelegate', function () {
             workerpool: workerpoolInstance.address,
             requester: requester.address,
         };
+        appRegistry = await smock.fake<AppRegistry>(AppRegistry__factory);
+        await iexecPocoBoostInstance.setVariable('m_appregistry', appRegistry.address);
+        datasetRegistry = await smock.fake<DatasetRegistry>(DatasetRegistry__factory);
+        await iexecPocoBoostInstance.setVariable('m_datasetregistry', datasetRegistry.address);
+        workerpoolRegistry = await smock.fake<WorkerpoolRegistry>(WorkerpoolRegistry__factory);
+        await iexecPocoBoostInstance.setVariable(
+            'm_workerpoolregistry',
+            workerpoolRegistry.address,
+        );
+
+        appRegistry.isRegistered.whenCalledWith(appInstance.address).returns(true);
+        datasetRegistry.isRegistered.whenCalledWith(datasetInstance.address).returns(true);
+        workerpoolRegistry.isRegistered.whenCalledWith(workerpoolInstance.address).returns(true);
     });
 
     describe('Match Orders Boost', function () {
@@ -795,6 +816,61 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.be.revertedWith('PocoBoost: Requester restricted by workerpool order');
+        });
+
+        it('Should fail when app not registered', async function () {
+            appRegistry.isRegistered.whenCalledWith(appInstance.address).returns(false);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                entriesAndRequester,
+                dealTagTee,
+            );
+            await signOrder(domain, appOrder, anyone);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: App not registered');
+        });
+
+        it('Should fail when dataset not registered', async function () {
+            appInstance.owner.returns(appProvider.address);
+            datasetRegistry.isRegistered.whenCalledWith(datasetInstance.address).returns(false);
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+            await signOrders(domain, orders, accounts);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Dataset not registered');
+        });
+
+        it('Should fail when workerpool not registered', async function () {
+            appInstance.owner.returns(appProvider.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            workerpoolRegistry.isRegistered
+                .whenCalledWith(workerpoolInstance.address)
+                .returns(false);
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+            await signOrders(domain, orders, accounts);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool not registered');
         });
     });
 
