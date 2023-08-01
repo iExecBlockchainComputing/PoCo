@@ -47,13 +47,13 @@ import {
     buildUtf8ResultAndDigest,
     buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
+    getDealId,
+    getTaskId,
 } from '../utils/poco-tools';
 
-const dealId = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
 const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
-const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 /**
@@ -173,6 +173,8 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTag);
             await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -228,6 +230,8 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             operation: 0,
             sign: '0x',
         });
+        const dealId = getDealId(domain, requestOrder, taskIndex);
+
         await expect(
             iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -266,6 +270,8 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .then((contract) => contract.deployed());
             requestOrder.callback = oracleConsumerInstance.address;
             await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -310,13 +316,14 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTag);
             await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
                 workerpoolOrder,
                 requestOrder,
             );
-
             const schedulerSignature = await buildAndSignSchedulerMessage(
                 worker.address,
                 taskId,
@@ -329,6 +336,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 resultDigest,
                 enclave,
             );
+
             await expect(
                 iexecPocoBoostInstance
                     .connect(worker)

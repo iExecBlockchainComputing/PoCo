@@ -40,15 +40,14 @@ import {
     buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
     getTaskId,
+    getDealId,
 } from '../../../utils/poco-tools';
 
 chai.use(smock.matchers);
 
-const dealIdTee = '0xcc69885fda6bcc1a4ace058b4a62bf5e179ea78fd58a1ccd71c22cc9b688792f';
 const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
-const taskId = '0xae9e915aaf14fdf170c136ab81636f27228ed29f8d58ef7c714a53e57ce0c884';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
 const { domain, domainSeparator } = buildDomain();
@@ -201,6 +200,8 @@ describe('IexecPocoBoostDelegate', function () {
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
             await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -212,7 +213,7 @@ describe('IexecPocoBoostDelegate', function () {
                 .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
                 .withArgs(
                     workerpoolInstance.address,
-                    dealIdTee,
+                    dealId,
                     appInstance.address,
                     datasetInstance.address,
                     requestOrder.category,
@@ -220,14 +221,14 @@ describe('IexecPocoBoostDelegate', function () {
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
-                    dealIdTee,
+                    dealId,
                     hashOrder(domain, appOrder),
                     hashOrder(domain, datasetOrder),
                     hashOrder(domain, workerpoolOrder),
                     hashOrder(domain, requestOrder),
                     volume,
                 );
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
+            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
             // Check addresses.
             expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
             expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
@@ -268,6 +269,7 @@ describe('IexecPocoBoostDelegate', function () {
                 [workerpoolOrderHash]: scheduler.address,
                 [requestOrderHash]: requester.address,
             });
+            const dealId = getDealId(domain, requestOrder, taskIndex);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -280,7 +282,7 @@ describe('IexecPocoBoostDelegate', function () {
                 .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
                 .withArgs(
                     workerpoolInstance.address,
-                    dealIdTee,
+                    dealId,
                     appInstance.address,
                     datasetInstance.address,
                     requestOrder.category,
@@ -288,7 +290,7 @@ describe('IexecPocoBoostDelegate', function () {
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
-                    dealIdTee,
+                    dealId,
                     hashOrder(domain, appOrder),
                     hashOrder(domain, datasetOrder),
                     hashOrder(domain, workerpoolOrder),
@@ -329,6 +331,7 @@ describe('IexecPocoBoostDelegate', function () {
             await signOrder(domain, appOrder, appProvider);
             await signOrder(domain, workerpoolOrder, scheduler);
             await signOrder(domain, requestOrder, requester);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -341,7 +344,7 @@ describe('IexecPocoBoostDelegate', function () {
                 .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
                 .withArgs(
                     workerpoolInstance.address,
-                    dealIdTee,
+                    dealId,
                     appInstance.address,
                     constants.NULL.ADDRESS, // No dataset.
                     requestOrder.category,
@@ -349,14 +352,14 @@ describe('IexecPocoBoostDelegate', function () {
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
-                    dealIdTee,
+                    dealId,
                     hashOrder(domain, appOrder),
                     constants.NULL.BYTES32,
                     hashOrder(domain, workerpoolOrder),
                     hashOrder(domain, requestOrder),
                     volume,
                 );
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealIdTee);
+            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
             expect(deal.datasetPrice).to.be.equal(0);
         });
 
@@ -892,6 +895,8 @@ describe('IexecPocoBoostDelegate', function () {
             );
             requestOrder.callback = oracleConsumerInstance.address;
             await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -916,7 +921,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealIdTee,
+                        dealId,
                         taskIndex,
                         results,
                         resultsCallback,
@@ -926,7 +931,7 @@ describe('IexecPocoBoostDelegate', function () {
                     ),
             )
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                .withArgs(dealIdTee, taskIndex, results);
+                .withArgs(dealId, taskIndex, results);
             expect(oracleConsumerInstance.receiveResult).to.have.been.calledWith(
                 taskId,
                 resultsCallback,
@@ -937,6 +942,8 @@ describe('IexecPocoBoostDelegate', function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee);
             await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -960,7 +967,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealIdTee,
+                        dealId,
                         taskIndex,
                         results,
                         constants.NULL.BYTES32,
@@ -970,17 +977,16 @@ describe('IexecPocoBoostDelegate', function () {
                     ),
             )
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                .withArgs(dealIdTee, taskIndex, results);
+                .withArgs(dealId, taskIndex, results);
         });
 
         it('Should push result (Standard)', async function () {
             const tag = constants.NULL.BYTES32;
-            const dealIdStandard =
-                '0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5';
-            const taskId = getTaskId(dealIdStandard, taskIndex);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, tag);
             await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -999,7 +1005,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealIdStandard,
+                        dealId,
                         taskIndex,
                         results,
                         constants.NULL.BYTES32,
@@ -1009,7 +1015,7 @@ describe('IexecPocoBoostDelegate', function () {
                     ),
             )
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                .withArgs(dealIdStandard, taskIndex, results);
+                .withArgs(dealId, taskIndex, results);
         });
 
         it('Should not push result with invalid scheduler signature', async function () {
@@ -1028,7 +1034,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealIdTee,
+                        getDealId(domain, requestOrder, taskIndex),
                         taskIndex,
                         results,
                         constants.NULL.BYTES32,
@@ -1043,6 +1049,7 @@ describe('IexecPocoBoostDelegate', function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee);
             await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1051,7 +1058,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
             const schedulerSignature = await buildAndSignSchedulerMessage(
                 worker.address,
-                taskId,
+                getTaskId(dealId, taskIndex),
                 enclave.address,
                 scheduler,
             );
@@ -1061,7 +1068,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealIdTee,
+                        dealId,
                         taskIndex,
                         results,
                         constants.NULL.BYTES32,
@@ -1077,6 +1084,8 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders(entriesAndRequester, dealTagTee);
             requestOrder.callback = '0x000000000000000000000000000000000000ca11';
             await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1101,7 +1110,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        dealIdTee,
+                        getDealId(domain, requestOrder, taskIndex),
                         taskIndex,
                         results,
                         resultsCallback,

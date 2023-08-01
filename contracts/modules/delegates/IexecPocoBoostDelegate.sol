@@ -166,8 +166,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         // TODO: Compute volume and assert value
         uint256 volume = 1;
-        bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
+        bytes32 dealId = keccak256(
+            abi.encodePacked(
+                requestOrderTypedDataHash,
+                m_consumed[requestOrderTypedDataHash] // index of first task
+            )
+        );
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
         deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
@@ -187,7 +192,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             _requestorder.workerpool,
-            dealid,
+            dealId,
             _requestorder.app,
             _requestorder.dataset,
             _requestorder.category,
@@ -195,7 +200,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         // Broadcast consumption of orders.
         emit OrdersMatched(
-            dealid,
+            dealId,
             appOrderTypedDataHash,
             datasetOrderTypedDataHash,
             workerpoolOrderTypedDataHash,
