@@ -20,6 +20,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
 import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
 
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
@@ -29,6 +30,7 @@ import "../interfaces/IexecAccessorsBoost.sol";
 /// @notice Works for deals with requested trust = 0.
 contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase {
     using ECDSA for bytes32;
+    using SafeCast for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
@@ -172,12 +174,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
-        deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
+        deal.workerpoolPrice = _workerpoolorder.workerpoolprice.toUint96();
         deal.appOwner = vars.appOwner;
-        deal.appPrice = uint96(_apporder.appprice); // TODO check overflow
+        deal.appPrice = _apporder.appprice.toUint96();
         if (hasDataset) {
             deal.datasetOwner = vars.datasetOwner;
-            deal.datasetPrice = uint96(_datasetorder.datasetprice); // TODO check overflow
+            deal.datasetPrice = _datasetorder.datasetprice.toUint96();
         }
         deal.workerReward = 0; // TODO: Update and test
         deal.beneficiary = _requestorder.beneficiary;
