@@ -165,11 +165,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             workerpoolOwner: vars.workerpoolOwner,
             workerpoolPrice: uint96(_workerpoolorder.workerpoolprice),
             requester: _requestorder.requester,
-            // deal.workerReward: ,
+            workerReward: 0, // TODO: Update
             beneficiary: _requestorder.beneficiary,
-            // deal.deadline: ,
-            // deal.botFirst: ,
-            // deal.botSize: ,
+            deadline: 0, // TODO: Update
+            botFirst: 0, // TODO: Update
+            botSize: 0, // TODO: Update
             tag: vars.tag,
             callback: _requestorder.callback
         });

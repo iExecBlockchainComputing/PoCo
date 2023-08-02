@@ -69,11 +69,11 @@ library IexecLibCore_v5 {
         address workerpoolOwner;
         uint96 workerpoolPrice;
         address requester;
-        // uint96 workerReward;
+        uint96 workerReward;
         address beneficiary;
-        // uint48 deadline;
-        // uint24 botFirst;
-        // uint24 botSize;
+        uint48 deadline;
+        uint24 botFirst;
+        uint24 botSize;
         bytes32 tag;
         address callback;
     }
