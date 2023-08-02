@@ -169,6 +169,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         bytes32 dealId = keccak256(
             abi.encodePacked(
                 requestOrderTypedDataHash,
+                // TODO: Refactor next variable (gas purposes) when m_consumed are implemented
                 m_consumed[requestOrderTypedDataHash] // index of first task
             )
         );
@@ -250,9 +251,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Invalid scheduler signature"
         );
         address target = deal.callback;
-        bytes32 resultDigest = target == address(0)
-            ? keccak256(results)
-            : keccak256(resultsCallback);
+        bytes32 resultDigest = keccak256(target == address(0) ? results : resultsCallback);
         // Check enclave signature
         require(
             enclaveChallenge == address(0) ||
