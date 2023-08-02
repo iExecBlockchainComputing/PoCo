@@ -157,23 +157,22 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // TODO: Compute volume and assert value
         uint256 volume = 1;
         bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
-        deal.requester = _requestorder.requester;
-        deal.workerpoolOwner = vars.workerpoolOwner;
-        deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
-        deal.appOwner = vars.appOwner;
-        deal.appPrice = uint96(_apporder.appprice); // TODO check overflow
-        if (hasDataset) {
-            deal.datasetOwner = vars.datasetOwner;
-            deal.datasetPrice = uint96(_datasetorder.datasetprice); // TODO check overflow
-        }
-        // deal.workerReward = ;
-        deal.beneficiary = _requestorder.beneficiary;
-        // deal.deadline = ;
-        // deal.botFirst = ;
-        // deal.botSize = ;
-        deal.tag = vars.tag;
-        deal.callback = _requestorder.callback;
+        m_dealsBoost[dealid] = IexecLibCore_v5.DealBoost({
+            appOwner: vars.appOwner,
+            appPrice: uint96(_apporder.appprice), // TODO check overflow
+            datasetOwner: hasDataset ? vars.datasetOwner : address(0),
+            datasetPrice: hasDataset ? uint96(_datasetorder.datasetprice) : 0, // TODO check overflow
+            workerpoolOwner: vars.workerpoolOwner,
+            workerpoolPrice: uint96(_workerpoolorder.workerpoolprice),
+            requester: _requestorder.requester,
+            // deal.workerReward: ,
+            beneficiary: _requestorder.beneficiary,
+            // deal.deadline: ,
+            // deal.botFirst: ,
+            // deal.botSize: ,
+            tag: vars.tag,
+            callback: _requestorder.callback
+        });
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             _requestorder.workerpool,
