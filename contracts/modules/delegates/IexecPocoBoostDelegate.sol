@@ -20,6 +20,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
 import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts-v4/utils/math/Math.sol";
 
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
@@ -29,6 +30,7 @@ import "../interfaces/IexecAccessorsBoost.sol";
 /// @notice Works for deals with requested trust = 0.
 contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase {
     using ECDSA for bytes32;
+    using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
@@ -165,15 +167,49 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Invalid request order signature"
         );
         // TODO: Compute volume and assert value
-        uint256 volume = 1;
-        bytes32 dealId = keccak256(
-            abi.encodePacked(
-                requestOrderTypedDataHash,
-                // TODO: Refactor next variable (gas purposes) when m_consumed are implemented
-                m_consumed[requestOrderTypedDataHash] // index of first task
-            )
-        );
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
+        bytes32 dealId;
+        uint256 volume;
+        IexecLibCore_v5.DealBoost storage deal;
+        {
+            /**
+             * Compute deal volume and consume orders.
+             * @dev
+             * - Volume of the deal is equal to the smallest unconsumed volume
+             *   among all orders.
+             * - Compute volume:
+             *   - in multiple steps to prevent `Stack too deep`
+             *   - but trying to use as little gas as possible
+             * - Overflows: Solidity 0.8 has built in overflow checking
+             */
+            uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
+            uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
+            // No workerpool variable, else `Stack too deep`
+            // No dataset variable since dataset is optional
+            dealId = keccak256(
+                abi.encodePacked(
+                    requestOrderTypedDataHash,
+                    requestOrderConsumed // index of first task
+                )
+            );
+            volume = _apporder.volume - appOrderConsumed;
+            volume = volume.min(_workerpoolorder.volume - m_consumed[workerpoolOrderTypedDataHash]);
+            volume = volume.min(_requestorder.volume - requestOrderConsumed);
+            if (hasDataset) {
+                volume = volume.min(_datasetorder.volume - m_consumed[datasetOrderTypedDataHash]);
+            }
+            require(volume > 0, "PocoBoost: One or more orders consumed");
+            m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // cheaper than `+= volume` here
+            m_consumed[workerpoolOrderTypedDataHash] += volume;
+            m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
+            if (hasDataset) {
+                m_consumed[datasetOrderTypedDataHash] += volume;
+            }
+            /**
+             * Store deal
+             */
+            deal = m_dealsBoost[dealId];
+            deal.botFirst = uint24(requestOrderConsumed); // TODO: Safe cast
+        }
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
         deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
@@ -186,8 +222,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // deal.workerReward = ;
         deal.beneficiary = _requestorder.beneficiary;
         // deal.deadline = ;
-        // deal.botFirst = ;
-        // deal.botSize = ;
+        deal.botSize = uint24(volume); // TODO: Safe cast
         deal.tag = vars.tag;
         deal.callback = _requestorder.callback;
         // Notify workerpool.

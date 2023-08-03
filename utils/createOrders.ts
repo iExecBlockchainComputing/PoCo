@@ -26,7 +26,7 @@ export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
     return {
         app: constants.NULL.ADDRESS,
         appprice: 0,
-        volume: 0,
+        volume: 1,
         tag: constants.NULL.BYTES32,
         datasetrestrict: constants.NULL.ADDRESS,
         workerpoolrestrict: constants.NULL.ADDRESS,
@@ -44,7 +44,7 @@ export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct 
         datasetmaxprice: 0,
         workerpool: constants.NULL.ADDRESS,
         workerpoolmaxprice: 0,
-        volume: 0,
+        volume: 1,
         tag: constants.NULL.BYTES32,
         category: 0,
         trust: 0,
@@ -61,7 +61,7 @@ export function createEmptyWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderS
     return {
         workerpool: constants.NULL.ADDRESS,
         workerpoolprice: 0,
-        volume: 0,
+        volume: 1,
         tag: constants.NULL.BYTES32,
         category: 0,
         trust: 0,
@@ -77,7 +77,7 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
     return {
         dataset: constants.NULL.ADDRESS,
         datasetprice: 0,
-        volume: 0,
+        volume: 1,
         tag: constants.NULL.BYTES32,
         apprestrict: constants.NULL.ADDRESS,
         workerpoolrestrict: constants.NULL.ADDRESS,
