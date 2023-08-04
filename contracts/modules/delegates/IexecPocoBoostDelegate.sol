@@ -20,6 +20,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
 import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
 
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
@@ -29,16 +30,26 @@ import "../interfaces/IexecAccessorsBoost.sol";
 /// @notice Works for deals with requested trust = 0.
 contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase {
     using ECDSA for bytes32;
+    using SafeCast for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
-    /// @notice This boost match orders is only compatible with trust = 0.
-    /// @param _apporder The order signed by the application developer
-    /// @param _datasetorder The order signed by the dataset provider
-    /// @param _workerpoolorder The order signed by the workerpool manager
-    /// @param _requestorder The order signed by the requester
+    /**
+     * @notice This boost match orders is only compatible with trust = 0.
+     * @param _apporder The order signed by the application developer
+     * @param _datasetorder The order signed by the dataset provider
+     * @param _workerpoolorder The order signed by the workerpool manager
+     * @param _requestorder The order signed by the requester
+     *
+     * @dev Considering min·max·avg gas values, preferred option for deal storage
+     *  is b.:
+     *   - a. 213498·273978·240761: Use memory struct and write new struct to storage once
+     *   - b. 213803·274283·240615: Use memory struct and write to storage field per field
+     *   - c. 213990·274470·240732: Write/read everything to/on storage
+     *   - d. 215729·276197·242985: Write/read everything to/on memory struct and asign memory to storage
+     */
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata _apporder,
         IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
@@ -62,15 +73,18 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         // Save some local variables in memory with a structure to fix `Stack too deep`.
         IexecLibCore_v5.DealBoost memory vars;
-        vars.tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
-        require(
-            vars.tag & ~_workerpoolorder.tag == 0x0,
-            "PocoBoost: Workerpool tag does not match demand"
-        );
-        require(
-            (vars.tag ^ _apporder.tag)[31] & 0x01 == 0x0,
-            "PocoBoost: App tag does not match demand"
-        );
+        {
+            bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+            require(
+                tag & ~_workerpoolorder.tag == 0x0,
+                "PocoBoost: Workerpool tag does not match demand"
+            );
+            require(
+                (tag ^ _apporder.tag)[31] & 0x01 == 0x0,
+                "PocoBoost: App tag does not match demand"
+            );
+            vars.tag = tag;
+        }
 
         // Check match and restriction
         require(_requestorder.app == _apporder.app, "PocoBoost: App mismatch");
@@ -176,18 +190,18 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
-        deal.workerpoolPrice = uint96(_workerpoolorder.workerpoolprice);
+        deal.workerpoolPrice = _workerpoolorder.workerpoolprice.toUint96();
         deal.appOwner = vars.appOwner;
-        deal.appPrice = uint96(_apporder.appprice); // TODO check overflow
+        deal.appPrice = _apporder.appprice.toUint96();
         if (hasDataset) {
             deal.datasetOwner = vars.datasetOwner;
-            deal.datasetPrice = uint96(_datasetorder.datasetprice); // TODO check overflow
+            deal.datasetPrice = _datasetorder.datasetprice.toUint96();
         }
-        // deal.workerReward = ;
+        deal.workerReward = 0; // TODO: Update and test
         deal.beneficiary = _requestorder.beneficiary;
-        // deal.deadline = ;
-        // deal.botFirst = ;
-        // deal.botSize = ;
+        deal.deadline = 0; // TODO: Update and test
+        deal.botFirst = 0; // TODO: Update and test
+        deal.botSize = 0; // TODO: Update and test
         deal.tag = vars.tag;
         deal.callback = _requestorder.callback;
         // Notify workerpool.
