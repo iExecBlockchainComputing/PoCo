@@ -29,7 +29,15 @@ interface IexecPocoBoost {
         uint256 category,
         string params
     );
-    event OrdersMatchedBoost(bytes32 dealid, bytes32 appHash, bytes32 datasetHash);
+    // Use same event (name and parameters) than classic Poco for cross-compatibility
+    event OrdersMatched(
+        bytes32 dealid,
+        bytes32 appHash,
+        bytes32 datasetHash,
+        bytes32 workerpoolHash,
+        bytes32 requestHash,
+        uint256 volume
+    );
     event ResultPushedBoost(bytes32 dealId, uint index, bytes results);
 
     function matchOrdersBoost(

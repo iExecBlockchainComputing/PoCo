@@ -74,7 +74,7 @@ library IexecLibCore_v5 {
         uint48 deadline;
         uint24 botFirst;
         uint24 botSize;
-        bytes32 tag;
+        bytes32 tag; // TODO: Store bytes12 & emit event with full bytes32
         address callback;
     }
     /**
