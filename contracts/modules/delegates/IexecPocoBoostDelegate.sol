@@ -72,9 +72,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         // Save some local variables in memory with a structure to fix `Stack too deep`.
         IexecLibCore_v5.DealBoost memory vars;
-        vars.tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
         {
-            bytes32 tag = vars.tag;
+            bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
             require(
                 tag & ~_workerpoolorder.tag == 0x0,
                 "PocoBoost: Workerpool tag does not match demand"
@@ -83,6 +82,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 (tag ^ _apporder.tag)[31] & 0x01 == 0x0,
                 "PocoBoost: App tag does not match demand"
             );
+            vars.tag = tag;
         }
 
         // Check match and restriction
