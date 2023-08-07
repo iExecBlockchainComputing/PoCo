@@ -235,8 +235,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         }
         deal.workerReward = 0; // TODO: Update and test
         deal.beneficiary = _requestorder.beneficiary;
-        // deal.deadline = ;
-        deal.deadline = 0; // TODO: Update and test
+        deal.deadline = (block.timestamp +
+            m_categories[_requestorder.category].workClockTimeRef *
+            CONTRIBUTION_DEADLINE_RATIO).toUint48();
         deal.botSize = uint24(volume); // TODO: Safe cast
         deal.tag = vars.tag;
         deal.callback = _requestorder.callback;
@@ -290,6 +291,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
+        //TODO: Add `claimBoost(..)`
+        require(
+            m_tasks[taskId].status == IexecLibCore_v5.TaskStatusEnum.UNSET,
+            "PocoBoost: Task status not empty"
+        );
+        require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
         // TODO: Check enclave challenge if TEE bit set
         // Check scheduler signature
         require(
@@ -312,6 +319,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 ),
             "PocoBoost: Invalid enclave signature"
         );
+
+        /**
+         * @dev Prevent reentrancy before external call
+         * Minimal reuse of Poco Classic task map.
+         * Benefit: Fetching task status is unchanged for clients
+         */
+        m_tasks[taskId].status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
 
         if (target != address(0)) {
             require(resultsCallback.length > 0, "PocoBoost: Callback requires data");
