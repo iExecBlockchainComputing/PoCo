@@ -61,6 +61,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.category == _workerpoolorder.category,
             "PocoBoost: Category mismatch"
         );
+        require(_requestorder.category < m_categories.length, "PocoBoost: Unknown category");
         require(_requestorder.appmaxprice >= _apporder.appprice, "PocoBoost: Overpriced app");
         require(
             _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
@@ -129,6 +130,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Requester restricted by workerpool order"
         );
 
+        require(m_appregistry.isRegistered(_apporder.app), "PocoBoost: App not registered");
         vars.appOwner = IERC5313(_apporder.app).owner();
         bytes32 appOrderTypedDataHash = _toTypedDataHash(_apporder.hash());
         require(
@@ -138,6 +140,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         bool hasDataset = _requestorder.dataset != address(0);
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
+            require(
+                m_datasetregistry.isRegistered(_datasetorder.dataset),
+                "PocoBoost: Dataset not registered"
+            );
             vars.datasetOwner = IERC5313(_datasetorder.dataset).owner();
             datasetOrderTypedDataHash = _toTypedDataHash(_datasetorder.hash());
             require(
@@ -149,6 +155,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 "PocoBoost: Invalid dataset order signature"
             );
         }
+        require(
+            m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),
+            "PocoBoost: Workerpool not registered"
+        );
         vars.workerpoolOwner = IERC5313(_workerpoolorder.workerpool).owner();
         bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(_workerpoolorder.hash());
         require(
@@ -170,8 +180,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         // TODO: Compute volume and assert value
         uint256 volume = 1;
-        bytes32 dealid = keccak256(abi.encodePacked(_requestorder.tag, _apporder.tag)); // random id
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealid];
+        bytes32 dealId = keccak256(
+            abi.encodePacked(
+                requestOrderTypedDataHash,
+                // TODO: Refactor next variable (gas purposes) when m_consumed are implemented
+                m_consumed[requestOrderTypedDataHash] // index of first task
+            )
+        );
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
         deal.workerpoolPrice = _workerpoolorder.workerpoolprice.toUint96();
@@ -191,7 +207,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             _requestorder.workerpool,
-            dealid,
+            dealId,
             _requestorder.app,
             _requestorder.dataset,
             _requestorder.category,
@@ -199,7 +215,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         // Broadcast consumption of orders.
         emit OrdersMatched(
-            dealid,
+            dealId,
             appOrderTypedDataHash,
             datasetOrderTypedDataHash,
             workerpoolOrderTypedDataHash,
@@ -229,7 +245,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
      */
     function pushResultBoost(
         bytes32 dealId,
-        uint index,
+        uint256 index,
         bytes calldata results,
         bytes calldata resultsCallback,
         bytes calldata authorizationSign,
@@ -249,9 +265,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Invalid scheduler signature"
         );
         address target = deal.callback;
-        bytes32 resultDigest = target == address(0)
-            ? keccak256(abi.encodePacked(results))
-            : keccak256(resultsCallback);
+        bytes32 resultDigest = keccak256(target == address(0) ? results : resultsCallback);
         // Check enclave signature
         require(
             enclaveChallenge == address(0) ||

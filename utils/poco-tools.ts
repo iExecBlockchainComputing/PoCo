@@ -16,9 +16,23 @@
 
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { TypedDataDomain } from '@ethersproject/abstract-signer';
+import { IexecLibOrders_v5 } from '../typechain';
+import { hashOrder } from './createOrders';
 
-export function getTaskId(dealId: string, taskIndex: number): any {
-    return ethers.utils.solidityKeccak256(['bytes32', 'uint'], [dealId, taskIndex]);
+export function getDealId(
+    domain: TypedDataDomain,
+    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
+    taskIndex: number,
+): string {
+    return ethers.utils.solidityKeccak256(
+        ['bytes32', 'uint256'],
+        [hashOrder(domain, requestOrder), taskIndex],
+    );
+}
+
+export function getTaskId(dealId: string, taskIndex: number): string {
+    return ethers.utils.solidityKeccak256(['bytes32', 'uint256'], [dealId, taskIndex]);
 }
 
 export async function buildAndSignSchedulerMessage(
