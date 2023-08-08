@@ -222,7 +222,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
              * Store deal
              */
             deal = m_dealsBoost[dealId];
-            deal.botFirst = uint24(requestOrderConsumed); // TODO: Safe cast
+            deal.botFirst = requestOrderConsumed.toUint24();
         }
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
@@ -235,9 +235,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         }
         deal.workerReward = 0; // TODO: Update and test
         deal.beneficiary = _requestorder.beneficiary;
-        // deal.deadline = ;
         deal.deadline = 0; // TODO: Update and test
-        deal.botSize = uint24(volume); // TODO: Safe cast
+        deal.botSize = volume.toUint24();
         deal.tag = vars.tag;
         deal.callback = _requestorder.callback;
         // Notify workerpool.

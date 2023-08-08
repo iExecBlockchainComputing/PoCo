@@ -200,8 +200,8 @@ describe('IexecPocoBoostDelegate', function () {
 
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
+            // Should match orders with low app order volume
             // Set volumes
-            // Should match orders partially with low app order volume
             appOrder.volume = 2; // smallest unconsumed volume among all orders
             datasetOrder.volume = 3;
             workerpoolOrder.volume = 4;
@@ -242,7 +242,7 @@ describe('IexecPocoBoostDelegate', function () {
                     datasetOrderHash,
                     workerpoolOrderHash,
                     requestOrderHash,
-                    2,
+                    expectedVolume,
                 );
             await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
@@ -388,7 +388,52 @@ describe('IexecPocoBoostDelegate', function () {
             expect(deal.datasetPrice).to.be.equal(0);
         });
 
-        it('Should match orders partially with low workerpool order volume', async function () {
+        it('Should match orders with low dataset order volume', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+            // Set volumes
+            appOrder.volume = 6;
+            datasetOrder.volume = 5; // smallest unconsumed volume among all orders
+            workerpoolOrder.volume = 7;
+            requestOrder.volume = 8;
+            const expectedVolume = 5;
+            await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const appOrderHash = hashOrder(domain, appOrder);
+            const datasetOrderHash = hashOrder(domain, datasetOrder);
+            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
+            const requestOrderHash = hashOrder(domain, requestOrder);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    appOrderHash,
+                    datasetOrderHash,
+                    workerpoolOrderHash,
+                    requestOrderHash,
+                    expectedVolume,
+                );
+            await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
+            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
+            await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
+            await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
+            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            expect(deal.botFirst).to.be.equal(0);
+            expect(deal.botSize).to.be.equal(expectedVolume);
+        });
+
+        it('Should match orders with low workerpool order volume', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
@@ -546,51 +591,6 @@ describe('IexecPocoBoostDelegate', function () {
             expect(deal2.botSize).to.be.equal(5);
             // Verify request is fully consumed
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, 8);
-        });
-
-        it('Should match orders partially with low request order volume', async function () {
-            appInstance.owner.returns(appProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
-            datasetInstance.owner.returns(datasetProvider.address);
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            // Set volumes
-            appOrder.volume = 6;
-            datasetOrder.volume = 5; // smallest unconsumed volume among all orders
-            workerpoolOrder.volume = 7;
-            requestOrder.volume = 8;
-            const expectedVolume = 5;
-            await signOrders(domain, orders, accounts);
-            const dealId = getDealId(domain, requestOrder, taskIndex);
-            const appOrderHash = hashOrder(domain, appOrder);
-            const datasetOrderHash = hashOrder(domain, datasetOrder);
-            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
-            const requestOrderHash = hashOrder(domain, requestOrder);
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            )
-                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
-                .withArgs(
-                    dealId,
-                    appOrderHash,
-                    datasetOrderHash,
-                    workerpoolOrderHash,
-                    requestOrderHash,
-                    expectedVolume,
-                );
-            await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
-            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
-            await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
-            await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
-            expect(deal.botFirst).to.be.equal(0);
-            expect(deal.botSize).to.be.equal(expectedVolume);
         });
 
         it('Should not match orders if one or more orders are consumed', async function () {
