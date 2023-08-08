@@ -478,7 +478,7 @@ describe('IexecPocoBoostDelegate', function () {
             expect(deal.botSize).to.be.equal(expectedVolume);
         });
 
-        it('Should match orders partially with low request order volume', async function () {
+        it('Should match orders with low request order volume', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
