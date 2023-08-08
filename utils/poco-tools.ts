@@ -26,13 +26,13 @@ export function getDealId(
     taskIndex: number,
 ): string {
     return ethers.utils.solidityKeccak256(
-        ['bytes32', 'uint'],
+        ['bytes32', 'uint256'],
         [hashOrder(domain, requestOrder), taskIndex],
     );
 }
 
 export function getTaskId(dealId: string, taskIndex: number): string {
-    return ethers.utils.solidityKeccak256(['bytes32', 'uint'], [dealId, taskIndex]);
+    return ethers.utils.solidityKeccak256(['bytes32', 'uint256'], [dealId, taskIndex]);
 }
 
 export async function buildAndSignSchedulerMessage(
