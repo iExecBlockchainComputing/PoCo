@@ -180,7 +180,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             ),
             "PocoBoost: Invalid request order signature"
         );
-        // TODO: Compute volume and assert value
         bytes32 dealId;
         uint256 volume;
         IexecLibCore_v5.DealBoost storage deal;
