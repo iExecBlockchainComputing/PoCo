@@ -326,6 +326,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
          */
         m_tasks[taskId].status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
 
+        emit ResultPushedBoost(dealId, index, results);
+
         if (target != address(0)) {
             require(resultsCallback.length > 0, "PocoBoost: Callback requires data");
             (bool success, ) = target.call{gas: m_callbackgas}(
@@ -334,7 +336,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             success; // silent unused variable warning
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }
-        emit ResultPushedBoost(dealId, index, results);
     }
 
     /**
