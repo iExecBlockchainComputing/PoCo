@@ -49,6 +49,7 @@ chai.use(smock.matchers);
 const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
+const startTime = 9876543210;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
 const { domain, domainSeparator } = buildDomain();
@@ -217,7 +218,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, undefined);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, undefined);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, undefined);
-            await time.setNextBlockTimestamp(9876543210);
+            await time.setNextBlockTimestamp(startTime);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -259,7 +260,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
             expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
             expect(deal.deadline).to.be.equal(
-                9876543210 + // match order block timestamp
+                startTime + // match order block timestamp
                     7 * // contribution deadline ratio
                         60, // requested category time reference
             );
@@ -1153,7 +1154,7 @@ describe('IexecPocoBoostDelegate', function () {
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
-            await time.setNextBlockTimestamp(9876543210);
+            await time.setNextBlockTimestamp(startTime);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1174,7 +1175,7 @@ describe('IexecPocoBoostDelegate', function () {
                 enclave,
             );
             await time.setNextBlockTimestamp(
-                9876543210 +
+                startTime +
                     7 * 60 - // deadline
                     1, // push result 1 second before deadline
             );
@@ -1322,14 +1323,14 @@ describe('IexecPocoBoostDelegate', function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee);
             await signOrders(domain, orders, accounts);
-            await time.setNextBlockTimestamp(9876543210);
+            await time.setNextBlockTimestamp(startTime);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
                 workerpoolOrder,
                 requestOrder,
             );
-            await time.setNextBlockTimestamp(9876543210 + 7 * 60); // push result on deadline
+            await time.setNextBlockTimestamp(startTime + 7 * 60); // push result on deadline
 
             await expect(
                 iexecPocoBoostInstance
