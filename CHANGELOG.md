@@ -32,7 +32,9 @@
         - price (175)
         - tag (#187)
         - restrictions (#189, #190)
+    - Verify entries are registered & category exists. (#193)
     - Verify signatures or presignatures of orders. (#185, #186, #191, #192)
+    - Compute volume & consume orders. (#194)
     - Store deal. (#174)
     - Emit events. (#182, #184)
 - Implement `pushResultBoost`:
