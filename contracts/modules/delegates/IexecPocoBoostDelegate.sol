@@ -23,13 +23,14 @@ import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
 import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
 
+import "./IexecEscrow.v8.sol";
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
 import "../interfaces/IexecAccessorsBoost.sol";
 
 /// @title PoCo Boost to reduce latency and increase throughput of deals.
 /// @notice Works for deals with requested trust = 0.
-contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase {
+contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase, IexecEscrow {
     using ECDSA for bytes32;
     using Math for uint256;
     using SafeCast for uint256;
@@ -240,6 +241,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.botSize = volume.toUint24();
         deal.tag = vars.tag;
         deal.callback = _requestorder.callback;
+        // Lock
+        {
+            uint256 taskPrice = _apporder.appprice +
+                _datasetorder.datasetprice +
+                _workerpoolorder.workerpoolprice;
+            lock(deal.requester, taskPrice * volume);
+        }
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             _requestorder.workerpool,
