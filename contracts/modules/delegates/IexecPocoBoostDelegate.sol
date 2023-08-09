@@ -293,7 +293,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         //TODO: Add `claimBoost(..)`
         require(
             m_tasks[taskId].status == IexecLibCore_v5.TaskStatusEnum.UNSET,
-            "PocoBoost: Task status not empty"
+            "PocoBoost: Task status not unset"
         );
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
         // TODO: Check enclave challenge if TEE bit set

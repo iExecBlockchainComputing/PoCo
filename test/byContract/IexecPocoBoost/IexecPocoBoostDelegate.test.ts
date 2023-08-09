@@ -1316,7 +1316,7 @@ describe('IexecPocoBoostDelegate', function () {
             // Push result
             await expect(pushResultBoost()).to.emit(iexecPocoBoostInstance, 'ResultPushedBoost');
             // Push result a second time
-            await expect(pushResultBoost()).to.be.revertedWith('PocoBoost: Task status not empty');
+            await expect(pushResultBoost()).to.be.revertedWith('PocoBoost: Task status not unset');
         });
 
         it('Should not push result after deadline', async function () {
