@@ -1,6 +1,6 @@
 import { FakeContract, MockContract, smock } from '@defi-wonderland/smock';
 import { FactoryOptions } from '@nomiclabs/hardhat-ethers/types';
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import chai, { expect } from 'chai';
 import { assert, ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -49,6 +49,7 @@ chai.use(smock.matchers);
 const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
+const startTime = 9876543210;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
 const { domain, domainSeparator } = buildDomain();
@@ -217,6 +218,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, undefined);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, undefined);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, undefined);
+            await time.setNextBlockTimestamp(startTime);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -257,6 +259,11 @@ describe('IexecPocoBoostDelegate', function () {
                 'Workerpool owner mismatch',
             );
             expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
+            expect(deal.deadline).to.be.equal(
+                startTime + // match order block timestamp
+                    7 * // contribution deadline ratio
+                        60, // requested category time reference
+            );
             expect(deal.callback).to.be.equal(requestOrder.callback, 'Callback mismatch');
             // Check prices.
             expect(deal.workerpoolPrice).to.be.equal(
@@ -1147,6 +1154,7 @@ describe('IexecPocoBoostDelegate', function () {
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
+            await time.setNextBlockTimestamp(startTime);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1165,6 +1173,11 @@ describe('IexecPocoBoostDelegate', function () {
                 taskId,
                 callbackResultDigest,
                 enclave,
+            );
+            await time.setNextBlockTimestamp(
+                startTime +
+                    7 * 60 - // deadline
+                    1, // push result 1 second before deadline
             );
 
             await expect(
@@ -1266,6 +1279,72 @@ describe('IexecPocoBoostDelegate', function () {
             )
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
+        });
+
+        it('Should not push result twice', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, constants.NULL.BYTES32);
+            await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const emptyEnclaveAddress = constants.NULL.ADDRESS;
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                emptyEnclaveAddress,
+                scheduler,
+            );
+            const pushResultBoost: () => Promise<any> = () =>
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        constants.NULL.BYTES32,
+                        schedulerSignature,
+                        emptyEnclaveAddress,
+                        constants.NULL.SIGNATURE,
+                    );
+
+            // Push result
+            await expect(pushResultBoost()).to.emit(iexecPocoBoostInstance, 'ResultPushedBoost');
+            // Push result a second time
+            await expect(pushResultBoost()).to.be.revertedWith('PocoBoost: Task status not unset');
+        });
+
+        it('Should not push result after deadline', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+            await signOrders(domain, orders, accounts);
+            await time.setNextBlockTimestamp(startTime);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            await time.setNextBlockTimestamp(startTime + 7 * 60); // push result on deadline
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        constants.NULL.BYTES32,
+                        constants.NULL.SIGNATURE,
+                        enclave.address,
+                        constants.NULL.SIGNATURE,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Deadline reached');
         });
 
         it('Should not push result with invalid scheduler signature', async function () {

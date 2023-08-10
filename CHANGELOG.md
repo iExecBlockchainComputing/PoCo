@@ -38,6 +38,7 @@
     - Store deal. (#174)
     - Emit events. (#182, #184)
 - Implement `pushResultBoost`:
+    - Push result before deadline. (#195)
     - Verify signatures
         - scheduler (#173)
         - enclave (#176)
