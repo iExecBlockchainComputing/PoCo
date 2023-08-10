@@ -234,7 +234,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
                 .withArgs(requester.address, dealPrice);
-
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);

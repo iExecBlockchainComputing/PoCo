@@ -212,15 +212,15 @@ describe('IexecPocoBoostDelegate', function () {
             const dealPrice =
                 (nonZeroAppPrice + nonZeroDatasetPrice + nonZeroWorkerpoolPrice) * expectedVolume;
             await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [iexecPocoBoostInstance.address]: 1,
+                [iexecPocoBoostInstance.address]: 1, // any initial value
             });
             await iexecPocoBoostInstance.setVariable(BALANCES, {
                 [requester.address]:
-                    2 + // some initial balance
-                    dealPrice,
+                    2 + // // any initial value
+                    dealPrice, // + price of deal
             });
             await iexecPocoBoostInstance.setVariable(FROZENS, {
-                [requester.address]: 3,
+                [requester.address]: 3, // any initial value
             });
             await expectBalance(iexecPocoBoostInstance, iexecPocoBoostInstance.address, 1);
             await expectBalance(iexecPocoBoostInstance, requester.address, 2 + dealPrice);
