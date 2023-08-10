@@ -424,7 +424,7 @@ describe('IexecPocoBoostDelegate', function () {
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
             expect(deal.datasetPrice).to.be.equal(0);
         });
-        /*
+
         it('Should match orders with low dataset order volume', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
@@ -1479,7 +1479,6 @@ describe('IexecPocoBoostDelegate', function () {
                     ),
             ).to.be.revertedWith('PocoBoost: Callback requires data');
         });
-        */
     });
 });
 
