@@ -213,14 +213,14 @@ describe('IexecPocoBoostDelegate', function () {
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
-            await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
-            });
-            await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [requester.address]: initialRequesterBalance + dealPrice,
-            });
-            await iexecPocoBoostInstance.setVariable(FROZENS, {
-                [requester.address]: initialRequesterFrozen,
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
+                    [requester.address]: initialRequesterBalance + dealPrice,
+                },
+                [FROZENS]: {
+                    [requester.address]: initialRequesterFrozen,
+                },
             });
             await expectBalance(
                 iexecPocoBoostInstance,
