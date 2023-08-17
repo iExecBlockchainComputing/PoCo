@@ -183,22 +183,22 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
 
-            const nonZeroAppPrice = 1000;
-            const nonZeroDatasetPrice = 1_000_000;
-            const nonZeroWorkerpoolPrice = 1_000_000_000;
+            const appPrice = 1000;
+            const datasetPrice = 1_000_000;
+            const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee);
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
             // Set prices
-            appOrder.appprice = nonZeroAppPrice;
-            requestOrder.appmaxprice = nonZeroAppPrice;
+            appOrder.appprice = appPrice;
+            requestOrder.appmaxprice = appPrice;
 
-            datasetOrder.datasetprice = nonZeroDatasetPrice;
-            requestOrder.datasetmaxprice = nonZeroDatasetPrice;
+            datasetOrder.datasetprice = datasetPrice;
+            requestOrder.datasetmaxprice = datasetPrice;
 
-            workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
-            requestOrder.workerpoolmaxprice = nonZeroWorkerpoolPrice;
+            workerpoolOrder.workerpoolprice = workerpoolPrice;
+            requestOrder.workerpoolmaxprice = workerpoolPrice;
 
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
@@ -209,22 +209,30 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOrder.volume = 4;
             requestOrder.volume = 5;
             const expectedVolume = 2;
-            const dealPrice =
-                (nonZeroAppPrice + nonZeroDatasetPrice + nonZeroWorkerpoolPrice) * expectedVolume;
-            await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [iexecPocoBoostInstance.address]: 1, // any initial value
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * expectedVolume;
+            const initialIexecPocoBalance = 1;
+            const initialRequesterBalance = 2;
+            const initialRequesterFrozen = 3;
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
+                    [requester.address]: initialRequesterBalance + dealPrice,
+                },
+                [FROZENS]: {
+                    [requester.address]: initialRequesterFrozen,
+                },
             });
-            await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [requester.address]:
-                    2 + // // any initial value
-                    dealPrice, // + price of deal
-            });
-            await iexecPocoBoostInstance.setVariable(FROZENS, {
-                [requester.address]: 3, // any initial value
-            });
-            await expectBalance(iexecPocoBoostInstance, iexecPocoBoostInstance.address, 1);
-            await expectBalance(iexecPocoBoostInstance, requester.address, 2 + dealPrice);
-            await expectFrozen(iexecPocoBoostInstance, requester.address, 3);
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance,
+            );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterBalance + dealPrice,
+            );
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
@@ -303,10 +311,14 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                1 + dealPrice,
+                initialIexecPocoBalance + dealPrice,
             );
-            await expectBalance(iexecPocoBoostInstance, requester.address, 2);
-            await expectFrozen(iexecPocoBoostInstance, requester.address, 3 + dealPrice);
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterFrozen + dealPrice,
+            );
         });
 
         it('Should match orders with pre-signatures', async function () {
@@ -362,8 +374,8 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
 
-            const nonZeroAppPrice = 1000;
-            const nonZeroWorkerpoolPrice = 1_000_000;
+            const appPrice = 1000;
+            const workerpoolPrice = 1_000_000;
             await iexecPocoBoostInstance.setVariable(BALANCES, {
                 [requester.address]: 1_001_000,
             });
@@ -381,11 +393,11 @@ describe('IexecPocoBoostDelegate', function () {
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
             // Set prices
-            appOrder.appprice = nonZeroAppPrice;
-            requestOrder.appmaxprice = nonZeroAppPrice;
+            appOrder.appprice = appPrice;
+            requestOrder.appmaxprice = appPrice;
 
-            workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
-            requestOrder.workerpoolmaxprice = nonZeroWorkerpoolPrice;
+            workerpoolOrder.workerpoolprice = workerpoolPrice;
+            requestOrder.workerpoolmaxprice = workerpoolPrice;
 
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
