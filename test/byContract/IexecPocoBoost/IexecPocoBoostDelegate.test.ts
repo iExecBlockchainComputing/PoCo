@@ -210,20 +210,29 @@ describe('IexecPocoBoostDelegate', function () {
             requestOrder.volume = 5;
             const expectedVolume = 2;
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * expectedVolume;
+            const initialIexecPocoBalance = 1;
+            const initialRequesterBalance = 2;
+            const initialRequesterFrozen = 3;
             await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [iexecPocoBoostInstance.address]: 1, // any initial value
+                [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
             });
             await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [requester.address]:
-                    2 + // // any initial value
-                    dealPrice, // + price of deal
+                [requester.address]: initialRequesterBalance + dealPrice,
             });
             await iexecPocoBoostInstance.setVariable(FROZENS, {
-                [requester.address]: 3, // any initial value
+                [requester.address]: initialRequesterFrozen,
             });
-            await expectBalance(iexecPocoBoostInstance, iexecPocoBoostInstance.address, 1);
-            await expectBalance(iexecPocoBoostInstance, requester.address, 2 + dealPrice);
-            await expectFrozen(iexecPocoBoostInstance, requester.address, 3);
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance,
+            );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterBalance + dealPrice,
+            );
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
@@ -301,10 +310,14 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                1 + dealPrice,
+                initialIexecPocoBalance + dealPrice,
             );
-            await expectBalance(iexecPocoBoostInstance, requester.address, 2);
-            await expectFrozen(iexecPocoBoostInstance, requester.address, 3 + dealPrice);
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterFrozen + dealPrice,
+            );
         });
 
         it('Should match orders with pre-signatures', async function () {
