@@ -16,6 +16,7 @@
 
 import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
+import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { TypedDataDomain } from 'ethers';
 import {
@@ -56,6 +57,7 @@ import {
 const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
+const startTime = 9876543210;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 /**
@@ -203,6 +205,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
+            await time.setNextBlockTimestamp(startTime);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -235,6 +238,19 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
                 .withArgs(requester.address, dealPrice);
+            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            expect(deal.appOwner).to.be.equal(appProvider.address);
+            expect(deal.appPrice).to.be.equal(appOrder.appprice);
+            expect(deal.datasetOwner).to.be.equal(datasetProvider.address);
+            expect(deal.datasetPrice).to.be.equal(datasetOrder.datasetprice);
+            expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
+            expect(deal.workerpoolPrice).to.be.equal(workerpoolOrder.workerpoolprice);
+            expect(deal.requester).to.be.equal(requester.address);
+            //expect(deal.beneficiary).to.be.equal(beneficiary.address);
+            expect(deal.deadline).to.be.equal(startTime + 7 * 300);
+            expect(deal.botFirst).to.be.equal(0);
+            expect(deal.botSize).to.be.equal(1);
+            expect(deal.tag).to.be.equal('0x000000000000000000000001');
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
@@ -347,6 +363,8 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(dealId, taskIndex, results)
                 .to.emit(oracleConsumerInstance, 'GotResult')
                 .withArgs(taskId, resultsCallback);
+            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            expect(deal.callback).to.be.equal(oracleConsumerInstance.address);
             expect(await oracleConsumerInstance.store(taskId)).to.be.equal(resultsCallback);
         });
 
