@@ -11,7 +11,7 @@ const settings = {
     },
     outputSelection: { '*': { '*': ['storageLayout'] } },
 };
-/***
+/**
  * Enable Intermediate Representation (IR) to reduce `Stack too deep` occurrences
  * at compile time.
  * https://hardhat.org/hardhat-runner/docs/reference/solidity-support#support-for-ir-based-codegen
