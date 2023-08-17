@@ -83,8 +83,17 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     let appAddress = '';
     let workerpoolAddress = '';
     let datasetAddress = '';
-    let [owner, requester, appProvider, datasetProvider, scheduler, worker, enclave, anyone] =
-        [] as SignerWithAddress[];
+    let [
+        owner,
+        requester,
+        beneficiary,
+        appProvider,
+        datasetProvider,
+        scheduler,
+        worker,
+        enclave,
+        anyone,
+    ] = [] as SignerWithAddress[];
     let accounts: IexecAccounts;
     let entriesAndRequester: Iexec<string>;
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
@@ -94,12 +103,13 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         let signers = await hre.ethers.getSigners();
         owner = signers[0];
         requester = signers[1];
-        appProvider = signers[2];
-        datasetProvider = signers[3];
-        scheduler = signers[4];
-        worker = signers[5];
-        enclave = signers[6];
-        anyone = signers[7];
+        beneficiary = signers[2];
+        appProvider = signers[3];
+        datasetProvider = signers[4];
+        scheduler = signers[5];
+        worker = signers[6];
+        enclave = signers[7];
+        anyone = signers[8];
         accounts = {
             app: appProvider,
             dataset: datasetProvider,
@@ -176,20 +186,26 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         it('Should match orders', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTag);
-            appOrder.appprice = 1000;
-            datasetOrder.datasetprice = 1_000_000;
-            workerpoolOrder.workerpoolprice = 1_000_000_000;
-            requestOrder.appmaxprice = appOrder.appprice;
-            requestOrder.datasetmaxprice = datasetOrder.datasetprice;
-            requestOrder.workerpoolmaxprice = workerpoolOrder.workerpoolprice;
+            const callbackAddress = '0x00000000000000000000000000000000ca11bac6';
+            const appPrice = 1000;
+            const datasetPrice = 1_000_000;
+            const workerpoolPrice = 1_000_000_000;
+            appOrder.appprice = appPrice;
+            datasetOrder.datasetprice = datasetPrice;
+            workerpoolOrder.workerpoolprice = workerpoolPrice;
+            requestOrder.appmaxprice = appPrice;
+            requestOrder.datasetmaxprice = datasetPrice;
+            requestOrder.workerpoolmaxprice = workerpoolPrice;
+            requestOrder.beneficiary = beneficiary.address;
+            requestOrder.callback = callbackAddress;
             const dealPrice =
-                (appOrder.appprice + datasetOrder.datasetprice + workerpoolOrder.workerpoolprice) * // task price
+                (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
             const iexecInstance = IexecAccessors__factory.connect(
                 iexecPocoBoostInstance.address,
                 anyone,
             );
-            const rlcInstance = RLC__factory.connect(iexecInstance.token(), owner);
+            const rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
             await rlcInstance.transfer(requester.address, dealPrice);
             await rlcInstance
                 .connect(requester)
@@ -234,17 +250,18 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(requester.address, dealPrice);
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
             expect(deal.appOwner).to.be.equal(appProvider.address);
-            expect(deal.appPrice).to.be.equal(appOrder.appprice);
+            expect(deal.appPrice).to.be.equal(appPrice);
             expect(deal.datasetOwner).to.be.equal(datasetProvider.address);
-            expect(deal.datasetPrice).to.be.equal(datasetOrder.datasetprice);
+            expect(deal.datasetPrice).to.be.equal(datasetPrice);
             expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
-            expect(deal.workerpoolPrice).to.be.equal(workerpoolOrder.workerpoolprice);
+            expect(deal.workerpoolPrice).to.be.equal(workerpoolPrice);
             expect(deal.requester).to.be.equal(requester.address);
-            //expect(deal.beneficiary).to.be.equal(beneficiary.address);
+            expect(deal.beneficiary).to.be.equal(beneficiary.address);
             expect(deal.deadline).to.be.equal(startTime + 7 * 300);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(1);
             expect(deal.tag).to.be.equal('0x000000000000000000000001');
+            expect(deal.callback.toLowerCase()).to.be.equal(callbackAddress);
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
@@ -357,8 +374,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(dealId, taskIndex, results)
                 .to.emit(oracleConsumerInstance, 'GotResult')
                 .withArgs(taskId, resultsCallback);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
-            expect(deal.callback).to.be.equal(oracleConsumerInstance.address);
             expect(await oracleConsumerInstance.store(taskId)).to.be.equal(resultsCallback);
         });
 
