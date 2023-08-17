@@ -62,19 +62,19 @@ library IexecLibCore_v5 {
         uint256 schedulerRewardRatio;
     }
     struct DealBoost {
-        address appOwner;
+        address appOwner; // Offset 0
         uint96 appPrice;
-        address datasetOwner;
+        address datasetOwner; // Offset 1
         uint96 datasetPrice;
-        address workerpoolOwner;
+        address workerpoolOwner; // Offset 2
         uint96 workerpoolPrice;
-        address requester;
+        address requester; // Offset 3
         uint96 workerReward;
-        address beneficiary;
+        address beneficiary; // Offset 4
         uint48 deadline;
         uint24 botFirst;
         uint24 botSize;
-        bytes32 tag; // TODO: Store bytes12 & emit event with full bytes32
+        bytes12 tag; // Offset 5
         address callback;
     }
     /**

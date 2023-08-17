@@ -252,6 +252,7 @@ describe('IexecPocoBoostDelegate', function () {
                     appInstance.address,
                     datasetInstance.address,
                     requestOrder.category,
+                    dealTagTee,
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
@@ -298,7 +299,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
-            expect(deal.tag).to.be.equal(dealTagTee);
+            expect(deal.tag).to.be.equal('0x000000000000000000000001');
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
@@ -343,6 +344,7 @@ describe('IexecPocoBoostDelegate', function () {
                     appInstance.address,
                     datasetInstance.address,
                     requestOrder.category,
+                    dealTagTee,
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
@@ -409,6 +411,7 @@ describe('IexecPocoBoostDelegate', function () {
                     appInstance.address,
                     constants.NULL.ADDRESS, // No dataset.
                     requestOrder.category,
+                    dealTagTee,
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
@@ -1375,6 +1378,33 @@ describe('IexecPocoBoostDelegate', function () {
                         constants.NULL.SIGNATURE,
                     ),
             ).to.be.revertedWith('PocoBoost: Deadline reached');
+        });
+
+        it('Should not push result without enclave challenge for TEE task', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+            await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        constants.NULL.BYTES32,
+                        constants.NULL.SIGNATURE,
+                        constants.NULL.ADDRESS,
+                        constants.NULL.SIGNATURE,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Tag requires enclave challenge');
         });
 
         it('Should not push result with invalid scheduler signature', async function () {

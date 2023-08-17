@@ -27,6 +27,7 @@ interface IexecPocoBoost {
         address app,
         address dataset,
         uint256 category,
+        bytes32 tag,
         string params
     );
     // Use same event (name and parameters) than classic Poco for cross-compatibility

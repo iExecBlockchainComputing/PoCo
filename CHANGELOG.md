@@ -37,9 +37,10 @@
     - Compute volume & consume orders. (#194)
     - Lock requester deal value. (#196)
     - Store deal. (#174)
-    - Emit events. (#182, #184)
+    - Emit events. (#182, #184, #197)
 - Implement `pushResultBoost`:
     - Push result before deadline. (#195)
+    - Require enclave challenge when TEE bit of tag set. (#197)
     - Verify signatures
         - scheduler (#173)
         - enclave (#176)
