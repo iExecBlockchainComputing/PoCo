@@ -30,6 +30,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     TestClient__factory,
+    RLC__factory,
+    IexecAccessors__factory,
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
@@ -79,7 +81,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     let appAddress = '';
     let workerpoolAddress = '';
     let datasetAddress = '';
-    let [requester, appProvider, datasetProvider, scheduler, worker, enclave, anyone] =
+    let [owner, requester, appProvider, datasetProvider, scheduler, worker, enclave, anyone] =
         [] as SignerWithAddress[];
     let accounts: IexecAccounts;
     let entriesAndRequester: Iexec<string>;
@@ -88,7 +90,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
         let signers = await hre.ethers.getSigners();
-        const owner = signers[0];
+        owner = signers[0];
         requester = signers[1];
         appProvider = signers[2];
         datasetProvider = signers[3];
@@ -172,6 +174,27 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         it('Should match orders', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTag);
+            appOrder.appprice = 1000;
+            datasetOrder.datasetprice = 1_000_000;
+            workerpoolOrder.workerpoolprice = 1_000_000_000;
+            requestOrder.appmaxprice = appOrder.appprice;
+            requestOrder.datasetmaxprice = datasetOrder.datasetprice;
+            requestOrder.workerpoolmaxprice = workerpoolOrder.workerpoolprice;
+            const dealPrice =
+                (appOrder.appprice + datasetOrder.datasetprice + workerpoolOrder.workerpoolprice) * // task price
+                1; // volume
+            const iexecInstance = IexecAccessors__factory.connect(
+                iexecPocoBoostInstance.address,
+                anyone,
+            );
+            const rlcInstance = RLC__factory.connect(iexecInstance.token(), owner);
+            await rlcInstance.transfer(requester.address, dealPrice);
+            await rlcInstance
+                .connect(requester)
+                .approveAndCall(iexecPocoBoostInstance.address, dealPrice, '0x'); // approve and deposit
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
 
@@ -200,7 +223,14 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     hashOrder(domain, workerpoolOrder),
                     hashOrder(domain, requestOrder),
                     volume,
-                );
+                )
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(requester.address, dealPrice);
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
         });
     });
 

@@ -35,6 +35,7 @@
     - Verify entries are registered & category exists. (#193)
     - Verify signatures or presignatures of orders. (#185, #186, #191, #192)
     - Compute volume & consume orders. (#194)
+    - Lock requester deal value. (#196)
     - Store deal. (#174)
     - Emit events. (#182, #184)
 - Implement `pushResultBoost`:

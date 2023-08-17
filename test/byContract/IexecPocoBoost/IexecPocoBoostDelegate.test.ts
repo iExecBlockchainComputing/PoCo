@@ -52,6 +52,8 @@ const volume = taskIndex + 1;
 const startTime = 9876543210;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
+const BALANCES = 'm_balances';
+const FROZENS = 'm_frozens';
 const { domain, domainSeparator } = buildDomain();
 
 async function deployBoostFixture() {
@@ -181,23 +183,22 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
 
-            const nonZeroAppPrice = 3000;
-            const nonZeroDatasetPrice = 900546000;
-            const nonZeroWorkerpoolPrice = 569872878;
-
+            const appPrice = 1000;
+            const datasetPrice = 1_000_000;
+            const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee);
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
             // Set prices
-            appOrder.appprice = nonZeroAppPrice;
-            requestOrder.appmaxprice = nonZeroAppPrice;
+            appOrder.appprice = appPrice;
+            requestOrder.appmaxprice = appPrice;
 
-            datasetOrder.datasetprice = nonZeroDatasetPrice;
-            requestOrder.datasetmaxprice = nonZeroDatasetPrice;
+            datasetOrder.datasetprice = datasetPrice;
+            requestOrder.datasetmaxprice = datasetPrice;
 
-            workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
-            requestOrder.workerpoolmaxprice = nonZeroWorkerpoolPrice;
+            workerpoolOrder.workerpoolprice = workerpoolPrice;
+            requestOrder.workerpoolmaxprice = workerpoolPrice;
 
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
@@ -208,6 +209,30 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOrder.volume = 4;
             requestOrder.volume = 5;
             const expectedVolume = 2;
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * expectedVolume;
+            const initialIexecPocoBalance = 1;
+            const initialRequesterBalance = 2;
+            const initialRequesterFrozen = 3;
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
+                    [requester.address]: initialRequesterBalance + dealPrice,
+                },
+                [FROZENS]: {
+                    [requester.address]: initialRequesterFrozen,
+                },
+            });
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance,
+            );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterBalance + dealPrice,
+            );
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
@@ -245,7 +270,11 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrderHash,
                     requestOrderHash,
                     expectedVolume,
-                );
+                )
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(requester.address, dealPrice);
             await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
@@ -278,6 +307,17 @@ describe('IexecPocoBoostDelegate', function () {
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
             expect(deal.tag).to.be.equal(dealTagTee);
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance + dealPrice,
+            );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterFrozen + dealPrice,
+            );
         });
 
         it('Should match orders with pre-signatures', async function () {
@@ -332,9 +372,11 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
 
-            const nonZeroAppPrice = 3000;
-            const nonZeroDatasetPrice = 900546000;
-            const nonZeroWorkerpoolPrice = 569872878;
+            const appPrice = 1000;
+            const workerpoolPrice = 1_000_000;
+            await iexecPocoBoostInstance.setVariable(BALANCES, {
+                [requester.address]: 1_001_000,
+            });
 
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 {
@@ -349,11 +391,11 @@ describe('IexecPocoBoostDelegate', function () {
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
             // Set prices
-            appOrder.appprice = nonZeroAppPrice;
-            requestOrder.appmaxprice = nonZeroAppPrice;
+            appOrder.appprice = appPrice;
+            requestOrder.appmaxprice = appPrice;
 
-            workerpoolOrder.workerpoolprice = nonZeroWorkerpoolPrice;
-            requestOrder.workerpoolmaxprice = nonZeroWorkerpoolPrice;
+            workerpoolOrder.workerpoolprice = workerpoolPrice;
+            requestOrder.workerpoolmaxprice = workerpoolPrice;
 
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
@@ -1470,4 +1512,20 @@ async function expectOrderConsumed(
         }
         assert(false); //revert
     }
+}
+
+async function expectBalance(
+    iexecPocoInstance: MockContract<IexecPocoBoostDelegate>,
+    account: string,
+    expectedBalanceValue: number,
+) {
+    expect(await iexecPocoInstance.getVariable(BALANCES, [account])).to.equal(expectedBalanceValue);
+}
+
+async function expectFrozen(
+    iexecPocoInstance: MockContract<IexecPocoBoostDelegate>,
+    account: string,
+    expectedFrozenValue: number,
+) {
+    expect(await iexecPocoInstance.getVariable(FROZENS, [account])).to.equal(expectedFrozenValue);
 }
