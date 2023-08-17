@@ -183,17 +183,11 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const dealPrice =
                 (appOrder.appprice + datasetOrder.datasetprice + workerpoolOrder.workerpoolprice) * // task price
                 1; // volume
-            const rlcInstance = RLC__factory.connect(
-                await IexecAccessors__factory.connect(
-                    iexecPocoBoostInstance.address,
-                    anyone,
-                ).token(),
-                owner,
-            );
             const iexecInstance = IexecAccessors__factory.connect(
                 iexecPocoBoostInstance.address,
                 anyone,
             );
+            const rlcInstance = RLC__factory.connect(iexecInstance.token(), owner);
             await rlcInstance.transfer(requester.address, dealPrice);
             await rlcInstance
                 .connect(requester)
