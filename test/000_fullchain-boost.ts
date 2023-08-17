@@ -219,6 +219,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
+                    dealTag,
                     requestOrder.params,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
@@ -283,6 +284,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 appAddress,
                 datasetAddress,
                 requestOrder.category,
+                dealTag,
                 requestOrder.params,
             )
             .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
