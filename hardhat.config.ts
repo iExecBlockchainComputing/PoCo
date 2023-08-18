@@ -10,20 +10,32 @@ const settings = {
         runs: 200,
     },
     outputSelection: { '*': { '*': ['storageLayout'] } },
-}
+};
+/**
+ * Enable Intermediate Representation (IR) to reduce `Stack too deep` occurrences
+ * at compile time (e.g.: too many local variables in `matchOrdersBoost`).
+ * https://hardhat.org/hardhat-runner/docs/reference/solidity-support#support-for-ir-based-codegen
+ */
+const v8Settings = JSON.parse(JSON.stringify(settings));
+v8Settings.viaIR = true;
+v8Settings.optimizer.details = {
+    yulDetails: {
+        optimizerSteps: 'u',
+    },
+};
 
-const zeroGasPrice = 0 // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
+const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
 
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: '0.8.19', settings }, // ENS contracts
+            { version: '0.8.19', settings: v8Settings }, // PoCo Boost & ENS contracts
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],
     },
     networks: {
-        "dev-native": {
+        'dev-native': {
             chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
@@ -31,7 +43,7 @@ const config: HardhatUserConfig = {
             },
             gasPrice: zeroGasPrice, // Get closer to Bellecour network
         },
-        "dev-token": {
+        'dev-token': {
             chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
@@ -109,21 +121,21 @@ const config: HardhatUserConfig = {
                 chainId: 133,
                 urls: {
                     apiURL: 'https://blockscout.viviani.iex.ec/api',
-                    browserURL: 'https://blockscout.viviani.iex.ec/'
-                }
+                    browserURL: 'https://blockscout.viviani.iex.ec/',
+                },
             },
             {
                 network: 'bellecour',
                 chainId: 134,
                 urls: {
                     apiURL: 'https://blockscout.bellecour.iex.ec/api',
-                    browserURL: 'https://blockscout.bellecour.iex.ec/'
-                }
+                    browserURL: 'https://blockscout.bellecour.iex.ec/',
+                },
             },
-        ]
+        ],
     },
     typechain: {
-        outDir: 'typechain'
+        outDir: 'typechain',
     },
     dependencyCompiler: {
         paths: [
@@ -138,7 +150,7 @@ const config: HardhatUserConfig = {
             '@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar.sol',
             '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol',
         ],
-    }
+    },
 };
 
 export default config;

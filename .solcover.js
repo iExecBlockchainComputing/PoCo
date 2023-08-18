@@ -1,6 +1,7 @@
 const BASE_FOLDER = './coverage'
 
 module.exports = {
+    configureYulOptimizer: true,
     mocha: {
         timeout: 600000, // double timeout
     },

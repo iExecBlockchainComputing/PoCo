@@ -76,18 +76,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         );
         // Save some local variables in memory with a structure to fix `Stack too deep`.
         IexecLibCore_v5.DealBoost memory vars;
-        {
-            bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
-            require(
-                tag & ~_workerpoolorder.tag == 0x0,
-                "PocoBoost: Workerpool tag does not match demand"
-            );
-            require(
-                (tag ^ _apporder.tag)[31] & 0x01 == 0x0,
-                "PocoBoost: App tag does not match demand"
-            );
-            vars.tag = tag;
-        }
+        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+        require(
+            tag & ~_workerpoolorder.tag == 0x0,
+            "PocoBoost: Workerpool tag does not match demand"
+        );
+        require(
+            (tag ^ _apporder.tag)[31] & 0x01 == 0x0,
+            "PocoBoost: App tag does not match demand"
+        );
 
         // Check match and restriction
         require(_requestorder.app == _apporder.app, "PocoBoost: App mismatch");
@@ -239,7 +236,19 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             m_categories[_requestorder.category].workClockTimeRef *
             CONTRIBUTION_DEADLINE_RATIO).toUint48();
         deal.botSize = volume.toUint24();
-        deal.tag = vars.tag;
+        /**
+         * Store right part of tag for later use.
+         * @dev From the cheapest to the most expensive option:
+         * a. Shift left with assembly
+         * b. Shift left in Solidity `tag << 160`
+         * c. Convert to smaller bytes size `uint96(uint256(tag))`, see
+         * https://github.com/ethereum/solidity/blob/v0.8.19/docs/types/value-types.rst?plain=1#L222
+         */
+        bytes12 shortTag;
+        assembly {
+            shortTag := shl(160, tag) // 96 = 256 - 160
+        }
+        deal.shortTag = shortTag;
         deal.callback = _requestorder.callback;
         // Lock
         {
@@ -255,6 +264,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.app,
             _requestorder.dataset,
             _requestorder.category,
+            tag,
             _requestorder.params
         );
         // Broadcast consumption of orders.
@@ -304,7 +314,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Task status not unset"
         );
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
-        // TODO: Check enclave challenge if TEE bit set
+        // Enclave challenge required for TEE tasks
+        require(
+            enclaveChallenge != address(0) || deal.shortTag[11] & 0x01 == 0,
+            "PocoBoost: Tag requires enclave challenge"
+        );
         // Check scheduler signature
         require(
             _verifySignatureOfEthSignedMessage(
