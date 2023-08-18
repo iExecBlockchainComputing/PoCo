@@ -419,6 +419,12 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(dealId, taskIndex, results);
         });
     });
+
+    describe('Claim', function () {
+        it('Should claim', async function () {
+            //TODO
+        });
+    });
 });
 
 /**

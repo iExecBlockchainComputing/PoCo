@@ -47,6 +47,7 @@ import {
 chai.use(smock.matchers);
 
 const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
+const standardTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const taskIndex = 0;
 const volume = taskIndex + 1;
 const startTime = 9876543210;
@@ -1244,6 +1245,7 @@ describe('IexecPocoBoostDelegate', function () {
                 taskId,
                 resultsCallback,
             );
+            //TODO: Check task status
         });
 
         it('Should push result (TEE)', async function () {
@@ -1507,7 +1509,7 @@ describe('IexecPocoBoostDelegate', function () {
                 enclave,
             );
 
-            expect(
+            await expect(
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
@@ -1520,6 +1522,151 @@ describe('IexecPocoBoostDelegate', function () {
                         enclaveSignature,
                     ),
             ).to.be.revertedWith('PocoBoost: Callback requires data');
+        });
+    });
+
+    describe('Claim task Boost', function () {
+        beforeEach('mock app, dataset and workerpool', async () => {
+            // Mock app, dataset and workerpool here before each test so
+            // matchOrdersBoost setup will be lighter when unit testing
+            // claimBoost
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+        });
+
+        it('Should claim', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+            const appPrice = 1000;
+            const datasetPrice = 1_000_000;
+            const workerpoolPrice = 1_000_000_000;
+            appOrder.appprice = appPrice;
+            datasetOrder.datasetprice = datasetPrice;
+            workerpoolOrder.workerpoolprice = workerpoolPrice;
+            requestOrder.appmaxprice = appPrice;
+            requestOrder.datasetmaxprice = datasetPrice;
+            requestOrder.workerpoolmaxprice = workerpoolPrice;
+            await signOrders(domain, orders, accounts);
+            const dealPrice = appPrice + datasetPrice + workerpoolPrice;
+            const initialIexecPocoBalance = 1;
+            const initialRequesterBalance = 2;
+            const initialRequesterFrozen = 3;
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
+                    [requester.address]: initialRequesterBalance + dealPrice,
+                },
+                [FROZENS]: {
+                    [requester.address]: initialRequesterFrozen,
+                },
+            });
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance,
+            );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterBalance + dealPrice,
+            );
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await time.setNextBlockTimestamp(startTime);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance + dealPrice,
+            );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterFrozen + dealPrice,
+            );
+            await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
+
+            await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
+                .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
+                .withArgs(dealId, taskIndex);
+            //TODO: Check task status
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance,
+            );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterBalance + dealPrice,
+            );
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+        });
+
+        it('Should not claim if task not unset', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, standardTag);
+            await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                constants.NULL.ADDRESS,
+                scheduler,
+            );
+            await iexecPocoBoostInstance
+                .connect(worker)
+                .pushResultBoost(
+                    dealId,
+                    taskIndex,
+                    results,
+                    constants.NULL.BYTES32,
+                    schedulerSignature,
+                    constants.NULL.ADDRESS,
+                    constants.NULL.SIGNATURE,
+                );
+
+            await expect(
+                iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex),
+            ).to.be.revertedWith('PocoBoost: Task status not unset');
+        });
+
+        it('Should not claim before deadline', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, standardTag);
+            await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            await time.setNextBlockTimestamp(startTime);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            await time.setNextBlockTimestamp(
+                startTime +
+                    7 * 60 - // claim
+                    1, // just before deadline
+            );
+
+            await expect(
+                iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex),
+            ).to.be.revertedWith('PocoBoost: Deadline not reached');
         });
     });
 });

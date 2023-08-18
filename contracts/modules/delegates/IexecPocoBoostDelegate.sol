@@ -252,10 +252,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.callback = _requestorder.callback;
         // Lock
         {
-            uint256 taskPrice = _apporder.appprice +
-                _datasetorder.datasetprice +
-                _workerpoolorder.workerpoolprice;
-            lock(deal.requester, taskPrice * volume);
+            lock(
+                deal.requester,
+                computeTaskPrice(
+                    _apporder.appprice,
+                    _datasetorder.datasetprice,
+                    _workerpoolorder.workerpoolprice
+                ) * volume
+            );
         }
         // Notify workerpool.
         emit SchedulerNoticeBoost(
@@ -276,6 +280,20 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             requestOrderTypedDataHash,
             volume
         );
+    }
+
+    /**
+     * Compute price of a task.
+     * @param appPrice The price of using the app.
+     * @param datasetPrice The price of using the dataset.
+     * @param workerpoolPrice The price of using the workerpool.
+     */
+    function computeTaskPrice(
+        uint256 appPrice,
+        uint256 datasetPrice,
+        uint256 workerpoolPrice
+    ) private pure returns (uint256) {
+        return appPrice + datasetPrice + workerpoolPrice;
     }
 
     // TODO: Move to IexecAccessorsBoost
@@ -308,7 +326,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
-        //TODO: Add `claimBoost(..)`
         require(
             m_tasks[taskId].status == IexecLibCore_v5.TaskStatusEnum.UNSET,
             "PocoBoost: Task status not unset"
@@ -358,6 +375,30 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             success; // silent unused variable warning
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }
+    }
+
+    /**
+     * Claim task to get a refund if task is not completed after deadline.
+     * @param dealId The ID of the deal.
+     * @param index The index of the task.
+     */
+    function claimBoost(bytes32 dealId, uint256 index) external {
+        bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
+        IexecLibCore_v5.Task storage task = m_tasks[taskId];
+        require(
+            task.status == IexecLibCore_v5.TaskStatusEnum.UNSET,
+            "PocoBoost: Task status not unset"
+        );
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
+        require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
+        task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
+        unlock(
+            deal.requester,
+            computeTaskPrice(deal.appPrice, deal.datasetPrice, deal.workerpoolPrice)
+        );
+        //TODO: Seize workerpool stake
+        //TODO: Reward & lock kitty with seized stake
+        emit TaskClaimed(dealId, index);
     }
 
     /**
