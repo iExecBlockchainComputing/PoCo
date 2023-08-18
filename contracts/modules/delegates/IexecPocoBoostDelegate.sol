@@ -254,11 +254,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         {
             lock(
                 deal.requester,
-                computeTaskPrice(
-                    _apporder.appprice,
-                    _datasetorder.datasetprice,
-                    _workerpoolorder.workerpoolprice
-                ) * volume
+                (_apporder.appprice +
+                    _datasetorder.datasetprice +
+                    _workerpoolorder.workerpoolprice) * volume
             );
         }
         // Notify workerpool.
@@ -280,20 +278,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             requestOrderTypedDataHash,
             volume
         );
-    }
-
-    /**
-     * Compute price of a task.
-     * @param appPrice The price of using the app.
-     * @param datasetPrice The price of using the dataset.
-     * @param workerpoolPrice The price of using the workerpool.
-     */
-    function computeTaskPrice(
-        uint256 appPrice,
-        uint256 datasetPrice,
-        uint256 workerpoolPrice
-    ) private pure returns (uint256) {
-        return appPrice + datasetPrice + workerpoolPrice;
     }
 
     // TODO: Move to IexecAccessorsBoost
@@ -392,10 +376,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
-        unlock(
-            deal.requester,
-            computeTaskPrice(deal.appPrice, deal.datasetPrice, deal.workerpoolPrice)
-        );
+        unlock(deal.requester, deal.appPrice + deal.datasetPrice + deal.workerpoolPrice);
         //TODO: Seize workerpool stake
         //TODO: Reward & lock kitty with seized stake
         emit TaskClaimed(dealId, index);
