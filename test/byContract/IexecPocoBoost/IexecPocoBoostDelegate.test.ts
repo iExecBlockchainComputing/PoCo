@@ -1245,7 +1245,20 @@ describe('IexecPocoBoostDelegate', function () {
                 taskId,
                 resultsCallback,
             );
-            //TODO: Check task status
+            /**
+             * Task status verification is delegated to related integration test.
+             *
+             * Smock does not support getting struct variable from a mapping:
+             * https://github.com/defi-wonderland/smock/blame/v2.3.5/docs/source/mocks.rst#L141
+             *
+             * 1.`IexecAccessors` contract is not deployed within this unit test
+             * suite, hence `viewTask` method is not available.
+             * 2. Another option would be to duplicate the `viewTask` method in
+             * `IexecPocoBoostDelegate` contract but this method is not required
+             * in production.
+             * 3. It could be also possible to create a new contract for unit test
+             * to wrap `IexecPocoBoostDelegate` and attach `viewTask` feature.
+             */
         });
 
         it('Should push result (TEE)', async function () {
@@ -1597,7 +1610,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
                 .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
                 .withArgs(dealId, taskIndex);
-            //TODO: Check task status
+            // Task status verification is delegated to related integration test.
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
