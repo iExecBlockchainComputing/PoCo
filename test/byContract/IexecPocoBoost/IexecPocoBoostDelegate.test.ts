@@ -307,7 +307,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
-            expect(deal.tag).to.be.equal('0x000000000000000000000001');
+            expect(deal.shortTag).to.be.equal('0x000000000000000000000001');
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,

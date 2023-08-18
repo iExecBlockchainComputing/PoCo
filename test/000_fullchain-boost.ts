@@ -260,7 +260,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(deal.deadline).to.be.equal(startTime + 7 * 300);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(1);
-            expect(deal.tag).to.be.equal('0x000000000000000000000001');
+            expect(deal.shortTag).to.be.equal('0x000000000000000000000001');
             expect(deal.callback.toLowerCase()).to.be.equal(callbackAddress);
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);

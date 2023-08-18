@@ -248,7 +248,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         assembly {
             shortTag := shl(160, tag) // 96 = 256 - 160
         }
-        deal.tag = shortTag;
+        deal.shortTag = shortTag;
         deal.callback = _requestorder.callback;
         // Lock
         {
@@ -316,7 +316,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
         // Enclave challenge required for TEE tasks
         require(
-            enclaveChallenge != address(0) || deal.tag[11] & 0x01 == 0,
+            enclaveChallenge != address(0) || deal.shortTag[11] & 0x01 == 0,
             "PocoBoost: Tag requires enclave challenge"
         );
         // Check scheduler signature

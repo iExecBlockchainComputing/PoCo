@@ -74,7 +74,7 @@ library IexecLibCore_v5 {
         uint48 deadline;
         uint24 botFirst;
         uint24 botSize;
-        bytes12 tag; // Offset 5
+        bytes12 shortTag; // Offset 5
         address callback;
     }
     /**
