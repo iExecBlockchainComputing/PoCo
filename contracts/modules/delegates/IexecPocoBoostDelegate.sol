@@ -252,12 +252,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.callback = _requestorder.callback;
         // Lock
         {
-            lock(
-                deal.requester,
-                (_apporder.appprice +
-                    _datasetorder.datasetprice +
-                    _workerpoolorder.workerpoolprice) * volume
-            );
+            uint256 taskPrice = _apporder.appprice +
+                _datasetorder.datasetprice +
+                _workerpoolorder.workerpoolprice;
+            lock(deal.requester, taskPrice * volume);
         }
         // Notify workerpool.
         emit SchedulerNoticeBoost(
