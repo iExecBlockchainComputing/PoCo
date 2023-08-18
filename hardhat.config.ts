@@ -13,7 +13,7 @@ const settings = {
 };
 /**
  * Enable Intermediate Representation (IR) to reduce `Stack too deep` occurrences
- * at compile time.
+ * at compile time (e.g.: too many local variables in `matchOrdersBoost`).
  * https://hardhat.org/hardhat-runner/docs/reference/solidity-support#support-for-ir-based-codegen
  */
 const v8Settings = JSON.parse(JSON.stringify(settings));
