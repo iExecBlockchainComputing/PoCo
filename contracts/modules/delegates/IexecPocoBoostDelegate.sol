@@ -23,6 +23,7 @@ import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
 import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
 
+import "../../registries/workerpools/IWorkerpool.v8.sol";
 import "./IexecEscrow.v8.sol";
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
@@ -155,11 +156,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 "PocoBoost: Invalid dataset order signature"
             );
         }
+        address workerpool = _workerpoolorder.workerpool;
         require(
-            m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),
+            m_workerpoolregistry.isRegistered(workerpool),
             "PocoBoost: Workerpool not registered"
         );
-        vars.workerpoolOwner = IERC5313(_workerpoolorder.workerpool).owner();
+        vars.workerpoolOwner = IERC5313(workerpool).owner();
         bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(_workerpoolorder.hash());
         require(
             _verifySignatureOrPresignature(
@@ -230,7 +232,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             deal.datasetOwner = vars.datasetOwner;
             deal.datasetPrice = _datasetorder.datasetprice.toUint96();
         }
-        deal.workerReward = 0; // TODO: Update and test
+        deal.workerReward = (((100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy()) *
+            _workerpoolorder.workerpoolprice) / 100).toUint96();
         deal.beneficiary = _requestorder.beneficiary;
         deal.deadline = (block.timestamp +
             m_categories[_requestorder.category].workClockTimeRef *

@@ -255,6 +255,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
             expect(deal.workerpoolPrice).to.be.equal(workerpoolPrice);
             expect(deal.requester).to.be.equal(requester.address);
+            expect(deal.workerReward).to.be.equal((workerpoolPrice * 99) / 100); // worker/scheduler -> 99%/1%
             expect(deal.beneficiary).to.be.equal(beneficiary.address);
             expect(deal.deadline).to.be.equal(startTime + 7 * 300);
             expect(deal.botFirst).to.be.equal(0);

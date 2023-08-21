@@ -183,6 +183,7 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
+            workerpoolInstance.m_schedulerRewardRatioPolicy.returns(1);
 
             const appPrice = 1000;
             const datasetPrice = 1_000_000;
@@ -289,6 +290,7 @@ describe('IexecPocoBoostDelegate', function () {
                 scheduler.address,
                 'Workerpool owner mismatch',
             );
+            expect(deal.workerReward).to.be.equal((workerpoolPrice * 99) / 100); // worker/scheduler -> 99%/1%
             expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
             expect(deal.deadline).to.be.equal(
                 startTime + // match order block timestamp
