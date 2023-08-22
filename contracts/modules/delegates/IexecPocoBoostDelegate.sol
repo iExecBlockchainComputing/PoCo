@@ -372,6 +372,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Task status not unset"
         );
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
+        // If deal not found then index < 0.
         require(index < deal.botSize, "PocoBoost: Unknown task");
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
