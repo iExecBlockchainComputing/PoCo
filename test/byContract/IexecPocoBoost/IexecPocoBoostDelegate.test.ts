@@ -1660,6 +1660,37 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Task status not unset');
         });
 
+        it('Should not claim if task unknown because of wrong deal ID', async function () {
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .claimBoost(
+                        '0x00000000000000000000000000000000000000000000000000000000fac6dea1',
+                        0,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Unknown task');
+        });
+
+        it('Should not claim if task unknown because of wrong index', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, standardDealTag);
+            await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+
+            await expect(
+                iexecPocoBoostInstance.connect(worker).claimBoost(
+                    dealId, // existing deal
+                    1, // only task index 0 would be authorized with this deal volume of 1
+                ),
+            ).to.be.revertedWith('PocoBoost: Unknown task');
+        });
+
         it('Should not claim before deadline', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, standardDealTag);
