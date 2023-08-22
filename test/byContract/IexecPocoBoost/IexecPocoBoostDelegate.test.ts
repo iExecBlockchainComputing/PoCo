@@ -46,8 +46,9 @@ import {
 
 chai.use(smock.matchers);
 
+// TODO: Rename to teeDealTag
 const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const standardTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const taskIndex = 0;
 const volume = taskIndex + 1;
 const startTime = 9876543210;
@@ -1626,7 +1627,7 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not claim if task not unset', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, standardTag);
+                buildCompatibleOrders(entriesAndRequester, standardDealTag);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -1661,7 +1662,7 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not claim before deadline', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, standardTag);
+                buildCompatibleOrders(entriesAndRequester, standardDealTag);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await time.setNextBlockTimestamp(startTime);
