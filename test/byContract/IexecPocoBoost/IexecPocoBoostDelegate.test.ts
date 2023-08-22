@@ -1193,8 +1193,27 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should push result (TEE & callback)', async function () {
+            workerpoolInstance.m_schedulerRewardRatioPolicy.returns(1);
+            const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee);
+            workerpoolOrder.workerpoolprice = workerpoolPrice;
+            requestOrder.workerpoolmaxprice = workerpoolPrice;
+            const taskPrice = workerpoolPrice;
+            const initialIexecPocoBalance = 1;
+            const initialRequesterBalance = 2 + taskPrice;
+            const initialRequesterFrozen = 3;
+            const initialWorkerBalance = 4;
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
+                    [requester.address]: initialRequesterBalance + taskPrice,
+                    [worker.address]: initialWorkerBalance,
+                },
+                [FROZENS]: {
+                    [requester.address]: initialRequesterFrozen,
+                },
+            });
             const oracleConsumerInstance = await createMock<TestClient__factory, TestClient>(
                 'TestClient',
             );
@@ -1227,6 +1246,22 @@ describe('IexecPocoBoostDelegate', function () {
                     7 * 60 - // deadline
                     1, // push result 1 second before deadline
             );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance + taskPrice,
+            );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterFrozen + taskPrice,
+            );
+            await expectBalance(iexecPocoBoostInstance, worker.address, initialWorkerBalance);
+            const expectedWorkerReward = (
+                await iexecPocoBoostInstance.viewDealBoost(dealId)
+            ).workerReward.toNumber();
+            const expectedSchedulerReward = workerpoolPrice - expectedWorkerReward;
 
             await expect(
                 iexecPocoBoostInstance
@@ -1242,7 +1277,13 @@ describe('IexecPocoBoostDelegate', function () {
                     ),
             )
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                .withArgs(dealId, taskIndex, results);
+                .withArgs(dealId, taskIndex, results)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, worker.address, expectedWorkerReward)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(worker.address, expectedWorkerReward, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(requester.address, expectedWorkerReward, taskId); //TODO: Seize app + dataset + workerpool price
             expect(oracleConsumerInstance.receiveResult).to.have.been.calledWith(
                 taskId,
                 resultsCallback,
@@ -1261,6 +1302,24 @@ describe('IexecPocoBoostDelegate', function () {
              * 3. It could be also possible to create a new contract for unit test
              * to wrap `IexecPocoBoostDelegate` and attach `viewTask` feature.
              */
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance + // TODO: Remove next line when scheduler
+                    expectedSchedulerReward, // reward will be implemented
+            );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterFrozen + // TODO: Remove next line when scheduler
+                    expectedSchedulerReward, // reward will be implemented
+            );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                worker.address,
+                initialWorkerBalance + expectedWorkerReward,
+            );
         });
 
         it('Should push result (TEE)', async function () {

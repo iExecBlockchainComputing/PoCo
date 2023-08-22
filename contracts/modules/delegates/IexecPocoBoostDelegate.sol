@@ -350,6 +350,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
          */
         m_tasks[taskId].status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
 
+        // Seize requester
+        seize(
+            deal.requester,
+            deal.workerReward, //TODO: Seize app + dataset + workerpool price
+            taskId
+        );
+        // Reward worker
+        reward(msg.sender, deal.workerReward, taskId);
+
         emit ResultPushedBoost(dealId, index, results);
 
         if (target != address(0)) {
