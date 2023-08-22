@@ -40,6 +40,7 @@ interface IexecPocoBoost {
         uint256 volume
     );
     event ResultPushedBoost(bytes32 dealId, uint256 index, bytes results);
+    event TaskClaimedBoost(bytes32 indexed dealId, uint256 indexed index);
 
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,
