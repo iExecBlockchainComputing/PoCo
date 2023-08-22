@@ -377,7 +377,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         unlock(deal.requester, deal.appPrice + deal.datasetPrice + deal.workerpoolPrice);
         //TODO: Seize workerpool stake
         //TODO: Reward & lock kitty with seized stake
-        emit TaskClaimed(dealId, index);
+        emit TaskClaimedBoost(dealId, index);
     }
 
     /**
