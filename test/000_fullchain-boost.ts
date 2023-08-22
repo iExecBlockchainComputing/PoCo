@@ -449,7 +449,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             await time.setNextBlockTimestamp(startTime + 7 * 300);
 
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
-                .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
+                .to.emit(iexecPocoBoostInstance, 'TaskClaimedBoost')
                 .withArgs(dealId, taskIndex);
             expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);

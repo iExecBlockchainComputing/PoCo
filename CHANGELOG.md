@@ -18,7 +18,7 @@
     - Add interfaces. (#156)   
 - Upgrade `hashStruct` function to use `ethers`. (#157)
 - Deploy Nominal and Boost modules with Hardhat. (#158)
-- Publish coverage report on CI/CD. Refactor Jenkinsfile. (#160)
+- Publish coverage report on CI/CD. Refactor Jenkinsfile. (#160, #199)
 - Init Boost deal structure. (#161)
 - Upgrade `eth_signTypedData` function to use `ethers`. Remove now useless `eth-sig-util`. (#163)
 - Run automatically before commit a prettier on `.ts` and `.sol` staged files. (#162)
@@ -47,7 +47,7 @@
     - Handle callback. (#183)
 - Implement `claimBoost`:
     - Refund requester. (#198)
-- Refactor tests. (#177, #178, #179, #181, #188)
+- Refactor tests. (#177, #178, #179, #181, #188, #200)
 - Add mocha to use test explorer. (#180)
 
 ## v5.4.2

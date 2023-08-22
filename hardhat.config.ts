@@ -19,6 +19,7 @@ const settings = {
 const v8Settings = JSON.parse(JSON.stringify(settings));
 v8Settings.viaIR = true;
 v8Settings.optimizer.details = {
+    yul: true,
     yulDetails: {
         optimizerSteps: 'u',
     },

@@ -46,11 +46,11 @@ import {
 
 chai.use(smock.matchers);
 
+// TODO: Rename to teeDealTag
 const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const standardTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const taskIndex = 0;
 const volume = taskIndex + 1;
-const startTime = 9876543210;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
 const BALANCES = 'm_balances';
@@ -245,7 +245,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, undefined);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, undefined);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, undefined);
-            await time.setNextBlockTimestamp(startTime);
+            const startTime = await setNextBlockTimestamp();
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1202,7 +1202,7 @@ describe('IexecPocoBoostDelegate', function () {
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
-            await time.setNextBlockTimestamp(startTime);
+            const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1385,7 +1385,7 @@ describe('IexecPocoBoostDelegate', function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee);
             await signOrders(domain, orders, accounts);
-            await time.setNextBlockTimestamp(startTime);
+            const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1589,7 +1589,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
-            await time.setNextBlockTimestamp(startTime);
+            const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1610,7 +1610,7 @@ describe('IexecPocoBoostDelegate', function () {
             await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
 
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
-                .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
+                .to.emit(iexecPocoBoostInstance, 'TaskClaimedBoost')
                 .withArgs(dealId, taskIndex);
             // Task status verification is delegated to related integration test.
             await expectBalance(
@@ -1628,7 +1628,7 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not claim if task not unset', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, standardTag);
+                buildCompatibleOrders(entriesAndRequester, standardDealTag);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -1661,12 +1661,43 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Task status not unset');
         });
 
-        it('Should not claim before deadline', async function () {
+        it('Should not claim if task unknown because of wrong deal ID', async function () {
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .claimBoost(
+                        '0x00000000000000000000000000000000000000000000000000000000fac6dea1',
+                        0,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Unknown task');
+        });
+
+        it('Should not claim if task unknown because of wrong index', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, standardTag);
+                buildCompatibleOrders(entriesAndRequester, standardDealTag);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
-            await time.setNextBlockTimestamp(startTime);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+
+            await expect(
+                iexecPocoBoostInstance.connect(worker).claimBoost(
+                    dealId, // existing deal
+                    1, // only task index 0 would be authorized with this deal volume of 1
+                ),
+            ).to.be.revertedWith('PocoBoost: Unknown task');
+        });
+
+        it('Should not claim before deadline', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, standardDealTag);
+            await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1685,6 +1716,19 @@ describe('IexecPocoBoostDelegate', function () {
         });
     });
 });
+
+/**
+ * Mine the next block with a timestamp corresponding to an arbitrary but known
+ * date in the future (10 seconds later).
+ * It fixes the `Timestamp is lower than the previous block's timestamp` error.
+ * e.g: This Error has been seen when running tests with `npm run coverage`.
+ * @returns timestamp of the next block.
+ */
+async function setNextBlockTimestamp() {
+    const startTime = (await time.latest()) + 10;
+    await time.setNextBlockTimestamp(startTime);
+    return startTime;
+}
 
 async function expectOrderConsumed(
     iexecPocoInstance: MockContract<IexecPocoBoostDelegate>,
