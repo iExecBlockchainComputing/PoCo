@@ -1669,8 +1669,8 @@ describe('IexecPocoBoostDelegate', function () {
             await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
 
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
-                .to.emit(iexecPocoBoostInstance, 'TaskClaimedBoost')
-                .withArgs(dealId, taskIndex);
+                .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
+                .withArgs(taskId);
             // Task status verification is delegated to related integration test.
             await expectBalance(
                 iexecPocoBoostInstance,
