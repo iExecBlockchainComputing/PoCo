@@ -51,6 +51,7 @@ const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const taskIndex = 0;
 const volume = taskIndex + 1;
+const schedulerRewardRatio = 1;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
 const BALANCES = 'm_balances';
@@ -183,7 +184,7 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
-            workerpoolInstance.m_schedulerRewardRatioPolicy.returns(1);
+            workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
 
             const appPrice = 1000;
             const datasetPrice = 1_000_000;
@@ -290,7 +291,11 @@ describe('IexecPocoBoostDelegate', function () {
                 scheduler.address,
                 'Workerpool owner mismatch',
             );
-            expect(deal.workerReward).to.be.equal((workerpoolPrice * 99) / 100); // worker/scheduler -> 99%/1%
+            expect(deal.workerReward).to.be.equal(
+                (workerpoolPrice * // reward depends on
+                    (100 - schedulerRewardRatio)) / // worker ratio
+                    100,
+            );
             expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
             expect(deal.deadline).to.be.equal(
                 startTime + // match order block timestamp
@@ -1193,7 +1198,7 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should push result (TEE & callback)', async function () {
-            workerpoolInstance.m_schedulerRewardRatioPolicy.returns(1);
+            workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
             const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee);
