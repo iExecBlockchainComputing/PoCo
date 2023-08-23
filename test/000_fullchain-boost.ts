@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { TypedDataDomain } from 'ethers';
+import { TypedDataDomain, BigNumber } from 'ethers';
 import {
     IexecOrderManagement,
     IexecOrderManagement__factory,
@@ -195,31 +195,26 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     describe('MatchOrders', function () {
         it('Should match orders', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTag);
+                buildCompatibleOrders(entriesAndRequester, dealTag, {
+                    app: appPrice,
+                    dataset: datasetPrice,
+                    workerpool: workerpoolPrice,
+                });
             const callbackAddress = '0x00000000000000000000000000000000ca11bac6';
-            appOrder.appprice = appPrice;
-            datasetOrder.datasetprice = datasetPrice;
-            workerpoolOrder.workerpoolprice = workerpoolPrice;
-            requestOrder.appmaxprice = appPrice;
-            requestOrder.datasetmaxprice = datasetPrice;
-            requestOrder.workerpoolmaxprice = workerpoolPrice;
             requestOrder.beneficiary = beneficiary.address;
             requestOrder.callback = callbackAddress;
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
-            await getRlcAndDeposit(requester, dealPrice);
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
+            await getRlcAndDeposit(requester, dealPrice);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
             // Deposit RLC in the scheduler's account.
             const stakeRatio = await iexecInstance.workerpool_stake_ratio();
             const oneTaskStake = stakeRatio.mul(workerpoolPrice).div(100);
             const schedulerStake = oneTaskStake.mul(volume);
-            await rlcInstance.transfer(scheduler.address, schedulerStake);
-            await rlcInstance
-                .connect(scheduler)
-                .approveAndCall(iexecPocoBoostInstance.address, schedulerStake, '0x'); // approve and deposit
+            await getRlcAndDeposit(scheduler, schedulerStake);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
             await signOrders(domain, orders, accounts);
@@ -438,15 +433,14 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
 
     describe('Claim', function () {
         it('Should claim', async function () {
+            const zeroWorkerpoolPrice = 0;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTag);
-            appOrder.appprice = appPrice;
-            datasetOrder.datasetprice = datasetPrice;
-            workerpoolOrder.workerpoolprice = workerpoolPrice;
-            requestOrder.appmaxprice = appPrice;
-            requestOrder.datasetmaxprice = datasetPrice;
-            requestOrder.workerpoolmaxprice = workerpoolPrice;
-            const dealPrice = appPrice + datasetPrice + workerpoolPrice;
+                buildCompatibleOrders(entriesAndRequester, dealTag, {
+                    app: appPrice,
+                    dataset: datasetPrice,
+                    workerpool: zeroWorkerpoolPrice,
+                });
+            const dealPrice = appPrice + datasetPrice + zeroWorkerpoolPrice;
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -478,7 +472,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
      * @param value The value to deposit.
      * @param account Deposit value for an account.
      */
-    async function getRlcAndDeposit(account: SignerWithAddress, value: number) {
+    async function getRlcAndDeposit(account: SignerWithAddress, value: number | BigNumber) {
         await rlcInstance.transfer(account.address, value);
         await rlcInstance
             .connect(account)
