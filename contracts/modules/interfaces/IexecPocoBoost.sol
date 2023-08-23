@@ -30,7 +30,7 @@ interface IexecPocoBoost {
         bytes32 tag,
         string params
     );
-    // Use same event (name and parameters) than classic Poco for cross-compatibility
+    // Same event than classic Poco for cross-compatibility
     event OrdersMatched(
         bytes32 dealid,
         bytes32 appHash,
@@ -40,7 +40,8 @@ interface IexecPocoBoost {
         uint256 volume
     );
     event ResultPushedBoost(bytes32 dealId, uint256 index, bytes results);
-    event TaskClaimedBoost(bytes32 indexed dealId, uint256 indexed index);
+    // Same event than classic Poco for cross-compatibility
+    event TaskClaimed(bytes32 indexed taskid);
 
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,

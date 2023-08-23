@@ -46,7 +46,7 @@
         - enclave (#176)
     - Handle callback. (#183)
 - Implement `claimBoost`:
-    - Refund requester. (#198)
+    - Refund requester. (#198, #201)
 - Refactor tests. (#177, #178, #179, #181, #188, #200)
 - Add mocha to use test explorer. (#180)
 
