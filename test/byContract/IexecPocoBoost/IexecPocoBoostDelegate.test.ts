@@ -1276,14 +1276,14 @@ describe('IexecPocoBoostDelegate', function () {
                         enclaveSignature,
                     ),
             )
-                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                .withArgs(dealId, taskIndex, results)
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(requester.address, expectedWorkerReward, taskId) //TODO: Seize app + dataset + workerpool price
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(iexecPocoBoostInstance.address, worker.address, expectedWorkerReward)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
                 .withArgs(worker.address, expectedWorkerReward, taskId)
-                .to.emit(iexecPocoBoostInstance, 'Seize')
-                .withArgs(requester.address, expectedWorkerReward, taskId); //TODO: Seize app + dataset + workerpool price
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                .withArgs(dealId, taskIndex, results);
             expect(oracleConsumerInstance.receiveResult).to.have.been.calledWith(
                 taskId,
                 resultsCallback,
