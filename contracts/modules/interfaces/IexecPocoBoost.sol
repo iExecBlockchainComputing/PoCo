@@ -59,4 +59,6 @@ interface IexecPocoBoost {
         address enclaveChallenge,
         bytes calldata enclaveSign
     ) external;
+
+    function claimBoost(bytes32 dealId, uint256 index) external;
 }
