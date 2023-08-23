@@ -1204,6 +1204,7 @@ describe('IexecPocoBoostDelegate', function () {
             const appPrice = 1000;
             const datasetPrice = 1_000_000;
             const workerpoolPrice = 1_000_000_000;
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee, {
                     app: appPrice,
@@ -1215,24 +1216,16 @@ describe('IexecPocoBoostDelegate', function () {
 
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
-            const initialRequesterFrozen = 3;
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance, // Way less than dealPrice.
                 },
-                [FROZENS]: {
-                    [requester.address]: initialRequesterFrozen,
-                },
             });
+            expect(
+                await iexecPocoBoostInstance.getVariable(BALANCES, [requester.address]),
+            ).to.be.lessThan(dealPrice);
 
-            await expectBalance(
-                iexecPocoBoostInstance,
-                iexecPocoBoostInstance.address,
-                initialIexecPocoBalance,
-            );
-            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
-            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             await signOrders(domain, orders, accounts);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1242,14 +1235,6 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.be.revertedWithPanic(0x11); // TODO change to explicit message.
-
-            await expectBalance(
-                iexecPocoBoostInstance,
-                iexecPocoBoostInstance.address,
-                initialIexecPocoBalance,
-            );
-            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
-            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
@@ -1260,6 +1245,8 @@ describe('IexecPocoBoostDelegate', function () {
             const appPrice = 1000;
             const datasetPrice = 1_000_000;
             const workerpoolPrice = 1_000_000_000;
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
+            const schedulerStake = computeSchedulerStake(workerpoolPrice, volume);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee, {
                     app: appPrice,
@@ -1269,10 +1256,9 @@ describe('IexecPocoBoostDelegate', function () {
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
 
-            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
-            const initialSchedulerBalance = 1; // Way less than what needed as stake.
+            const initialSchedulerBalance = 3; // Way less than what is needed as stake.
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
@@ -1280,13 +1266,15 @@ describe('IexecPocoBoostDelegate', function () {
                     [scheduler.address]: initialSchedulerBalance,
                 },
             });
+            // Make sure the tx does not fail because of requester's balance.
+            expect(
+                await iexecPocoBoostInstance.getVariable(BALANCES, [requester.address]),
+            ).to.be.greaterThan(dealPrice);
+            // Make sure the scheduler does not have enough to stake.
+            expect(
+                await iexecPocoBoostInstance.getVariable(BALANCES, [scheduler.address]),
+            ).to.be.lessThan(schedulerStake);
 
-            await expectBalance(
-                iexecPocoBoostInstance,
-                iexecPocoBoostInstance.address,
-                initialIexecPocoBalance,
-            );
-            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
             await signOrders(domain, orders, accounts);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1296,18 +1284,6 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.be.revertedWithPanic(0x11); // TODO change to explicit message.
-
-            await expectBalance(
-                iexecPocoBoostInstance,
-                iexecPocoBoostInstance.address,
-                initialIexecPocoBalance,
-            );
-            await expectBalance(
-                iexecPocoBoostInstance,
-                requester.address,
-                initialRequesterBalance + dealPrice,
-            );
-            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
         });
     });
 
