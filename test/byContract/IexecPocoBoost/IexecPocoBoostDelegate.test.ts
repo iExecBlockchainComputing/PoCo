@@ -1666,7 +1666,7 @@ describe('IexecPocoBoostDelegate', function () {
         it('Should claim', async function () {
             const appPrice = 1000;
             const datasetPrice = 1_000_000;
-            const workerpoolPrice = 0;
+            const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee, {
                     app: appPrice,
@@ -1678,13 +1678,18 @@ describe('IexecPocoBoostDelegate', function () {
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
+            const initialSchedulerBalance = 4;
+            const initialSchedulerFrozen = 5;
+            const schedulerStake = computeSchedulerStake(workerpoolPrice, volume);
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance + dealPrice,
+                    [scheduler.address]: initialSchedulerBalance + schedulerStake,
                 },
                 [FROZENS]: {
                     [requester.address]: initialRequesterFrozen,
+                    [scheduler.address]: initialSchedulerFrozen,
                 },
             });
             await expectBalance(
@@ -1698,6 +1703,12 @@ describe('IexecPocoBoostDelegate', function () {
                 initialRequesterBalance + dealPrice,
             );
             await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+            await expectBalance(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                initialSchedulerBalance + schedulerStake,
+            );
+            await expectFrozen(iexecPocoBoostInstance, scheduler.address, initialSchedulerFrozen);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             const startTime = await setNextBlockTimestamp();
@@ -1710,13 +1721,19 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + dealPrice,
+                initialIexecPocoBalance + dealPrice + schedulerStake,
             );
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 requester.address,
                 initialRequesterFrozen + dealPrice,
+            );
+            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                initialSchedulerFrozen + schedulerStake,
             );
             await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
 
@@ -1727,7 +1744,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance,
+                initialIexecPocoBalance + schedulerStake,
             );
             await expectBalance(
                 iexecPocoBoostInstance,
@@ -1735,6 +1752,12 @@ describe('IexecPocoBoostDelegate', function () {
                 initialRequesterBalance + dealPrice,
             );
             await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                initialSchedulerFrozen + schedulerStake,
+            );
         });
 
         it('Should not claim if task not unset', async function () {
