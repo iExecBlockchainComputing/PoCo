@@ -252,6 +252,8 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
                 .withArgs(requester.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(scheduler.address, iexecPocoBoostInstance.address, schedulerStake)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
                 .withArgs(scheduler.address, schedulerStake);
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);

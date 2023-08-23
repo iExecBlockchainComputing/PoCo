@@ -275,6 +275,8 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
                 .withArgs(requester.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(scheduler.address, iexecPocoBoostInstance.address, schedulerStake)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
                 .withArgs(scheduler.address, schedulerStake);
             await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
