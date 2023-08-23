@@ -232,8 +232,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             deal.datasetOwner = vars.datasetOwner;
             deal.datasetPrice = _datasetorder.datasetprice.toUint96();
         }
-        deal.workerReward = (((100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy()) *
-            _workerpoolorder.workerpoolprice) / 100).toUint96();
+        deal.workerReward = ((_workerpoolorder.workerpoolprice * // reward depends on
+            (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
         deal.beneficiary = _requestorder.beneficiary;
         deal.deadline = (block.timestamp +
             m_categories[_requestorder.category].workClockTimeRef *
