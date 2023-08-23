@@ -33,7 +33,6 @@ import {
     signOrders,
     Iexec,
     IexecAccounts,
-    createEmptyWorkerpoolOrder,
 } from '../../../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
@@ -189,18 +188,13 @@ describe('IexecPocoBoostDelegate', function () {
             const datasetPrice = 1_000_000;
             const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+                buildCompatibleOrders(entriesAndRequester, dealTagTee, {
+                    app: appPrice,
+                    dataset: datasetPrice,
+                    workerpool: workerpoolPrice,
+                });
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
-            // Set prices
-            appOrder.appprice = appPrice;
-            requestOrder.appmaxprice = appPrice;
-
-            datasetOrder.datasetprice = datasetPrice;
-            requestOrder.datasetmaxprice = datasetPrice;
-
-            workerpoolOrder.workerpoolprice = workerpoolPrice;
-            requestOrder.workerpoolmaxprice = workerpoolPrice;
 
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
@@ -398,16 +392,15 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                 },
                 dealTagTee,
+                {
+                    app: appPrice,
+                    dataset: 0,
+                    workerpool: workerpoolPrice,
+                },
             );
 
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
-            // Set prices
-            appOrder.appprice = appPrice;
-            requestOrder.appmaxprice = appPrice;
-
-            workerpoolOrder.workerpoolprice = workerpoolPrice;
-            requestOrder.workerpoolmaxprice = workerpoolPrice;
 
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
