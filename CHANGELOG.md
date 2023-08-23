@@ -44,6 +44,7 @@
     - Verify signatures
         - scheduler (#173)
         - enclave (#176)
+    - Reward worker. (#202)
     - Handle callback. (#183)
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)
