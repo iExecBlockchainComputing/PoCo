@@ -211,9 +211,11 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
             // Deposit RLC in the scheduler's account.
-            const stakeRatio = await iexecInstance.workerpool_stake_ratio();
-            const oneTaskStake = stakeRatio.mul(workerpoolPrice).div(100);
-            const schedulerStake = oneTaskStake.mul(volume);
+            const schedulerStake = await computeSchedulerStake(
+                iexecInstance,
+                workerpoolPrice,
+                volume,
+            );
             await getRlcAndDeposit(scheduler, schedulerStake);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
@@ -491,4 +493,24 @@ async function getContractAddress(contractName: string): Promise<string> {
     return await (
         await hre.artifacts.require(contractName).deployed()
     ).address;
+}
+
+/**
+ * Compute the amount of RLCs to be staked by the scheduler
+ * for a deal. We first compute the percentage by task
+ * (See contracts/Store.sol#WORKERPOOL_STAKE_RATIO), then
+ * compute the total amount according to the volume.
+ * @param iexecInstance where to fetch ratio value
+ * @param workerpoolPrice
+ * @param volume number of tasks of a deal
+ * @returns total amount to stake by the scheduler
+ */
+async function computeSchedulerStake(
+    iexecInstance: IexecAccessors,
+    workerpoolPrice: number,
+    volume: number,
+): Promise<BigNumber> {
+    const stakeRatio = await iexecInstance.workerpool_stake_ratio();
+    const oneTaskStake = stakeRatio.mul(workerpoolPrice).div(100);
+    return oneTaskStake.mul(volume);
 }
