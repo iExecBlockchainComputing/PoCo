@@ -33,6 +33,8 @@ import {
     TestClient__factory,
     RLC__factory,
     IexecAccessors__factory,
+    IexecAccessors,
+    RLC,
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
@@ -59,6 +61,9 @@ const taskIndex = 0;
 const volume = taskIndex + 1;
 const startTime = 9876543210;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+const appPrice = 1000;
+const datasetPrice = 1_000_000;
+const workerpoolPrice = 1_000_000_000;
 
 /**
  * Extract address of a newly created entry in a registry contract
@@ -78,8 +83,11 @@ async function extractRegistryEntryAddress(
 
 describe('IexecPocoBoostDelegate (integration tests)', function () {
     let domain: TypedDataDomain;
+    //TODO: Rename to iexecOrderManagementInstance
     let iexecCategoryManagementInstance: IexecOrderManagement;
+    let iexecInstance: IexecAccessors;
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
+    let rlcInstance: RLC;
     let appAddress = '';
     let workerpoolAddress = '';
     let datasetAddress = '';
@@ -124,6 +132,8 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             anyone,
         );
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
+        iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
+        rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
         domain = {
             name: 'iExecODB',
             version: '5.0.0',
@@ -187,9 +197,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTag);
             const callbackAddress = '0x00000000000000000000000000000000ca11bac6';
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             appOrder.appprice = appPrice;
             datasetOrder.datasetprice = datasetPrice;
             workerpoolOrder.workerpoolprice = workerpoolPrice;
@@ -201,16 +208,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
-            const iexecInstance = IexecAccessors__factory.connect(
-                iexecPocoBoostInstance.address,
-                anyone,
-            );
-            const rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
-            // Deposit RLC in the requester's account.
-            await rlcInstance.transfer(requester.address, dealPrice);
-            await rlcInstance
-                .connect(requester)
-                .approveAndCall(iexecPocoBoostInstance.address, dealPrice, '0x'); // approve and deposit
+            await getRlcAndDeposit(requester, dealPrice);
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
@@ -391,6 +389,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(dealId, taskIndex, results)
                 .to.emit(oracleConsumerInstance, 'GotResult')
                 .withArgs(taskId, resultsCallback);
+            expect((await iexecInstance.viewTask(taskId)).status).to.equal(3); // COMPLETED
             expect(await oracleConsumerInstance.store(taskId)).to.be.equal(resultsCallback);
         });
 
@@ -436,6 +435,55 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(dealId, taskIndex, results);
         });
     });
+
+    describe('Claim', function () {
+        it('Should claim', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, dealTag);
+            appOrder.appprice = appPrice;
+            datasetOrder.datasetprice = datasetPrice;
+            workerpoolOrder.workerpoolprice = workerpoolPrice;
+            requestOrder.appmaxprice = appPrice;
+            requestOrder.datasetmaxprice = datasetPrice;
+            requestOrder.workerpoolmaxprice = workerpoolPrice;
+            const dealPrice = appPrice + datasetPrice + workerpoolPrice;
+            await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await getRlcAndDeposit(requester, dealPrice);
+            await time.setNextBlockTimestamp(startTime);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
+            await time.setNextBlockTimestamp(startTime + 7 * 300);
+
+            await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
+                .to.emit(iexecPocoBoostInstance, 'TaskClaimedBoost')
+                .withArgs(dealId, taskIndex);
+            expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+        });
+    });
+
+    /**
+     * Transfer RLC from owner to recipient and deposit recipient value on iExec.
+     * @param value The value to deposit.
+     * @param account Deposit value for an account.
+     */
+    async function getRlcAndDeposit(account: SignerWithAddress, value: number) {
+        await rlcInstance.transfer(account.address, value);
+        await rlcInstance
+            .connect(account)
+            .approveAndCall(iexecPocoBoostInstance.address, value, '0x');
+    }
 });
 
 /**
