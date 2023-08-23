@@ -209,9 +209,7 @@ describe('IexecPocoBoostDelegate', function () {
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
-            // See Store.sol#WORKERPOOL_STAKE_RATIO.
-            const schedulerStake =
-                ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * expectedVolume;
+            const schedulerStake = computeSchedulerStake(workerpoolPrice, expectedVolume);
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
@@ -382,6 +380,7 @@ describe('IexecPocoBoostDelegate', function () {
             const workerpoolPrice = 1_000_000;
             await iexecPocoBoostInstance.setVariable(BALANCES, {
                 [requester.address]: 1_001_000,
+                [scheduler.address]: computeSchedulerStake(workerpoolPrice, volume),
             });
 
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
@@ -1180,6 +1179,156 @@ describe('IexecPocoBoostDelegate', function () {
                 ),
             ).to.be.revertedWith('PocoBoost: Workerpool not registered');
         });
+
+        //     it('Should fail when scheduler has insufficient balance',async () => {
+        //         appInstance.owner.returns(appProvider.address);
+        //         workerpoolInstance.owner.returns(scheduler.address);
+        //         datasetInstance.owner.returns(datasetProvider.address);
+
+        //         const appPrice = 1000;
+        //         const datasetPrice = 1_000_000;
+        //         const workerpoolPrice = 1_000_000_000;
+        //         const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+        //             buildCompatibleOrders(entriesAndRequester, dealTagTee);
+        //         requestOrder.requester = requester.address;
+        //         requestOrder.beneficiary = beneficiary.address;
+        //         // Set prices
+        //         appOrder.appprice = appPrice;
+        //         requestOrder.appmaxprice = appPrice;
+
+        //         datasetOrder.datasetprice = datasetPrice;
+        //         requestOrder.datasetmaxprice = datasetPrice;
+
+        //         workerpoolOrder.workerpoolprice = workerpoolPrice;
+        //         requestOrder.workerpoolmaxprice = workerpoolPrice;
+
+        //         // Set callback
+        //         requestOrder.callback = ethers.Wallet.createRandom().address;
+        //         // Should match orders with low app order volume
+        //         // Set volumes
+        //         appOrder.volume = 2; // smallest unconsumed volume among all orders
+        //         datasetOrder.volume = 3;
+        //         workerpoolOrder.volume = 4;
+        //         requestOrder.volume = 5;
+        //         const expectedVolume = 2;
+        //         const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * expectedVolume;
+        //         const initialIexecPocoBalance = 1;
+        //         const initialRequesterBalance = 2;
+        //         const initialRequesterFrozen = 3;
+        //         // See Store.sol#WORKERPOOL_STAKE_RATIO.
+        //         const schedulerStake = getSchedulerStake(workerpoolPrice, volume);
+        //         await iexecPocoBoostInstance.setVariables({
+        //             [BALANCES]: {
+        //                 [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
+        //                 [requester.address]: initialRequesterBalance + dealPrice,
+        //                 [scheduler.address]: schedulerStake,
+        //             },
+        //             [FROZENS]: {
+        //                 [requester.address]: initialRequesterFrozen,
+        //             },
+        //         });
+        //         await expectBalance(
+        //             iexecPocoBoostInstance,
+        //             iexecPocoBoostInstance.address,
+        //             initialIexecPocoBalance,
+        //         );
+        //         await expectBalance(
+        //             iexecPocoBoostInstance,
+        //             requester.address,
+        //             initialRequesterBalance + dealPrice,
+        //         );
+        //         await expectBalance(iexecPocoBoostInstance, scheduler.address, schedulerStake);
+        //         await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+        //         await signOrders(domain, orders, accounts);
+        //         const dealId = getDealId(domain, requestOrder, taskIndex);
+        //         const appOrderHash = hashOrder(domain, appOrder);
+        //         const datasetOrderHash = hashOrder(domain, datasetOrder);
+        //         const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
+        //         const requestOrderHash = hashOrder(domain, requestOrder);
+        //         await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, undefined);
+        //         await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, undefined);
+        //         await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, undefined);
+        //         await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, undefined);
+        //         const startTime = await setNextBlockTimestamp();
+
+        //         await expect(
+        //             iexecPocoBoostInstance.matchOrdersBoost(
+        //                 appOrder,
+        //                 datasetOrder,
+        //                 workerpoolOrder,
+        //                 requestOrder,
+        //             ),
+        //         )
+        //             .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+        //             .withArgs(
+        //                 workerpoolInstance.address,
+        //                 dealId,
+        //                 appInstance.address,
+        //                 datasetInstance.address,
+        //                 requestOrder.category,
+        //                 dealTagTee,
+        //                 requestOrder.params,
+        //             )
+        //             .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
+        //             .withArgs(
+        //                 dealId,
+        //                 appOrderHash,
+        //                 datasetOrderHash,
+        //                 workerpoolOrderHash,
+        //                 requestOrderHash,
+        //                 expectedVolume,
+        //             )
+        //             .to.emit(iexecPocoBoostInstance, 'Transfer')
+        //             .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
+        //             .to.emit(iexecPocoBoostInstance, 'Lock')
+        //             .withArgs(requester.address, dealPrice)
+        //             .to.emit(iexecPocoBoostInstance, 'Lock')
+        //             .withArgs(scheduler.address, schedulerStake);
+        //         await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
+        //         await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
+        //         await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
+        //         await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
+        //         const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+        //         // Check addresses.
+        //         expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
+        //         expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
+        //         expect(deal.workerpoolOwner).to.be.equal(
+        //             scheduler.address,
+        //             'Workerpool owner mismatch',
+        //         );
+        //         expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
+        //         expect(deal.deadline).to.be.equal(
+        //             startTime + // match order block timestamp
+        //                 7 * // contribution deadline ratio
+        //                     60, // requested category time reference
+        //         );
+        //         expect(deal.callback).to.be.equal(requestOrder.callback, 'Callback mismatch');
+        //         // Check prices.
+        //         expect(deal.workerpoolPrice).to.be.equal(
+        //             workerpoolOrder.workerpoolprice,
+        //             'Workerpool price mismatch',
+        //         );
+        //         expect(deal.appPrice).to.be.equal(appOrder.appprice, 'App price mismatch');
+        //         expect(deal.datasetPrice).to.be.equal(
+        //             datasetOrder.datasetprice,
+        //             'Dataset price mismatch',
+        //         );
+        //         expect(deal.botFirst).to.be.equal(0);
+        //         expect(deal.botSize).to.be.equal(expectedVolume);
+        //         expect(deal.shortTag).to.be.equal('0x000000000000000000000001');
+        //         await expectBalance(
+        //             iexecPocoBoostInstance,
+        //             iexecPocoBoostInstance.address,
+        //             initialIexecPocoBalance + dealPrice + schedulerStake,
+        //         );
+        //         await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+        //         await expectFrozen(
+        //             iexecPocoBoostInstance,
+        //             requester.address,
+        //             initialRequesterFrozen + dealPrice,
+        //         );
+        //         await expectFrozen(iexecPocoBoostInstance, scheduler.address, schedulerStake);
+        //     })
     });
 
     describe('Push Result Boost', function () {
@@ -1551,17 +1700,15 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should claim', async function () {
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
             const appPrice = 1000;
             const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
-            appOrder.appprice = appPrice;
-            datasetOrder.datasetprice = datasetPrice;
-            workerpoolOrder.workerpoolprice = workerpoolPrice;
-            requestOrder.appmaxprice = appPrice;
-            requestOrder.datasetmaxprice = datasetPrice;
-            requestOrder.workerpoolmaxprice = workerpoolPrice;
+            const workerpoolPrice = 0;
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, dealTagTee, {
+                    app: appPrice,
+                    dataset: datasetPrice,
+                    workerpool: workerpoolPrice,
+                });
             await signOrders(domain, orders, accounts);
             const dealPrice = appPrice + datasetPrice + workerpoolPrice;
             const initialIexecPocoBalance = 1;
@@ -1728,6 +1875,19 @@ async function setNextBlockTimestamp() {
     const startTime = (await time.latest()) + 10;
     await time.setNextBlockTimestamp(startTime);
     return startTime;
+}
+
+/**
+ * Compute the amount of RLC to be staked by the scheduler
+ * for a deal. We first compute the percentage by task
+ * (See contracts/Store.sol#WORKERPOOL_STAKE_RATIO), then
+ * compute the total amount according to the volume.
+ * @param workerpoolPrice
+ * @param volume number of tasks in the deal
+ * @returns amount of total stake
+ */
+function computeSchedulerStake(workerpoolPrice: number, volume: number) {
+    return ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume;
 }
 
 async function expectOrderConsumed(
