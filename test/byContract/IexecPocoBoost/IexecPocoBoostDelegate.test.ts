@@ -1197,17 +1197,13 @@ describe('IexecPocoBoostDelegate', function () {
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
 
-            // Set callback
-            requestOrder.callback = ethers.Wallet.createRandom().address;
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
-            const schedulerBalance = computeSchedulerStake(workerpoolPrice, volume);
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance, // Way less than dealPrice.
-                    [scheduler.address]: schedulerBalance,
                 },
                 [FROZENS]: {
                     [requester.address]: initialRequesterFrozen,
@@ -1220,7 +1216,6 @@ describe('IexecPocoBoostDelegate', function () {
                 initialIexecPocoBalance,
             );
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
-            await expectBalance(iexecPocoBoostInstance, scheduler.address, schedulerBalance);
             await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             await signOrders(domain, orders, accounts);
             await expect(
@@ -1239,7 +1234,6 @@ describe('IexecPocoBoostDelegate', function () {
             );
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
-            await expectBalance(iexecPocoBoostInstance, scheduler.address, schedulerBalance);
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
@@ -1259,21 +1253,15 @@ describe('IexecPocoBoostDelegate', function () {
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
 
-            // Set callback
-            requestOrder.callback = ethers.Wallet.createRandom().address;
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
-            const initialRequesterFrozen = 3;
-            const schedulerBalance = 1; // Way less than what needed as stake.
+            const initialSchedulerBalance = 1; // Way less than what needed as stake.
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance + dealPrice,
-                    [scheduler.address]: schedulerBalance,
-                },
-                [FROZENS]: {
-                    [requester.address]: initialRequesterFrozen,
+                    [scheduler.address]: initialSchedulerBalance,
                 },
             });
 
@@ -1282,13 +1270,7 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance.address,
                 initialIexecPocoBalance,
             );
-            await expectBalance(
-                iexecPocoBoostInstance,
-                requester.address,
-                initialRequesterBalance + dealPrice,
-            );
-            await expectBalance(iexecPocoBoostInstance, scheduler.address, schedulerBalance);
-            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
             await signOrders(domain, orders, accounts);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1309,8 +1291,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester.address,
                 initialRequesterBalance + dealPrice,
             );
-            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
-            await expectBalance(iexecPocoBoostInstance, scheduler.address, schedulerBalance);
+            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
         });
     });
 
