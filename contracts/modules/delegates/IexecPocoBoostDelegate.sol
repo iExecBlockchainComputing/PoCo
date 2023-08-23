@@ -256,6 +256,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 _datasetorder.datasetprice +
                 _workerpoolorder.workerpoolprice;
             lock(deal.requester, taskPrice * volume);
+            // Order is important here. First get percentage by task then
+            // multiply by volume.
+            uint256 taskWorkerpoolStake = (_workerpoolorder.workerpoolprice *
+                WORKERPOOL_STAKE_RATIO) / 100;
+            lock(deal.workerpoolOwner, taskWorkerpoolStake * volume);
         }
         // Notify workerpool.
         emit SchedulerNoticeBoost(

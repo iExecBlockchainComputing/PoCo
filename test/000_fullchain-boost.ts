@@ -206,6 +206,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 anyone,
             );
             const rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
+            // Deposit RLC in the requester's account.
             await rlcInstance.transfer(requester.address, dealPrice);
             await rlcInstance
                 .connect(requester)
@@ -213,6 +214,16 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+            // Deposit RLC in the scheduler's account.
+            const stakeRatio = await iexecInstance.workerpool_stake_ratio();
+            const oneTaskStake = stakeRatio.mul(workerpoolPrice).div(100);
+            const schedulerStake = oneTaskStake.mul(volume);
+            await rlcInstance.transfer(scheduler.address, schedulerStake);
+            await rlcInstance
+                .connect(scheduler)
+                .approveAndCall(iexecPocoBoostInstance.address, schedulerStake, '0x'); // approve and deposit
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await time.setNextBlockTimestamp(startTime);
@@ -247,7 +258,9 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
-                .withArgs(requester.address, dealPrice);
+                .withArgs(requester.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(scheduler.address, schedulerStake);
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
             expect(deal.appOwner).to.be.equal(appProvider.address);
             expect(deal.appPrice).to.be.equal(appPrice);
@@ -262,9 +275,13 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(deal.botSize).to.be.equal(1);
             expect(deal.shortTag).to.be.equal('0x000000000000000000000001');
             expect(deal.callback.toLowerCase()).to.be.equal(callbackAddress);
-            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
+                schedulerStake.add(dealPrice),
+            );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
         });
     });
 

@@ -54,6 +54,7 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
 const BALANCES = 'm_balances';
 const FROZENS = 'm_frozens';
+const WORKERPOOL_STAKE_RATIO = 30;
 const { domain, domainSeparator } = buildDomain();
 
 async function deployBoostFixture() {
@@ -213,10 +214,14 @@ describe('IexecPocoBoostDelegate', function () {
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
+            // See Store.sol#WORKERPOOL_STAKE_RATIO.
+            const schedulerStake =
+                ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * expectedVolume;
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance + dealPrice,
+                    [scheduler.address]: schedulerStake,
                 },
                 [FROZENS]: {
                     [requester.address]: initialRequesterFrozen,
@@ -232,6 +237,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester.address,
                 initialRequesterBalance + dealPrice,
             );
+            await expectBalance(iexecPocoBoostInstance, scheduler.address, schedulerStake);
             await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -275,7 +281,9 @@ describe('IexecPocoBoostDelegate', function () {
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
-                .withArgs(requester.address, dealPrice);
+                .withArgs(requester.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(scheduler.address, schedulerStake);
             await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
@@ -311,7 +319,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + dealPrice,
+                initialIexecPocoBalance + dealPrice + schedulerStake,
             );
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
@@ -319,6 +327,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester.address,
                 initialRequesterFrozen + dealPrice,
             );
+            await expectFrozen(iexecPocoBoostInstance, scheduler.address, schedulerStake);
         });
 
         it('Should match orders with pre-signatures', async function () {
