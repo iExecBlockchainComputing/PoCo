@@ -1736,7 +1736,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + schedulerStake,
+                initialIexecPocoBalance + schedulerStake, // TODO: Remove schedulerStake when kitty reward implemented
             );
             await expectBalance(
                 iexecPocoBoostInstance,
