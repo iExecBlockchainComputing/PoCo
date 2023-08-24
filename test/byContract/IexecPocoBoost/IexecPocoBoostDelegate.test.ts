@@ -1690,23 +1690,6 @@ describe('IexecPocoBoostDelegate', function () {
                     [scheduler.address]: initialSchedulerFrozen,
                 },
             });
-            await expectBalance(
-                iexecPocoBoostInstance,
-                iexecPocoBoostInstance.address,
-                initialIexecPocoBalance,
-            );
-            await expectBalance(
-                iexecPocoBoostInstance,
-                requester.address,
-                initialRequesterBalance + dealPrice,
-            );
-            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
-            await expectBalance(
-                iexecPocoBoostInstance,
-                scheduler.address,
-                initialSchedulerBalance + schedulerDealStake,
-            );
-            await expectFrozen(iexecPocoBoostInstance, scheduler.address, initialSchedulerFrozen);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             const startTime = await setNextBlockTimestamp();
