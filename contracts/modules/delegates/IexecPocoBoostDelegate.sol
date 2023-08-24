@@ -71,8 +71,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
             "PocoBoost: Overpriced dataset"
         );
+        uint256 workerpoolPrice = _workerpoolorder.workerpoolprice;
         require(
-            _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
+            _requestorder.workerpoolmaxprice >= workerpoolPrice,
             "PocoBoost: Overpriced workerpool"
         );
         // Save some local variables in memory with a structure to fix `Stack too deep`.
@@ -225,14 +226,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         }
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
-        deal.workerpoolPrice = _workerpoolorder.workerpoolprice.toUint96();
+        deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.appOwner = vars.appOwner;
         deal.appPrice = _apporder.appprice.toUint96();
         if (hasDataset) {
             deal.datasetOwner = vars.datasetOwner;
             deal.datasetPrice = _datasetorder.datasetprice.toUint96();
         }
-        deal.workerReward = ((_workerpoolorder.workerpoolprice * // reward depends on
+        deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
         deal.beneficiary = _requestorder.beneficiary;
         deal.deadline = (block.timestamp +
@@ -255,9 +256,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.callback = _requestorder.callback;
         // Lock
         {
-            uint256 taskPrice = _apporder.appprice +
-                _datasetorder.datasetprice +
-                _workerpoolorder.workerpoolprice;
+            uint256 taskPrice = _apporder.appprice + _datasetorder.datasetprice + workerpoolPrice;
             lock(deal.requester, taskPrice * volume);
         }
         // Notify workerpool.
