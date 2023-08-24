@@ -1752,7 +1752,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectFrozen(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterFrozen + taskPrice,
+                initialRequesterFrozen + taskPrice, // 2nd task can still be claimed
             );
             await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
             await expectFrozen(
