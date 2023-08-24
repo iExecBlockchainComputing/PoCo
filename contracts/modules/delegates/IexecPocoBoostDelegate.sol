@@ -70,8 +70,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
             "PocoBoost: Overpriced dataset"
         );
+        // An intermediate variable stored in the stack consumes
+        // less gas than accessing calldata each time.
+        uint256 workerpoolPrice = _workerpoolorder.workerpoolprice;
         require(
-            _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
+            _requestorder.workerpoolmaxprice >= workerpoolPrice,
             "PocoBoost: Overpriced workerpool"
         );
         // Save some local variables in memory with a structure to fix `Stack too deep`.
@@ -223,7 +226,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         }
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
-        deal.workerpoolPrice = _workerpoolorder.workerpoolprice.toUint96();
+        deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.appOwner = vars.appOwner;
         deal.appPrice = _apporder.appprice.toUint96();
         if (hasDataset) {
@@ -252,10 +255,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.callback = _requestorder.callback;
         // Lock
         {
-            uint256 taskPrice = _apporder.appprice +
-                _datasetorder.datasetprice +
-                _workerpoolorder.workerpoolprice;
+            uint256 taskPrice = _apporder.appprice + _datasetorder.datasetprice + workerpoolPrice;
             lock(deal.requester, taskPrice * volume);
+            // Order is important here. First get percentage by task then
+            // multiply by volume.
+            uint256 taskWorkerpoolStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+            lock(deal.workerpoolOwner, taskWorkerpoolStake * volume);
         }
         // Notify workerpool.
         emit SchedulerNoticeBoost(

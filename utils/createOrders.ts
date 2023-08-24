@@ -87,7 +87,11 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
     };
 }
 
-export function buildCompatibleOrders(entriesAndRequester: Iexec<string>, tag: string) {
+export function buildCompatibleOrders(
+    entriesAndRequester: Iexec<string>,
+    tag: string,
+    prices?: { app: number; dataset: number; workerpool: number },
+) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
@@ -108,6 +112,15 @@ export function buildCompatibleOrders(entriesAndRequester: Iexec<string>, tag: s
     requestOrder.tag = tag;
     datasetOrder.tag = tag;
     workerpoolOrder.tag = tag;
+    // Set prices
+    if (prices) {
+        appOrder.appprice = prices.app;
+        datasetOrder.datasetprice = prices.dataset;
+        workerpoolOrder.workerpoolprice = prices.workerpool;
+        requestOrder.appmaxprice = prices.app;
+        requestOrder.datasetmaxprice = prices.dataset;
+        requestOrder.workerpoolmaxprice = prices.workerpool;
+    }
 
     return {
         orders: {
