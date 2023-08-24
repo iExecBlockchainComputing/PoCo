@@ -1748,7 +1748,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectFrozen(
                 iexecPocoBoostInstance,
                 scheduler.address,
-                initialSchedulerFrozen + schedulerStake,
+                initialSchedulerFrozen + schedulerStake, // TODO: Remove schedulerStake when kitty reward implemented
             );
         });
 
