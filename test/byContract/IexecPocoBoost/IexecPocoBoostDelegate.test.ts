@@ -211,7 +211,7 @@ describe('IexecPocoBoostDelegate', function () {
             const initialRequesterFrozen = 3;
             const initialSchedulerBalance = 4;
             const initialSchedulerFrozen = 5;
-            const schedulerStake = computeSchedulerStake(workerpoolPrice, expectedVolume);
+            const schedulerStake = computeSchedulerDealStake(workerpoolPrice, expectedVolume);
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
@@ -396,7 +396,7 @@ describe('IexecPocoBoostDelegate', function () {
             const workerpoolPrice = 1_000_000;
             await iexecPocoBoostInstance.setVariable(BALANCES, {
                 [requester.address]: 1_001_000,
-                [scheduler.address]: computeSchedulerStake(workerpoolPrice, volume),
+                [scheduler.address]: computeSchedulerDealStake(workerpoolPrice, volume),
             });
 
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
@@ -1246,7 +1246,7 @@ describe('IexecPocoBoostDelegate', function () {
             const datasetPrice = 1_000_000;
             const workerpoolPrice = 1_000_000_000;
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
-            const schedulerStake = computeSchedulerStake(workerpoolPrice, volume);
+            const schedulerStake = computeSchedulerDealStake(workerpoolPrice, volume);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee, {
                     app: appPrice,
@@ -1659,25 +1659,31 @@ describe('IexecPocoBoostDelegate', function () {
             const appPrice = 1000;
             const datasetPrice = 1_000_000;
             const workerpoolPrice = 1_000_000_000;
+            const expectedVolume = 2; // > 1 to explicit taskPrice vs dealPrice
+            const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+            const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTagTee, {
                     app: appPrice,
                     dataset: datasetPrice,
                     workerpool: workerpoolPrice,
                 });
+            appOrder.volume = expectedVolume;
+            datasetOrder.volume = expectedVolume;
+            workerpoolOrder.volume = expectedVolume;
+            requestOrder.volume = expectedVolume;
             await signOrders(domain, orders, accounts);
-            const dealPrice = appPrice + datasetPrice + workerpoolPrice;
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
             const initialSchedulerBalance = 4;
             const initialSchedulerFrozen = 5;
-            const schedulerStake = computeSchedulerStake(workerpoolPrice, volume);
+            const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, expectedVolume);
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance + dealPrice,
-                    [scheduler.address]: initialSchedulerBalance + schedulerStake,
+                    [scheduler.address]: initialSchedulerBalance + schedulerDealStake,
                 },
                 [FROZENS]: {
                     [requester.address]: initialRequesterFrozen,
@@ -1698,7 +1704,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 scheduler.address,
-                initialSchedulerBalance + schedulerStake,
+                initialSchedulerBalance + schedulerDealStake,
             );
             await expectFrozen(iexecPocoBoostInstance, scheduler.address, initialSchedulerFrozen);
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -1713,7 +1719,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + dealPrice + schedulerStake,
+                initialIexecPocoBalance + dealPrice + schedulerDealStake,
             );
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
@@ -1725,7 +1731,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectFrozen(
                 iexecPocoBoostInstance,
                 scheduler.address,
-                initialSchedulerFrozen + schedulerStake,
+                initialSchedulerFrozen + schedulerDealStake,
             );
             await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
 
@@ -1736,19 +1742,23 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + schedulerStake, // TODO: Remove schedulerStake when kitty reward implemented
+                initialIexecPocoBalance + taskPrice + schedulerDealStake, // TODO: Remove schedulerStake when kitty reward implemented
             );
             await expectBalance(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterBalance + dealPrice,
+                initialRequesterBalance + taskPrice,
             );
-            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterFrozen + taskPrice,
+            );
             await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 scheduler.address,
-                initialSchedulerFrozen + schedulerStake, // TODO: Remove schedulerStake when kitty reward implemented
+                initialSchedulerFrozen + schedulerDealStake, // TODO: Remove schedulerStake when kitty reward implemented
             );
         });
 
@@ -1865,7 +1875,7 @@ async function setNextBlockTimestamp() {
  * @param volume number of tasks in the deal
  * @returns amount of total stake
  */
-function computeSchedulerStake(workerpoolPrice: number, volume: number) {
+function computeSchedulerDealStake(workerpoolPrice: number, volume: number) {
     return ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume;
 }
 

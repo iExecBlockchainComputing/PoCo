@@ -211,7 +211,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
             // Deposit RLC in the scheduler's account.
-            const schedulerStake = await computeSchedulerStake(
+            const schedulerStake = await computeSchedulerDealStake(
                 iexecInstance,
                 workerpoolPrice,
                 volume,
@@ -437,24 +437,30 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
 
     describe('Claim', function () {
         it('Should claim', async function () {
+            const expectedVolume = 2; // > 1 to explicit taskPrice vs dealPrice
+            const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+            const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTag, {
                     app: appPrice,
                     dataset: datasetPrice,
                     workerpool: workerpoolPrice,
                 });
-            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
+            appOrder.volume = expectedVolume;
+            datasetOrder.volume = expectedVolume;
+            workerpoolOrder.volume = expectedVolume;
+            requestOrder.volume = expectedVolume;
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await getRlcAndDeposit(requester, dealPrice);
             // Deposit RLC in the scheduler's account.
-            const schedulerStake = await computeSchedulerStake(
+            const schedulerDealStake = await computeSchedulerDealStake(
                 iexecInstance,
                 workerpoolPrice,
-                volume,
+                expectedVolume,
             );
-            await getRlcAndDeposit(scheduler, schedulerStake);
+            await getRlcAndDeposit(scheduler, schedulerDealStake);
             await time.setNextBlockTimestamp(startTime);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -463,12 +469,12 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 requestOrder,
             );
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                dealPrice + schedulerStake,
+                dealPrice + schedulerDealStake,
             );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
-            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
             await time.setNextBlockTimestamp(startTime + 7 * 300);
 
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
@@ -476,12 +482,12 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(taskId);
             expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                schedulerStake,
+                taskPrice + schedulerDealStake,
             );
-            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
-            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(taskPrice);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(taskPrice);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
-            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
         });
     });
 
@@ -519,7 +525,7 @@ async function getContractAddress(contractName: string): Promise<string> {
  * @param volume number of tasks of a deal
  * @returns total amount to stake by the scheduler
  */
-async function computeSchedulerStake(
+async function computeSchedulerDealStake(
     iexecInstance: IexecAccessors,
     workerpoolPrice: number,
     volume: number,
