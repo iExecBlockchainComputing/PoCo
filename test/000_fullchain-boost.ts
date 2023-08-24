@@ -437,7 +437,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
 
     describe('Claim', function () {
         it('Should claim', async function () {
-            const expectedVolume = 2; // > 1 to explicit taskPrice vs dealPrice
+            const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
@@ -482,10 +482,11 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(taskId);
             expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                taskPrice + schedulerDealStake,
+                taskPrice * 2 + schedulerDealStake, // only one task is claimed.
             );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(taskPrice);
-            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(taskPrice); // 2nd task can still be claimed
+            // 2nd & 3rd tasks can still be claimed.
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(taskPrice * 2);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
         });
