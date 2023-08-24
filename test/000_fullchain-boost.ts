@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { TypedDataDomain, BigNumber } from 'ethers';
+import { TypedDataDomain } from 'ethers';
 import {
     IexecOrderManagement,
     IexecOrderManagement__factory,
@@ -273,7 +273,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(deal.shortTag).to.be.equal('0x000000000000000000000001');
             expect(deal.callback.toLowerCase()).to.be.equal(callbackAddress);
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                schedulerStake.add(dealPrice),
+                dealPrice + schedulerStake,
             );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
@@ -463,7 +463,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 requestOrder,
             );
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                schedulerStake.add(dealPrice),
+                dealPrice + schedulerStake,
             );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
@@ -490,7 +490,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
      * @param value The value to deposit.
      * @param account Deposit value for an account.
      */
-    async function getRlcAndDeposit(account: SignerWithAddress, value: number | BigNumber) {
+    async function getRlcAndDeposit(account: SignerWithAddress, value: number) {
         await rlcInstance.transfer(account.address, value);
         await rlcInstance
             .connect(account)
@@ -523,8 +523,7 @@ async function computeSchedulerStake(
     iexecInstance: IexecAccessors,
     workerpoolPrice: number,
     volume: number,
-): Promise<BigNumber> {
-    const stakeRatio = await iexecInstance.workerpool_stake_ratio();
-    const oneTaskStake = stakeRatio.mul(workerpoolPrice).div(100);
-    return oneTaskStake.mul(volume);
+): Promise<number> {
+    const stakeRatio = (await iexecInstance.workerpool_stake_ratio()).toNumber();
+    return ((workerpoolPrice * stakeRatio) / 100) * volume;
 }
