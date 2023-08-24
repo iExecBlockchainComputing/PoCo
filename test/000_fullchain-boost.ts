@@ -485,7 +485,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 taskPrice + schedulerDealStake,
             );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(taskPrice);
-            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(taskPrice);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(taskPrice); // 2nd task can still be claimed
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
         });
