@@ -1254,12 +1254,10 @@ describe('IexecPocoBoostDelegate', function () {
             requestOrder.requester = requester.address;
             requestOrder.beneficiary = beneficiary.address;
 
-            const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialSchedulerBalance = 3; // Way less than what is needed as stake.
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
-                    [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance + dealPrice,
                     [scheduler.address]: initialSchedulerBalance,
                 },
