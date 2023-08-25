@@ -1302,21 +1302,33 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should push result (TEE & callback)', async function () {
             workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
+            const appPrice = 1000;
+            const datasetPrice = 1_000_000;
             const workerpoolPrice = 1_000_000_000;
+            const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+            const volume = 3;
+            const dealPrice = taskPrice * volume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            workerpoolOrder.workerpoolprice = workerpoolPrice;
-            requestOrder.workerpoolmaxprice = workerpoolPrice;
-            const taskPrice = workerpoolPrice;
+                buildCompatibleOrders(
+                    entriesAndRequester,
+                    dealTagTee,
+                    {
+                        app: appPrice,
+                        dataset: datasetPrice,
+                        workerpool: workerpoolPrice,
+                    },
+                    volume,
+                );
             const initialIexecPocoBalance = 1;
-            const initialRequesterBalance = 2 + taskPrice;
+            const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
             const initialWorkerBalance = 4;
-            const schedulerDealStake = computeSchedulerDealStake(taskPrice, volume);
+            const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, volume);
+            const schedulerTaskStake = schedulerDealStake / volume;
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
-                    [requester.address]: initialRequesterBalance + taskPrice,
+                    [requester.address]: initialRequesterBalance + dealPrice,
                     [worker.address]: initialWorkerBalance,
                     [scheduler.address]: schedulerDealStake,
                 },
@@ -1359,13 +1371,13 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + taskPrice + schedulerDealStake,
+                initialIexecPocoBalance + dealPrice + schedulerDealStake,
             );
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterFrozen + taskPrice,
+                initialRequesterFrozen + dealPrice,
             );
             await expectBalance(iexecPocoBoostInstance, worker.address, initialWorkerBalance);
             const expectedWorkerReward = (
@@ -1412,19 +1424,26 @@ describe('IexecPocoBoostDelegate', function () {
              * 3. It could be also possible to create a new contract for unit test
              * to wrap `IexecPocoBoostDelegate` and attach `viewTask` feature.
              */
+            const remainingTasksToPush = volume - 1;
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + // TODO: Remove next line when scheduler
-                    expectedSchedulerReward + // reward will be implemented
-                    schedulerDealStake, // TODO: Remove after unlock scheduler feature
+                initialIexecPocoBalance +
+                    (taskPrice + schedulerTaskStake) * remainingTasksToPush +
+                    schedulerTaskStake + // TODO: Remove after unlock scheduler feature
+                    expectedSchedulerReward + // TODO: Remove after scheduler reward feature
+                    appPrice + // TODO: Remove after app reward and
+                    datasetPrice, // dataset reward feature
             );
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterFrozen + // TODO: Remove next line when scheduler
-                    expectedSchedulerReward, // reward will be implemented
+                initialRequesterFrozen +
+                    taskPrice * remainingTasksToPush +
+                    expectedSchedulerReward + // TODO: Remove after scheduler reward feature
+                    appPrice + // TODO: Remove after app reward and
+                    datasetPrice, // dataset reward feature
             );
             await expectBalance(
                 iexecPocoBoostInstance,

@@ -91,6 +91,7 @@ export function buildCompatibleOrders(
     entriesAndRequester: Iexec<string>,
     tag: string,
     prices?: { app: number; dataset: number; workerpool: number },
+    volume?: number,
 ) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
@@ -120,6 +121,12 @@ export function buildCompatibleOrders(
         requestOrder.appmaxprice = prices.app;
         requestOrder.datasetmaxprice = prices.dataset;
         requestOrder.workerpoolmaxprice = prices.workerpool;
+    }
+    if (volume) {
+        appOrder.volume = volume;
+        datasetOrder.volume = volume;
+        workerpoolOrder.volume = volume;
+        requestOrder.volume = volume;
     }
 
     return {
