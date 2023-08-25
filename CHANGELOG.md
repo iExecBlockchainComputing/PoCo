@@ -38,6 +38,7 @@
     - Lock requester deal value. (#196)
     - Store deal. (#174)
     - Emit events. (#182, #184, #197)
+    - Lock scheduler stake. (#202)
 - Implement `pushResultBoost`:
     - Push result before deadline. (#195)
     - Require enclave challenge when TEE bit of tag set. (#197)
