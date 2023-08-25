@@ -66,11 +66,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Category mismatch"
         );
         require(_requestorder.category < m_categories.length, "PocoBoost: Unknown category");
-        require(_requestorder.appmaxprice >= _apporder.appprice, "PocoBoost: Overpriced app");
-        require(
-            _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
-            "PocoBoost: Overpriced dataset"
-        );
+        uint256 appPrice = _apporder.appprice;
+        require(_requestorder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
+        uint256 datasetPrice = _datasetorder.datasetprice;
+        require(_requestorder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
         // An intermediate variable stored in the stack consumes
         // less gas than accessing calldata each time.
         uint256 workerpoolPrice = _workerpoolorder.workerpoolprice;
@@ -230,10 +229,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.workerpoolOwner = vars.workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.appOwner = vars.appOwner;
-        deal.appPrice = _apporder.appprice.toUint96();
+        deal.appPrice = appPrice.toUint96();
         if (hasDataset) {
             deal.datasetOwner = vars.datasetOwner;
-            deal.datasetPrice = _datasetorder.datasetprice.toUint96();
+            deal.datasetPrice = datasetPrice.toUint96();
         }
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
@@ -258,7 +257,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.callback = _requestorder.callback;
         // Lock
         {
-            uint256 taskPrice = _apporder.appprice + _datasetorder.datasetprice + workerpoolPrice;
+            uint256 taskPrice = appPrice + datasetPrice + workerpoolPrice;
             lock(deal.requester, taskPrice * volume);
             // Order is important here. First get percentage by task then
             // multiply by volume.
