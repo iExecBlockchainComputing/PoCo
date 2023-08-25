@@ -401,6 +401,12 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             requestOrder.workerpoolmaxprice = workerpoolPrice;
             const taskPrice = workerpoolPrice;
             await getRlcAndDeposit(requester, taskPrice);
+            const schedulerDealStake = await computeSchedulerDealStake(
+                iexecInstance,
+                workerpoolPrice,
+                volume,
+            );
+            await getRlcAndDeposit(scheduler, schedulerDealStake);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -422,7 +428,9 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 resultDigest,
                 enclave,
             );
-            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(taskPrice);
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
+                taskPrice + schedulerDealStake,
+            );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(taskPrice);
             expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(0);
@@ -453,7 +461,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                expectedSchedulerReward,
+                schedulerDealStake + expectedSchedulerReward,
             ); // TODO: Set to 0 when scheduler reward implemented
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(

@@ -1312,11 +1312,13 @@ describe('IexecPocoBoostDelegate', function () {
             const initialRequesterBalance = 2 + taskPrice;
             const initialRequesterFrozen = 3;
             const initialWorkerBalance = 4;
+            const schedulerDealStake = computeSchedulerDealStake(taskPrice, volume);
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance + taskPrice,
                     [worker.address]: initialWorkerBalance,
+                    [scheduler.address]: schedulerDealStake,
                 },
                 [FROZENS]: {
                     [requester.address]: initialRequesterFrozen,
@@ -1357,7 +1359,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + taskPrice,
+                initialIexecPocoBalance + taskPrice + schedulerDealStake,
             );
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
@@ -1414,7 +1416,8 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
                 initialIexecPocoBalance + // TODO: Remove next line when scheduler
-                    expectedSchedulerReward, // reward will be implemented
+                    expectedSchedulerReward + // reward will be implemented
+                    schedulerDealStake, // TODO: Remove after unlock scheduler feature
             );
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
