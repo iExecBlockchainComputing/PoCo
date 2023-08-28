@@ -1383,6 +1383,10 @@ describe('IexecPocoBoostDelegate', function () {
             const expectedWorkerReward = (
                 await iexecPocoBoostInstance.viewDealBoost(dealId)
             ).workerReward.toNumber();
+            // Worker reward formula already checked in match orders test, hence
+            // we just need to verify here that some worker reward value will be
+            // transferred
+            expect(expectedWorkerReward).to.be.greaterThan(0);
             const expectedSchedulerReward = workerpoolPrice - expectedWorkerReward;
 
             await expect(
