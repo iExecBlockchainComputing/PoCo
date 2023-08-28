@@ -486,15 +486,16 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTag, {
-                    app: appPrice,
-                    dataset: datasetPrice,
-                    workerpool: workerpoolPrice,
-                });
-            appOrder.volume = expectedVolume;
-            datasetOrder.volume = expectedVolume;
-            workerpoolOrder.volume = expectedVolume;
-            requestOrder.volume = expectedVolume;
+                buildCompatibleOrders(
+                    entriesAndRequester,
+                    dealTag,
+                    {
+                        app: appPrice,
+                        dataset: datasetPrice,
+                        workerpool: workerpoolPrice,
+                    },
+                    expectedVolume,
+                );
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);

@@ -1751,15 +1751,16 @@ describe('IexecPocoBoostDelegate', function () {
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee, {
-                    app: appPrice,
-                    dataset: datasetPrice,
-                    workerpool: workerpoolPrice,
-                });
-            appOrder.volume = expectedVolume;
-            datasetOrder.volume = expectedVolume;
-            workerpoolOrder.volume = expectedVolume;
-            requestOrder.volume = expectedVolume;
+                buildCompatibleOrders(
+                    entriesAndRequester,
+                    dealTagTee,
+                    {
+                        app: appPrice,
+                        dataset: datasetPrice,
+                        workerpool: workerpoolPrice,
+                    },
+                    expectedVolume,
+                );
             await signOrders(domain, orders, accounts);
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
