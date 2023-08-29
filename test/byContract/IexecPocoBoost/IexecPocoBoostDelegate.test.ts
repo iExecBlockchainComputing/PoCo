@@ -50,6 +50,7 @@ const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const taskIndex = 0;
 const volume = taskIndex + 1;
+const schedulerRewardRatio = 1;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
 const BALANCES = 'm_balances';
@@ -183,6 +184,7 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
+            workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
 
             const appPrice = 1000;
             const datasetPrice = 1_000_000;
@@ -298,6 +300,11 @@ describe('IexecPocoBoostDelegate', function () {
             expect(deal.workerpoolOwner).to.be.equal(
                 scheduler.address,
                 'Workerpool owner mismatch',
+            );
+            expect(deal.workerReward).to.be.equal(
+                (workerpoolPrice * // reward depends on
+                    (100 - schedulerRewardRatio)) / // worker ratio
+                    100,
             );
             expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
             expect(deal.deadline).to.be.equal(
@@ -1294,8 +1301,41 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should push result (TEE & callback)', async function () {
+            workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
+            const appPrice = 1000;
+            const datasetPrice = 1_000_000;
+            const workerpoolPrice = 1_000_000_000;
+            const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+            const volume = 3;
+            const dealPrice = taskPrice * volume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+                buildCompatibleOrders(
+                    entriesAndRequester,
+                    dealTagTee,
+                    {
+                        app: appPrice,
+                        dataset: datasetPrice,
+                        workerpool: workerpoolPrice,
+                    },
+                    volume,
+                );
+            const initialIexecPocoBalance = 1;
+            const initialRequesterBalance = 2;
+            const initialRequesterFrozen = 3;
+            const initialWorkerBalance = 4;
+            const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, volume);
+            const schedulerTaskStake = schedulerDealStake / volume;
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
+                    [requester.address]: initialRequesterBalance + dealPrice,
+                    [worker.address]: initialWorkerBalance,
+                    [scheduler.address]: schedulerDealStake,
+                },
+                [FROZENS]: {
+                    [requester.address]: initialRequesterFrozen,
+                },
+            });
             const oracleConsumerInstance = await createMock<TestClient__factory, TestClient>(
                 'TestClient',
             );
@@ -1328,6 +1368,26 @@ describe('IexecPocoBoostDelegate', function () {
                     7 * 60 - // deadline
                     1, // push result 1 second before deadline
             );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance + dealPrice + schedulerDealStake,
+            );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterFrozen + dealPrice,
+            );
+            await expectBalance(iexecPocoBoostInstance, worker.address, initialWorkerBalance);
+            const expectedWorkerReward = (
+                await iexecPocoBoostInstance.viewDealBoost(dealId)
+            ).workerReward.toNumber();
+            // Worker reward formula already checked in match orders test, hence
+            // we just need to verify here that some worker reward value will be
+            // transferred
+            expect(expectedWorkerReward).to.be.greaterThan(0);
+            const expectedSchedulerReward = workerpoolPrice - expectedWorkerReward;
 
             await expect(
                 iexecPocoBoostInstance
@@ -1342,6 +1402,12 @@ describe('IexecPocoBoostDelegate', function () {
                         enclaveSignature,
                     ),
             )
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(requester.address, expectedWorkerReward, taskId) //TODO: Seize app + dataset + workerpool price
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, worker.address, expectedWorkerReward)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(worker.address, expectedWorkerReward, taskId)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
             expect(oracleConsumerInstance.receiveResult).to.have.been.calledWith(
@@ -1362,6 +1428,32 @@ describe('IexecPocoBoostDelegate', function () {
              * 3. It could be also possible to create a new contract for unit test
              * to wrap `IexecPocoBoostDelegate` and attach `viewTask` feature.
              */
+            const remainingTasksToPush = volume - 1;
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance +
+                    (taskPrice + schedulerTaskStake) * remainingTasksToPush +
+                    schedulerTaskStake + // TODO: Remove after unlock scheduler feature
+                    expectedSchedulerReward + // TODO: Remove after scheduler reward feature
+                    appPrice + // TODO: Remove after app reward and
+                    datasetPrice, // dataset reward feature
+            );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                requester.address,
+                initialRequesterFrozen +
+                    taskPrice * remainingTasksToPush +
+                    expectedSchedulerReward + // TODO: Remove after scheduler reward feature
+                    appPrice + // TODO: Remove after app reward and
+                    datasetPrice, // dataset reward feature
+            );
+            await expectBalance(
+                iexecPocoBoostInstance,
+                worker.address,
+                initialWorkerBalance + expectedWorkerReward,
+            );
         });
 
         it('Should push result (TEE)', async function () {
@@ -1659,15 +1751,16 @@ describe('IexecPocoBoostDelegate', function () {
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee, {
-                    app: appPrice,
-                    dataset: datasetPrice,
-                    workerpool: workerpoolPrice,
-                });
-            appOrder.volume = expectedVolume;
-            datasetOrder.volume = expectedVolume;
-            workerpoolOrder.volume = expectedVolume;
-            requestOrder.volume = expectedVolume;
+                buildCompatibleOrders(
+                    entriesAndRequester,
+                    dealTagTee,
+                    {
+                        app: appPrice,
+                        dataset: datasetPrice,
+                        workerpool: workerpoolPrice,
+                    },
+                    expectedVolume,
+                );
             await signOrders(domain, orders, accounts);
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;

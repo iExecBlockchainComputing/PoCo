@@ -23,6 +23,7 @@ import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
 import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
 
+import "../../registries/workerpools/IWorkerpool.v8.sol";
 import "./IexecEscrow.v8.sol";
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
@@ -65,11 +66,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             "PocoBoost: Category mismatch"
         );
         require(_requestorder.category < m_categories.length, "PocoBoost: Unknown category");
-        require(_requestorder.appmaxprice >= _apporder.appprice, "PocoBoost: Overpriced app");
-        require(
-            _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
-            "PocoBoost: Overpriced dataset"
-        );
+        uint256 appPrice = _apporder.appprice;
+        require(_requestorder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
+        uint256 datasetPrice = _datasetorder.datasetprice;
+        require(_requestorder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
         // An intermediate variable stored in the stack consumes
         // less gas than accessing calldata each time.
         uint256 workerpoolPrice = _workerpoolorder.workerpoolprice;
@@ -158,11 +158,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
                 "PocoBoost: Invalid dataset order signature"
             );
         }
+        address workerpool = _workerpoolorder.workerpool;
         require(
-            m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),
+            m_workerpoolregistry.isRegistered(workerpool),
             "PocoBoost: Workerpool not registered"
         );
-        vars.workerpoolOwner = IERC5313(_workerpoolorder.workerpool).owner();
+        vars.workerpoolOwner = IERC5313(workerpool).owner();
         bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(_workerpoolorder.hash());
         require(
             _verifySignatureOrPresignature(
@@ -228,12 +229,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.workerpoolOwner = vars.workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.appOwner = vars.appOwner;
-        deal.appPrice = _apporder.appprice.toUint96();
+        deal.appPrice = appPrice.toUint96();
         if (hasDataset) {
             deal.datasetOwner = vars.datasetOwner;
-            deal.datasetPrice = _datasetorder.datasetprice.toUint96();
+            deal.datasetPrice = datasetPrice.toUint96();
         }
-        deal.workerReward = 0; // TODO: Update and test
+        deal.workerReward = ((workerpoolPrice * // reward depends on
+            (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
         deal.beneficiary = _requestorder.beneficiary;
         deal.deadline = (block.timestamp +
             m_categories[_requestorder.category].workClockTimeRef *
@@ -255,7 +257,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         deal.callback = _requestorder.callback;
         // Lock
         {
-            uint256 taskPrice = _apporder.appprice + _datasetorder.datasetprice + workerpoolPrice;
+            uint256 taskPrice = appPrice + datasetPrice + workerpoolPrice;
             lock(deal.requester, taskPrice * volume);
             // Order is important here. First get percentage by task then
             // multiply by volume.
@@ -351,6 +353,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
          * Benefit: Fetching task status is unchanged for clients
          */
         m_tasks[taskId].status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
+
+        // Seize requester
+        seize(
+            deal.requester,
+            deal.workerReward, //TODO: Seize app + dataset + workerpool price
+            taskId
+        );
+        // Reward worker
+        reward(msg.sender, deal.workerReward, taskId);
 
         emit ResultPushedBoost(dealId, index, results);
 

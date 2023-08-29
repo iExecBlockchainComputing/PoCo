@@ -35,6 +35,7 @@ import {
     IexecAccessors__factory,
     IexecAccessors,
     RLC,
+    WorkerpoolInterface__factory,
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
@@ -266,6 +267,15 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
             expect(deal.workerpoolPrice).to.be.equal(workerpoolPrice);
             expect(deal.requester).to.be.equal(requester.address);
+            const schedulerRewardRatio = (
+                await WorkerpoolInterface__factory.connect(
+                    workerpoolAddress,
+                    anyone,
+                ).m_schedulerRewardRatioPolicy()
+            ).toNumber();
+            expect(deal.workerReward)
+                .to.be.equal((workerpoolPrice * (100 - schedulerRewardRatio)) / 100)
+                .to.be.greaterThan(0);
             expect(deal.beneficiary).to.be.equal(beneficiary.address);
             expect(deal.deadline).to.be.equal(startTime + 7 * 300);
             expect(deal.botFirst).to.be.equal(0);
@@ -393,8 +403,19 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         });
 
         it('Should push result (TEE)', async function () {
+            const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(entriesAndRequester, dealTag);
+            workerpoolOrder.workerpoolprice = workerpoolPrice;
+            requestOrder.workerpoolmaxprice = workerpoolPrice;
+            const taskPrice = workerpoolPrice;
+            await getRlcAndDeposit(requester, taskPrice);
+            const schedulerDealStake = await computeSchedulerDealStake(
+                iexecInstance,
+                workerpoolPrice,
+                volume,
+            );
+            await getRlcAndDeposit(scheduler, schedulerDealStake);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -416,6 +437,16 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 resultDigest,
                 enclave,
             );
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
+                taskPrice + schedulerDealStake,
+            );
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(taskPrice);
+            expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(0);
+            const expectedWorkerReward = (
+                await iexecPocoBoostInstance.viewDealBoost(dealId)
+            ).workerReward.toNumber();
+            const expectedSchedulerReward = workerpoolPrice - expectedWorkerReward;
 
             await expect(
                 iexecPocoBoostInstance
@@ -430,8 +461,22 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                         enclaveSignature,
                     ),
             )
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(requester.address, expectedWorkerReward, taskId) //TODO: Seize app + dataset + workerpool price
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecInstance.address, worker.address, expectedWorkerReward)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(worker.address, expectedWorkerReward, taskId)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
+                schedulerDealStake + expectedSchedulerReward,
+            ); // TODO: Set to 0 when scheduler reward implemented
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
+                expectedSchedulerReward,
+            ); // TODO: Set to 0 when scheduler reward implemented
+            expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(expectedWorkerReward);
         });
     });
 
@@ -441,15 +486,16 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTag, {
-                    app: appPrice,
-                    dataset: datasetPrice,
-                    workerpool: workerpoolPrice,
-                });
-            appOrder.volume = expectedVolume;
-            datasetOrder.volume = expectedVolume;
-            workerpoolOrder.volume = expectedVolume;
-            requestOrder.volume = expectedVolume;
+                buildCompatibleOrders(
+                    entriesAndRequester,
+                    dealTag,
+                    {
+                        app: appPrice,
+                        dataset: datasetPrice,
+                        workerpool: workerpoolPrice,
+                    },
+                    expectedVolume,
+                );
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
