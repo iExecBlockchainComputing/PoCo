@@ -271,6 +271,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     dealTagTee,
                     requestOrder.params,
+                    beneficiary,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
@@ -306,7 +307,6 @@ describe('IexecPocoBoostDelegate', function () {
                     (100 - schedulerRewardRatio)) / // worker ratio
                     100,
             );
-            expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
             expect(deal.deadline).to.be.equal(
                 startTime + // match order block timestamp
                     7 * // contribution deadline ratio
@@ -450,6 +450,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     dealTagTee,
                     requestOrder.params,
+                    beneficiary,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(

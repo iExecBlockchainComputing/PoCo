@@ -250,6 +250,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     hashOrder(domain, workerpoolOrder),
                     hashOrder(domain, requestOrder),
                     volume,
+                    beneficiary,
                 )
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
@@ -276,7 +277,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(deal.workerReward)
                 .to.be.equal((workerpoolPrice * (100 - schedulerRewardRatio)) / 100)
                 .to.be.greaterThan(0);
-            expect(deal.beneficiary).to.be.equal(beneficiary.address);
             expect(deal.deadline).to.be.equal(startTime + 7 * 300);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(1);
