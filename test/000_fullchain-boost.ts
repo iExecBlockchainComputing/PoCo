@@ -124,6 +124,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             dataset: datasetProvider,
             workerpool: scheduler,
             requester: requester,
+            beneficiary: beneficiary,
         };
 
         await deployments.fixture();

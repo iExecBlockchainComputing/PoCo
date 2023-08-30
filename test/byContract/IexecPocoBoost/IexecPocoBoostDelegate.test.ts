@@ -155,6 +155,7 @@ describe('IexecPocoBoostDelegate', function () {
             dataset: datasetProvider,
             workerpool: scheduler,
             requester: requester,
+            beneficiary: beneficiary,
         };
         appInstance = await createMock<App__factory, App>('App');
         workerpoolInstance = await createMock<Workerpool__factory, Workerpool>('Workerpool');
