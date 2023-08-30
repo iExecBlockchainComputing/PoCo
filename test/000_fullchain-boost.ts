@@ -473,10 +473,10 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(requester.address, expectedWorkerReward + appPrice, taskId) //TODO: Seize app + dataset + workerpool price
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(iexecInstance.address, worker.address, expectedWorkerReward)
-                .to.emit(iexecPocoBoostInstance, 'Transfer')
-                .withArgs(iexecInstance.address, appProvider.address, appPrice)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
                 .withArgs(worker.address, expectedWorkerReward, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecInstance.address, appProvider.address, appPrice)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
                 .withArgs(appProvider.address, appPrice, taskId)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
