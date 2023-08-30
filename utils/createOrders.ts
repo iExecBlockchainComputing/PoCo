@@ -11,6 +11,7 @@ export interface Iexec<T> {
     dataset: T;
     workerpool: T;
     requester: T;
+    beneficiary?: T;
 }
 
 export interface IexecAccounts extends Iexec<SignerWithAddress> {}
@@ -108,6 +109,8 @@ export function buildCompatibleOrders(
     requestOrder.dataset = entriesAndRequester.dataset;
     // Set requester
     requestOrder.requester = entriesAndRequester.requester;
+    // Set beneficiary
+    requestOrder.beneficiary = entriesAndRequester.beneficiary || constants.NULL.ADDRESS;
     // Set tag
     appOrder.tag = tag;
     requestOrder.tag = tag;

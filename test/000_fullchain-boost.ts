@@ -190,6 +190,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             dataset: datasetAddress,
             workerpool: workerpoolAddress,
             requester: requester.address,
+            beneficiary: beneficiary.address,
         };
     });
 
@@ -202,7 +203,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     workerpool: workerpoolPrice,
                 });
             const callbackAddress = '0x00000000000000000000000000000000ca11bac6';
-            requestOrder.beneficiary = beneficiary.address;
             requestOrder.callback = callbackAddress;
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
@@ -298,8 +298,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             entriesAndRequester,
             dealTag,
         );
-        requestOrder.requester = requester.address;
-        requestOrder.beneficiary = beneficiary.address;
         await iexecCategoryManagementInstance.connect(appProvider).manageAppOrder({
             order: appOrder,
             operation: 0,

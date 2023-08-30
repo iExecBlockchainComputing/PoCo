@@ -136,6 +136,7 @@ describe('IexecPocoBoostDelegate', function () {
     let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
         [] as SignerWithAddress[];
     let accounts: IexecAccounts;
+    // Rename to orderParams
     let entriesAndRequester: Iexec<string>;
 
     beforeEach('set up contract instances and mock app', async () => {
@@ -163,6 +164,7 @@ describe('IexecPocoBoostDelegate', function () {
             dataset: datasetInstance.address,
             workerpool: workerpoolInstance.address,
             requester: requester.address,
+            beneficiary: beneficiary.address,
         };
         appRegistry = await smock.fake<AppRegistry>(AppRegistry__factory);
         await iexecPocoBoostInstance.setVariable('m_appregistry', appRegistry.address);
@@ -195,9 +197,6 @@ describe('IexecPocoBoostDelegate', function () {
                     dataset: datasetPrice,
                     workerpool: workerpoolPrice,
                 });
-            requestOrder.requester = requester.address;
-            requestOrder.beneficiary = beneficiary.address;
-
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
             // Should match orders with low app order volume
@@ -354,8 +353,6 @@ describe('IexecPocoBoostDelegate', function () {
                 entriesAndRequester,
                 dealTagTee,
             );
-            requestOrder.requester = requester.address;
-            requestOrder.beneficiary = beneficiary.address;
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
             const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
@@ -410,12 +407,7 @@ describe('IexecPocoBoostDelegate', function () {
             });
 
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                {
-                    app: appInstance.address,
-                    dataset: constants.NULL.ADDRESS, // No dataset.
-                    workerpool: workerpoolInstance.address,
-                    requester: requester.address,
-                },
+                entriesAndRequester,
                 dealTagTee,
                 {
                     app: appPrice,
@@ -423,10 +415,9 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpool: workerpoolPrice,
                 },
             );
-
-            requestOrder.requester = requester.address;
-            requestOrder.beneficiary = beneficiary.address;
-
+            // No dataset
+            requestOrder.dataset = constants.NULL.ADDRESS;
+            datasetOrder.dataset = constants.NULL.ADDRESS;
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
             await signOrder(domain, appOrder, appProvider);
@@ -1222,8 +1213,6 @@ describe('IexecPocoBoostDelegate', function () {
                     dataset: datasetPrice,
                     workerpool: workerpoolPrice,
                 });
-            requestOrder.requester = requester.address;
-            requestOrder.beneficiary = beneficiary.address;
 
             const initialRequesterBalance = 2;
             await iexecPocoBoostInstance.setVariables({
@@ -1262,8 +1251,6 @@ describe('IexecPocoBoostDelegate', function () {
                     dataset: datasetPrice,
                     workerpool: workerpoolPrice,
                 });
-            requestOrder.requester = requester.address;
-            requestOrder.beneficiary = beneficiary.address;
 
             const initialRequesterBalance = 2;
             const initialSchedulerBalance = 3; // Way less than what is needed as stake.
