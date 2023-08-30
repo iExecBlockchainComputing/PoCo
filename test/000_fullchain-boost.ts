@@ -241,6 +241,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     requestOrder.category,
                     dealTag,
                     requestOrder.params,
+                    beneficiary.address,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
@@ -250,7 +251,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     hashOrder(domain, workerpoolOrder),
                     hashOrder(domain, requestOrder),
                     volume,
-                    beneficiary,
                 )
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(requester.address, iexecPocoBoostInstance.address, dealPrice)
@@ -298,6 +298,8 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             entriesAndRequester,
             dealTag,
         );
+        requestOrder.requester = requester.address;
+        requestOrder.beneficiary = beneficiary.address;
         await iexecCategoryManagementInstance.connect(appProvider).manageAppOrder({
             order: appOrder,
             operation: 0,
@@ -337,6 +339,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 requestOrder.category,
                 dealTag,
                 requestOrder.params,
+                beneficiary.address,
             )
             .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
             .withArgs(
