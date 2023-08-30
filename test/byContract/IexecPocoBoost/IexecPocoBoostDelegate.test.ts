@@ -1419,6 +1419,8 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(requester.address, expectedWorkerReward + appPrice, taskId) //TODO: Seize app + dataset + workerpool price
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(iexecPocoBoostInstance.address, worker.address, expectedWorkerReward)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, appProvider.address, appPrice)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
                 .withArgs(worker.address, expectedWorkerReward, taskId)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
