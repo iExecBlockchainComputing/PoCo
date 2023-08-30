@@ -403,6 +403,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         });
 
         it('Should push result (TEE)', async function () {
+            const volume = 3;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders(
                     entriesAndRequester,
@@ -422,6 +423,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 workerpoolPrice,
                 volume,
             );
+            const schedulerTaskStake = schedulerDealStake / volume;
             await getRlcAndDeposit(scheduler, schedulerDealStake);
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -481,12 +483,18 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(appProvider.address, appPrice, taskId)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
+            const remainingTasksToPush = volume - 1;
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                schedulerDealStake + expectedSchedulerReward + datasetPrice,
-            ); // TODO: Set to 0 when scheduler reward implemented
+                (taskPrice + schedulerTaskStake) * remainingTasksToPush +
+                    schedulerTaskStake + // TODO: Remove after unlock scheduler feature
+                    expectedSchedulerReward + // TODO: Remove after scheduler reward feature
+                    datasetPrice, // dataset reward feature,
+            );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
-                expectedSchedulerReward + datasetPrice,
+                taskPrice * remainingTasksToPush +
+                    expectedSchedulerReward + // TODO: Remove after scheduler reward feature
+                    datasetPrice, // dataset reward feature
             ); // TODO: Set to 0 when scheduler + dataset reward implemented
             expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(expectedWorkerReward);
             expect(await iexecInstance.balanceOf(appProvider.address)).to.be.equal(appPrice);
