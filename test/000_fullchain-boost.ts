@@ -488,14 +488,14 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 (taskPrice + schedulerTaskStake) * remainingTasksToPush +
                     schedulerTaskStake + // TODO: Remove after unlock scheduler feature
                     expectedSchedulerReward + // TODO: Remove after scheduler reward feature
-                    datasetPrice, // dataset reward feature,
+                    datasetPrice, // TODO: Remove after dataset reward feature
             );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
                 taskPrice * remainingTasksToPush +
                     expectedSchedulerReward + // TODO: Remove after scheduler reward feature
-                    datasetPrice, // dataset reward feature
-            ); // TODO: Set to 0 when scheduler + dataset reward implemented
+                    datasetPrice, // TODO: Remove after dataset reward feature
+            );
             expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(expectedWorkerReward);
             expect(await iexecInstance.balanceOf(appProvider.address)).to.be.equal(appPrice);
         });

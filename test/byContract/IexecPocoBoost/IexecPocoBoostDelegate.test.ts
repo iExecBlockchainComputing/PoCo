@@ -1370,22 +1370,22 @@ describe('IexecPocoBoostDelegate', function () {
                     7 * 60 - // deadline
                     1, // push result 1 second before deadline
             );
-            // Check PoCo boost smart contract balance
+            // Check pocoboost smart contract balance
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
                 initialIexecPocoBalance + dealPrice + schedulerDealStake,
             );
-            // Check Requester balance and frozen
+            // Check requester balance and frozen
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 requester.address,
                 initialRequesterFrozen + dealPrice,
             );
-            // Check Worker balance
+            // Check worker balance
             await expectBalance(iexecPocoBoostInstance, worker.address, initialWorkerBalance);
-            // Check Scheduler frozen
+            // Check scheduler frozen
             await expectFrozen(iexecPocoBoostInstance, scheduler.address, schedulerDealStake);
             // Check app provider balance
             await expectBalance(
@@ -1454,9 +1454,9 @@ describe('IexecPocoBoostDelegate', function () {
                     (taskPrice + schedulerTaskStake) * remainingTasksToPush +
                     schedulerTaskStake + // TODO: Remove after unlock scheduler feature
                     expectedSchedulerReward + // TODO: Remove after scheduler reward feature
-                    datasetPrice, // dataset reward feature
+                    datasetPrice, // TODO: Remove after dataset reward feature
             );
-            // Check Requester balance and Frozen
+            // Check requester balance and frozen
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
@@ -1464,9 +1464,9 @@ describe('IexecPocoBoostDelegate', function () {
                 initialRequesterFrozen +
                     taskPrice * remainingTasksToPush +
                     expectedSchedulerReward + // TODO: Remove after scheduler reward feature
-                    datasetPrice, // dataset reward feature
+                    datasetPrice, // TODO: Remove after dataset reward feature
             );
-            // Check Worker balance
+            // Check worker balance
             await expectBalance(
                 iexecPocoBoostInstance,
                 worker.address,
