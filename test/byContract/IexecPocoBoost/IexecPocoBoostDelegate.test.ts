@@ -271,7 +271,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     dealTagTee,
                     requestOrder.params,
-                    beneficiary,
+                    beneficiary.address,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
@@ -354,6 +354,8 @@ describe('IexecPocoBoostDelegate', function () {
                 entriesAndRequester,
                 dealTagTee,
             );
+            requestOrder.requester = requester.address;
+            requestOrder.beneficiary = beneficiary.address;
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
             const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
@@ -383,6 +385,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     dealTagTee,
                     requestOrder.params,
+                    beneficiary.address,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
@@ -450,7 +453,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     dealTagTee,
                     requestOrder.params,
-                    beneficiary,
+                    beneficiary.address,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
