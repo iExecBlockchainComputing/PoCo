@@ -408,7 +408,13 @@ describe('IexecPocoBoostDelegate', function () {
             });
 
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
+                {
+                    app: appInstance.address,
+                    dataset: constants.NULL.ADDRESS, // No dataset.
+                    workerpool: workerpoolInstance.address,
+                    requester: requester.address,
+                    beneficiary: beneficiary.address,
+                },
                 dealTagTee,
                 {
                     app: appPrice,
@@ -416,17 +422,14 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpool: workerpoolPrice,
                 },
             );
-            // No dataset
-            requestOrder.dataset = constants.NULL.ADDRESS;
-            datasetOrder.dataset = constants.NULL.ADDRESS;
             // Set callback
             requestOrder.callback = ethers.Wallet.createRandom().address;
             await signOrder(domain, appOrder, appProvider);
             await signOrder(domain, workerpoolOrder, scheduler);
             await signOrder(domain, requestOrder, requester);
             const dealId = getDealId(domain, requestOrder, taskIndex);
-            const datasetOrderHash = hashOrder(domain, datasetOrder);
-            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, undefined);
+            const emptyDatasetOrderHash = hashOrder(domain, datasetOrder);
+            await expectOrderConsumed(iexecPocoBoostInstance, emptyDatasetOrderHash, undefined);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -456,7 +459,7 @@ describe('IexecPocoBoostDelegate', function () {
                     hashOrder(domain, requestOrder),
                     volume,
                 );
-            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, undefined);
+            await expectOrderConsumed(iexecPocoBoostInstance, emptyDatasetOrderHash, undefined);
             const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
             expect(deal.datasetPrice).to.be.equal(0);
         });
