@@ -18,8 +18,13 @@
 
 pragma solidity ^0.8.0;
 
-import "../../libs/IexecLibCore_v5.sol";
+import "../DelegateBase.v8.sol";
+import "./IexecAccessorsBoostDelegate.sol";
+import "./IexecPocoBoostDelegate.sol";
 
-interface IexecAccessorsBoost {
-    function viewDealBoost(bytes32 id) external view returns (IexecLibCore_v5.DealBoost memory);
+/**
+ * @notice This contract is dedicated to unit testing.
+ */
+contract IexecPocoBoostDelegateProxy is IexecAccessorsBoostDelegate, IexecPocoBoostDelegate {
+
 }

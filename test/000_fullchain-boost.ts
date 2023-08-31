@@ -23,6 +23,7 @@ import {
     IexecOrderManagement,
     IexecOrderManagement__factory,
     IexecPocoBoostDelegate__factory,
+    IexecAccessorsBoostDelegate__factory,
     IexecPocoBoostDelegate,
     AppRegistry__factory,
     AppRegistry,
@@ -259,7 +260,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(scheduler.address, iexecPocoBoostInstance.address, schedulerStake)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
                 .withArgs(scheduler.address, schedulerStake);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             expect(deal.appOwner).to.be.equal(appProvider.address);
             expect(deal.appPrice).to.be.equal(appPrice);
             expect(deal.datasetOwner).to.be.equal(datasetProvider.address);
@@ -453,9 +454,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(0);
             expect(await iexecInstance.balanceOf(appProvider.address)).to.be.equal(0);
-            const expectedWorkerReward = (
-                await iexecPocoBoostInstance.viewDealBoost(dealId)
-            ).workerReward.toNumber();
+            const expectedWorkerReward = (await viewDealBoost(dealId)).workerReward.toNumber();
             const expectedSchedulerReward = workerpoolPrice - expectedWorkerReward;
 
             await expect(
@@ -569,6 +568,13 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         await rlcInstance
             .connect(account)
             .approveAndCall(iexecPocoBoostInstance.address, value, '0x');
+    }
+
+    async function viewDealBoost(dealId: string) {
+        return await IexecAccessorsBoostDelegate__factory.connect(
+            iexecPocoBoostInstance.address,
+            anyone,
+        ).viewDealBoost(dealId);
     }
 });
 

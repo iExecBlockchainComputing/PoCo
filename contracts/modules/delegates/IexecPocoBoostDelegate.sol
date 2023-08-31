@@ -29,9 +29,11 @@ import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
 import "../interfaces/IexecAccessorsBoost.sol";
 
-/// @title PoCo Boost to reduce latency and increase throughput of deals.
-/// @notice Works for deals with requested trust = 0.
-contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase, IexecEscrow {
+/**
+ * @title PoCo Boost to reduce latency and increase throughput of deals.
+ * @notice Works for deals with requested trust = 0.
+ */
+contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     using ECDSA for bytes32;
     using Math for uint256;
     using SafeCast for uint256;
@@ -283,13 +285,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             requestOrderTypedDataHash,
             volume
         );
-    }
-
-    // TODO: Move to IexecAccessorsBoost
-    function viewDealBoost(
-        bytes32 _id
-    ) external view returns (IexecLibCore_v5.DealBoost memory deal) {
-        return m_dealsBoost[_id];
     }
 
     /**
