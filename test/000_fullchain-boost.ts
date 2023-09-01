@@ -89,7 +89,6 @@ async function extractRegistryEntryAddress(
 
 describe('IexecPocoBoostDelegate (integration tests)', function () {
     let domain: TypedDataDomain;
-    //TODO: Rename to iexecOrderManagementInstance
     let iexecOrderManagementInstance: IexecOrderManagement;
     let iexecInstance: IexecAccessors;
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
