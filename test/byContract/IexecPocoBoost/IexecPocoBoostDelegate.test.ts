@@ -32,7 +32,6 @@ import {
     hashOrder,
     signOrders,
     IexecAccounts,
-    OrderMatchArguments,
     OrderMatchAssets,
     OrderMatchPrices,
 } from '../../../utils/createOrders';
