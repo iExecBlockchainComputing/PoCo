@@ -27,7 +27,7 @@ export interface OrderMatchPrices {
     workerpool?: number;
 }
 
-export interface OrderMatchArguments {
+export interface OrderMatchArgs {
     assets: OrderMatchAssets;
     requester: string;
     beneficiary: string;
@@ -111,54 +111,54 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
     };
 }
 
-export function buildCompatibleOrders(entriesAndRequester: OrderMatchArguments) {
+export function buildCompatibleOrders(orderMatchArgs: OrderMatchArgs) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
     let datasetOrder = createEmptyDatasetOrder();
     // Set app
-    appOrder.app = entriesAndRequester.assets.app;
-    requestOrder.app = entriesAndRequester.assets.app;
+    appOrder.app = orderMatchArgs.assets.app;
+    requestOrder.app = orderMatchArgs.assets.app;
     // Set workerpool
-    workerpoolOrder.workerpool = entriesAndRequester.assets.workerpool;
-    requestOrder.workerpool = entriesAndRequester.assets.workerpool;
+    workerpoolOrder.workerpool = orderMatchArgs.assets.workerpool;
+    requestOrder.workerpool = orderMatchArgs.assets.workerpool;
     // Set dataset
-    datasetOrder.dataset = entriesAndRequester.assets.dataset;
-    requestOrder.dataset = entriesAndRequester.assets.dataset;
+    datasetOrder.dataset = orderMatchArgs.assets.dataset;
+    requestOrder.dataset = orderMatchArgs.assets.dataset;
     // Set requester
-    requestOrder.requester = entriesAndRequester.requester;
+    requestOrder.requester = orderMatchArgs.requester;
     // Set beneficiary
-    requestOrder.beneficiary = entriesAndRequester.beneficiary;
+    requestOrder.beneficiary = orderMatchArgs.beneficiary;
     // Set tag
-    appOrder.tag = entriesAndRequester.tag;
-    requestOrder.tag = entriesAndRequester.tag;
-    datasetOrder.tag = entriesAndRequester.tag;
-    workerpoolOrder.tag = entriesAndRequester.tag;
+    appOrder.tag = orderMatchArgs.tag;
+    requestOrder.tag = orderMatchArgs.tag;
+    datasetOrder.tag = orderMatchArgs.tag;
+    workerpoolOrder.tag = orderMatchArgs.tag;
     // Set prices
-    if (entriesAndRequester.prices) {
-        if (entriesAndRequester.prices.app) {
-            appOrder.appprice = entriesAndRequester.prices.app;
-            requestOrder.appmaxprice = entriesAndRequester.prices.app;
+    if (orderMatchArgs.prices) {
+        if (orderMatchArgs.prices.app) {
+            appOrder.appprice = orderMatchArgs.prices.app;
+            requestOrder.appmaxprice = orderMatchArgs.prices.app;
         }
-        if (entriesAndRequester.prices.dataset) {
-            datasetOrder.datasetprice = entriesAndRequester.prices.dataset;
-            requestOrder.datasetmaxprice = entriesAndRequester.prices.dataset;
+        if (orderMatchArgs.prices.dataset) {
+            datasetOrder.datasetprice = orderMatchArgs.prices.dataset;
+            requestOrder.datasetmaxprice = orderMatchArgs.prices.dataset;
         }
-        if (entriesAndRequester.prices.workerpool) {
-            workerpoolOrder.workerpoolprice = entriesAndRequester.prices.workerpool;
-            requestOrder.workerpoolmaxprice = entriesAndRequester.prices.workerpool;
+        if (orderMatchArgs.prices.workerpool) {
+            workerpoolOrder.workerpoolprice = orderMatchArgs.prices.workerpool;
+            requestOrder.workerpoolmaxprice = orderMatchArgs.prices.workerpool;
         }
     }
     // Set volume
-    if (entriesAndRequester.volume) {
-        appOrder.volume = entriesAndRequester.volume;
-        datasetOrder.volume = entriesAndRequester.volume;
-        workerpoolOrder.volume = entriesAndRequester.volume;
-        requestOrder.volume = entriesAndRequester.volume;
+    if (orderMatchArgs.volume) {
+        appOrder.volume = orderMatchArgs.volume;
+        datasetOrder.volume = orderMatchArgs.volume;
+        workerpoolOrder.volume = orderMatchArgs.volume;
+        requestOrder.volume = orderMatchArgs.volume;
     }
     // Set callback
-    if (entriesAndRequester.callback) {
-        requestOrder.callback = entriesAndRequester.callback;
+    if (orderMatchArgs.callback) {
+        requestOrder.callback = orderMatchArgs.callback;
     }
     return {
         orders: {
