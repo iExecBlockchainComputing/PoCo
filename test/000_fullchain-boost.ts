@@ -85,7 +85,7 @@ async function extractRegistryEntryAddress(
 describe('IexecPocoBoostDelegate (integration tests)', function () {
     let domain: TypedDataDomain;
     //TODO: Rename to iexecOrderManagementInstance
-    let iexecOrderManagementInstance: IexecOrderManagement;
+    let iexecCategoryManagementInstance: IexecOrderManagement;
     let iexecInstance: IexecAccessors;
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let rlcInstance: RLC;
@@ -128,7 +128,10 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
 
         await deployments.fixture();
         const proxyAddress = await getContractAddress('ERC1538Proxy');
-        iexecOrderManagementInstance = IexecOrderManagement__factory.connect(proxyAddress, anyone);
+        iexecCategoryManagementInstance = IexecOrderManagement__factory.connect(
+            proxyAddress,
+            anyone,
+        );
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
         rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
@@ -295,22 +298,22 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             entriesAndRequester,
             dealTag,
         );
-        await iexecOrderManagementInstance.connect(appProvider).manageAppOrder({
+        await iexecCategoryManagementInstance.connect(appProvider).manageAppOrder({
             order: appOrder,
             operation: 0,
             sign: '0x',
         });
-        await iexecOrderManagementInstance.connect(datasetProvider).manageDatasetOrder({
+        await iexecCategoryManagementInstance.connect(datasetProvider).manageDatasetOrder({
             order: datasetOrder,
             operation: 0,
             sign: '0x',
         });
-        await iexecOrderManagementInstance.connect(scheduler).manageWorkerpoolOrder({
+        await iexecCategoryManagementInstance.connect(scheduler).manageWorkerpoolOrder({
             order: workerpoolOrder,
             operation: 0,
             sign: '0x',
         });
-        await iexecOrderManagementInstance.connect(requester).manageRequestOrder({
+        await iexecCategoryManagementInstance.connect(requester).manageRequestOrder({
             order: requestOrder,
             operation: 0,
             sign: '0x',
