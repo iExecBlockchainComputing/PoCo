@@ -156,6 +156,10 @@ export function buildCompatibleOrders(entriesAndRequester: OrderMatchArguments) 
         workerpoolOrder.volume = entriesAndRequester.volume;
         requestOrder.volume = entriesAndRequester.volume;
     }
+    // Set callback
+    if (entriesAndRequester.callback) {
+        requestOrder.callback = entriesAndRequester.callback;
+    }
     return {
         orders: {
             app: appOrder,
