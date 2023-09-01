@@ -14,10 +14,6 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-//
-// TODO Rename file to .test.ts
-//
-
 import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
@@ -87,7 +83,7 @@ async function extractRegistryEntryAddress(
     return ethers.utils.getAddress(lowercaseAddress);
 }
 
-describe('IexecPocoBoostDelegate (integration tests)', function () {
+describe('IexecPocoBoostDelegate (IT)', function () {
     let domain: TypedDataDomain;
     let iexecOrderManagementInstance: IexecOrderManagement;
     let iexecInstance: IexecAccessors;
