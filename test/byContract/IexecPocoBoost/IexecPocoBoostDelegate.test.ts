@@ -1366,6 +1366,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     beneficiary: beneficiary.address,
                     tag: dealTagTee,
+                    prices: orderMatchPrices,
                 });
 
             const initialRequesterBalance = 2;
@@ -1405,6 +1406,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     beneficiary: beneficiary.address,
                     tag: dealTagTee,
+                    prices: orderMatchPrices,
                 });
 
             const initialRequesterBalance = 2;
@@ -1448,9 +1450,6 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should push result (TEE & callback)', async function () {
             workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const volume = 3;
             const dealPrice = taskPrice * volume;
@@ -1460,6 +1459,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     beneficiary: beneficiary.address,
                     tag: dealTagTee,
+                    prices: orderMatchPrices,
                     volume: volume,
                 });
             const initialIexecPocoBalance = 1;
@@ -1951,9 +1951,6 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should claim', async function () {
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             const expectedVolume = 2; // > 1 to explicit taskPrice vs dealPrice
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
@@ -1963,6 +1960,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     beneficiary: beneficiary.address,
                     tag: dealTagTee,
+                    prices: orderMatchPrices,
                     volume: expectedVolume,
                 });
             await signOrders(domain, orders, accounts);
