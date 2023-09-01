@@ -366,7 +366,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         if (appPrice > 0) {
             reward(deal.appOwner, appPrice, taskId);
         }
-        // Reward data
+        // Reward dataset provider
         if (datasetPrice > 0) {
             reward(deal.datasetOwner, datasetPrice, taskId);
         }
