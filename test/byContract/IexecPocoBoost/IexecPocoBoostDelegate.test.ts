@@ -321,7 +321,9 @@ describe('IexecPocoBoostDelegate', function () {
                     7 * // contribution deadline ratio
                         60, // requested category time reference
             );
-            expect(deal.callback).to.be.equal(requestOrder.callback, 'Callback mismatch');
+            expect(deal.callback)
+                .to.be.equal(requestOrder.callback, 'Callback mismatch')
+                .to.not.be.equal(constants.NULL.ADDRESS);
             // Check prices.
             expect(deal.workerpoolPrice).to.be.equal(
                 workerpoolOrder.workerpoolprice,
@@ -435,7 +437,6 @@ describe('IexecPocoBoostDelegate', function () {
                         workerpool: workerpoolPrice,
                     },
                     tag: dealTagTee,
-                    callback: ethers.Wallet.createRandom().address,
                 },
             );
             await signOrder(domain, appOrder, appProvider);
@@ -1450,6 +1451,9 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should push result (TEE & callback)', async function () {
             workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
+            const oracleConsumerInstance = await createMock<TestClient__factory, TestClient>(
+                'TestClient',
+            );
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const volume = 3;
             const dealPrice = taskPrice * volume;
@@ -1461,6 +1465,7 @@ describe('IexecPocoBoostDelegate', function () {
                     tag: dealTagTee,
                     prices: orderMatchPrices,
                     volume: volume,
+                    callback: oracleConsumerInstance.address,
                 });
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
@@ -1481,10 +1486,6 @@ describe('IexecPocoBoostDelegate', function () {
                     [requester.address]: initialRequesterFrozen,
                 },
             });
-            const oracleConsumerInstance = await createMock<TestClient__factory, TestClient>(
-                'TestClient',
-            );
-            requestOrder.callback = oracleConsumerInstance.address;
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -1899,8 +1900,8 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     beneficiary: beneficiary.address,
                     tag: dealTagTee,
+                    callback: ethers.Wallet.createRandom().address,
                 });
-            requestOrder.callback = '0x000000000000000000000000000000000000ca11';
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
