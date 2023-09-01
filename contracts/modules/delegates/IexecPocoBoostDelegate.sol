@@ -362,7 +362,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         seize(deal.requester, appPrice + datasetPrice + deal.workerReward, taskId); //TODO :  Seize app + dataset + workerpool (workerpool = workerReward + schedulerReward) price
         // Reward worker
         reward(msg.sender, deal.workerReward, taskId);
-        // Reward app
+        // Reward app developer
         if (appPrice > 0) {
             reward(deal.appOwner, appPrice, taskId);
         }
