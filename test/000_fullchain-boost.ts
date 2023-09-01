@@ -14,6 +14,10 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
+//
+// TODO Rename file to .test.ts
+//
+
 import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
@@ -42,8 +46,9 @@ import { extractEventsFromReceipt } from '../utils/tools';
 import { ContractReceipt } from '@ethersproject/contracts';
 
 import {
-    Iexec,
     IexecAccounts,
+    OrderMatchAssets,
+    OrderMatchPrices,
     buildCompatibleOrders,
     hashOrder,
     signOrders,
@@ -104,7 +109,9 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         anyone,
     ] = [] as SignerWithAddress[];
     let accounts: IexecAccounts;
-    let entriesAndRequester: Iexec<string>;
+    let orderMatchAssets: OrderMatchAssets;
+    let orderMatchPrices: OrderMatchPrices;
+
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
@@ -124,8 +131,8 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             dataset: datasetProvider,
             workerpool: scheduler,
             requester: requester,
+            beneficiary: beneficiary,
         };
-
         await deployments.fixture();
         const proxyAddress = await getContractAddress('ERC1538Proxy');
         iexecCategoryManagementInstance = IexecOrderManagement__factory.connect(
@@ -185,25 +192,30 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             datasetReceipt,
             datasetRegistryInstance.address,
         );
-        entriesAndRequester = {
+        orderMatchAssets = {
             app: appAddress,
             dataset: datasetAddress,
             workerpool: workerpoolAddress,
-            requester: requester.address,
+        };
+        orderMatchPrices = {
+            app: appPrice,
+            dataset: datasetPrice,
+            workerpool: workerpoolPrice,
         };
     });
 
     describe('MatchOrders', function () {
         it('Should match orders', async function () {
+            const callbackAddress = ethers.Wallet.createRandom().address;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTag, {
-                    app: appPrice,
-                    dataset: datasetPrice,
-                    workerpool: workerpoolPrice,
+                buildCompatibleOrders({
+                    assets: orderMatchAssets,
+                    requester: requester.address,
+                    beneficiary: beneficiary.address,
+                    tag: dealTag,
+                    prices: orderMatchPrices,
+                    callback: callbackAddress,
                 });
-            const callbackAddress = '0x00000000000000000000000000000000ca11bac6';
-            requestOrder.beneficiary = beneficiary.address;
-            requestOrder.callback = callbackAddress;
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
@@ -241,6 +253,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     requestOrder.category,
                     dealTag,
                     requestOrder.params,
+                    beneficiary.address,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
@@ -276,12 +289,11 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(deal.workerReward)
                 .to.be.equal((workerpoolPrice * (100 - schedulerRewardRatio)) / 100)
                 .to.be.greaterThan(0);
-            expect(deal.beneficiary).to.be.equal(beneficiary.address);
             expect(deal.deadline).to.be.equal(startTime + 7 * 300);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(1);
             expect(deal.shortTag).to.be.equal('0x000000000000000000000001');
-            expect(deal.callback.toLowerCase()).to.be.equal(callbackAddress);
+            expect(deal.callback).to.be.equal(callbackAddress);
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
                 dealPrice + schedulerStake,
             );
@@ -294,10 +306,12 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
 
     // TODO: Move to MatchOrders block
     it('Should match orders with pre-signatures', async function () {
-        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-            entriesAndRequester,
-            dealTag,
-        );
+        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders({
+            assets: orderMatchAssets,
+            requester: requester.address,
+            beneficiary: beneficiary.address,
+            tag: dealTag,
+        });
         await iexecCategoryManagementInstance.connect(appProvider).manageAppOrder({
             order: appOrder,
             operation: 0,
@@ -337,6 +351,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 requestOrder.category,
                 dealTag,
                 requestOrder.params,
+                beneficiary.address,
             )
             .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
             .withArgs(
@@ -352,7 +367,12 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     describe('PushResult', function () {
         it('Should push result (TEE & callback)', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTag);
+                buildCompatibleOrders({
+                    assets: orderMatchAssets,
+                    requester: requester.address,
+                    beneficiary: beneficiary.address,
+                    tag: dealTag,
+                });
             const oracleConsumerInstance = await new TestClient__factory()
                 .connect(anyone)
                 .deploy()
@@ -405,16 +425,14 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         it('Should push result (TEE)', async function () {
             const volume = 3;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(
-                    entriesAndRequester,
-                    dealTag,
-                    {
-                        app: appPrice,
-                        dataset: datasetPrice,
-                        workerpool: workerpoolPrice,
-                    },
-                    volume,
-                );
+                buildCompatibleOrders({
+                    assets: orderMatchAssets,
+                    requester: requester.address,
+                    beneficiary: beneficiary.address,
+                    tag: dealTag,
+                    prices: orderMatchPrices,
+                    volume: volume,
+                });
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * volume;
             await getRlcAndDeposit(requester, dealPrice);
@@ -512,16 +530,14 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(
-                    entriesAndRequester,
-                    dealTag,
-                    {
-                        app: appPrice,
-                        dataset: datasetPrice,
-                        workerpool: workerpoolPrice,
-                    },
-                    expectedVolume,
-                );
+                buildCompatibleOrders({
+                    assets: orderMatchAssets,
+                    requester: requester.address,
+                    beneficiary: beneficiary.address,
+                    tag: dealTag,
+                    prices: orderMatchPrices,
+                    volume: expectedVolume,
+                });
             await signOrders(domain, orders, accounts);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);

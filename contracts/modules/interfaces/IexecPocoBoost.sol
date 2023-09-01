@@ -28,7 +28,8 @@ interface IexecPocoBoost {
         address dataset,
         uint256 category,
         bytes32 tag,
-        string params
+        string params,
+        address beneficiary
     );
     // Same event than classic Poco for cross-compatibility
     event OrdersMatched(
