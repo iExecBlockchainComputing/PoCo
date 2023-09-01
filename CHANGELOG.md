@@ -47,7 +47,7 @@
         - enclave (#176)
     - Reward worker. (#203)
     - Reward app provider. (#204)
-    - Handle callback. (#183)
+    - Handle callback. (#183, #208)
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)
 - Refactor tests. (#177, #178, #179, #181, #188, #200)

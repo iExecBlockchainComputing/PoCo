@@ -28,6 +28,7 @@ import "./IexecEscrow.v8.sol";
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
 import "../interfaces/IexecAccessorsBoost.sol";
+import "../interfaces/IOracleConsumer.sol";
 
 /// @title PoCo Boost to reduce latency and increase throughput of deals.
 /// @notice Works for deals with requested trust = 0.
@@ -370,10 +371,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
 
         if (target != address(0)) {
             require(resultsCallback.length > 0, "PocoBoost: Callback requires data");
-            (bool success, ) = target.call{gas: m_callbackgas}(
-                abi.encodeWithSignature("receiveResult(bytes32,bytes)", taskId, resultsCallback)
-            );
-            success; // silent unused variable warning
+            IOracleConsumer(target).receiveResult{gas: m_callbackgas}(taskId, resultsCallback);
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }
     }

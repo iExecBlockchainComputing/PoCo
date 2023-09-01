@@ -89,6 +89,7 @@ async function deployBoostFixture() {
         .then((instance) => instance.deployed())) as MockContract<IexecPocoBoostDelegate>;
     // A global domain separator needs to be set since current contract is being
     // unit tested here (hence no proxy)
+    await iexecPocoBoostInstance.setVariable('m_callbackgas', 100000);
     await iexecPocoBoostInstance.setVariable(EIP712DOMAIN_SEPARATOR, domainSeparator);
     await iexecPocoBoostInstance.setVariable('m_categories', [
         {
@@ -1427,7 +1428,7 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(appProvider.address, appPrice, taskId)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
-            expect(oracleConsumerInstance.receiveResult).to.have.been.calledWith(
+            expect(oracleConsumerInstance.receiveResult).to.have.been.calledOnceWith(
                 taskId,
                 resultsCallback,
             );
