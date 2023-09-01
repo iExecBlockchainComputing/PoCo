@@ -471,6 +471,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(0);
             expect(await iexecInstance.balanceOf(appProvider.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(datasetProvider.address)).to.be.equal(0);
             const expectedWorkerReward = (
                 await iexecPocoBoostInstance.viewDealBoost(dealId)
             ).workerReward.toNumber();
@@ -490,7 +491,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     ),
             )
                 .to.emit(iexecPocoBoostInstance, 'Seize')
-                .withArgs(requester.address, expectedWorkerReward + appPrice, taskId) //TODO: Seize app + dataset + workerpool price
+                .withArgs(requester.address, expectedWorkerReward + appPrice + datasetPrice, taskId) //TODO: Seize app + dataset + workerpool price
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(iexecInstance.address, worker.address, expectedWorkerReward)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
@@ -499,23 +500,27 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .withArgs(iexecInstance.address, appProvider.address, appPrice)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
                 .withArgs(appProvider.address, appPrice, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecInstance.address, datasetProvider.address, datasetPrice)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(datasetProvider.address, datasetPrice, taskId)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
             const remainingTasksToPush = volume - 1;
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
                 (taskPrice + schedulerTaskStake) * remainingTasksToPush +
                     schedulerTaskStake + // TODO: Remove after unlock scheduler feature
-                    expectedSchedulerReward + // TODO: Remove after scheduler reward feature
-                    datasetPrice, // TODO: Remove after dataset reward feature
+                    expectedSchedulerReward, // TODO: Remove after scheduler reward feature
             );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
-                taskPrice * remainingTasksToPush +
-                    expectedSchedulerReward + // TODO: Remove after scheduler reward feature
-                    datasetPrice, // TODO: Remove after dataset reward feature
+                taskPrice * remainingTasksToPush + expectedSchedulerReward, // TODO: Remove after scheduler reward feature
             );
             expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(expectedWorkerReward);
             expect(await iexecInstance.balanceOf(appProvider.address)).to.be.equal(appPrice);
+            expect(await iexecInstance.balanceOf(datasetProvider.address)).to.be.equal(
+                datasetPrice,
+            );
         });
     });
 
