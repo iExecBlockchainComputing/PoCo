@@ -6,12 +6,35 @@ import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
 
+// TODO clean/remove this interface.
 export interface Iexec<T> {
     app: T;
     dataset: T;
     workerpool: T;
     requester: T;
     beneficiary: T;
+}
+
+export interface OrderMatchAssets {
+    app: string;
+    dataset: string;
+    workerpool: string;
+}
+
+export interface OrderMatchPrices {
+    app?: number;
+    dataset?: number;
+    workerpool?: number;
+}
+
+export interface OrderMatchArguments {
+    assets: OrderMatchAssets;
+    requester: string;
+    beneficiary: string;
+    tag: string;
+    prices?: OrderMatchPrices;
+    volume?: number;
+    callback?: string;
 }
 
 export interface IexecAccounts extends Iexec<SignerWithAddress> {}
@@ -88,50 +111,51 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
     };
 }
 
-export function buildCompatibleOrders(
-    entriesAndRequester: Iexec<string>,
-    tag: string,
-    prices?: { app: number; dataset: number; workerpool: number },
-    volume?: number,
-) {
+export function buildCompatibleOrders(entriesAndRequester: OrderMatchArguments) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
     let datasetOrder = createEmptyDatasetOrder();
     // Set app
-    appOrder.app = entriesAndRequester.app;
-    requestOrder.app = entriesAndRequester.app;
+    appOrder.app = entriesAndRequester.assets.app;
+    requestOrder.app = entriesAndRequester.assets.app;
     // Set workerpool
-    workerpoolOrder.workerpool = entriesAndRequester.workerpool;
-    requestOrder.workerpool = entriesAndRequester.workerpool;
+    workerpoolOrder.workerpool = entriesAndRequester.assets.workerpool;
+    requestOrder.workerpool = entriesAndRequester.assets.workerpool;
     // Set dataset
-    datasetOrder.dataset = entriesAndRequester.dataset;
-    requestOrder.dataset = entriesAndRequester.dataset;
+    datasetOrder.dataset = entriesAndRequester.assets.dataset;
+    requestOrder.dataset = entriesAndRequester.assets.dataset;
     // Set requester
     requestOrder.requester = entriesAndRequester.requester;
     // Set beneficiary
     requestOrder.beneficiary = entriesAndRequester.beneficiary;
     // Set tag
-    appOrder.tag = tag;
-    requestOrder.tag = tag;
-    datasetOrder.tag = tag;
-    workerpoolOrder.tag = tag;
+    appOrder.tag = entriesAndRequester.tag;
+    requestOrder.tag = entriesAndRequester.tag;
+    datasetOrder.tag = entriesAndRequester.tag;
+    workerpoolOrder.tag = entriesAndRequester.tag;
     // Set prices
-    if (prices) {
-        appOrder.appprice = prices.app;
-        datasetOrder.datasetprice = prices.dataset;
-        workerpoolOrder.workerpoolprice = prices.workerpool;
-        requestOrder.appmaxprice = prices.app;
-        requestOrder.datasetmaxprice = prices.dataset;
-        requestOrder.workerpoolmaxprice = prices.workerpool;
+    if (entriesAndRequester.prices) {
+        if (entriesAndRequester.prices.app) {
+            appOrder.appprice = entriesAndRequester.prices.app;
+            requestOrder.appmaxprice = entriesAndRequester.prices.app;
+        }
+        if (entriesAndRequester.prices.dataset) {
+            datasetOrder.datasetprice = entriesAndRequester.prices.dataset;
+            requestOrder.datasetmaxprice = entriesAndRequester.prices.dataset;
+        }
+        if (entriesAndRequester.prices.workerpool) {
+            workerpoolOrder.workerpoolprice = entriesAndRequester.prices.workerpool;
+            requestOrder.workerpoolmaxprice = entriesAndRequester.prices.workerpool;
+        }
     }
-    if (volume) {
-        appOrder.volume = volume;
-        datasetOrder.volume = volume;
-        workerpoolOrder.volume = volume;
-        requestOrder.volume = volume;
+    // Set volume
+    if (entriesAndRequester.volume) {
+        appOrder.volume = entriesAndRequester.volume;
+        datasetOrder.volume = entriesAndRequester.volume;
+        workerpoolOrder.volume = entriesAndRequester.volume;
+        requestOrder.volume = entriesAndRequester.volume;
     }
-
     return {
         orders: {
             app: appOrder,
