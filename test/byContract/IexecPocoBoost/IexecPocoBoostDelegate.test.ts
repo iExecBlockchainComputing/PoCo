@@ -155,11 +155,10 @@ describe('IexecPocoBoostDelegate', function () {
         beneficiary = fixtures.beneficiary;
         anyone = fixtures.anyone;
         accounts = {
-            app: appProvider,
-            dataset: datasetProvider,
-            workerpool: scheduler,
+            appOwner: appProvider,
+            datasetOwner: datasetProvider,
+            workerpoolOwner: scheduler,
             requester: requester,
-            beneficiary: beneficiary,
         };
         appInstance = await createMock<App__factory, App>('App');
         workerpoolInstance = await createMock<Workerpool__factory, Workerpool>('Workerpool');

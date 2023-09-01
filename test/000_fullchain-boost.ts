@@ -127,11 +127,10 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         enclave = signers[7];
         anyone = signers[8];
         accounts = {
-            app: appProvider,
-            dataset: datasetProvider,
-            workerpool: scheduler,
+            appOwner: appProvider,
+            datasetOwner: datasetProvider,
+            workerpoolOwner: scheduler,
             requester: requester,
-            beneficiary: beneficiary,
         };
         await deployments.fixture();
         const proxyAddress = await getContractAddress('ERC1538Proxy');
