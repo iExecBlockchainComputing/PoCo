@@ -299,66 +299,67 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
         });
-    });
 
-    // TODO: Move to MatchOrders block
-    it('Should match orders with pre-signatures', async function () {
-        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders({
-            assets: orderMatchAssets,
-            requester: requester.address,
-            beneficiary: beneficiary.address,
-            tag: dealTag,
-        });
-        await iexecOrderManagementInstance.connect(appProvider).manageAppOrder({
-            order: appOrder,
-            operation: 0,
-            sign: '0x',
-        });
-        await iexecOrderManagementInstance.connect(datasetProvider).manageDatasetOrder({
-            order: datasetOrder,
-            operation: 0,
-            sign: '0x',
-        });
-        await iexecOrderManagementInstance.connect(scheduler).manageWorkerpoolOrder({
-            order: workerpoolOrder,
-            operation: 0,
-            sign: '0x',
-        });
-        await iexecOrderManagementInstance.connect(requester).manageRequestOrder({
-            order: requestOrder,
-            operation: 0,
-            sign: '0x',
-        });
-        const dealId = getDealId(domain, requestOrder, taskIndex);
-
-        await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            ),
-        )
-            .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
-            .withArgs(
-                workerpoolAddress,
-                dealId,
-                appAddress,
-                datasetAddress,
-                requestOrder.category,
-                dealTag,
-                requestOrder.params,
-                beneficiary.address,
-            )
-            .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
-            .withArgs(
-                dealId,
-                hashOrder(domain, appOrder),
-                hashOrder(domain, datasetOrder),
-                hashOrder(domain, workerpoolOrder),
-                hashOrder(domain, requestOrder),
-                volume,
+        it('Should match orders with pre-signatures', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                {
+                    assets: orderMatchAssets,
+                    requester: requester.address,
+                    beneficiary: beneficiary.address,
+                    tag: dealTag,
+                },
             );
+            await iexecOrderManagementInstance.connect(appProvider).manageAppOrder({
+                order: appOrder,
+                operation: 0,
+                sign: '0x',
+            });
+            await iexecOrderManagementInstance.connect(datasetProvider).manageDatasetOrder({
+                order: datasetOrder,
+                operation: 0,
+                sign: '0x',
+            });
+            await iexecOrderManagementInstance.connect(scheduler).manageWorkerpoolOrder({
+                order: workerpoolOrder,
+                operation: 0,
+                sign: '0x',
+            });
+            await iexecOrderManagementInstance.connect(requester).manageRequestOrder({
+                order: requestOrder,
+                operation: 0,
+                sign: '0x',
+            });
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+                .withArgs(
+                    workerpoolAddress,
+                    dealId,
+                    appAddress,
+                    datasetAddress,
+                    requestOrder.category,
+                    dealTag,
+                    requestOrder.params,
+                    beneficiary.address,
+                )
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    hashOrder(domain, appOrder),
+                    hashOrder(domain, datasetOrder),
+                    hashOrder(domain, workerpoolOrder),
+                    hashOrder(domain, requestOrder),
+                    volume,
+                );
+        });
     });
 
     describe('PushResult', function () {
