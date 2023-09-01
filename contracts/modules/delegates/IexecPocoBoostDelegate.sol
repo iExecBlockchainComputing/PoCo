@@ -356,14 +356,19 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
 
         // Reward and seize each parties
         uint96 appPrice = deal.appPrice;
+        uint96 datasetPrice = deal.datasetPrice;
 
         // Seize requester
-        seize(deal.requester, appPrice + deal.workerReward, taskId); //TODO :  Seize app + dataset + workerpool (workerpool = workerReward + schedulerReward) price
+        seize(deal.requester, appPrice + datasetPrice + deal.workerReward, taskId); //TODO :  Seize app + dataset + workerpool (workerpool = workerReward + schedulerReward) price
         // Reward worker
         reward(msg.sender, deal.workerReward, taskId);
-        // Reward app
+        // Reward app developer
         if (appPrice > 0) {
             reward(deal.appOwner, appPrice, taskId);
+        }
+        // Reward dataset provider
+        if (datasetPrice > 0) {
+            reward(deal.datasetOwner, datasetPrice, taskId);
         }
 
         emit ResultPushedBoost(dealId, index, results);
