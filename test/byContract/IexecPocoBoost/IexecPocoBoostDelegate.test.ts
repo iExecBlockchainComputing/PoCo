@@ -1756,6 +1756,48 @@ describe('IexecPocoBoostDelegate', function () {
                     ),
             ).to.be.revertedWith('PocoBoost: Callback requires data');
         });
+
+        it('Should push result even if callback target is not a contract', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+            requestOrder.callback = '0x000000000000000000000000000000000000ca11';
+            await signOrders(domain, orders, accounts);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const schedulerSignature = await buildAndSignSchedulerMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                scheduler,
+            );
+            const resultsCallback = '0xab';
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                ethers.utils.keccak256(resultsCallback),
+                enclave,
+            );
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        schedulerSignature,
+                        enclave.address,
+                        enclaveSignature,
+                    ),
+            ).to.emit(iexecPocoBoostInstance, 'ResultPushedBoost');
+        });
     });
 
     describe('Claim task Boost', function () {

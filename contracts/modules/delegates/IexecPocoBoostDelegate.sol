@@ -19,6 +19,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
+import "@openzeppelin/contracts-v4/utils/Address.sol";
 import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
 import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
@@ -33,6 +34,7 @@ import "../interfaces/IOracleConsumer.sol";
 /// @title PoCo Boost to reduce latency and increase throughput of deals.
 /// @notice Works for deals with requested trust = 0.
 contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase, IexecEscrow {
+    using Address for address;
     using ECDSA for bytes32;
     using Math for uint256;
     using SafeCast for uint256;
@@ -371,7 +373,19 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
 
         if (target != address(0)) {
             require(resultsCallback.length > 0, "PocoBoost: Callback requires data");
-            IOracleConsumer(target).receiveResult{gas: m_callbackgas}(taskId, resultsCallback);
+            /*
+             * The "extcodesize check" will fail if the target is not a contract.
+             * Such revert should not prevent the caller to finalize the task.
+             * https://forum.soliditylang.org/t/call-for-feedback-the-future-of-try-catch-in-solidity/1497
+             */
+            if (target.isContract()) {
+                try
+                    IOracleConsumer(target).receiveResult{gas: m_callbackgas}(
+                        taskId,
+                        resultsCallback
+                    )
+                {} catch {}
+            }
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }
     }
