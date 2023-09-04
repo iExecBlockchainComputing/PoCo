@@ -27,7 +27,7 @@ import "../../registries/workerpools/IWorkerpool.v8.sol";
 import "./IexecEscrow.v8.sol";
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
-import "../interfaces/IexecAccessorsBoost.sol";
+import "../interfaces/IexecPocoBoostAccessors.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.

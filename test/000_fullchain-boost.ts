@@ -23,7 +23,7 @@ import {
     IexecOrderManagement,
     IexecOrderManagement__factory,
     IexecPocoBoostDelegate__factory,
-    IexecAccessorsBoostDelegate__factory,
+    IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate,
     AppRegistry__factory,
     AppRegistry,
@@ -576,7 +576,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     }
 
     async function viewDealBoost(dealId: string) {
-        return await IexecAccessorsBoostDelegate__factory.connect(
+        return await IexecPocoBoostAccessorsDelegate__factory.connect(
             iexecPocoBoostInstance.address,
             anyone,
         ).viewDealBoost(dealId);

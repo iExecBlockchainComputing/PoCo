@@ -18,21 +18,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../DelegateBase.v8.sol";
-import "../interfaces/IexecAccessorsBoost.sol";
+import "../../libs/IexecLibCore_v5.sol";
 
-/**
- * @title Access data related to Poco Boost deals.
- * @notice Access to PoCo Boost tasks must be done with classic `IexecAccessors`.
- */
-contract IexecAccessorsBoostDelegate is IexecAccessorsBoost, DelegateBase {
-    /**
-     * Read deal Boost information.
-     * @param id The ID of the deal.
-     */
-    function viewDealBoost(
-        bytes32 id
-    ) external view returns (IexecLibCore_v5.DealBoost memory deal) {
-        return m_dealsBoost[id];
-    }
+interface IexecPocoBoostAccessors {
+    function viewDealBoost(bytes32 id) external view returns (IexecLibCore_v5.DealBoost memory);
 }

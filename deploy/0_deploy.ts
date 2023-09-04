@@ -12,7 +12,7 @@ import {
     ERC1538Proxy,
     IexecLibOrders_v5,
     IexecPocoBoostDelegate__factory,
-    IexecAccessorsBoostDelegate__factory,
+    IexecPocoBoostAccessorsDelegate__factory,
     ERC1538Update,
     ERC1538Update__factory,
     ERC1538Query,
@@ -59,14 +59,16 @@ module.exports = async function () {
         log: true,
     });
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostDeployment.address}`);
-    const IexecAccessorsBoostDeployment = await hre.deployments.deploy(
-        'IexecAccessorsBoostDelegate',
+    const IexecPocoBoostAccessorsDeployment = await hre.deployments.deploy(
+        'IexecPocoBoostAccessorsDelegate',
         {
             from: owner.address,
             log: true,
         },
     );
-    console.log(`IexecAccessorsBoostDelegate deployed: ${IexecAccessorsBoostDeployment.address}`);
+    console.log(
+        `IexecPocoBoostAccessorsDelegate deployed: ${IexecPocoBoostAccessorsDeployment.address}`,
+    );
 
     // Show proxy functions
     await functions(accounts);
@@ -81,8 +83,8 @@ module.exports = async function () {
     );
     await linkContractToProxy(
         erc1538,
-        IexecAccessorsBoostDeployment.address,
-        IexecAccessorsBoostDelegate__factory,
+        IexecPocoBoostAccessorsDeployment.address,
+        IexecPocoBoostAccessorsDelegate__factory,
     );
     // Verify linking on ERC1538Proxy
     const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(

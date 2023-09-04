@@ -7,7 +7,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract, ContractFactory } from '@ethersproject/contracts';
 import {
     IexecPocoBoostDelegateProxy__factory,
-    IexecAccessorsBoostDelegate__factory,
+    IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate,
     App__factory,
     Workerpool__factory,
@@ -43,7 +43,7 @@ import {
     getTaskId,
     getDealId,
 } from '../../../utils/poco-tools';
-import { IexecLibCore_v5 } from '../../../typechain/contracts/modules/interfaces/IexecAccessorsBoost';
+import { IexecLibCore_v5 } from '../../../typechain/contracts/modules/interfaces/IexecPocoBoostAccessors';
 
 chai.use(smock.matchers);
 
@@ -1966,7 +1966,7 @@ describe('IexecPocoBoostDelegate', function () {
      * @notice Smock does not support getting struct variable from a mapping.
      */
     async function viewDealBoost(dealId: string) {
-        return await IexecAccessorsBoostDelegate__factory.connect(
+        return await IexecPocoBoostAccessorsDelegate__factory.connect(
             iexecPocoBoostInstance.address,
             anyone,
         ).viewDealBoost(dealId);
