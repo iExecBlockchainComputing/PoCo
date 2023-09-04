@@ -59,7 +59,7 @@ import {
     getTaskId,
 } from '../utils/poco-tools';
 
-const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
 const startTime = 9876543210;
@@ -204,7 +204,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                     assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
-                    tag: dealTag,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     callback: callbackAddress,
                 });
@@ -243,7 +243,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
-                    dealTag,
+                    teeDealTag,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -301,7 +301,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                     assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
-                    tag: dealTag,
+                    tag: teeDealTag,
                 },
             );
             await iexecOrderManagementInstance.connect(appProvider).manageAppOrder({
@@ -341,7 +341,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
-                    dealTag,
+                    teeDealTag,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -363,7 +363,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTag,
+                    tag: teeDealTag,
                 });
             const oracleConsumerInstance = await new TestClient__factory()
                 .connect(anyone)
@@ -420,7 +420,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTag,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     volume: volume,
                 });
@@ -522,7 +522,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTag,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     volume: expectedVolume,
                 });
