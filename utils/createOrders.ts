@@ -31,7 +31,7 @@ export interface MatchOrdersArgs {
     assets: OrdersAssets;
     requester: string;
     beneficiary?: string;
-    tag: string;
+    tag?: string;
     prices?: OrdersPrices;
     volume?: number;
     callback?: string;
@@ -133,10 +133,12 @@ export function buildCompatibleOrders(matchOrdersArgs: MatchOrdersArgs) {
         requestOrder.beneficiary = matchOrdersArgs.beneficiary;
     }
     // Set tag
-    appOrder.tag = matchOrdersArgs.tag;
-    requestOrder.tag = matchOrdersArgs.tag;
-    datasetOrder.tag = matchOrdersArgs.tag;
-    workerpoolOrder.tag = matchOrdersArgs.tag;
+    if (matchOrdersArgs.tag) {
+        appOrder.tag = matchOrdersArgs.tag;
+        requestOrder.tag = matchOrdersArgs.tag;
+        datasetOrder.tag = matchOrdersArgs.tag;
+        workerpoolOrder.tag = matchOrdersArgs.tag;
+    }
     // Set prices
     const prices = matchOrdersArgs.prices;
     if (prices) {
