@@ -6,7 +6,8 @@ import { assert, ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract, ContractFactory } from '@ethersproject/contracts';
 import {
-    IexecPocoBoostDelegate__factory,
+    IexecPocoBoostCompositeDelegate__factory,
+    IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate,
     App__factory,
     Workerpool__factory,
@@ -43,6 +44,7 @@ import {
     getTaskId,
     getDealId,
 } from '../../../utils/poco-tools';
+import { IexecLibCore_v5 } from '../../../typechain/contracts/modules/interfaces/IexecPocoBoostAccessors';
 
 chai.use(smock.matchers);
 
@@ -82,7 +84,7 @@ async function deployBoostFixture() {
     // Using native smock call here for understandability purposes (also works with
     // the custom `createMock` method)
     const iexecPocoBoostInstance = (await smock
-        .mock<IexecPocoBoostDelegate__factory>('IexecPocoBoostDelegate', {
+        .mock<IexecPocoBoostCompositeDelegate__factory>('IexecPocoBoostCompositeDelegate', {
             libraries: {
                 ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
                     iexecLibOrdersInstanceAddress,
@@ -301,7 +303,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             // Check addresses.
             expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
             expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
@@ -473,7 +475,7 @@ describe('IexecPocoBoostDelegate', function () {
                     volume,
                 );
             await expectOrderConsumed(iexecPocoBoostInstance, emptyDatasetOrderHash, undefined);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             expect(deal.datasetPrice).to.be.equal(0);
         });
 
@@ -520,7 +522,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
         });
@@ -568,7 +570,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
         });
@@ -616,7 +618,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
         });
@@ -659,7 +661,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrderHash,
                     3,
                 );
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId1);
+            const deal = await viewDealBoost(dealId1);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(3);
 
@@ -687,7 +689,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrderHash,
                     5,
                 );
-            const deal2 = await iexecPocoBoostInstance.viewDealBoost(dealId2);
+            const deal2 = await viewDealBoost(dealId2);
             expect(deal2.botFirst).to.be.equal(3); // next index after last task of deal1:{0, 1, 2}
             expect(deal2.botSize).to.be.equal(5);
             // Verify request is fully consumed
@@ -1476,9 +1478,7 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetProvider.address,
                 initialDatasetOwnerBalance,
             );
-            const expectedWorkerReward = (
-                await iexecPocoBoostInstance.viewDealBoost(dealId)
-            ).workerReward.toNumber();
+            const expectedWorkerReward = (await viewDealBoost(dealId)).workerReward.toNumber();
             // Worker reward formula already checked in match orders test, hence
             // we just need to verify here that some worker reward value will be
             // transferred
@@ -2065,6 +2065,16 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Deadline not reached');
         });
     });
+
+    /**
+     * @notice Smock does not support getting struct variable from a mapping.
+     */
+    async function viewDealBoost(dealId: string) {
+        return await IexecPocoBoostAccessorsDelegate__factory.connect(
+            iexecPocoBoostInstance.address,
+            anyone,
+        ).viewDealBoost(dealId);
+    }
 });
 
 /**
