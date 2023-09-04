@@ -205,7 +205,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     });
 
     describe('MatchOrders', function () {
-        it('Should match orders', async function () {
+        it('Should match orders (TEE)', async function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
@@ -305,7 +305,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     });
 
     // TODO: Move to MatchOrders block
-    it('Should match orders with pre-signatures', async function () {
+    it('Should match orders with pre-signatures (TEE)', async function () {
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -523,7 +523,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     });
 
     describe('Claim', function () {
-        it('Should claim', async function () {
+        it('Should claim (TEE)', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
