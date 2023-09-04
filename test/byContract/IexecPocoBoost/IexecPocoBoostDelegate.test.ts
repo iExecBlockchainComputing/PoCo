@@ -6,7 +6,7 @@ import { assert, ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract, ContractFactory } from '@ethersproject/contracts';
 import {
-    IexecPocoBoostDelegateProxy__factory,
+    IexecPocoBoostCompositeDelegate__factory,
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate,
     App__factory,
@@ -81,7 +81,7 @@ async function deployBoostFixture() {
     // Using native smock call here for understandability purposes (also works with
     // the custom `createMock` method)
     const iexecPocoBoostInstance = (await smock
-        .mock<IexecPocoBoostDelegateProxy__factory>('IexecPocoBoostDelegateProxy', {
+        .mock<IexecPocoBoostCompositeDelegate__factory>('IexecPocoBoostCompositeDelegate', {
             libraries: {
                 ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
                     iexecLibOrdersInstanceAddress,

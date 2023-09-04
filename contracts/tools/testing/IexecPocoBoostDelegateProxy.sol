@@ -18,13 +18,16 @@
 
 pragma solidity ^0.8.0;
 
-import "../DelegateBase.v8.sol";
-import "./IexecPocoBoostAccessorsDelegate.sol";
-import "./IexecPocoBoostDelegate.sol";
+import "../../modules/DelegateBase.v8.sol";
+import "../../modules/delegates/IexecPocoBoostAccessorsDelegate.sol";
+import "../../modules/delegates/IexecPocoBoostDelegate.sol";
 
 /**
  * @notice This contract is dedicated to unit testing.
  */
-contract IexecPocoBoostDelegateProxy is IexecPocoBoostAccessorsDelegate, IexecPocoBoostDelegate {
+contract IexecPocoBoostCompositeDelegate is
+    IexecPocoBoostAccessorsDelegate,
+    IexecPocoBoostDelegate
+{
 
 }
