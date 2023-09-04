@@ -238,7 +238,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
-        deal.beneficiary = _requestorder.beneficiary;
         deal.deadline = (block.timestamp +
             m_categories[_requestorder.category].workClockTimeRef *
             CONTRIBUTION_DEADLINE_RATIO).toUint48();
@@ -274,7 +273,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             _requestorder.dataset,
             _requestorder.category,
             tag,
-            _requestorder.params
+            _requestorder.params,
+            _requestorder.beneficiary
         );
         // Broadcast consumption of orders.
         emit OrdersMatched(
