@@ -1,3 +1,5 @@
+TODO
+
 # Changelog
 
 ## vNEXT
@@ -54,6 +56,7 @@
     - Refund requester. (#198, #201)
 - Refactor tests. (#177, #178, #179, #181, #188, #200)
 - Add mocha to use test explorer. (#180)
+- Clean tests' data structures. (#209)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
