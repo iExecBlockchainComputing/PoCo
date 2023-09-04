@@ -142,7 +142,7 @@ export function buildCompatibleOrders(orderMatchArgs: OrderMatchArgs) {
             appOrder.appprice = prices.app;
             requestOrder.appmaxprice = prices.app;
         }
-        if (prices.dataset) {
+        if (prices.dataset && assets.dataset != constants.NULL.ADDRESS) {
             datasetOrder.datasetprice = prices.dataset;
             requestOrder.datasetmaxprice = prices.dataset;
         }
