@@ -1,5 +1,3 @@
-TODO
-
 # Changelog
 
 ## vNEXT

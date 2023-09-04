@@ -196,7 +196,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     });
 
     describe('MatchOrders', function () {
-        it('Should match orders', async function () {
+        it('Should match orders (TEE)', async function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
@@ -515,7 +515,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     });
 
     describe('Claim', function () {
-        it('Should claim', async function () {
+        it('Should claim (TEE)', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
