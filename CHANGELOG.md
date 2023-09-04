@@ -54,9 +54,8 @@ TODO
     - Handle callback. (#183)
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)
-- Refactor tests. (#177, #178, #179, #181, #188, #200)
+- Refactor tests. (#177, #178, #179, #181, #188, #200, #209)
 - Add mocha to use test explorer. (#180)
-- Clean tests' data structures. (#209)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
