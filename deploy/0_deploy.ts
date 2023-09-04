@@ -12,6 +12,7 @@ import {
     ERC1538Proxy,
     IexecLibOrders_v5,
     IexecPocoBoostDelegate__factory,
+    IexecPocoBoostAccessorsDelegate__factory,
     ERC1538Update,
     ERC1538Update__factory,
     ERC1538Query,
@@ -58,17 +59,32 @@ module.exports = async function () {
         log: true,
     });
     console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostDeployment.address}`);
+    const IexecPocoBoostAccessorsDeployment = await hre.deployments.deploy(
+        'IexecPocoBoostAccessorsDelegate',
+        {
+            from: owner.address,
+            log: true,
+        },
+    );
+    console.log(
+        `IexecPocoBoostAccessorsDelegate deployed: ${IexecPocoBoostAccessorsDeployment.address}`,
+    );
 
     // Show proxy functions
     await functions(accounts);
 
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${erc1538.address}`);
-    // Link IexecPocoBoost methods to ERC1538Proxy
-    await erc1538.updateContract(
+    // Link Boost methods to ERC1538Proxy
+    await linkContractToProxy(
+        erc1538,
         iexecPocoBoostDeployment.address,
-        getFunctionSignatures(IexecPocoBoostDelegate__factory.abi),
-        'Linking ' + IexecPocoBoostDelegate__factory.name,
+        IexecPocoBoostDelegate__factory,
+    );
+    await linkContractToProxy(
+        erc1538,
+        IexecPocoBoostAccessorsDeployment.address,
+        IexecPocoBoostAccessorsDelegate__factory,
     );
     // Verify linking on ERC1538Proxy
     const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(
@@ -86,6 +102,24 @@ module.exports = async function () {
         }),
     );
 };
+
+/**
+ * Link a contract to an ERC1538 proxy.
+ * @param proxy contract to ERC1538 proxy.
+ * @param contractAddress The contract address to link to the proxy.
+ * @param contractFactory The contract factory to link to the proxy.
+ */
+async function linkContractToProxy(
+    proxy: ERC1538Update,
+    contractAddress: string,
+    contractFactory: any,
+) {
+    await proxy.updateContract(
+        contractAddress,
+        getFunctionSignatures(contractFactory.abi),
+        'Linking ' + contractFactory.name,
+    );
+}
 
 // TODO [optional]: Use hardhat-deploy to save addresses automatically
 // https://github.com/wighawag/hardhat-deploy/tree/master#hardhat-deploy-in-a-nutshell
