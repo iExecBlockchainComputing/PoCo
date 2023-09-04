@@ -30,7 +30,7 @@ export interface OrdersPrices {
 export interface OrderMatchArgs {
     assets: OrdersAssets;
     requester: string;
-    beneficiary: string;
+    beneficiary?: string;
     tag: string;
     prices?: OrdersPrices;
     volume?: number;
@@ -129,7 +129,9 @@ export function buildCompatibleOrders(orderMatchArgs: OrderMatchArgs) {
     // Set requester
     requestOrder.requester = orderMatchArgs.requester;
     // Set beneficiary
-    requestOrder.beneficiary = orderMatchArgs.beneficiary;
+    if (orderMatchArgs.beneficiary) {
+        requestOrder.beneficiary = orderMatchArgs.beneficiary;
+    }
     // Set tag
     appOrder.tag = orderMatchArgs.tag;
     requestOrder.tag = orderMatchArgs.tag;

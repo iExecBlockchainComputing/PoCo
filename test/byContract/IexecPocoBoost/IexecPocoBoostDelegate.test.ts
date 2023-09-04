@@ -486,7 +486,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             // Set volumes
@@ -536,7 +535,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             // Set volumes
@@ -586,7 +584,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             // Set volumes
@@ -636,7 +633,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             appOrder.volume = 8;
@@ -711,7 +707,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             // Set volumes
@@ -733,7 +728,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -755,7 +749,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -778,7 +771,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -801,7 +793,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -823,7 +814,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -847,7 +837,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -872,7 +861,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -895,7 +883,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -920,7 +907,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -946,7 +932,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -970,7 +955,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -998,7 +982,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1028,7 +1011,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1050,7 +1032,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1072,7 +1053,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1094,7 +1074,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1116,7 +1095,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1138,7 +1116,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1160,7 +1137,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1182,7 +1158,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1203,7 +1178,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1224,7 +1198,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1245,7 +1218,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1266,7 +1238,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1288,7 +1259,6 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 },
             );
@@ -1311,7 +1281,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             await signOrders(domain, orders, accounts);
@@ -1336,7 +1305,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             await signOrders(domain, orders, accounts);
@@ -1364,7 +1332,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                     prices: ordersPrices,
                 });
@@ -1404,7 +1371,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                     prices: ordersPrices,
                 });
@@ -1460,7 +1426,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                     prices: ordersPrices,
                     volume: volume,
@@ -1642,7 +1607,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             await signOrders(domain, orders, accounts);
@@ -1690,7 +1654,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: tag,
                 });
             await signOrders(domain, orders, accounts);
@@ -1732,7 +1695,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: standardDealTag,
                 });
             await signOrders(domain, orders, accounts);
@@ -1775,7 +1737,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             await signOrders(domain, orders, accounts);
@@ -1808,7 +1769,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             await signOrders(domain, orders, accounts);
@@ -1840,7 +1800,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             await signOrders(domain, orders, accounts);
@@ -1872,7 +1831,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                 });
             await signOrders(domain, orders, accounts);
@@ -1911,7 +1869,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                     callback: ethers.Wallet.createRandom().address,
                 });
@@ -1972,7 +1929,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTagTee,
                     prices: ordersPrices,
                     volume: expectedVolume,
@@ -2055,7 +2011,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: standardDealTag,
                 });
             await signOrders(domain, orders, accounts);
@@ -2106,7 +2061,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: standardDealTag,
                 });
             await signOrders(domain, orders, accounts);
@@ -2131,7 +2085,6 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: standardDealTag,
                 });
             await signOrders(domain, orders, accounts);

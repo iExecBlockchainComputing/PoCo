@@ -370,7 +370,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTag,
                 });
             const oracleConsumerInstance = await new TestClient__factory()
@@ -428,7 +427,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTag,
                     prices: ordersPrices,
                     volume: volume,
@@ -533,7 +531,6 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    beneficiary: beneficiary.address,
                     tag: dealTag,
                     prices: ordersPrices,
                     volume: expectedVolume,
