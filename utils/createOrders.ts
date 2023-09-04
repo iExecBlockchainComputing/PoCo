@@ -6,24 +6,24 @@ import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
 
-export interface OrderMatchAssets {
+export interface OrdersAssets {
     app: string;
     dataset: string;
     workerpool: string;
 }
 
-export interface OrderMatchPrices {
+export interface OrdersPrices {
     app?: number;
     dataset?: number;
     workerpool?: number;
 }
 
-export interface OrderMatchArgs {
-    assets: OrderMatchAssets;
+export interface MatchOrdersArgs {
+    assets: OrdersAssets;
     requester: string;
-    beneficiary: string;
+    beneficiary?: string;
     tag: string;
-    prices?: OrderMatchPrices;
+    prices?: OrdersPrices;
     volume?: number;
     callback?: string;
 }
@@ -107,54 +107,58 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
     };
 }
 
-export function buildCompatibleOrders(orderMatchArgs: OrderMatchArgs) {
+export function buildCompatibleOrders(matchOrdersArgs: MatchOrdersArgs) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
     let datasetOrder = createEmptyDatasetOrder();
+    const assets = matchOrdersArgs.assets;
     // Set app
-    appOrder.app = orderMatchArgs.assets.app;
-    requestOrder.app = orderMatchArgs.assets.app;
+    appOrder.app = assets.app;
+    requestOrder.app = assets.app;
     // Set workerpool
-    workerpoolOrder.workerpool = orderMatchArgs.assets.workerpool;
-    requestOrder.workerpool = orderMatchArgs.assets.workerpool;
+    workerpoolOrder.workerpool = assets.workerpool;
+    requestOrder.workerpool = assets.workerpool;
     // Set dataset
-    datasetOrder.dataset = orderMatchArgs.assets.dataset;
-    requestOrder.dataset = orderMatchArgs.assets.dataset;
+    datasetOrder.dataset = assets.dataset;
+    requestOrder.dataset = assets.dataset;
     // Set requester
-    requestOrder.requester = orderMatchArgs.requester;
+    requestOrder.requester = matchOrdersArgs.requester;
     // Set beneficiary
-    requestOrder.beneficiary = orderMatchArgs.beneficiary;
+    if (matchOrdersArgs.beneficiary) {
+        requestOrder.beneficiary = matchOrdersArgs.beneficiary;
+    }
     // Set tag
-    appOrder.tag = orderMatchArgs.tag;
-    requestOrder.tag = orderMatchArgs.tag;
-    datasetOrder.tag = orderMatchArgs.tag;
-    workerpoolOrder.tag = orderMatchArgs.tag;
+    appOrder.tag = matchOrdersArgs.tag;
+    requestOrder.tag = matchOrdersArgs.tag;
+    datasetOrder.tag = matchOrdersArgs.tag;
+    workerpoolOrder.tag = matchOrdersArgs.tag;
     // Set prices
-    if (orderMatchArgs.prices) {
-        if (orderMatchArgs.prices.app) {
-            appOrder.appprice = orderMatchArgs.prices.app;
-            requestOrder.appmaxprice = orderMatchArgs.prices.app;
+    const prices = matchOrdersArgs.prices;
+    if (prices) {
+        if (prices.app) {
+            appOrder.appprice = prices.app;
+            requestOrder.appmaxprice = prices.app;
         }
-        if (orderMatchArgs.prices.dataset) {
-            datasetOrder.datasetprice = orderMatchArgs.prices.dataset;
-            requestOrder.datasetmaxprice = orderMatchArgs.prices.dataset;
+        if (prices.dataset && assets.dataset != constants.NULL.ADDRESS) {
+            datasetOrder.datasetprice = prices.dataset;
+            requestOrder.datasetmaxprice = prices.dataset;
         }
-        if (orderMatchArgs.prices.workerpool) {
-            workerpoolOrder.workerpoolprice = orderMatchArgs.prices.workerpool;
-            requestOrder.workerpoolmaxprice = orderMatchArgs.prices.workerpool;
+        if (prices.workerpool) {
+            workerpoolOrder.workerpoolprice = prices.workerpool;
+            requestOrder.workerpoolmaxprice = prices.workerpool;
         }
     }
     // Set volume
-    if (orderMatchArgs.volume) {
-        appOrder.volume = orderMatchArgs.volume;
-        datasetOrder.volume = orderMatchArgs.volume;
-        workerpoolOrder.volume = orderMatchArgs.volume;
-        requestOrder.volume = orderMatchArgs.volume;
+    if (matchOrdersArgs.volume) {
+        appOrder.volume = matchOrdersArgs.volume;
+        datasetOrder.volume = matchOrdersArgs.volume;
+        workerpoolOrder.volume = matchOrdersArgs.volume;
+        requestOrder.volume = matchOrdersArgs.volume;
     }
     // Set callback
-    if (orderMatchArgs.callback) {
-        requestOrder.callback = orderMatchArgs.callback;
+    if (matchOrdersArgs.callback) {
+        requestOrder.callback = matchOrdersArgs.callback;
     }
     return {
         orders: {
