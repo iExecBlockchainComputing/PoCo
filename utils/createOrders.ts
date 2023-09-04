@@ -28,7 +28,7 @@ export interface MatchOrdersArgs {
     callback?: string;
 }
 
-export interface OrderMatchActors {
+export interface OrdersActors {
     appOwner: SignerWithAddress;
     datasetOwner: SignerWithAddress;
     workerpoolOwner: SignerWithAddress;
@@ -202,7 +202,7 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
 export async function signOrders(
     domain: TypedDataDomain,
     orders: IexecOrders,
-    signers: OrderMatchActors,
+    signers: OrdersActors,
 ): Promise<void> {
     await signOrder(domain, orders.app, signers.appOwner);
     if (orders.dataset) {

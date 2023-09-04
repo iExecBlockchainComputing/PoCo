@@ -42,7 +42,7 @@ import { extractEventsFromReceipt } from '../utils/tools';
 import { ContractReceipt } from '@ethersproject/contracts';
 
 import {
-    OrderMatchActors,
+    OrdersActors,
     OrdersAssets,
     OrdersPrices,
     buildCompatibleOrders,
@@ -103,7 +103,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         enclave,
         anyone,
     ] = [] as SignerWithAddress[];
-    let orderMatchActors: OrderMatchActors;
+    let ordersActors: OrdersActors;
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
 
@@ -121,7 +121,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         worker = signers[6];
         enclave = signers[7];
         anyone = signers[8];
-        orderMatchActors = {
+        ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
             workerpoolOwner: scheduler,
@@ -223,7 +223,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             await getRlcAndDeposit(scheduler, schedulerStake);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await time.setNextBlockTimestamp(startTime);
 
@@ -369,7 +369,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 .deploy()
                 .then((contract) => contract.deployed());
             requestOrder.callback = oracleConsumerInstance.address;
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -433,7 +433,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             );
             const schedulerTaskStake = schedulerDealStake / volume;
             await getRlcAndDeposit(scheduler, schedulerDealStake);
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -527,7 +527,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                     prices: ordersPrices,
                     volume: expectedVolume,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await getRlcAndDeposit(requester, dealPrice);

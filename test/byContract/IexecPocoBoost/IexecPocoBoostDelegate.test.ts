@@ -31,7 +31,7 @@ import {
     signOrder,
     hashOrder,
     signOrders,
-    OrderMatchActors,
+    OrdersActors,
     OrdersAssets,
     OrdersPrices,
 } from '../../../utils/createOrders';
@@ -139,7 +139,7 @@ describe('IexecPocoBoostDelegate', function () {
     let workerpoolRegistry: FakeContract<WorkerpoolRegistry>;
     let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
         [] as SignerWithAddress[];
-    let orderMatchActors: OrderMatchActors;
+    let ordersActors: OrdersActors;
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
 
@@ -154,7 +154,7 @@ describe('IexecPocoBoostDelegate', function () {
         requester = fixtures.requester;
         beneficiary = fixtures.beneficiary;
         anyone = fixtures.anyone;
-        orderMatchActors = {
+        ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
             workerpoolOwner: scheduler,
@@ -249,7 +249,7 @@ describe('IexecPocoBoostDelegate', function () {
                 initialSchedulerBalance + schedulerStake,
             );
             await expectFrozen(iexecPocoBoostInstance, scheduler.address, initialSchedulerFrozen);
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -493,7 +493,7 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOrder.volume = 7;
             requestOrder.volume = 8;
             const expectedVolume = 5;
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -542,7 +542,7 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOrder.volume = 3; // smallest unconsumed volume among all orders
             requestOrder.volume = 6;
             const expectedVolume = 3;
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -591,7 +591,7 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOrder.volume = 5;
             requestOrder.volume = 4; // smallest unconsumed volume among all orders
             const expectedVolume = 4;
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -639,7 +639,7 @@ describe('IexecPocoBoostDelegate', function () {
             requestOrder.volume = 8;
             // Partially consume orders in a first batch
             workerpoolOrder.volume = 3; // 3 now and 5 later
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId1 = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -710,7 +710,7 @@ describe('IexecPocoBoostDelegate', function () {
                 });
             // Set volumes
             appOrder.volume = 0; // nothing to consume
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1282,7 +1282,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: dealTagTee,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1306,7 +1306,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: dealTagTee,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1345,7 +1345,7 @@ describe('IexecPocoBoostDelegate', function () {
                 await iexecPocoBoostInstance.getVariable(BALANCES, [requester.address]),
             ).to.be.lessThan(dealPrice);
 
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -1391,7 +1391,7 @@ describe('IexecPocoBoostDelegate', function () {
                 await iexecPocoBoostInstance.getVariable(BALANCES, [scheduler.address]),
             ).to.be.lessThan(schedulerStake);
 
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -1451,7 +1451,7 @@ describe('IexecPocoBoostDelegate', function () {
                     [requester.address]: initialRequesterFrozen,
                 },
             });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             const startTime = await setNextBlockTimestamp();
@@ -1608,7 +1608,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: dealTagTee,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -1655,7 +1655,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: tag,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -1696,7 +1696,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: standardDealTag,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -1738,7 +1738,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: dealTagTee,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -1770,7 +1770,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: dealTagTee,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -1801,7 +1801,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: dealTagTee,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1832,7 +1832,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: dealTagTee,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -1871,7 +1871,7 @@ describe('IexecPocoBoostDelegate', function () {
                     tag: dealTagTee,
                     callback: ethers.Wallet.createRandom().address,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -1932,7 +1932,7 @@ describe('IexecPocoBoostDelegate', function () {
                     prices: ordersPrices,
                     volume: expectedVolume,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
@@ -2012,7 +2012,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: standardDealTag,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -2062,7 +2062,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: standardDealTag,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -2086,7 +2086,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requester: requester.address,
                     tag: standardDealTag,
                 });
-            await signOrders(domain, orders, orderMatchActors);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
