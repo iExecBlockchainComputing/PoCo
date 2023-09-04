@@ -107,7 +107,7 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
     };
 }
 
-export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
+export function buildCompatibleOrders(matchOrdersArgs: MatchOrdersArgs) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
