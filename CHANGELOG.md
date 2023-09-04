@@ -51,7 +51,7 @@
     - Handle callback. (#183)
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)
-- Add dedicated Poco Boost accessors.
+- Add dedicated Poco Boost accessors. (#206)
 - Refactor tests. (#177, #178, #179, #181, #188, #200)
 - Add mocha to use test explorer. (#180)
 
