@@ -47,7 +47,7 @@ import { extractEventsFromReceipt } from '../utils/tools';
 import { ContractReceipt } from '@ethersproject/contracts';
 
 import {
-    IexecAccounts,
+    OrdersActors,
     OrdersAssets,
     OrdersPrices,
     buildCompatibleOrders,
@@ -109,7 +109,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         enclave,
         anyone,
     ] = [] as SignerWithAddress[];
-    let accounts: IexecAccounts;
+    let ordersActors: OrdersActors;
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
 
@@ -127,12 +127,11 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         worker = signers[6];
         enclave = signers[7];
         anyone = signers[8];
-        accounts = {
-            app: appProvider,
-            dataset: datasetProvider,
-            workerpool: scheduler,
+        ordersActors = {
+            appOwner: appProvider,
+            datasetOwner: datasetProvider,
+            workerpoolOwner: scheduler,
             requester: requester,
-            beneficiary: beneficiary,
         };
         await deployments.fixture();
         const proxyAddress = await getContractAddress('ERC1538Proxy');
@@ -206,7 +205,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     });
 
     describe('MatchOrders', function () {
-        it('Should match orders', async function () {
+        it('Should match orders (TEE)', async function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
@@ -233,7 +232,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             await getRlcAndDeposit(scheduler, schedulerStake);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await time.setNextBlockTimestamp(startTime);
 
@@ -306,7 +305,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     });
 
     // TODO: Move to MatchOrders block
-    it('Should match orders with pre-signatures', async function () {
+    it('Should match orders with pre-signatures (TEE)', async function () {
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -378,7 +377,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 .deploy()
                 .then((contract) => contract.deployed());
             requestOrder.callback = oracleConsumerInstance.address;
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -442,7 +441,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             );
             const schedulerTaskStake = schedulerDealStake / volume;
             await getRlcAndDeposit(scheduler, schedulerDealStake);
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -522,7 +521,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     });
 
     describe('Claim', function () {
-        it('Should claim', async function () {
+        it('Should claim (TEE)', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
@@ -534,7 +533,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     prices: ordersPrices,
                     volume: expectedVolume,
                 });
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await getRlcAndDeposit(requester, dealPrice);

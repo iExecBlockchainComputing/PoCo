@@ -6,15 +6,6 @@ import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
 
-// TODO clean/remove this interface.
-export interface Iexec<T> {
-    app: T;
-    dataset: T;
-    workerpool: T;
-    requester: T;
-    beneficiary: T;
-}
-
 export interface OrdersAssets {
     app: string;
     dataset: string;
@@ -37,9 +28,14 @@ export interface MatchOrdersArgs {
     callback?: string;
 }
 
-export interface IexecAccounts extends Iexec<SignerWithAddress> {}
+export interface OrdersActors {
+    appOwner: SignerWithAddress;
+    datasetOwner: SignerWithAddress;
+    workerpoolOwner: SignerWithAddress;
+    requester: SignerWithAddress;
+}
 
-export interface IexecOrders extends Iexec<Record<string, any>> {
+export interface IexecOrders {
     app: IexecLibOrders_v5.AppOrderStruct;
     dataset: IexecLibOrders_v5.DatasetOrderStruct;
     workerpool: IexecLibOrders_v5.WorkerpoolOrderStruct;
@@ -208,13 +204,13 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
 export async function signOrders(
     domain: TypedDataDomain,
     orders: IexecOrders,
-    signers: IexecAccounts,
+    signers: OrdersActors,
 ): Promise<void> {
-    await signOrder(domain, orders.app, signers.app);
+    await signOrder(domain, orders.app, signers.appOwner);
     if (orders.dataset) {
-        await signOrder(domain, orders.dataset, signers.dataset);
+        await signOrder(domain, orders.dataset, signers.datasetOwner);
     }
-    await signOrder(domain, orders.workerpool, signers.workerpool);
+    await signOrder(domain, orders.workerpool, signers.workerpoolOwner);
     await signOrder(domain, orders.requester, signers.requester);
 }
 
