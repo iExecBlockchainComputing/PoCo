@@ -295,7 +295,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
         });
 
-        it('Should match orders with pre-signatures', async function () {
+        it('Should match orders with pre-signatures (TEE)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 {
                     assets: ordersAssets,
