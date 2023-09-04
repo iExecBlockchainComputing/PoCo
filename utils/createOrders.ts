@@ -15,24 +15,24 @@ export interface Iexec<T> {
     beneficiary: T;
 }
 
-export interface OrderMatchAssets {
+export interface OrdersAssets {
     app: string;
     dataset: string;
     workerpool: string;
 }
 
-export interface OrderMatchPrices {
+export interface OrdersPrices {
     app?: number;
     dataset?: number;
     workerpool?: number;
 }
 
 export interface OrderMatchArgs {
-    assets: OrderMatchAssets;
+    assets: OrdersAssets;
     requester: string;
     beneficiary: string;
     tag: string;
-    prices?: OrderMatchPrices;
+    prices?: OrdersPrices;
     volume?: number;
     callback?: string;
 }
@@ -116,15 +116,16 @@ export function buildCompatibleOrders(orderMatchArgs: OrderMatchArgs) {
     let appOrder = createEmptyAppOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
     let datasetOrder = createEmptyDatasetOrder();
+    const assets = orderMatchArgs.assets;
     // Set app
-    appOrder.app = orderMatchArgs.assets.app;
-    requestOrder.app = orderMatchArgs.assets.app;
+    appOrder.app = assets.app;
+    requestOrder.app = assets.app;
     // Set workerpool
-    workerpoolOrder.workerpool = orderMatchArgs.assets.workerpool;
-    requestOrder.workerpool = orderMatchArgs.assets.workerpool;
+    workerpoolOrder.workerpool = assets.workerpool;
+    requestOrder.workerpool = assets.workerpool;
     // Set dataset
-    datasetOrder.dataset = orderMatchArgs.assets.dataset;
-    requestOrder.dataset = orderMatchArgs.assets.dataset;
+    datasetOrder.dataset = assets.dataset;
+    requestOrder.dataset = assets.dataset;
     // Set requester
     requestOrder.requester = orderMatchArgs.requester;
     // Set beneficiary
@@ -135,18 +136,19 @@ export function buildCompatibleOrders(orderMatchArgs: OrderMatchArgs) {
     datasetOrder.tag = orderMatchArgs.tag;
     workerpoolOrder.tag = orderMatchArgs.tag;
     // Set prices
-    if (orderMatchArgs.prices) {
-        if (orderMatchArgs.prices.app) {
-            appOrder.appprice = orderMatchArgs.prices.app;
-            requestOrder.appmaxprice = orderMatchArgs.prices.app;
+    const prices = orderMatchArgs.prices;
+    if (prices) {
+        if (prices.app) {
+            appOrder.appprice = prices.app;
+            requestOrder.appmaxprice = prices.app;
         }
-        if (orderMatchArgs.prices.dataset) {
-            datasetOrder.datasetprice = orderMatchArgs.prices.dataset;
-            requestOrder.datasetmaxprice = orderMatchArgs.prices.dataset;
+        if (prices.dataset) {
+            datasetOrder.datasetprice = prices.dataset;
+            requestOrder.datasetmaxprice = prices.dataset;
         }
-        if (orderMatchArgs.prices.workerpool) {
-            workerpoolOrder.workerpoolprice = orderMatchArgs.prices.workerpool;
-            requestOrder.workerpoolmaxprice = orderMatchArgs.prices.workerpool;
+        if (prices.workerpool) {
+            workerpoolOrder.workerpoolprice = prices.workerpool;
+            requestOrder.workerpoolmaxprice = prices.workerpool;
         }
     }
     // Set volume

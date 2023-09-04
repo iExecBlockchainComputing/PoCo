@@ -47,8 +47,8 @@ import { ContractReceipt } from '@ethersproject/contracts';
 
 import {
     IexecAccounts,
-    OrderMatchAssets,
-    OrderMatchPrices,
+    OrdersAssets,
+    OrdersPrices,
     buildCompatibleOrders,
     hashOrder,
     signOrders,
@@ -109,8 +109,8 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         anyone,
     ] = [] as SignerWithAddress[];
     let accounts: IexecAccounts;
-    let orderMatchAssets: OrderMatchAssets;
-    let orderMatchPrices: OrderMatchPrices;
+    let ordersAssets: OrdersAssets;
+    let ordersPrices: OrdersPrices;
 
     beforeEach('Deploy IexecPocoBoostDelegate', async () => {
         // We define a fixture to reuse the same setup in every test.
@@ -192,12 +192,12 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             datasetReceipt,
             datasetRegistryInstance.address,
         );
-        orderMatchAssets = {
+        ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
             workerpool: workerpoolAddress,
         };
-        orderMatchPrices = {
+        ordersPrices = {
             app: appPrice,
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
@@ -209,11 +209,11 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
-                    assets: orderMatchAssets,
+                    assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
                     tag: dealTag,
-                    prices: orderMatchPrices,
+                    prices: ordersPrices,
                     callback: callbackAddress,
                 });
             const dealPrice =
@@ -307,7 +307,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
     // TODO: Move to MatchOrders block
     it('Should match orders with pre-signatures', async function () {
         const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders({
-            assets: orderMatchAssets,
+            assets: ordersAssets,
             requester: requester.address,
             beneficiary: beneficiary.address,
             tag: dealTag,
@@ -368,7 +368,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
         it('Should push result (TEE & callback)', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
-                    assets: orderMatchAssets,
+                    assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
                     tag: dealTag,
@@ -426,11 +426,11 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const volume = 3;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
-                    assets: orderMatchAssets,
+                    assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
                     tag: dealTag,
-                    prices: orderMatchPrices,
+                    prices: ordersPrices,
                     volume: volume,
                 });
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
@@ -531,11 +531,11 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
-                    assets: orderMatchAssets,
+                    assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
                     tag: dealTag,
-                    prices: orderMatchPrices,
+                    prices: ordersPrices,
                     volume: expectedVolume,
                 });
             await signOrders(domain, orders, accounts);
