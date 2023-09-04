@@ -23,6 +23,7 @@ import {
     IexecOrderManagement,
     IexecOrderManagement__factory,
     IexecPocoBoostDelegate__factory,
+    IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate,
     AppRegistry__factory,
     AppRegistry,
@@ -263,7 +264,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 .withArgs(scheduler.address, iexecPocoBoostInstance.address, schedulerStake)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
                 .withArgs(scheduler.address, schedulerStake);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             expect(deal.appOwner).to.be.equal(appProvider.address);
             expect(deal.appPrice).to.be.equal(appPrice);
             expect(deal.datasetOwner).to.be.equal(datasetProvider.address);
@@ -462,9 +463,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(0);
             expect(await iexecInstance.balanceOf(appProvider.address)).to.be.equal(0);
             expect(await iexecInstance.balanceOf(datasetProvider.address)).to.be.equal(0);
-            const expectedWorkerReward = (
-                await iexecPocoBoostInstance.viewDealBoost(dealId)
-            ).workerReward.toNumber();
+            const expectedWorkerReward = (await viewDealBoost(dealId)).workerReward.toNumber();
             const expectedSchedulerReward = workerpoolPrice - expectedWorkerReward;
 
             await expect(
@@ -579,6 +578,13 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         await rlcInstance
             .connect(account)
             .approveAndCall(iexecPocoBoostInstance.address, value, '0x');
+    }
+
+    async function viewDealBoost(dealId: string) {
+        return await IexecPocoBoostAccessorsDelegate__factory.connect(
+            iexecPocoBoostInstance.address,
+            anyone,
+        ).viewDealBoost(dealId);
     }
 });
 
