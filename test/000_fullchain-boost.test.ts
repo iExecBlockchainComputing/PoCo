@@ -86,7 +86,7 @@ async function extractRegistryEntryAddress(
 
 describe('IexecPocoBoostDelegate (IT)', function () {
     let domain: TypedDataDomain;
-    let iexecOrderManagementInstance: IexecOrderManagement;
+    let proxyAddress: string;
     let iexecInstance: IexecAccessors;
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let rlcInstance: RLC;
@@ -129,8 +129,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             requester: requester,
         };
         await deployments.fixture();
-        const proxyAddress = await getContractAddress('ERC1538Proxy');
-        iexecOrderManagementInstance = IexecOrderManagement__factory.connect(proxyAddress, anyone);
+        proxyAddress = await getContractAddress('ERC1538Proxy');
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
         rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
@@ -296,6 +295,10 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         });
 
         it('Should match orders with pre-signatures (TEE)', async function () {
+            let iexecOrderManagementInstance = IexecOrderManagement__factory.connect(
+                proxyAddress,
+                anyone,
+            );
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 {
                     assets: ordersAssets,
