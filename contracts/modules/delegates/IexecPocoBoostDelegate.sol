@@ -19,7 +19,6 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
-import "@openzeppelin/contracts-v4/utils/Address.sol";
 import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
 import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
@@ -35,7 +34,6 @@ import "../interfaces/IOracleConsumer.sol";
  * @notice Works for deals with requested trust = 0.
  */
 contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
-    using Address for address;
     using ECDSA for bytes32;
     using Math for uint256;
     using SafeCast for uint256;
