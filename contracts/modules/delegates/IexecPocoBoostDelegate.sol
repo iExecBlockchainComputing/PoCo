@@ -373,18 +373,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         if (target != address(0)) {
             require(resultsCallback.length > 0, "PocoBoost: Callback requires data");
             /*
-             * The "extcodesize check" will fail if the target is not a contract.
-             * Such revert should not prevent the caller to finalize the task.
-             * https://forum.soliditylang.org/t/call-for-feedback-the-future-of-try-catch-in-solidity/1497
+             * The caller must be able to complete the task even if the external
+             * call reverts.
              */
-            if (target.isContract()) {
-                try
-                    IOracleConsumer(target).receiveResult{gas: m_callbackgas}(
-                        taskId,
-                        resultsCallback
-                    )
-                {} catch {}
-            }
+            (bool success, ) = target.call{gas: m_callbackgas}(
+                abi.encodeWithSelector(
+                    IOracleConsumer.receiveResult.selector,
+                    taskId,
+                    resultsCallback
+                )
+            );
+            success; // silent unused variable warning
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }
     }
