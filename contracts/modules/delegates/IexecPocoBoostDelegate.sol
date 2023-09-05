@@ -348,7 +348,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          */
         m_tasks[taskId].status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
 
-        // Reward and seize each parties
+        // Reward, seize and unlock each parties
         uint96 appPrice = deal.appPrice;
         uint96 datasetPrice = deal.datasetPrice;
 
@@ -364,6 +364,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         if (datasetPrice > 0) {
             reward(deal.datasetOwner, datasetPrice, taskId);
         }
+
+        // Unlock scheduler stake
+        uint256 taskWorkerpoolStake = (deal.workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+        unlock(deal.workerpoolOwner, taskWorkerpoolStake);
 
         emit ResultPushedBoost(dealId, index, results);
 

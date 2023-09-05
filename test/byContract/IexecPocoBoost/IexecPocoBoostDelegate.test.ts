@@ -1511,6 +1511,10 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(iexecPocoBoostInstance.address, datasetProvider.address, datasetPrice)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
                 .withArgs(datasetProvider.address, datasetPrice, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, scheduler.address, schedulerTaskStake)
+                .to.emit(iexecPocoBoostInstance, 'Unlock')
+                .withArgs(scheduler.address, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
             expect(oracleConsumerInstance.receiveResult).to.have.been.calledWith(
@@ -1538,7 +1542,6 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance.address,
                 initialIexecPocoBalance +
                     (taskPrice + schedulerTaskStake) * remainingTasksToPush +
-                    schedulerTaskStake + // TODO: Remove after unlock scheduler feature
                     expectedSchedulerReward, // TODO: Remove after scheduler reward feature
             );
             // Check requester balance and frozen
@@ -1565,6 +1568,12 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance,
                 datasetProvider.address,
                 initialDatasetOwnerBalance + datasetPrice,
+            );
+            // Check scherduler frozen
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                schedulerTaskStake * remainingTasksToPush,
             );
         });
 
