@@ -19,6 +19,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { IexecLibOrders_v5 } from '../typechain';
 import { hashOrder } from './createOrders';
+import { time } from '@nomicfoundation/hardhat-network-helpers';
 
 export function getDealId(
     domain: TypedDataDomain,
@@ -109,4 +110,17 @@ function buildEnclaveMessage(workerAddress: string, taskId: string, resultDigest
 
 export async function signMessage(signerAccount: SignerWithAddress, message: string) {
     return signerAccount.signMessage(ethers.utils.arrayify(message));
+}
+
+/**
+ * Mine the next block with a timestamp corresponding to an arbitrary but known
+ * date in the future (10 seconds later).
+ * It fixes the `Timestamp is lower than the previous block's timestamp` error.
+ * e.g: This Error has been seen when running tests with `npm run coverage`.
+ * @returns timestamp of the next block.
+ */
+export async function setNextBlockTimestamp() {
+    const startTime = (await time.latest()) + 10;
+    await time.setNextBlockTimestamp(startTime);
+    return startTime;
 }

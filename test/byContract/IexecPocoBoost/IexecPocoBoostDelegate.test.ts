@@ -43,8 +43,8 @@ import {
     buildAndSignEnclaveMessage,
     getTaskId,
     getDealId,
+    setNextBlockTimestamp,
 } from '../../../utils/poco-tools';
-import { IexecLibCore_v5 } from '../../../typechain/contracts/modules/interfaces/IexecPocoBoostAccessors';
 
 chai.use(smock.matchers);
 
@@ -302,6 +302,10 @@ describe('IexecPocoBoostDelegate', function () {
             // Check addresses.
             expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
             expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
+            expect(deal.datasetOwner).to.be.equal(
+                datasetProvider.address,
+                'Dataset owner mismatch',
+            );
             expect(deal.workerpoolOwner).to.be.equal(
                 scheduler.address,
                 'Workerpool owner mismatch',
@@ -331,7 +335,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
-            expect(deal.shortTag).to.be.equal('0x000000000000000000000001');
+            expect(deal.shortTag).to.be.equal('0x00000001');
             // Check balances.
             await expectBalance(
                 iexecPocoBoostInstance,
@@ -2062,19 +2066,6 @@ describe('IexecPocoBoostDelegate', function () {
         ).viewDealBoost(dealId);
     }
 });
-
-/**
- * Mine the next block with a timestamp corresponding to an arbitrary but known
- * date in the future (10 seconds later).
- * It fixes the `Timestamp is lower than the previous block's timestamp` error.
- * e.g: This Error has been seen when running tests with `npm run coverage`.
- * @returns timestamp of the next block.
- */
-async function setNextBlockTimestamp() {
-    const startTime = (await time.latest()) + 10;
-    await time.setNextBlockTimestamp(startTime);
-    return startTime;
-}
 
 /**
  * Compute the amount of RLC to be staked by the scheduler
