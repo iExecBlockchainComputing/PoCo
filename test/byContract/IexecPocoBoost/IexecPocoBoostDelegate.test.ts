@@ -133,6 +133,7 @@ async function createMock<CF extends ContractFactory, C extends Contract>(
 
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: MockContract<IexecPocoBoostDelegate>;
+    let oracleConsumerInstance: FakeContract<TestClient>;
     let appInstance: MockContract<App>;
     let workerpoolInstance: MockContract<Workerpool>;
     let datasetInstance: MockContract<Dataset>;
@@ -162,6 +163,7 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOwner: scheduler,
             requester: requester,
         };
+        oracleConsumerInstance = await smock.fake<TestClient>(TestClient__factory);
         appInstance = await createMock<App__factory, App>('App');
         workerpoolInstance = await createMock<Workerpool__factory, Workerpool>('Workerpool');
         datasetInstance = await createMock<Dataset__factory, Dataset>('Dataset');
@@ -1385,9 +1387,6 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should push result (TEE & callback)', async function () {
             workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
-            const oracleConsumerInstance = await createMock<TestClient__factory, TestClient>(
-                'TestClient',
-            );
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const volume = 3;
             const dealPrice = taskPrice * volume;
@@ -1889,19 +1888,7 @@ describe('IexecPocoBoostDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
-                worker.address,
-                taskId,
-                enclave.address,
-                scheduler,
-            );
             const resultsCallback = '0xab';
-            const enclaveSignature = await buildAndSignEnclaveMessage(
-                worker.address,
-                taskId,
-                ethers.utils.keccak256(resultsCallback),
-                enclave,
-            );
 
             await expect(
                 iexecPocoBoostInstance
@@ -1911,11 +1898,75 @@ describe('IexecPocoBoostDelegate', function () {
                         taskIndex,
                         results,
                         resultsCallback,
-                        schedulerSignature,
+                        await buildAndSignSchedulerMessage(
+                            worker.address,
+                            taskId,
+                            enclave.address,
+                            scheduler,
+                        ),
                         enclave.address,
-                        enclaveSignature,
+                        await buildAndSignEnclaveMessage(
+                            worker.address,
+                            taskId,
+                            ethers.utils.keccak256(resultsCallback),
+                            enclave,
+                        ),
                     ),
             ).to.emit(iexecPocoBoostInstance, 'ResultPushedBoost');
+        });
+
+        it('Should push result even if callback reverts', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: dealTagTee,
+                    callback: oracleConsumerInstance.address,
+                });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const resultsCallback = '0xab';
+            oracleConsumerInstance.receiveResult.reverts();
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        await buildAndSignSchedulerMessage(
+                            worker.address,
+                            taskId,
+                            enclave.address,
+                            scheduler,
+                        ),
+                        enclave.address,
+                        await buildAndSignEnclaveMessage(
+                            worker.address,
+                            taskId,
+                            ethers.utils.keccak256(resultsCallback),
+                            enclave,
+                        ),
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                /**
+                 * Oracle consumer has been called but did not succeed.
+                 */
+                .to.not.emit(oracleConsumerInstance, 'GotResult');
+            expect(oracleConsumerInstance.receiveResult).to.have.been.calledOnceWith(
+                taskId,
+                resultsCallback,
+            );
         });
     });
 
