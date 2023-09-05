@@ -409,9 +409,9 @@ describe('IexecPocoBoostDelegate', function () {
         it('Should match orders without dataset (TEE)', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
-
+            const dealPrice = (appPrice + workerpoolPrice) * volume;
             await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [requester.address]: 1_000_001_000,
+                [requester.address]: dealPrice,
                 [scheduler.address]: computeSchedulerDealStake(workerpoolPrice, volume),
             });
 
