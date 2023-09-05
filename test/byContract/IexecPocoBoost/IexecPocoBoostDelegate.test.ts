@@ -1569,7 +1569,7 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetProvider.address,
                 initialDatasetOwnerBalance + datasetPrice,
             );
-            // Check scherduler frozen
+            // Check scheduler frozen
             await expectFrozen(
                 iexecPocoBoostInstance,
                 scheduler.address,
