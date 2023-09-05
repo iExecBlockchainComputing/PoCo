@@ -351,6 +351,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Reward, seize and unlock each parties
         uint96 appPrice = deal.appPrice;
         uint96 datasetPrice = deal.datasetPrice;
+        uint96 workerPoolPrice = deal.workerpoolPrice;
 
         // Seize requester
         seize(deal.requester, appPrice + datasetPrice + deal.workerReward, taskId); //TODO :  Seize app + dataset + workerpool (workerpool = workerReward + schedulerReward) price
@@ -366,7 +367,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
 
         // Unlock scheduler stake
-        uint256 taskWorkerpoolStake = (deal.workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 taskWorkerpoolStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
         unlock(deal.workerpoolOwner, taskWorkerpoolStake);
 
         emit ResultPushedBoost(dealId, index, results);
