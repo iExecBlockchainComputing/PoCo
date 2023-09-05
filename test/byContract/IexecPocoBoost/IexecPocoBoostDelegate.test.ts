@@ -48,8 +48,7 @@ import { IexecLibCore_v5 } from '../../../typechain/contracts/modules/interfaces
 
 chai.use(smock.matchers);
 
-// TODO: Rename to teeDealTag
-const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
+const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
 const schedulerRewardRatio = 1;
@@ -199,15 +198,12 @@ describe('IexecPocoBoostDelegate', function () {
             datasetInstance.owner.returns(datasetProvider.address);
             workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
 
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     callback: ethers.Wallet.createRandom().address,
                 });
@@ -280,7 +276,7 @@ describe('IexecPocoBoostDelegate', function () {
                     appInstance.address,
                     datasetInstance.address,
                     requestOrder.category,
-                    dealTagTee,
+                    teeDealTag,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -368,7 +364,7 @@ describe('IexecPocoBoostDelegate', function () {
                     assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 },
             );
             const appOrderHash = hashOrder(domain, appOrder);
@@ -398,7 +394,7 @@ describe('IexecPocoBoostDelegate', function () {
                     appInstance.address,
                     datasetInstance.address,
                     requestOrder.category,
-                    dealTagTee,
+                    teeDealTag,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -417,10 +413,8 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
 
-            const appPrice = 1000;
-            const workerpoolPrice = 1_000_000;
             await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [requester.address]: 1_001_000,
+                [requester.address]: 1_000_001_000,
                 [scheduler.address]: computeSchedulerDealStake(workerpoolPrice, volume),
             });
 
@@ -438,7 +432,7 @@ describe('IexecPocoBoostDelegate', function () {
                         dataset: 0,
                         workerpool: workerpoolPrice,
                     },
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 },
             );
             await signOrder(domain, appOrder, appProvider);
@@ -463,7 +457,7 @@ describe('IexecPocoBoostDelegate', function () {
                     appInstance.address,
                     constants.NULL.ADDRESS, // No dataset.
                     requestOrder.category,
-                    dealTagTee,
+                    teeDealTag,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -943,7 +937,7 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 },
             );
             // Manually set the tags for app, dataset, and request orders
@@ -970,7 +964,7 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 },
             );
 
@@ -1297,9 +1291,6 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
 
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
@@ -1333,10 +1324,6 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
-
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const schedulerStake = computeSchedulerDealStake(workerpoolPrice, volume);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
@@ -1394,7 +1381,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     volume: volume,
                     callback: oracleConsumerInstance.address,
@@ -1573,7 +1560,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -1731,7 +1718,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -1792,7 +1779,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -1830,7 +1817,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                     callback: ethers.Wallet.createRandom().address,
                 });
             await signOrders(domain, orders, ordersActors);
