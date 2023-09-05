@@ -6,16 +6,36 @@ import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
 
-export interface Iexec<T> {
-    app: T;
-    dataset: T;
-    workerpool: T;
-    requester: T;
+export interface OrdersAssets {
+    app: string;
+    dataset: string;
+    workerpool: string;
 }
 
-export interface IexecAccounts extends Iexec<SignerWithAddress> {}
+export interface OrdersPrices {
+    app?: number;
+    dataset?: number;
+    workerpool?: number;
+}
 
-export interface IexecOrders extends Iexec<Record<string, any>> {
+export interface MatchOrdersArgs {
+    assets: OrdersAssets;
+    requester: string;
+    beneficiary?: string;
+    tag?: string;
+    prices?: OrdersPrices;
+    volume?: number;
+    callback?: string;
+}
+
+export interface OrdersActors {
+    appOwner: SignerWithAddress;
+    datasetOwner: SignerWithAddress;
+    workerpoolOwner: SignerWithAddress;
+    requester: SignerWithAddress;
+}
+
+export interface IexecOrders {
     app: IexecLibOrders_v5.AppOrderStruct;
     dataset: IexecLibOrders_v5.DatasetOrderStruct;
     workerpool: IexecLibOrders_v5.WorkerpoolOrderStruct;
@@ -87,48 +107,61 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
     };
 }
 
-export function buildCompatibleOrders(
-    entriesAndRequester: Iexec<string>,
-    tag: string,
-    prices?: { app: number; dataset: number; workerpool: number },
-    volume?: number,
-) {
+export function buildCompatibleOrders(matchOrdersArgs: MatchOrdersArgs) {
     let requestOrder = createEmptyRequestOrder();
     let appOrder = createEmptyAppOrder();
     let workerpoolOrder = createEmptyWorkerpoolOrder();
     let datasetOrder = createEmptyDatasetOrder();
+    const assets = matchOrdersArgs.assets;
     // Set app
-    appOrder.app = entriesAndRequester.app;
-    requestOrder.app = entriesAndRequester.app;
+    appOrder.app = assets.app;
+    requestOrder.app = assets.app;
     // Set workerpool
-    workerpoolOrder.workerpool = entriesAndRequester.workerpool;
-    requestOrder.workerpool = entriesAndRequester.workerpool;
+    workerpoolOrder.workerpool = assets.workerpool;
+    requestOrder.workerpool = assets.workerpool;
     // Set dataset
-    datasetOrder.dataset = entriesAndRequester.dataset;
-    requestOrder.dataset = entriesAndRequester.dataset;
+    datasetOrder.dataset = assets.dataset;
+    requestOrder.dataset = assets.dataset;
     // Set requester
-    requestOrder.requester = entriesAndRequester.requester;
+    requestOrder.requester = matchOrdersArgs.requester;
+    // Set beneficiary
+    if (matchOrdersArgs.beneficiary) {
+        requestOrder.beneficiary = matchOrdersArgs.beneficiary;
+    }
     // Set tag
-    appOrder.tag = tag;
-    requestOrder.tag = tag;
-    datasetOrder.tag = tag;
-    workerpoolOrder.tag = tag;
+    if (matchOrdersArgs.tag) {
+        appOrder.tag = matchOrdersArgs.tag;
+        requestOrder.tag = matchOrdersArgs.tag;
+        datasetOrder.tag = matchOrdersArgs.tag;
+        workerpoolOrder.tag = matchOrdersArgs.tag;
+    }
     // Set prices
+    const prices = matchOrdersArgs.prices;
     if (prices) {
-        appOrder.appprice = prices.app;
-        datasetOrder.datasetprice = prices.dataset;
-        workerpoolOrder.workerpoolprice = prices.workerpool;
-        requestOrder.appmaxprice = prices.app;
-        requestOrder.datasetmaxprice = prices.dataset;
-        requestOrder.workerpoolmaxprice = prices.workerpool;
+        if (prices.app) {
+            appOrder.appprice = prices.app;
+            requestOrder.appmaxprice = prices.app;
+        }
+        if (prices.dataset && assets.dataset != constants.NULL.ADDRESS) {
+            datasetOrder.datasetprice = prices.dataset;
+            requestOrder.datasetmaxprice = prices.dataset;
+        }
+        if (prices.workerpool) {
+            workerpoolOrder.workerpoolprice = prices.workerpool;
+            requestOrder.workerpoolmaxprice = prices.workerpool;
+        }
     }
-    if (volume) {
-        appOrder.volume = volume;
-        datasetOrder.volume = volume;
-        workerpoolOrder.volume = volume;
-        requestOrder.volume = volume;
+    // Set volume
+    if (matchOrdersArgs.volume) {
+        appOrder.volume = matchOrdersArgs.volume;
+        datasetOrder.volume = matchOrdersArgs.volume;
+        workerpoolOrder.volume = matchOrdersArgs.volume;
+        requestOrder.volume = matchOrdersArgs.volume;
     }
-
+    // Set callback
+    if (matchOrdersArgs.callback) {
+        requestOrder.callback = matchOrdersArgs.callback;
+    }
     return {
         orders: {
             app: appOrder,
@@ -171,13 +204,13 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
 export async function signOrders(
     domain: TypedDataDomain,
     orders: IexecOrders,
-    signers: IexecAccounts,
+    signers: OrdersActors,
 ): Promise<void> {
-    await signOrder(domain, orders.app, signers.app);
+    await signOrder(domain, orders.app, signers.appOwner);
     if (orders.dataset) {
-        await signOrder(domain, orders.dataset, signers.dataset);
+        await signOrder(domain, orders.dataset, signers.datasetOwner);
     }
-    await signOrder(domain, orders.workerpool, signers.workerpool);
+    await signOrder(domain, orders.workerpool, signers.workerpoolOwner);
     await signOrder(domain, orders.requester, signers.requester);
 }
 

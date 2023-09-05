@@ -28,12 +28,13 @@ import "../../registries/workerpools/IWorkerpool.v8.sol";
 import "./IexecEscrow.v8.sol";
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
-import "../interfaces/IexecAccessorsBoost.sol";
 import "../interfaces/IOracleConsumer.sol";
 
-/// @title PoCo Boost to reduce latency and increase throughput of deals.
-/// @notice Works for deals with requested trust = 0.
-contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, DelegateBase, IexecEscrow {
+/**
+ * @title PoCo Boost to reduce latency and increase throughput of deals.
+ * @notice Works for deals with requested trust = 0.
+ */
+contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     using Address for address;
     using ECDSA for bytes32;
     using Math for uint256;
@@ -239,7 +240,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
         }
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
-        deal.beneficiary = _requestorder.beneficiary;
         deal.deadline = (block.timestamp +
             m_categories[_requestorder.category].workClockTimeRef *
             CONTRIBUTION_DEADLINE_RATIO).toUint48();
@@ -275,7 +275,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             _requestorder.dataset,
             _requestorder.category,
             tag,
-            _requestorder.params
+            _requestorder.params,
+            _requestorder.beneficiary
         );
         // Broadcast consumption of orders.
         emit OrdersMatched(
@@ -286,13 +287,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, IexecAccessorsBoost, Delegate
             requestOrderTypedDataHash,
             volume
         );
-    }
-
-    // TODO: Move to IexecAccessorsBoost
-    function viewDealBoost(
-        bytes32 _id
-    ) external view returns (IexecLibCore_v5.DealBoost memory deal) {
-        return m_dealsBoost[_id];
     }
 
     /**

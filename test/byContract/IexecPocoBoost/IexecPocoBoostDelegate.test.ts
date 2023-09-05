@@ -6,7 +6,8 @@ import { assert, ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract, ContractFactory } from '@ethersproject/contracts';
 import {
-    IexecPocoBoostDelegate__factory,
+    IexecPocoBoostCompositeDelegate__factory,
+    IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate,
     App__factory,
     Workerpool__factory,
@@ -31,8 +32,9 @@ import {
     signOrder,
     hashOrder,
     signOrders,
-    Iexec,
-    IexecAccounts,
+    OrdersActors,
+    OrdersAssets,
+    OrdersPrices,
 } from '../../../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
@@ -42,12 +44,12 @@ import {
     getTaskId,
     getDealId,
 } from '../../../utils/poco-tools';
+import { IexecLibCore_v5 } from '../../../typechain/contracts/modules/interfaces/IexecPocoBoostAccessors';
 
 chai.use(smock.matchers);
 
 // TODO: Rename to teeDealTag
 const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const taskIndex = 0;
 const volume = taskIndex + 1;
 const schedulerRewardRatio = 1;
@@ -57,6 +59,9 @@ const BALANCES = 'm_balances';
 const FROZENS = 'm_frozens';
 const WORKERPOOL_STAKE_RATIO = 30;
 const { domain, domainSeparator } = buildDomain();
+const appPrice = 1000;
+const datasetPrice = 1_000_000;
+const workerpoolPrice = 1_000_000_000;
 
 async function deployBoostFixture() {
     const [
@@ -79,7 +84,7 @@ async function deployBoostFixture() {
     // Using native smock call here for understandability purposes (also works with
     // the custom `createMock` method)
     const iexecPocoBoostInstance = (await smock
-        .mock<IexecPocoBoostDelegate__factory>('IexecPocoBoostDelegate', {
+        .mock<IexecPocoBoostCompositeDelegate__factory>('IexecPocoBoostCompositeDelegate', {
             libraries: {
                 ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
                     iexecLibOrdersInstanceAddress,
@@ -136,8 +141,9 @@ describe('IexecPocoBoostDelegate', function () {
     let workerpoolRegistry: FakeContract<WorkerpoolRegistry>;
     let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
         [] as SignerWithAddress[];
-    let accounts: IexecAccounts;
-    let entriesAndRequester: Iexec<string>;
+    let ordersActors: OrdersActors;
+    let ordersAssets: OrdersAssets;
+    let ordersPrices: OrdersPrices;
 
     beforeEach('set up contract instances and mock app', async () => {
         const fixtures = await loadFixture(deployBoostFixture);
@@ -150,20 +156,24 @@ describe('IexecPocoBoostDelegate', function () {
         requester = fixtures.requester;
         beneficiary = fixtures.beneficiary;
         anyone = fixtures.anyone;
-        accounts = {
-            app: appProvider,
-            dataset: datasetProvider,
-            workerpool: scheduler,
+        ordersActors = {
+            appOwner: appProvider,
+            datasetOwner: datasetProvider,
+            workerpoolOwner: scheduler,
             requester: requester,
         };
         appInstance = await createMock<App__factory, App>('App');
         workerpoolInstance = await createMock<Workerpool__factory, Workerpool>('Workerpool');
         datasetInstance = await createMock<Dataset__factory, Dataset>('Dataset');
-        entriesAndRequester = {
+        ordersAssets = {
             app: appInstance.address,
             dataset: datasetInstance.address,
             workerpool: workerpoolInstance.address,
-            requester: requester.address,
+        };
+        ordersPrices = {
+            app: appPrice,
+            dataset: datasetPrice,
+            workerpool: workerpoolPrice,
         };
         appRegistry = await smock.fake<AppRegistry>(AppRegistry__factory);
         await iexecPocoBoostInstance.setVariable('m_appregistry', appRegistry.address);
@@ -181,7 +191,7 @@ describe('IexecPocoBoostDelegate', function () {
     });
 
     describe('Match Orders Boost', function () {
-        it('Should match orders', async function () {
+        it('Should match orders (TEE)', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
@@ -191,16 +201,14 @@ describe('IexecPocoBoostDelegate', function () {
             const datasetPrice = 1_000_000;
             const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee, {
-                    app: appPrice,
-                    dataset: datasetPrice,
-                    workerpool: workerpoolPrice,
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    beneficiary: beneficiary.address,
+                    tag: dealTagTee,
+                    prices: ordersPrices,
+                    callback: ethers.Wallet.createRandom().address,
                 });
-            requestOrder.requester = requester.address;
-            requestOrder.beneficiary = beneficiary.address;
-
-            // Set callback
-            requestOrder.callback = ethers.Wallet.createRandom().address;
             // Should match orders with low app order volume
             // Set volumes
             appOrder.volume = 2; // smallest unconsumed volume among all orders
@@ -243,7 +251,7 @@ describe('IexecPocoBoostDelegate', function () {
                 initialSchedulerBalance + schedulerStake,
             );
             await expectFrozen(iexecPocoBoostInstance, scheduler.address, initialSchedulerFrozen);
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -272,6 +280,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     dealTagTee,
                     requestOrder.params,
+                    beneficiary.address,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
@@ -294,7 +303,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             // Check addresses.
             expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
             expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
@@ -307,13 +316,14 @@ describe('IexecPocoBoostDelegate', function () {
                     (100 - schedulerRewardRatio)) / // worker ratio
                     100,
             );
-            expect(deal.beneficiary).to.be.equal(requestOrder.beneficiary, 'Beneficiary mismatch');
             expect(deal.deadline).to.be.equal(
                 startTime + // match order block timestamp
                     7 * // contribution deadline ratio
                         60, // requested category time reference
             );
-            expect(deal.callback).to.be.equal(requestOrder.callback, 'Callback mismatch');
+            expect(deal.callback)
+                .to.be.equal(requestOrder.callback, 'Callback mismatch')
+                .to.not.be.equal(constants.NULL.ADDRESS);
             // Check prices.
             expect(deal.workerpoolPrice).to.be.equal(
                 workerpoolOrder.workerpoolprice,
@@ -347,13 +357,17 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
-        it('Should match orders with pre-signatures', async function () {
+        it('Should match orders with pre-signatures (TEE)', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    beneficiary: beneficiary.address,
+                    tag: dealTagTee,
+                },
             );
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -384,6 +398,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     dealTagTee,
                     requestOrder.params,
+                    beneficiary.address,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
@@ -396,7 +411,7 @@ describe('IexecPocoBoostDelegate', function () {
                 );
         });
 
-        it('Should match orders without dataset', async function () {
+        it('Should match orders without dataset (TEE)', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
 
@@ -409,30 +424,27 @@ describe('IexecPocoBoostDelegate', function () {
 
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
                 {
-                    app: appInstance.address,
-                    dataset: constants.NULL.ADDRESS, // No dataset.
-                    workerpool: workerpoolInstance.address,
+                    assets: {
+                        app: appInstance.address,
+                        dataset: constants.NULL.ADDRESS, // No dataset.
+                        workerpool: workerpoolInstance.address,
+                    },
                     requester: requester.address,
-                },
-                dealTagTee,
-                {
-                    app: appPrice,
-                    dataset: 0,
-                    workerpool: workerpoolPrice,
+                    beneficiary: beneficiary.address,
+                    prices: {
+                        app: appPrice,
+                        dataset: 0,
+                        workerpool: workerpoolPrice,
+                    },
+                    tag: dealTagTee,
                 },
             );
-
-            requestOrder.requester = requester.address;
-            requestOrder.beneficiary = beneficiary.address;
-
-            // Set callback
-            requestOrder.callback = ethers.Wallet.createRandom().address;
             await signOrder(domain, appOrder, appProvider);
             await signOrder(domain, workerpoolOrder, scheduler);
             await signOrder(domain, requestOrder, requester);
             const dealId = getDealId(domain, requestOrder, taskIndex);
-            const datasetOrderHash = hashOrder(domain, datasetOrder);
-            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, undefined);
+            const emptyDatasetOrderHash = hashOrder(domain, datasetOrder);
+            await expectOrderConsumed(iexecPocoBoostInstance, emptyDatasetOrderHash, undefined);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -451,6 +463,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder.category,
                     dealTagTee,
                     requestOrder.params,
+                    beneficiary.address,
                 )
                 .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
                 .withArgs(
@@ -461,8 +474,8 @@ describe('IexecPocoBoostDelegate', function () {
                     hashOrder(domain, requestOrder),
                     volume,
                 );
-            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, undefined);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            await expectOrderConsumed(iexecPocoBoostInstance, emptyDatasetOrderHash, undefined);
+            const deal = await viewDealBoost(dealId);
             expect(deal.datasetPrice).to.be.equal(0);
         });
 
@@ -471,14 +484,17 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
             // Set volumes
             appOrder.volume = 6;
             datasetOrder.volume = 5; // smallest unconsumed volume among all orders
             workerpoolOrder.volume = 7;
             requestOrder.volume = 8;
             const expectedVolume = 5;
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -506,7 +522,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
         });
@@ -516,14 +532,17 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
             // Set volumes
             appOrder.volume = 5;
             datasetOrder.volume = 4;
             workerpoolOrder.volume = 3; // smallest unconsumed volume among all orders
             requestOrder.volume = 6;
             const expectedVolume = 3;
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -551,7 +570,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
         });
@@ -561,14 +580,17 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
             // Set volumes
             appOrder.volume = 7;
             datasetOrder.volume = 6;
             workerpoolOrder.volume = 5;
             requestOrder.volume = 4; // smallest unconsumed volume among all orders
             const expectedVolume = 4;
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -596,7 +618,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId);
+            const deal = await viewDealBoost(dealId);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
         });
@@ -606,13 +628,16 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
             appOrder.volume = 8;
             datasetOrder.volume = 8;
             requestOrder.volume = 8;
             // Partially consume orders in a first batch
             workerpoolOrder.volume = 3; // 3 now and 5 later
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId1 = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
             const datasetOrderHash = hashOrder(domain, datasetOrder);
@@ -636,7 +661,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrderHash,
                     3,
                 );
-            const deal = await iexecPocoBoostInstance.viewDealBoost(dealId1);
+            const deal = await viewDealBoost(dealId1);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(3);
 
@@ -664,7 +689,7 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrderHash,
                     5,
                 );
-            const deal2 = await iexecPocoBoostInstance.viewDealBoost(dealId2);
+            const deal2 = await viewDealBoost(dealId2);
             expect(deal2.botFirst).to.be.equal(3); // next index after last task of deal1:{0, 1, 2}
             expect(deal2.botSize).to.be.equal(5);
             // Verify request is fully consumed
@@ -676,10 +701,13 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
             // Set volumes
             appOrder.volume = 0; // nothing to consume
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -693,8 +721,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when trust is not zero', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Set non-zero trust
             requestOrder.trust = 1;
@@ -711,8 +741,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when categories are different', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Set different categories
             requestOrder.category = 1;
@@ -730,8 +762,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when category unknown', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Unknown category
             requestOrder.category = 1;
@@ -749,8 +783,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when app max price is less than app price', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             appOrder.appprice = 200;
             requestOrder.appmaxprice = 100;
@@ -767,8 +803,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when dataset max price is less than dataset price', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
 
             // Set dataset price higher than dataset max price
@@ -787,8 +825,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when workerpool max price is less than workerpool price', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
 
             // Set workerpool price higher than workerpool max price
@@ -808,8 +848,10 @@ describe('IexecPocoBoostDelegate', function () {
         it('Should fail when invalid app order signature', async function () {
             appInstance.owner.returns(appProvider.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             await signOrder(domain, appOrder, anyone);
 
@@ -827,8 +869,10 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             datasetInstance.owner.returns(datasetProvider.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             await signOrder(domain, appOrder, appProvider);
             await signOrder(domain, datasetOrder, anyone);
@@ -848,8 +892,10 @@ describe('IexecPocoBoostDelegate', function () {
             datasetInstance.owner.returns(datasetProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             await signOrder(domain, appOrder, appProvider);
             await signOrder(domain, datasetOrder, datasetProvider);
@@ -870,8 +916,10 @@ describe('IexecPocoBoostDelegate', function () {
             datasetInstance.owner.returns(datasetProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             await signOrder(domain, appOrder, appProvider);
             await signOrder(domain, datasetOrder, datasetProvider);
@@ -890,8 +938,11 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when the workerpool tag does not provide what app, dataset and request expect', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: dealTagTee,
+                },
             );
             // Manually set the tags for app, dataset, and request orders
             appOrder.tag = '0x0000000000000000000000000000000000000000000000000000000000000001'; // 0b0001
@@ -914,8 +965,11 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when the last bit of app tag does not provide what dataset or request expect', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: dealTagTee,
+                },
             );
 
             // Manually set the tags for app, dataset, and request orders
@@ -940,8 +994,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when app are different', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Request different app adress
             requestOrder.app = '0x0000000000000000000000000000000000000001';
@@ -958,8 +1014,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when dataset are different', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Request different dataset adress
             requestOrder.dataset = '0x0000000000000000000000000000000000000001';
@@ -976,8 +1034,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when requestorder mismatch workerpool restriction ', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Request different dataset adress
             requestOrder.workerpool = '0x0000000000000000000000000000000000000001';
@@ -994,8 +1054,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when apporder mismatch dataset restriction ', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Request different dataset adress
             appOrder.datasetrestrict = '0x0000000000000000000000000000000000000001';
@@ -1012,8 +1074,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when apporder mismatch workerpool restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Set different workerpool address
             appOrder.workerpoolrestrict = '0x0000000000000000000000000000000000000001';
@@ -1030,8 +1094,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when apporder mismatch requester restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Set different requester address
             appOrder.requesterrestrict = '0x0000000000000000000000000000000000000001';
@@ -1048,8 +1114,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when datasetorder mismatch app restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             // Set different app address
             datasetOrder.apprestrict = '0x0000000000000000000000000000000000000001';
@@ -1066,8 +1134,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when datasetorder mismatch workerpool restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             datasetOrder.workerpoolrestrict = '0x0000000000000000000000000000000000000001';
 
@@ -1083,8 +1153,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when datasetorder mismatch requester restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             datasetOrder.requesterrestrict = '0x0000000000000000000000000000000000000001';
 
@@ -1100,8 +1172,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when workerpoolorder mismatch app restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             workerpoolOrder.apprestrict = '0x0000000000000000000000000000000000000001';
 
@@ -1117,8 +1191,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when workerpoolorder mismatch dataset restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             workerpoolOrder.datasetrestrict = '0x0000000000000000000000000000000000000001';
 
@@ -1134,8 +1210,10 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should fail when workerpoolorder mismatch requester restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             workerpoolOrder.requesterrestrict = '0x0000000000000000000000000000000000000001';
 
@@ -1152,8 +1230,10 @@ describe('IexecPocoBoostDelegate', function () {
         it('Should fail when app not registered', async function () {
             appRegistry.isRegistered.whenCalledWith(appInstance.address).returns(false);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                entriesAndRequester,
-                dealTagTee,
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                },
             );
             await signOrder(domain, appOrder, anyone);
 
@@ -1171,8 +1251,11 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             datasetRegistry.isRegistered.whenCalledWith(datasetInstance.address).returns(false);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
+            await signOrders(domain, orders, ordersActors);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1191,8 +1274,11 @@ describe('IexecPocoBoostDelegate', function () {
                 .whenCalledWith(workerpoolInstance.address)
                 .returns(false);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
+            await signOrders(domain, orders, ordersActors);
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1214,13 +1300,11 @@ describe('IexecPocoBoostDelegate', function () {
             const workerpoolPrice = 1_000_000_000;
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee, {
-                    app: appPrice,
-                    dataset: datasetPrice,
-                    workerpool: workerpoolPrice,
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    prices: ordersPrices,
                 });
-            requestOrder.requester = requester.address;
-            requestOrder.beneficiary = beneficiary.address;
 
             const initialRequesterBalance = 2;
             await iexecPocoBoostInstance.setVariables({
@@ -1232,7 +1316,7 @@ describe('IexecPocoBoostDelegate', function () {
                 await iexecPocoBoostInstance.getVariable(BALANCES, [requester.address]),
             ).to.be.lessThan(dealPrice);
 
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -1254,13 +1338,11 @@ describe('IexecPocoBoostDelegate', function () {
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const schedulerStake = computeSchedulerDealStake(workerpoolPrice, volume);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee, {
-                    app: appPrice,
-                    dataset: datasetPrice,
-                    workerpool: workerpoolPrice,
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    prices: ordersPrices,
                 });
-            requestOrder.requester = requester.address;
-            requestOrder.beneficiary = beneficiary.address;
 
             const initialRequesterBalance = 2;
             const initialSchedulerBalance = 3; // Way less than what is needed as stake.
@@ -1279,7 +1361,7 @@ describe('IexecPocoBoostDelegate', function () {
                 await iexecPocoBoostInstance.getVariable(BALANCES, [scheduler.address]),
             ).to.be.lessThan(schedulerStake);
 
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
                     appOrder,
@@ -1303,23 +1385,21 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should push result (TEE & callback)', async function () {
             workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
+            const oracleConsumerInstance = await createMock<TestClient__factory, TestClient>(
+                'TestClient',
+            );
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const volume = 3;
             const dealPrice = taskPrice * volume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(
-                    entriesAndRequester,
-                    dealTagTee,
-                    {
-                        app: appPrice,
-                        dataset: datasetPrice,
-                        workerpool: workerpoolPrice,
-                    },
-                    volume,
-                );
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: dealTagTee,
+                    prices: ordersPrices,
+                    volume: volume,
+                    callback: oracleConsumerInstance.address,
+                });
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
@@ -1341,11 +1421,7 @@ describe('IexecPocoBoostDelegate', function () {
                     [requester.address]: initialRequesterFrozen,
                 },
             });
-            const oracleConsumerInstance = await createMock<TestClient__factory, TestClient>(
-                'TestClient',
-            );
-            requestOrder.callback = oracleConsumerInstance.address;
-            await signOrders(domain, orders, accounts);
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             const startTime = await setNextBlockTimestamp();
@@ -1402,9 +1478,7 @@ describe('IexecPocoBoostDelegate', function () {
                 datasetProvider.address,
                 initialDatasetOwnerBalance,
             );
-            const expectedWorkerReward = (
-                await iexecPocoBoostInstance.viewDealBoost(dealId)
-            ).workerReward.toNumber();
+            const expectedWorkerReward = (await viewDealBoost(dealId)).workerReward.toNumber();
             // Worker reward formula already checked in match orders test, hence
             // we just need to verify here that some worker reward value will be
             // transferred
@@ -1497,8 +1571,12 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should push result (TEE)', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: dealTagTee,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -1537,11 +1615,13 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(dealId, taskIndex, results);
         });
 
-        it('Should push result (Standard)', async function () {
-            const tag = constants.NULL.BYTES32;
+        it('Should push result', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, tag);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -1577,8 +1657,11 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not push result twice', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, constants.NULL.BYTES32);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -1615,8 +1698,11 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not push result after deadline', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
+            await signOrders(domain, orders, ordersActors);
             const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -1643,8 +1729,12 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not push result without enclave challenge for TEE task', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: dealTagTee,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -1670,8 +1760,11 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not push result with invalid scheduler signature', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
+            await signOrders(domain, orders, ordersActors);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,
@@ -1697,8 +1790,12 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not push result with invalid enclave signature', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: dealTagTee,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -1731,9 +1828,13 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not push result with missing data for callback', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            requestOrder.callback = '0x000000000000000000000000000000000000ca11';
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: dealTagTee,
+                    callback: ethers.Wallet.createRandom().address,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -1825,24 +1926,17 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should claim', async function () {
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             const expectedVolume = 2; // > 1 to explicit taskPrice vs dealPrice
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(
-                    entriesAndRequester,
-                    dealTagTee,
-                    {
-                        app: appPrice,
-                        dataset: datasetPrice,
-                        workerpool: workerpoolPrice,
-                    },
-                    expectedVolume,
-                );
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    prices: ordersPrices,
+                    volume: expectedVolume,
+                });
+            await signOrders(domain, orders, ordersActors);
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
             const initialRequesterFrozen = 3;
@@ -1917,8 +2011,11 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not claim if task not unset', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, standardDealTag);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -1963,8 +2060,11 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not claim if task unknown because of wrong index', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, standardDealTag);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -1983,8 +2083,11 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should not claim before deadline', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, standardDealTag);
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -2004,6 +2107,16 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Deadline not reached');
         });
     });
+
+    /**
+     * @notice Smock does not support getting struct variable from a mapping.
+     */
+    async function viewDealBoost(dealId: string) {
+        return await IexecPocoBoostAccessorsDelegate__factory.connect(
+            iexecPocoBoostInstance.address,
+            anyone,
+        ).viewDealBoost(dealId);
+    }
 });
 
 /**

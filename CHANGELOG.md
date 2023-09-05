@@ -39,6 +39,7 @@
     - Store deal. (#174)
     - Emit events. (#182, #184, #197)
     - Lock scheduler stake. (#202)
+    - Remove beneficiary from deal storage. (#205)
 - Implement `pushResultBoost`:
     - Push result before deadline. (#195)
     - Require enclave challenge when TEE bit of tag set. (#197)
@@ -51,7 +52,8 @@
     - Handle callback. (#183, #208)
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)
-- Refactor tests. (#177, #178, #179, #181, #188, #200)
+- Add dedicated Poco Boost accessors. (#206)
+- Refactor tests. (#177, #178, #179, #181, #188, #200, #209)
 - Add mocha to use test explorer. (#180)
 
 ## v5.4.2
