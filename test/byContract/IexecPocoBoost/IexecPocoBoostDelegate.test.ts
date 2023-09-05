@@ -1874,9 +1874,13 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should push result even if callback target is not a contract', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders(entriesAndRequester, dealTagTee);
-            requestOrder.callback = '0x000000000000000000000000000000000000ca11';
-            await signOrders(domain, orders, accounts);
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: dealTagTee,
+                    callback: ethers.Wallet.createRandom().address,
+                });
+            await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
