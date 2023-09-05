@@ -377,11 +377,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
              * call reverts.
              */
             (bool success, ) = target.call{gas: m_callbackgas}(
-                abi.encodeWithSelector(
-                    IOracleConsumer.receiveResult.selector,
-                    taskId,
-                    resultsCallback
-                )
+                abi.encodeCall(IOracleConsumer.receiveResult, (taskId, resultsCallback))
             );
             success; // silent unused variable warning
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
