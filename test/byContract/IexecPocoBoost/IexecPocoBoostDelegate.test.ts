@@ -1863,7 +1863,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                     callback: ethers.Wallet.createRandom().address,
                 });
             await signOrders(domain, orders, ordersActors);
@@ -1907,7 +1907,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                     callback: oracleConsumerInstance.address,
                 });
             await signOrders(domain, orders, ordersActors);

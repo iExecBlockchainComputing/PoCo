@@ -23,11 +23,11 @@ import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
 import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
 
+import "../../external/interfaces/IOracleConsumer.sol";
 import "../../registries/workerpools/IWorkerpool.v8.sol";
 import "./IexecEscrow.v8.sol";
 import "../DelegateBase.v8.sol";
 import "../interfaces/IexecPocoBoost.sol";
-import "../interfaces/IOracleConsumer.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
