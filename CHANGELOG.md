@@ -49,7 +49,7 @@
     - Reward worker. (#203)
     - Reward app provider. (#204)
     - Reward dataset provider. (#207)
-    - Handle callback. (#183)
+    - Handle callback. (#183, #208)
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)
 - Add dedicated Poco Boost accessors. (#206)
