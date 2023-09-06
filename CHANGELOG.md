@@ -40,6 +40,7 @@
     - Emit events. (#182, #184, #197)
     - Lock scheduler stake. (#202)
     - Remove beneficiary from deal storage. (#205)
+    - Reduce Boost deal storage from 6 to 5 slots. (#216)
 - Implement `pushResultBoost`:
     - Push result before deadline. (#195)
     - Require enclave challenge when TEE bit of tag set. (#197)
