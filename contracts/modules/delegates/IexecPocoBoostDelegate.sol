@@ -23,6 +23,7 @@ import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
 import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
 
+import "../../external/interfaces/IOracleConsumer.sol";
 import "../../registries/workerpools/IWorkerpool.v8.sol";
 import "./IexecEscrow.v8.sol";
 import "../DelegateBase.v8.sol";
@@ -374,8 +375,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
         if (target != address(0)) {
             require(resultsCallback.length > 0, "PocoBoost: Callback requires data");
+            /*
+             * The caller must be able to complete the task even if the external
+             * call reverts.
+             */
             (bool success, ) = target.call{gas: m_callbackgas}(
-                abi.encodeWithSignature("receiveResult(bytes32,bytes)", taskId, resultsCallback)
+                abi.encodeCall(IOracleConsumer.receiveResult, (taskId, resultsCallback))
             );
             success; // silent unused variable warning
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");

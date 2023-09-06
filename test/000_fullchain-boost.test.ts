@@ -14,10 +14,6 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-//
-// TODO Rename file to .test.ts
-//
-
 import { expect } from 'chai';
 import hre, { ethers, deployments } from 'hardhat';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
@@ -63,7 +59,7 @@ import {
     getTaskId,
 } from '../utils/poco-tools';
 
-const dealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
 const startTime = 9876543210;
@@ -88,10 +84,9 @@ async function extractRegistryEntryAddress(
     return ethers.utils.getAddress(lowercaseAddress);
 }
 
-describe('IexecPocoBoostDelegate (integration tests)', function () {
+describe('IexecPocoBoostDelegate (IT)', function () {
     let domain: TypedDataDomain;
-    //TODO: Rename to iexecOrderManagementInstance
-    let iexecCategoryManagementInstance: IexecOrderManagement;
+    let proxyAddress: string;
     let iexecInstance: IexecAccessors;
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
     let rlcInstance: RLC;
@@ -134,11 +129,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             requester: requester,
         };
         await deployments.fixture();
-        const proxyAddress = await getContractAddress('ERC1538Proxy');
-        iexecCategoryManagementInstance = IexecOrderManagement__factory.connect(
-            proxyAddress,
-            anyone,
-        );
+        proxyAddress = await getContractAddress('ERC1538Proxy');
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
         rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
@@ -212,7 +203,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
-                    tag: dealTag,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     callback: callbackAddress,
                 });
@@ -251,7 +242,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
-                    dealTag,
+                    teeDealTag,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -302,66 +293,71 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
         });
-    });
 
-    // TODO: Move to MatchOrders block
-    it('Should match orders with pre-signatures (TEE)', async function () {
-        const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders({
-            assets: ordersAssets,
-            requester: requester.address,
-            beneficiary: beneficiary.address,
-            tag: dealTag,
-        });
-        await iexecCategoryManagementInstance.connect(appProvider).manageAppOrder({
-            order: appOrder,
-            operation: 0,
-            sign: '0x',
-        });
-        await iexecCategoryManagementInstance.connect(datasetProvider).manageDatasetOrder({
-            order: datasetOrder,
-            operation: 0,
-            sign: '0x',
-        });
-        await iexecCategoryManagementInstance.connect(scheduler).manageWorkerpoolOrder({
-            order: workerpoolOrder,
-            operation: 0,
-            sign: '0x',
-        });
-        await iexecCategoryManagementInstance.connect(requester).manageRequestOrder({
-            order: requestOrder,
-            operation: 0,
-            sign: '0x',
-        });
-        const dealId = getDealId(domain, requestOrder, taskIndex);
-
-        await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            ),
-        )
-            .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
-            .withArgs(
-                workerpoolAddress,
-                dealId,
-                appAddress,
-                datasetAddress,
-                requestOrder.category,
-                dealTag,
-                requestOrder.params,
-                beneficiary.address,
-            )
-            .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
-            .withArgs(
-                dealId,
-                hashOrder(domain, appOrder),
-                hashOrder(domain, datasetOrder),
-                hashOrder(domain, workerpoolOrder),
-                hashOrder(domain, requestOrder),
-                volume,
+        it('Should match orders with pre-signatures (TEE)', async function () {
+            let iexecOrderManagementInstance = IexecOrderManagement__factory.connect(
+                proxyAddress,
+                anyone,
             );
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
+                {
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    beneficiary: beneficiary.address,
+                    tag: teeDealTag,
+                },
+            );
+            await iexecOrderManagementInstance.connect(appProvider).manageAppOrder({
+                order: appOrder,
+                operation: 0,
+                sign: '0x',
+            });
+            await iexecOrderManagementInstance.connect(datasetProvider).manageDatasetOrder({
+                order: datasetOrder,
+                operation: 0,
+                sign: '0x',
+            });
+            await iexecOrderManagementInstance.connect(scheduler).manageWorkerpoolOrder({
+                order: workerpoolOrder,
+                operation: 0,
+                sign: '0x',
+            });
+            await iexecOrderManagementInstance.connect(requester).manageRequestOrder({
+                order: requestOrder,
+                operation: 0,
+                sign: '0x',
+            });
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+                .withArgs(
+                    workerpoolAddress,
+                    dealId,
+                    appAddress,
+                    datasetAddress,
+                    requestOrder.category,
+                    teeDealTag,
+                    requestOrder.params,
+                    beneficiary.address,
+                )
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    hashOrder(domain, appOrder),
+                    hashOrder(domain, datasetOrder),
+                    hashOrder(domain, workerpoolOrder),
+                    hashOrder(domain, requestOrder),
+                    volume,
+                );
+        });
     });
 
     describe('PushResult', function () {
@@ -370,7 +366,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTag,
+                    tag: teeDealTag,
                 });
             const oracleConsumerInstance = await new TestClient__factory()
                 .connect(anyone)
@@ -427,7 +423,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTag,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     volume: volume,
                 });
@@ -534,7 +530,7 @@ describe('IexecPocoBoostDelegate (integration tests)', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTag,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     volume: expectedVolume,
                 });

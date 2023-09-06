@@ -48,8 +48,7 @@ import { IexecLibCore_v5 } from '../../../typechain/contracts/modules/interfaces
 
 chai.use(smock.matchers);
 
-// TODO: Rename to teeDealTag
-const dealTagTee = '0x0000000000000000000000000000000000000000000000000000000000000001';
+const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
 const schedulerRewardRatio = 1;
@@ -94,6 +93,7 @@ async function deployBoostFixture() {
         .then((instance) => instance.deployed())) as MockContract<IexecPocoBoostDelegate>;
     // A global domain separator needs to be set since current contract is being
     // unit tested here (hence no proxy)
+    await iexecPocoBoostInstance.setVariable('m_callbackgas', 100000);
     await iexecPocoBoostInstance.setVariable(EIP712DOMAIN_SEPARATOR, domainSeparator);
     await iexecPocoBoostInstance.setVariable('m_categories', [
         {
@@ -132,6 +132,7 @@ async function createMock<CF extends ContractFactory, C extends Contract>(
 
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: MockContract<IexecPocoBoostDelegate>;
+    let oracleConsumerInstance: FakeContract<TestClient>;
     let appInstance: MockContract<App>;
     let workerpoolInstance: MockContract<Workerpool>;
     let datasetInstance: MockContract<Dataset>;
@@ -161,6 +162,7 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOwner: scheduler,
             requester: requester,
         };
+        oracleConsumerInstance = await smock.fake<TestClient>(TestClient__factory);
         appInstance = await createMock<App__factory, App>('App');
         workerpoolInstance = await createMock<Workerpool__factory, Workerpool>('Workerpool');
         datasetInstance = await createMock<Dataset__factory, Dataset>('Dataset');
@@ -196,15 +198,12 @@ describe('IexecPocoBoostDelegate', function () {
             datasetInstance.owner.returns(datasetProvider.address);
             workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
 
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     callback: ethers.Wallet.createRandom().address,
                 });
@@ -277,7 +276,7 @@ describe('IexecPocoBoostDelegate', function () {
                     appInstance.address,
                     datasetInstance.address,
                     requestOrder.category,
-                    dealTagTee,
+                    teeDealTag,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -365,7 +364,7 @@ describe('IexecPocoBoostDelegate', function () {
                     assets: ordersAssets,
                     requester: requester.address,
                     beneficiary: beneficiary.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 },
             );
             const appOrderHash = hashOrder(domain, appOrder);
@@ -395,7 +394,7 @@ describe('IexecPocoBoostDelegate', function () {
                     appInstance.address,
                     datasetInstance.address,
                     requestOrder.category,
-                    dealTagTee,
+                    teeDealTag,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -414,10 +413,8 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
 
-            const appPrice = 1000;
-            const workerpoolPrice = 1_000_000;
             await iexecPocoBoostInstance.setVariable(BALANCES, {
-                [requester.address]: 1_001_000,
+                [requester.address]: 1_000_001_000,
                 [scheduler.address]: computeSchedulerDealStake(workerpoolPrice, volume),
             });
 
@@ -435,7 +432,7 @@ describe('IexecPocoBoostDelegate', function () {
                         dataset: 0,
                         workerpool: workerpoolPrice,
                     },
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 },
             );
             await signOrder(domain, appOrder, appProvider);
@@ -460,7 +457,7 @@ describe('IexecPocoBoostDelegate', function () {
                     appInstance.address,
                     constants.NULL.ADDRESS, // No dataset.
                     requestOrder.category,
-                    dealTagTee,
+                    teeDealTag,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -940,7 +937,7 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 },
             );
             // Manually set the tags for app, dataset, and request orders
@@ -967,7 +964,7 @@ describe('IexecPocoBoostDelegate', function () {
                 {
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 },
             );
 
@@ -1294,9 +1291,6 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
 
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
                 buildCompatibleOrders({
@@ -1330,10 +1324,6 @@ describe('IexecPocoBoostDelegate', function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
             datasetInstance.owner.returns(datasetProvider.address);
-
-            const appPrice = 1000;
-            const datasetPrice = 1_000_000;
-            const workerpoolPrice = 1_000_000_000;
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const schedulerStake = computeSchedulerDealStake(workerpoolPrice, volume);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
@@ -1384,9 +1374,6 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should push result (TEE & callback)', async function () {
             workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
-            const oracleConsumerInstance = await createMock<TestClient__factory, TestClient>(
-                'TestClient',
-            );
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const volume = 3;
             const dealPrice = taskPrice * volume;
@@ -1394,7 +1381,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                     prices: ordersPrices,
                     volume: volume,
                     callback: oracleConsumerInstance.address,
@@ -1517,7 +1504,7 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(scheduler.address, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
-            expect(oracleConsumerInstance.receiveResult).to.have.been.calledWith(
+            expect(oracleConsumerInstance.receiveResult).to.have.been.calledOnceWith(
                 taskId,
                 resultsCallback,
             );
@@ -1582,7 +1569,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -1740,7 +1727,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -1801,7 +1788,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                 });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -1839,7 +1826,7 @@ describe('IexecPocoBoostDelegate', function () {
                 buildCompatibleOrders({
                     assets: ordersAssets,
                     requester: requester.address,
-                    tag: dealTagTee,
+                    tag: teeDealTag,
                     callback: ethers.Wallet.createRandom().address,
                 });
             await signOrders(domain, orders, ordersActors);
@@ -1878,6 +1865,104 @@ describe('IexecPocoBoostDelegate', function () {
                         enclaveSignature,
                     ),
             ).to.be.revertedWith('PocoBoost: Callback requires data');
+        });
+
+        it('Should push result even if callback target is not a contract', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: teeDealTag,
+                    callback: ethers.Wallet.createRandom().address,
+                });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const resultsCallback = '0xab';
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        await buildAndSignSchedulerMessage(
+                            worker.address,
+                            taskId,
+                            enclave.address,
+                            scheduler,
+                        ),
+                        enclave.address,
+                        await buildAndSignEnclaveMessage(
+                            worker.address,
+                            taskId,
+                            ethers.utils.keccak256(resultsCallback),
+                            enclave,
+                        ),
+                    ),
+            ).to.emit(iexecPocoBoostInstance, 'ResultPushedBoost');
+        });
+
+        it('Should push result even if callback reverts', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
+                buildCompatibleOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    tag: teeDealTag,
+                    callback: oracleConsumerInstance.address,
+                });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const resultsCallback = '0xab';
+            oracleConsumerInstance.receiveResult.reverts();
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        await buildAndSignSchedulerMessage(
+                            worker.address,
+                            taskId,
+                            enclave.address,
+                            scheduler,
+                        ),
+                        enclave.address,
+                        await buildAndSignEnclaveMessage(
+                            worker.address,
+                            taskId,
+                            ethers.utils.keccak256(resultsCallback),
+                            enclave,
+                        ),
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                /**
+                 * Oracle consumer has been called but did not succeed.
+                 */
+                .to.not.emit(oracleConsumerInstance, 'GotResult');
+            expect(oracleConsumerInstance.receiveResult).to.have.been.calledOnceWith(
+                taskId,
+                resultsCallback,
+            );
         });
     });
 

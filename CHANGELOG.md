@@ -49,12 +49,12 @@
     - Reward worker. (#203)
     - Reward app provider. (#204)
     - Reward dataset provider. (#207)
-    - Unlock scheduler stake. (#20?)
-    - Handle callback. (#183)
+    - Unlock scheduler stake. (#212)
+    - Handle callback. (#183, #208)
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)
 - Add dedicated Poco Boost accessors. (#206)
-- Refactor tests. (#177, #178, #179, #181, #188, #200, #209)
+- Refactor tests. (#177, #178, #179, #181, #188, #200, #209, #210)
 - Add mocha to use test explorer. (#180)
 
 ## v5.4.2
