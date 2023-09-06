@@ -1786,13 +1786,12 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should push result even if callback target is not a contract', async function () {
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders({
-                    assets: ordersAssets,
-                    requester: requester.address,
-                    tag: teeDealTag,
-                    callback: ethers.Wallet.createRandom().address,
-                });
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+                callback: ethers.Wallet.createRandom().address,
+            });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -1830,13 +1829,12 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should push result even if callback reverts', async function () {
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders({
-                    assets: ordersAssets,
-                    requester: requester.address,
-                    tag: teeDealTag,
-                    callback: oracleConsumerInstance.address,
-                });
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+                callback: oracleConsumerInstance.address,
+            });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
