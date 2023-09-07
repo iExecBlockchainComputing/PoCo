@@ -1327,6 +1327,7 @@ describe('IexecPocoBoostDelegate', function () {
             const initialWorkerBalance = 4;
             const initialAppOwnerBalance = 5;
             const initialDatasetOwnerBalance = 6;
+            const initialSchedulerBalance = 7;
             const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, volume);
             const schedulerTaskStake = schedulerDealStake / volume;
             await iexecPocoBoostInstance.setVariables({
@@ -1334,7 +1335,7 @@ describe('IexecPocoBoostDelegate', function () {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance + dealPrice,
                     [worker.address]: initialWorkerBalance,
-                    [scheduler.address]: schedulerDealStake,
+                    [scheduler.address]: initialSchedulerBalance + schedulerDealStake,
                     [appProvider.address]: initialAppOwnerBalance,
                     [datasetProvider.address]: initialDatasetOwnerBalance,
                 },
@@ -1385,7 +1386,8 @@ describe('IexecPocoBoostDelegate', function () {
             );
             // Check worker balance
             await expectBalance(iexecPocoBoostInstance, worker.address, initialWorkerBalance);
-            // Check scheduler frozen
+            // Check scheduler balance and frozen
+            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
             await expectFrozen(iexecPocoBoostInstance, scheduler.address, schedulerDealStake);
             // Check app provider balance
             await expectBalance(
@@ -1433,6 +1435,10 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(iexecPocoBoostInstance.address, datasetProvider.address, datasetPrice)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
                 .withArgs(datasetProvider.address, datasetPrice, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, scheduler.address, schedulerTaskStake)
+                .to.emit(iexecPocoBoostInstance, 'Unlock')
+                .withArgs(scheduler.address, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
             expect(oracleConsumerInstance.receiveResult).to.have.been.calledOnceWith(
@@ -1460,7 +1466,6 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance.address,
                 initialIexecPocoBalance +
                     (taskPrice + schedulerTaskStake) * remainingTasksToPush +
-                    schedulerTaskStake + // TODO: Remove after unlock scheduler feature
                     expectedSchedulerReward, // TODO: Remove after scheduler reward feature
             );
             // Check requester balance and frozen
@@ -1487,6 +1492,17 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance,
                 datasetProvider.address,
                 initialDatasetOwnerBalance + datasetPrice,
+            );
+            // Check scheduler balance and frozen
+            await expectBalance(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                initialSchedulerBalance + schedulerTaskStake,
+            );
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                schedulerTaskStake * remainingTasksToPush,
             );
         });
 
