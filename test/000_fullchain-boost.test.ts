@@ -461,6 +461,8 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(0);
             expect(await iexecInstance.balanceOf(appProvider.address)).to.be.equal(0);
             expect(await iexecInstance.balanceOf(datasetProvider.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
             const expectedWorkerReward = (await viewDealBoost(dealId)).workerReward.toNumber();
             const expectedSchedulerReward = workerpoolPrice - expectedWorkerReward;
 
@@ -509,6 +511,9 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.balanceOf(appProvider.address)).to.be.equal(appPrice);
             expect(await iexecInstance.balanceOf(datasetProvider.address)).to.be.equal(
                 datasetPrice,
+            );
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(
+                schedulerTaskStake,
             );
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(
                 schedulerTaskStake * remainingTasksToPush,
