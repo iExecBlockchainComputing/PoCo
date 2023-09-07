@@ -46,7 +46,7 @@ import {
     OrdersActors,
     OrdersAssets,
     OrdersPrices,
-    buildCompatibleOrders,
+    buildOrders,
     hashOrder,
     signOrders,
 } from '../utils/createOrders';
@@ -198,15 +198,14 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     describe('MatchOrders', function () {
         it('Should match orders (TEE)', async function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders({
-                    assets: ordersAssets,
-                    requester: requester.address,
-                    beneficiary: beneficiary.address,
-                    tag: teeDealTag,
-                    prices: ordersPrices,
-                    callback: callbackAddress,
-                });
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                beneficiary: beneficiary.address,
+                tag: teeDealTag,
+                prices: ordersPrices,
+                callback: callbackAddress,
+            });
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
@@ -299,14 +298,12 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 proxyAddress,
                 anyone,
             );
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildCompatibleOrders(
-                {
-                    assets: ordersAssets,
-                    requester: requester.address,
-                    beneficiary: beneficiary.address,
-                    tag: teeDealTag,
-                },
-            );
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                beneficiary: beneficiary.address,
+                tag: teeDealTag,
+            });
             await iexecOrderManagementInstance.connect(appProvider).manageAppOrder({
                 order: appOrder,
                 operation: 0,
@@ -362,12 +359,11 @@ describe('IexecPocoBoostDelegate (IT)', function () {
 
     describe('PushResult', function () {
         it('Should push result (TEE & callback)', async function () {
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders({
-                    assets: ordersAssets,
-                    requester: requester.address,
-                    tag: teeDealTag,
-                });
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+            });
             const oracleConsumerInstance = await new TestClient__factory()
                 .connect(anyone)
                 .deploy()
@@ -419,14 +415,13 @@ describe('IexecPocoBoostDelegate (IT)', function () {
 
         it('Should push result (TEE)', async function () {
             const volume = 3;
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders({
-                    assets: ordersAssets,
-                    requester: requester.address,
-                    tag: teeDealTag,
-                    prices: ordersPrices,
-                    volume: volume,
-                });
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+                prices: ordersPrices,
+                volume: volume,
+            });
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * volume;
             await getRlcAndDeposit(requester, dealPrice);
@@ -526,14 +521,13 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } =
-                buildCompatibleOrders({
-                    assets: ordersAssets,
-                    requester: requester.address,
-                    tag: teeDealTag,
-                    prices: ordersPrices,
-                    volume: expectedVolume,
-                });
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+                prices: ordersPrices,
+                volume: expectedVolume,
+            });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
