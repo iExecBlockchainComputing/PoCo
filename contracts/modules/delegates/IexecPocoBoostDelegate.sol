@@ -368,8 +368,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
 
         // Unlock scheduler stake
-        uint256 taskWorkerpoolStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
-        unlock(deal.workerpoolOwner, taskWorkerpoolStake);
+        unlock(deal.workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
 
         emit ResultPushedBoost(dealId, index, results);
 
