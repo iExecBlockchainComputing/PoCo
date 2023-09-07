@@ -259,11 +259,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Lock
         {
             uint256 taskPrice = appPrice + datasetPrice + workerpoolPrice;
-            lock(deal.requester, taskPrice * volume);
+            lock(deal.requester, taskPrice * volume); //TODO gas : use _requester. instead of deal. and update taskPrice
             // Order is important here. First get percentage by task then
             // multiply by volume.
             uint256 taskWorkerpoolStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
-            lock(deal.workerpoolOwner, taskWorkerpoolStake * volume);
+            lock(deal.workerpoolOwner, taskWorkerpoolStake * volume); // TODO gas : use local vars. instead of deal.
         }
         // Notify workerpool.
         emit SchedulerNoticeBoost(
@@ -349,9 +349,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          */
         m_tasks[taskId].status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
 
-        // Reward and seize each parties
+        // Reward, seize and unlock each parties
         uint96 appPrice = deal.appPrice;
         uint96 datasetPrice = deal.datasetPrice;
+        uint96 workerPoolPrice = deal.workerpoolPrice;
 
         // Seize requester
         seize(deal.requester, appPrice + datasetPrice + deal.workerReward, taskId); //TODO :  Seize app + dataset + workerpool (workerpool = workerReward + schedulerReward) price
@@ -365,6 +366,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         if (datasetPrice > 0) {
             reward(deal.datasetOwner, datasetPrice, taskId);
         }
+
+        // Unlock scheduler stake
+        unlock(deal.workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
 
         emit ResultPushedBoost(dealId, index, results);
 
