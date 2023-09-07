@@ -259,7 +259,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Lock
         {
             uint256 taskPrice = appPrice + datasetPrice + workerpoolPrice;
-            lock(deal.requester, taskPrice * volume); //TODO gas : use _requester. instead of deal.
+            lock(deal.requester, taskPrice * volume); //TODO gas : use _requester. instead of deal. and update taskPrice
             // Order is important here. First get percentage by task then
             // multiply by volume.
             uint256 taskWorkerpoolStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
