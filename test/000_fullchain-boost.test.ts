@@ -543,6 +543,8 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 workerpoolPrice,
                 expectedVolume,
             );
+            const schedulerTaskStake = schedulerDealStake / expectedVolume;
+
             await getRlcAndDeposit(scheduler, schedulerDealStake);
             await time.setNextBlockTimestamp(startTime);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -560,18 +562,44 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
             await time.setNextBlockTimestamp(startTime + 7 * 300);
 
+            const kittyAddress = await iexecInstance.kitty_address();
+
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, requester.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Unlock')
+                .withArgs(requester.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(scheduler.address, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, kittyAddress, schedulerTaskStake)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(kittyAddress, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(kittyAddress, iexecPocoBoostInstance.address, schedulerTaskStake)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(kittyAddress, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
                 .withArgs(taskId);
+
             expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
+            const remainingTasksToPush = expectedVolume - 1;
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                taskPrice * 2 + schedulerDealStake, // only one task is claimed.
+                taskPrice * remainingTasksToPush + schedulerDealStake, // only one task is claimed.
             );
-            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(taskPrice);
             // 2nd & 3rd tasks can still be claimed.
-            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(taskPrice * 2);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(taskPrice);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
+                taskPrice * remainingTasksToPush,
+            );
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
-            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(
+                schedulerTaskStake * remainingTasksToPush,
+            );
+            expect(await iexecInstance.balanceOf(kittyAddress)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(
+                schedulerTaskStake * (expectedVolume - remainingTasksToPush),
+            );
         });
     });
 

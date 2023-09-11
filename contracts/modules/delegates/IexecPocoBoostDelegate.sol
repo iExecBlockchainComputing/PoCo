@@ -403,9 +403,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         require(index < deal.botSize, "PocoBoost: Unknown task");
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
-        unlock(deal.requester, deal.appPrice + deal.datasetPrice + deal.workerpoolPrice);
-        //TODO: Seize workerpool stake
-        //TODO: Reward & lock kitty with seized stake
+        uint96 workerPoolPrice = deal.workerpoolPrice;
+        uint256 taskWorkerpoolStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+        unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
+        seize(deal.workerpoolOwner, taskWorkerpoolStake, taskId);
+        reward(KITTY_ADDRESS, taskWorkerpoolStake, taskId);
+        lock(KITTY_ADDRESS, taskWorkerpoolStake);
         emit TaskClaimed(taskId);
     }
 
