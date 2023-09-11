@@ -76,10 +76,10 @@ library IexecLibCore_v5 {
         uint96 workerReward;
         // Offset 4
         address callback;
-        uint32 deadline; // Max: 4294967295 => Feb 2106
+        uint40 deadline; // Max: 1099511627776 => ∞
         uint16 botFirst; // Max: 65535
         uint16 botSize; // Max: 65535
-        bytes4 shortTag; // Max: 11111111111111111111111111111111 (0xFFFFFFFF)
+        bytes3 shortTag; // Max: 111111111111111111111111 (0xFFFFFF)
     }
     /**
      * Tasks
