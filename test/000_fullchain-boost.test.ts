@@ -281,7 +281,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(deal.deadline).to.be.equal(startTime + 7 * 300); // Category 0
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(1);
-            expect(deal.shortTag).to.be.equal('0x00000001');
+            expect(deal.shortTag).to.be.equal('0x000001');
             expect(deal.callback).to.be.equal(callbackAddress);
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
                 dealPrice + schedulerStake,
