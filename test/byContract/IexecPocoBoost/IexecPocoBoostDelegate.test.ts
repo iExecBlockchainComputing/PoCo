@@ -2010,7 +2010,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectFrozen(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterFrozen + taskPrice * remainingTasksToPush, // 2nd task can still be claimed
+                initialRequesterFrozen + taskPrice * remainingTasksToPush, // 2nd & 3rd tasks can still be claimed
             );
             // Check scheduler balance and frozen
             await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
