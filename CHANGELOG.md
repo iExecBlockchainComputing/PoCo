@@ -51,6 +51,7 @@
     - Reward app provider. (#204)
     - Reward dataset provider. (#207)
     - Unlock scheduler stake. (#212)
+    - Reward scheduler. (#213)
     - Handle callback. (#183, #208)
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)

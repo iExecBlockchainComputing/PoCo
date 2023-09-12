@@ -310,6 +310,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
+        //TODO: Verify index belongs to range
         require(
             m_tasks[taskId].status == IexecLibCore_v5.TaskStatusEnum.UNSET,
             "PocoBoost: Task status not unset"
@@ -321,9 +322,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             "PocoBoost: Tag requires enclave challenge"
         );
         // Check scheduler signature
+        address workerpoolOwner = deal.workerpoolOwner;
         require(
             _verifySignatureOfEthSignedMessage(
-                deal.workerpoolOwner,
+                workerpoolOwner,
                 abi.encodePacked(msg.sender, taskId, enclaveChallenge),
                 authorizationSign
             ),
@@ -355,9 +357,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         uint96 workerPoolPrice = deal.workerpoolPrice;
 
         // Seize requester
-        seize(deal.requester, appPrice + datasetPrice + deal.workerReward, taskId); //TODO :  Seize app + dataset + workerpool (workerpool = workerReward + schedulerReward) price
+        seize(deal.requester, appPrice + datasetPrice + workerPoolPrice, taskId);
+        uint96 workerReward = deal.workerReward;
         // Reward worker
-        reward(msg.sender, deal.workerReward, taskId);
+        reward(msg.sender, workerReward, taskId);
         // Reward app developer
         if (appPrice > 0) {
             reward(deal.appOwner, appPrice, taskId);
@@ -368,7 +371,24 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
 
         // Unlock scheduler stake
-        unlock(deal.workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
+        unlock(workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
+        // Reward scheduler
+        uint256 kitty = m_frozens[KITTY_ADDRESS];
+        if (kitty > 0) {
+            kitty = KITTY_MIN // 1. retrieve bare minimum from kitty
+            .max( // 2. or eventually a fraction of kitty if bigger
+                /// @dev As long as `KITTY_RATIO = 10`, we can introduce this small
+                kitty / KITTY_RATIO // optimization for `kitty * KITTY_RATIO / 100`
+            ).min(kitty); // 3. but no more than available
+            seize(KITTY_ADDRESS, kitty, taskId);
+        }
+        reward(
+            workerpoolOwner,
+            workerPoolPrice - // reward with
+                workerReward + // sheduler base reward
+                kitty, // and optional kitty fraction
+            taskId
+        );
 
         emit ResultPushedBoost(dealId, index, results);
 
