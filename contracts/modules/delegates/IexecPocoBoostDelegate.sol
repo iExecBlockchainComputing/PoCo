@@ -407,8 +407,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         uint256 taskWorkerpoolStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
         unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         seize(deal.workerpoolOwner, taskWorkerpoolStake, taskId);
-        reward(KITTY_ADDRESS, taskWorkerpoolStake, taskId);
-        lock(KITTY_ADDRESS, taskWorkerpoolStake);
+        rewardAndLock(KITTY_ADDRESS, taskWorkerpoolStake, taskId);
         emit TaskClaimed(taskId);
     }
 
