@@ -1910,7 +1910,7 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should claim', async function () {
-            const expectedVolume = 2; // > 1 to explicit taskPrice vs dealPrice
+            const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
@@ -2001,7 +2001,9 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + taskPrice * remainingTasksToPush + schedulerDealStake,
+                initialIexecPocoBalance +
+                    taskPrice * remainingTasksToPush + // requester has 2nd & 3rd task locked
+                    schedulerDealStake, // kitty value since 1st task seized
             );
             // Check requester balance and frozen
             await expectBalance(
