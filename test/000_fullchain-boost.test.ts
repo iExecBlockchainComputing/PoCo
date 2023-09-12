@@ -20,7 +20,6 @@ import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { TypedDataDomain } from 'ethers';
 import {
-    IexecOrderManagement,
     IexecOrderManagement__factory,
     IexecPocoBoostDelegate__factory,
     IexecPocoBoostAccessorsDelegate__factory,
@@ -57,12 +56,12 @@ import {
     buildAndSignEnclaveMessage,
     getDealId,
     getTaskId,
+    setNextBlockTimestamp,
 } from '../utils/poco-tools';
 
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
-const startTime = 9876543210;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
@@ -224,7 +223,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
-            await time.setNextBlockTimestamp(startTime);
+            const startTime = await setNextBlockTimestamp();
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -279,10 +278,10 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(deal.workerReward)
                 .to.be.equal((workerpoolPrice * (100 - schedulerRewardRatio)) / 100)
                 .to.be.greaterThan(0);
-            expect(deal.deadline).to.be.equal(startTime + 7 * 300);
+            expect(deal.deadline).to.be.equal(startTime + 7 * 300); // Category 0
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(1);
-            expect(deal.shortTag).to.be.equal('0x000000000000000000000001');
+            expect(deal.shortTag).to.be.equal('0x000001');
             expect(deal.callback).to.be.equal(callbackAddress);
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
                 dealPrice + schedulerStake,
@@ -549,7 +548,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 expectedVolume,
             );
             await getRlcAndDeposit(scheduler, schedulerDealStake);
-            await time.setNextBlockTimestamp(startTime);
+            const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
                 datasetOrder,

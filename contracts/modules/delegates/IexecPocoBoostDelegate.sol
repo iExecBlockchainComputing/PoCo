@@ -225,7 +225,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
              * Store deal
              */
             deal = m_dealsBoost[dealId];
-            deal.botFirst = requestOrderConsumed.toUint24();
+            deal.botFirst = requestOrderConsumed.toUint16();
         }
         deal.requester = _requestorder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
@@ -240,8 +240,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
         deal.deadline = (block.timestamp +
             m_categories[_requestorder.category].workClockTimeRef *
-            CONTRIBUTION_DEADLINE_RATIO).toUint48();
-        deal.botSize = volume.toUint24();
+            CONTRIBUTION_DEADLINE_RATIO).toUint40();
+        deal.botSize = volume.toUint16();
         /**
          * Store right part of tag for later use.
          * @dev From the cheapest to the most expensive option:
@@ -250,9 +250,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          * c. Convert to smaller bytes size `uint96(uint256(tag))`, see
          * https://github.com/ethereum/solidity/blob/v0.8.19/docs/types/value-types.rst?plain=1#L222
          */
-        bytes12 shortTag;
+        bytes3 shortTag;
         assembly {
-            shortTag := shl(160, tag) // 96 = 256 - 160
+            shortTag := shl(232, tag) // 24 = 256 - 232
         }
         deal.shortTag = shortTag;
         deal.callback = _requestorder.callback;
@@ -318,7 +318,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
         // Enclave challenge required for TEE tasks
         require(
-            enclaveChallenge != address(0) || deal.shortTag[11] & 0x01 == 0,
+            enclaveChallenge != address(0) || deal.shortTag[2] & 0x01 == 0,
             "PocoBoost: Tag requires enclave challenge"
         );
         // Check scheduler signature
