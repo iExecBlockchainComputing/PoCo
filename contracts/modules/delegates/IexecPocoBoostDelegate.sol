@@ -375,11 +375,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Reward scheduler
         uint256 kitty = m_frozens[KITTY_ADDRESS];
         if (kitty > 0) {
-            kitty = KITTY_MIN // retrieve bare minimum from kitty
-                .max(
-                    kitty / KITTY_RATIO // or eventually a fraction of kitty if bigger
-                )
-                .min(kitty); // but no more than available
+            kitty = KITTY_MIN // 1. retrieve bare minimum from kitty
+            .max( // 2. or eventually a fraction of kitty if bigger
+                /// @dev As long as `KITTY_RATIO = 10`, we can introduce this small
+                kitty / KITTY_RATIO // optimization for `kitty * KITTY_RATIO / 100`
+            ).min(kitty); // 3. but no more than available
             seize(KITTY_ADDRESS, kitty, taskId);
         }
         reward(

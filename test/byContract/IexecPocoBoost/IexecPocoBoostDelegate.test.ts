@@ -1332,8 +1332,13 @@ describe('IexecPocoBoostDelegate', function () {
             const initialKitty = 10_000_000_010; // MIN_KITTY * 10 + 10,
             const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, volume);
             const schedulerTaskStake = schedulerDealStake / volume;
-            // MIN_REWARD < reward < available
-            const schedulerTask1KittyReward = initialKitty / 10;
+            // Setup: MIN_REWARD < reward < available
+            // Further assertion on scheduler kitty reward will fail if the
+            // KITTY_RATIO constant is someday updated in the source code.
+            const expectedSchedulerKittyRewardForTask1 =
+                (initialKitty * // total kitty
+                    10) / // KITTY_RATIO
+                100; // percentage
 
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
@@ -1414,8 +1419,9 @@ describe('IexecPocoBoostDelegate', function () {
             // we just need to verify here that some worker reward value will be
             // transferred
             expect(expectedWorkerReward).to.be.greaterThan(0);
-            const schedulerBaseReward = workerpoolPrice - expectedWorkerReward;
-            const schedulerFullReward = schedulerBaseReward + schedulerTask1KittyReward;
+            const expectedSchedulerBaseReward = workerpoolPrice - expectedWorkerReward;
+            const expectedSchedulerFullReward =
+                expectedSchedulerBaseReward + expectedSchedulerKittyRewardForTask1;
 
             await expect(
                 iexecPocoBoostInstance
@@ -1449,11 +1455,15 @@ describe('IexecPocoBoostDelegate', function () {
                 .to.emit(iexecPocoBoostInstance, 'Unlock')
                 .withArgs(scheduler.address, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'Seize')
-                .withArgs(kittyAddress, schedulerTask1KittyReward, taskId)
+                .withArgs(kittyAddress, expectedSchedulerKittyRewardForTask1, taskId)
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
-                .withArgs(iexecPocoBoostInstance.address, scheduler.address, schedulerFullReward)
+                .withArgs(
+                    iexecPocoBoostInstance.address,
+                    scheduler.address,
+                    expectedSchedulerFullReward,
+                )
                 .to.emit(iexecPocoBoostInstance, 'Reward')
-                .withArgs(scheduler.address, schedulerFullReward, taskId)
+                .withArgs(scheduler.address, expectedSchedulerFullReward, taskId)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
             expect(oracleConsumerInstance.receiveResult).to.have.been.calledOnceWith(
@@ -1482,7 +1492,7 @@ describe('IexecPocoBoostDelegate', function () {
                 initialIexecPocoBalance +
                     (taskPrice + schedulerTaskStake) * remainingTasksToPush +
                     initialKitty -
-                    schedulerTask1KittyReward,
+                    expectedSchedulerKittyRewardForTask1,
             );
             // Check requester balance and frozen
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
@@ -1513,7 +1523,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 scheduler.address,
-                initialSchedulerBalance + schedulerTaskStake + schedulerFullReward,
+                initialSchedulerBalance + schedulerTaskStake + expectedSchedulerFullReward,
             );
             await expectFrozen(
                 iexecPocoBoostInstance,
@@ -1524,7 +1534,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectFrozen(
                 iexecPocoBoostInstance,
                 kittyAddress,
-                initialKitty - schedulerTask1KittyReward,
+                initialKitty - expectedSchedulerKittyRewardForTask1,
             );
         });
 
