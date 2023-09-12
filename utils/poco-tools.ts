@@ -116,6 +116,7 @@ export async function signMessage(signerAccount: SignerWithAddress, message: str
  * Mine the next block with a timestamp corresponding to an arbitrary but known
  * date in the future (10 seconds later).
  * It fixes the `Timestamp is lower than the previous block's timestamp` error.
+ * Originally this method was a fix for UT but then it has been also used for IT.
  * e.g: This Error has been seen when running tests with `npm run coverage`.
  * @returns timestamp of the next block.
  */
