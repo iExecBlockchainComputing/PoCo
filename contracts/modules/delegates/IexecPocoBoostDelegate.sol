@@ -262,8 +262,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             lock(deal.requester, taskPrice * volume); //TODO gas : use _requester. instead of deal. and update taskPrice
             // Order is important here. First get percentage by task then
             // multiply by volume.
-            uint256 taskWorkerpoolStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
-            lock(deal.workerpoolOwner, taskWorkerpoolStake * volume); // TODO gas : use local vars. instead of deal.
+            uint256 workerpoolTaskStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+            lock(deal.workerpoolOwner, workerpoolTaskStake * volume); // TODO gas : use local vars. instead of deal.
         }
         // Notify workerpool.
         emit SchedulerNoticeBoost(
@@ -404,10 +404,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
         uint96 workerPoolPrice = deal.workerpoolPrice;
-        uint256 taskWorkerpoolStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
         unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
-        seize(deal.workerpoolOwner, taskWorkerpoolStake, taskId);
-        rewardAndLock(KITTY_ADDRESS, taskWorkerpoolStake, taskId);
+        seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
+        rewardAndLock(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit TaskClaimed(taskId);
     }
 
