@@ -57,7 +57,7 @@ const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
 const BALANCES = 'm_balances';
 const FROZENS = 'm_frozens';
 const WORKERPOOL_STAKE_RATIO = 30;
-const KITTY_ADDRESS = '0x99c2268479b93fDe36232351229815DF80837e23';
+const kittyAddress = '0x99c2268479b93fDe36232351229815DF80837e23';
 const { domain, domainSeparator } = buildDomain();
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
@@ -1925,8 +1925,8 @@ describe('IexecPocoBoostDelegate', function () {
             const initialRequesterFrozen = 3;
             const initialSchedulerBalance = 4;
             const initialSchedulerFrozen = 5;
-            const initialKittyBlance = 6;
-            const initialKittyFrozen = 7;
+            const initialKitty = 6;
+            const initialFrozenKitty = 6;
             const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, expectedVolume);
             const schedulerTaskStake = schedulerDealStake / expectedVolume;
             await iexecPocoBoostInstance.setVariables({
@@ -1934,12 +1934,12 @@ describe('IexecPocoBoostDelegate', function () {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance + dealPrice,
                     [scheduler.address]: initialSchedulerBalance + schedulerDealStake,
-                    [KITTY_ADDRESS]: initialKittyBlance,
+                    [kittyAddress]: initialKitty,
                 },
                 [FROZENS]: {
                     [requester.address]: initialRequesterFrozen,
                     [scheduler.address]: initialSchedulerFrozen,
-                    [KITTY_ADDRESS]: initialKittyFrozen,
+                    [kittyAddress]: initialFrozenKitty,
                 },
             });
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -1971,6 +1971,10 @@ describe('IexecPocoBoostDelegate', function () {
                 scheduler.address,
                 initialSchedulerFrozen + schedulerDealStake,
             );
+
+            // Check kitty balance and frozen
+            await expectBalance(iexecPocoBoostInstance, kittyAddress, initialKitty);
+            await expectFrozen(iexecPocoBoostInstance, kittyAddress, initialFrozenKitty);
             await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
 
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
@@ -1981,13 +1985,13 @@ describe('IexecPocoBoostDelegate', function () {
                 .to.emit(iexecPocoBoostInstance, 'Seize')
                 .withArgs(scheduler.address, schedulerTaskStake, taskId)
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
-                .withArgs(iexecPocoBoostInstance.address, KITTY_ADDRESS, schedulerTaskStake)
+                .withArgs(iexecPocoBoostInstance.address, kittyAddress, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
-                .withArgs(KITTY_ADDRESS, schedulerTaskStake, taskId)
+                .withArgs(kittyAddress, schedulerTaskStake, taskId)
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
-                .withArgs(KITTY_ADDRESS, iexecPocoBoostInstance.address, schedulerTaskStake)
+                .withArgs(kittyAddress, iexecPocoBoostInstance.address, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'Lock')
-                .withArgs(KITTY_ADDRESS, schedulerTaskStake)
+                .withArgs(kittyAddress, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
                 .withArgs(taskId);
 
@@ -2018,11 +2022,11 @@ describe('IexecPocoBoostDelegate', function () {
                 initialSchedulerFrozen + schedulerTaskStake * remainingTasksToPush,
             );
             // Check kitty reward balance and frozen
-            await expectBalance(iexecPocoBoostInstance, KITTY_ADDRESS, initialKittyBlance);
+            await expectBalance(iexecPocoBoostInstance, kittyAddress, initialKitty);
             await expectFrozen(
                 iexecPocoBoostInstance,
-                KITTY_ADDRESS,
-                initialKittyFrozen + schedulerTaskStake * (expectedVolume - remainingTasksToPush),
+                kittyAddress,
+                initialFrozenKitty + schedulerTaskStake * (expectedVolume - remainingTasksToPush),
             );
         });
 
