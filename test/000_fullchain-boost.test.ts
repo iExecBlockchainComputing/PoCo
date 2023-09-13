@@ -463,7 +463,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
             const expectedWorkerReward = (await viewDealBoost(dealId)).workerReward.toNumber();
-            const expectedSchedulerReward = workerpoolPrice - expectedWorkerReward;
+            const schedulerBaseReward = workerpoolPrice - expectedWorkerReward;
 
             await expect(
                 iexecPocoBoostInstance
@@ -479,7 +479,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                     ),
             )
                 .to.emit(iexecPocoBoostInstance, 'Seize')
-                .withArgs(requester.address, expectedWorkerReward + appPrice + datasetPrice, taskId) //TODO: Seize app + dataset + workerpool price
+                .withArgs(requester.address, taskPrice, taskId)
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(iexecInstance.address, worker.address, expectedWorkerReward)
                 .to.emit(iexecPocoBoostInstance, 'Reward')
@@ -496,15 +496,19 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 .withArgs(iexecPocoBoostInstance.address, scheduler.address, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'Unlock')
                 .withArgs(scheduler.address, schedulerTaskStake)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecInstance.address, scheduler.address, schedulerBaseReward)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(scheduler.address, schedulerBaseReward, taskId)
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
             const remainingTasksToPush = volume - 1;
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                (taskPrice + schedulerTaskStake) * remainingTasksToPush + expectedSchedulerReward, // TODO: Remove after scheduler reward feature
+                (taskPrice + schedulerTaskStake) * remainingTasksToPush,
             );
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
-                taskPrice * remainingTasksToPush + expectedSchedulerReward, // TODO: Remove after scheduler reward feature
+                taskPrice * remainingTasksToPush,
             );
             expect(await iexecInstance.balanceOf(worker.address)).to.be.equal(expectedWorkerReward);
             expect(await iexecInstance.balanceOf(appProvider.address)).to.be.equal(appPrice);
@@ -512,11 +516,12 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 datasetPrice,
             );
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(
-                schedulerTaskStake,
+                schedulerTaskStake + schedulerBaseReward,
             );
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(
                 schedulerTaskStake * remainingTasksToPush,
             );
+            //TODO: Eventually add check where scheduler is rewarded with kitty (already covered in UT)
         });
     });
 
