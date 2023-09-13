@@ -503,7 +503,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Check if a task is virtually "initialized" (wording refers to Classic Poco).
+     * Check if a task exists. Equivalent to task "initialized" in Classic workflow.
+     In order for the task to exist, its index should be: 0 <= index < deal.botSize.
      * @param taskStatus The status of the task.
      * @param taskIndex The index of the task.
      * @param botSize The size of the Bag-of-Task in the deal.
