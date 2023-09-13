@@ -1540,7 +1540,6 @@ describe('IexecPocoBoostDelegate', function () {
                 kittyAddress,
                 initialKitty - expectedSchedulerKittyRewardForTask1,
             );
-            // TODO: Eventually add (volume - remainingTasksToPush )
         });
 
         it('Should push result (TEE)', async function () {
