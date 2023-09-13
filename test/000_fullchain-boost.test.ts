@@ -586,7 +586,9 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                     schedulerDealStake, // kitty value since 1st task seized
             );
             // 2nd & 3rd tasks can still be claimed.
-            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(taskPrice);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(
+                taskPrice * (expectedVolume - remainingTasksToClaim),
+            );
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
                 taskPrice * remainingTasksToClaim,
             );

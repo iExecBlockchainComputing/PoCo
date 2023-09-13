@@ -1995,40 +1995,40 @@ describe('IexecPocoBoostDelegate', function () {
                 .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
                 .withArgs(taskId);
 
-            const remainingTasksToPush = expectedVolume - 1;
+            const remainingTasksToClaim = expectedVolume - 1;
             // Task status verification is delegated to related integration test.
             // Check poco boost balance
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
                 initialIexecPocoBalance +
-                    taskPrice * remainingTasksToPush + // requester has 2nd & 3rd task locked
+                    taskPrice * remainingTasksToClaim + // requester has 2nd & 3rd task locked
                     schedulerDealStake, // kitty value since 1st task seized
             );
             // Check requester balance and frozen
             await expectBalance(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterBalance + taskPrice,
+                initialRequesterBalance + taskPrice * (expectedVolume - remainingTasksToClaim),
             );
             await expectFrozen(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterFrozen + taskPrice * remainingTasksToPush, // 2nd & 3rd tasks can still be claimed
+                initialRequesterFrozen + taskPrice * remainingTasksToClaim, // 2nd & 3rd tasks can still be claimed
             );
             // Check scheduler balance and frozen
             await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 scheduler.address,
-                initialSchedulerFrozen + schedulerTaskStake * remainingTasksToPush,
+                initialSchedulerFrozen + schedulerTaskStake * remainingTasksToClaim,
             );
             // Check kitty reward balance and frozen
             await expectBalance(iexecPocoBoostInstance, kittyAddress, initialKitty);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 kittyAddress,
-                initialFrozenKitty + schedulerTaskStake * (expectedVolume - remainingTasksToPush),
+                initialFrozenKitty + schedulerTaskStake * (expectedVolume - remainingTasksToClaim),
             );
         });
 
