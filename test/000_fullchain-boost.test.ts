@@ -521,6 +521,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(
                 schedulerTaskStake * remainingTasksToPush,
             );
+            // TODO: Eventually add (volume - remainingTasksToPush )
             //TODO: Eventually add check where scheduler is rewarded with kitty (already covered in UT)
         });
     });
