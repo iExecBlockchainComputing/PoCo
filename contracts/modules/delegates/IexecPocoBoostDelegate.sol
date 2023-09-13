@@ -310,11 +310,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
-        //TODO: Verify index belongs to range
-        require(
-            m_tasks[taskId].status == IexecLibCore_v5.TaskStatusEnum.UNSET,
-            "PocoBoost: Task status not unset"
-        );
+        requireTask(m_tasks[taskId].status, index, deal.botSize);
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
         // Enclave challenge required for TEE tasks
         require(
@@ -414,13 +410,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     function claimBoost(bytes32 dealId, uint256 index) external {
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
-        require(
-            task.status == IexecLibCore_v5.TaskStatusEnum.UNSET,
-            "PocoBoost: Task status not unset"
-        );
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        // If deal not found then index < 0.
-        require(index < deal.botSize, "PocoBoost: Unknown task");
+        requireTask(task.status, index, deal.botSize);
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
         unlock(deal.requester, deal.appPrice + deal.datasetPrice + deal.workerpoolPrice);
@@ -503,5 +494,24 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         address expectedAddress
     ) internal pure returns (bool) {
         return identity == address(0) || identity == expectedAddress; // Simple address
+    }
+
+    /**
+     * Check if a task is virtually "initialized" (wording refers to Classic Poco).
+     * @param taskStatus The status of the task.
+     * @param taskIndex The index of the task.
+     * @param botSize The size of the Bag-of-Task in the deal.
+     */
+    function requireTask(
+        IexecLibCore_v5.TaskStatusEnum taskStatus,
+        uint256 taskIndex,
+        uint16 botSize
+    ) private pure {
+        require(
+            taskStatus == IexecLibCore_v5.TaskStatusEnum.UNSET,
+            "PocoBoost: Task status not unset"
+        );
+        // If deal not found then index < 0.
+        require(taskIndex < botSize, "PocoBoost: Unknown task");
     }
 }

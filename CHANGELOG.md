@@ -42,6 +42,7 @@
     - Remove beneficiary from deal storage. (#205)
     - Reduce Boost deal storage from 6 to 5 slots. (#216)
 - Implement `pushResultBoost`:
+    - Verify task exists. (#219)
     - Push result before deadline. (#195)
     - Require enclave challenge when TEE bit of tag set. (#197)
     - Verify signatures
@@ -51,7 +52,7 @@
     - Reward app provider. (#204)
     - Reward dataset provider. (#207)
     - Unlock scheduler stake. (#212)
-    - Reward scheduler. (#213)
+    - Reward scheduler. (#217)
     - Handle callback. (#183, #208)
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)

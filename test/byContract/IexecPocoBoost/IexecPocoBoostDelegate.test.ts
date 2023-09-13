@@ -1666,6 +1666,62 @@ describe('IexecPocoBoostDelegate', function () {
             await expect(pushResultBoost()).to.be.revertedWith('PocoBoost: Task status not unset');
         });
 
+        it('Should not push result if wrong deal ID', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        '0x00000000000000000000000000000000000000000000000000000000fac6dea1',
+                        taskIndex,
+                        '0x',
+                        constants.NULL.BYTES32,
+                        constants.NULL.SIGNATURE,
+                        constants.NULL.ADDRESS,
+                        constants.NULL.SIGNATURE,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Unknown task');
+        });
+
+        it('Should not push result if wrong task index', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+
+            await expect(
+                iexecPocoBoostInstance.connect(worker).pushResultBoost(
+                    dealId, // existing deal
+                    1, // only task index 0 would be authorized with this deal volume of 1
+                    '0x',
+                    constants.NULL.BYTES32,
+                    constants.NULL.SIGNATURE,
+                    constants.NULL.ADDRESS,
+                    constants.NULL.SIGNATURE,
+                ),
+            ).to.be.revertedWith('PocoBoost: Unknown task');
+        });
+
         it('Should not push result after deadline', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
@@ -2027,6 +2083,32 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
+        // Different test than other `Should not claim if task not unset` test
+        it('Should not claim twice', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const startTime = await setNextBlockTimestamp();
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            await time.setNextBlockTimestamp(startTime + 7 * 60);
+            // Claim
+            await expect(
+                iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex),
+            ).to.emit(iexecPocoBoostInstance, 'TaskClaimed');
+            // Claim a second time
+            await expect(
+                iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex),
+            ).to.be.revertedWith('PocoBoost: Task status not unset');
+        });
+
         it('Should not claim if task not unset', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
@@ -2064,7 +2146,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Task status not unset');
         });
 
-        it('Should not claim if task unknown because of wrong deal ID', async function () {
+        it('Should not claim if wrong deal ID', async function () {
             await expect(
                 iexecPocoBoostInstance
                     .connect(worker)
@@ -2075,7 +2157,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Unknown task');
         });
 
-        it('Should not claim if task unknown because of wrong index', async function () {
+        it('Should not claim if wrong task index', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
