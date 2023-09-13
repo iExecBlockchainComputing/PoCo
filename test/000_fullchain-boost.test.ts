@@ -528,6 +528,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     describe('Claim', function () {
         it('Should claim (TEE)', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
+            const claimedTasks = 1;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
@@ -547,6 +548,10 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 workerpoolPrice,
                 expectedVolume,
             );
+            const schedulerTaskStake = schedulerDealStake / expectedVolume;
+
+            const kittyAddress = await iexecInstance.kitty_address();
+
             await getRlcAndDeposit(scheduler, schedulerDealStake);
             const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -562,20 +567,45 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
+            expect(await iexecInstance.balanceOf(kittyAddress)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(0);
             await time.setNextBlockTimestamp(startTime + 7 * 300);
 
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, requester.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Unlock')
+                .withArgs(requester.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(scheduler.address, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(kittyAddress, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(kittyAddress, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
                 .withArgs(taskId);
+
             expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
+            const remainingTasksToClaim = expectedVolume - claimedTasks;
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                taskPrice * 2 + schedulerDealStake, // only one task is claimed.
+                taskPrice * remainingTasksToClaim + // requester has 2nd & 3rd task locked
+                    schedulerDealStake, // kitty value since 1st task seized
             );
-            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(taskPrice);
             // 2nd & 3rd tasks can still be claimed.
-            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(taskPrice * 2);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(
+                taskPrice * claimedTasks,
+            );
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
+                taskPrice * remainingTasksToClaim,
+            );
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
-            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(
+                schedulerTaskStake * remainingTasksToClaim,
+            );
+            expect(await iexecInstance.balanceOf(kittyAddress)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(
+                schedulerTaskStake * claimedTasks,
+            );
         });
     });
 
