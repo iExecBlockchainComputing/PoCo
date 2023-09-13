@@ -2065,7 +2065,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
-        //TODO: Should claim twice
+        // TODO: Should claim two tasks
 
         it('Should not claim if task not unset', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
