@@ -310,7 +310,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
-        requireTask(m_tasks[taskId].status, index, deal.botSize);
+        requireTaskExists(m_tasks[taskId].status, index, deal.botSize);
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
         // Enclave challenge required for TEE tasks
         require(
@@ -411,7 +411,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        requireTask(task.status, index, deal.botSize);
+        requireTaskExists(task.status, index, deal.botSize);
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
         uint96 workerPoolPrice = deal.workerpoolPrice;
@@ -508,7 +508,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param taskIndex The index of the task.
      * @param botSize The size of the Bag-of-Task in the deal.
      */
-    function requireTask(
+    function requireTaskExists(
         IexecLibCore_v5.TaskStatusEnum taskStatus,
         uint256 taskIndex,
         uint16 botSize
