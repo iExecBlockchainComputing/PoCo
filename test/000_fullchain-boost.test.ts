@@ -580,7 +580,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 .withArgs(taskId);
 
             expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
-            const remainingTasksToPush = expectedVolume - 1;
+            const remainingTasksToClaim = expectedVolume - 1;
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
                 taskPrice * remainingTasksToPush + // requester has 2nd & 3rd task locked
                     schedulerDealStake, // kitty value since 1st task seized
