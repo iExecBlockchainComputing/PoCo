@@ -428,6 +428,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
+        //TODO: Factorise this in a function
         m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
         emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
