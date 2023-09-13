@@ -529,6 +529,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     describe('Claim', function () {
         it('Should claim (TEE)', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
+            const claimedTasks = 1;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
@@ -586,14 +587,14 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 .withArgs(taskId);
 
             expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
-            const remainingTasksToClaim = expectedVolume - 1;
+            const remainingTasksToClaim = expectedVolume - claimedTasks;
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
                 taskPrice * remainingTasksToClaim + // requester has 2nd & 3rd task locked
                     schedulerDealStake, // kitty value since 1st task seized
             );
             // 2nd & 3rd tasks can still be claimed.
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(
-                taskPrice * (expectedVolume - remainingTasksToClaim),
+                taskPrice * claimedTasks,
             );
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
                 taskPrice * remainingTasksToClaim,
@@ -604,7 +605,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             );
             expect(await iexecInstance.balanceOf(kittyAddress)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(
-                schedulerTaskStake * (expectedVolume - remainingTasksToClaim),
+                schedulerTaskStake * claimedTasks,
             );
         });
     });

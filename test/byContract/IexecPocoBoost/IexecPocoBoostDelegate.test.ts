@@ -1947,6 +1947,7 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should claim', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
+            const claimedTasks = 1;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
@@ -2027,7 +2028,7 @@ describe('IexecPocoBoostDelegate', function () {
                 .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
                 .withArgs(taskId);
 
-            const remainingTasksToClaim = expectedVolume - 1;
+            const remainingTasksToClaim = expectedVolume - claimedTasks;
             // Task status verification is delegated to related integration test.
             // Check poco boost balance
             await expectBalance(
@@ -2041,7 +2042,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterBalance + taskPrice * (expectedVolume - remainingTasksToClaim),
+                initialRequesterBalance + taskPrice * claimedTasks,
             );
             await expectFrozen(
                 iexecPocoBoostInstance,
@@ -2060,9 +2061,11 @@ describe('IexecPocoBoostDelegate', function () {
             await expectFrozen(
                 iexecPocoBoostInstance,
                 kittyAddress,
-                initialFrozenKitty + schedulerTaskStake * (expectedVolume - remainingTasksToClaim),
+                initialFrozenKitty + schedulerTaskStake * claimedTasks,
             );
         });
+
+        //TODO: Should claim twice
 
         it('Should not claim if task not unset', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
