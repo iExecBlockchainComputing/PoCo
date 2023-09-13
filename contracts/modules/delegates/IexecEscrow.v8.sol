@@ -75,18 +75,6 @@ contract IexecEscrow is DelegateBase {
     }
 
     /**
-     * Reward an account and immediately lock the rewarded amount.
-     * @param account The account to reward.
-     * @param value The reward value.
-     * @param ref A reference for the reward context.
-     */
-    function rewardAndLock(address account, uint256 value, bytes32 ref) internal {
-        m_frozens[account] += value;
-        emit Reward(account, value, ref);
-        emit Lock(account, value);
-    }
-
-    /**
      * Seize value on an account.
      * @param account The account to seize.
      * @param value The seize value.
