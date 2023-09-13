@@ -582,21 +582,21 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
             const remainingTasksToClaim = expectedVolume - 1;
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
-                taskPrice * remainingTasksToPush + // requester has 2nd & 3rd task locked
+                taskPrice * remainingTasksToClaim + // requester has 2nd & 3rd task locked
                     schedulerDealStake, // kitty value since 1st task seized
             );
             // 2nd & 3rd tasks can still be claimed.
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(taskPrice);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(
-                taskPrice * remainingTasksToPush,
+                taskPrice * remainingTasksToClaim,
             );
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(
-                schedulerTaskStake * remainingTasksToPush,
+                schedulerTaskStake * remainingTasksToClaim,
             );
             expect(await iexecInstance.balanceOf(kittyAddress)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(
-                schedulerTaskStake * (expectedVolume - remainingTasksToPush),
+                schedulerTaskStake * (expectedVolume - remainingTasksToClaim),
             );
         });
     });
