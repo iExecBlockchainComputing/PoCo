@@ -2001,7 +2001,8 @@ describe('IexecPocoBoostDelegate', function () {
         });
 
         it('Should claim', async function () {
-            const expectedVolume = 2; // > 1 to explicit taskPrice vs dealPrice
+            const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
+            const claimedTasks = 1;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
@@ -2016,16 +2017,21 @@ describe('IexecPocoBoostDelegate', function () {
             const initialRequesterFrozen = 3;
             const initialSchedulerBalance = 4;
             const initialSchedulerFrozen = 5;
+            const initialKitty = 6;
+            const initialFrozenKitty = 6;
             const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, expectedVolume);
+            const schedulerTaskStake = schedulerDealStake / expectedVolume;
             await iexecPocoBoostInstance.setVariables({
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance + dealPrice,
                     [scheduler.address]: initialSchedulerBalance + schedulerDealStake,
+                    [kittyAddress]: initialKitty,
                 },
                 [FROZENS]: {
                     [requester.address]: initialRequesterFrozen,
                     [scheduler.address]: initialSchedulerFrozen,
+                    [kittyAddress]: initialFrozenKitty,
                 },
             });
             const dealId = getDealId(domain, requestOrder, taskIndex);
@@ -2037,51 +2043,84 @@ describe('IexecPocoBoostDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             );
+            // Check poco boost balance
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
                 initialIexecPocoBalance + dealPrice + schedulerDealStake,
             );
+            // Check requester balance and frozen
             await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 requester.address,
                 initialRequesterFrozen + dealPrice,
             );
+            // Check scheduler balance and frozen
             await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 scheduler.address,
                 initialSchedulerFrozen + schedulerDealStake,
             );
+
+            // Check kitty balance and frozen
+            await expectBalance(iexecPocoBoostInstance, kittyAddress, initialKitty);
+            await expectFrozen(iexecPocoBoostInstance, kittyAddress, initialFrozenKitty);
             await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
 
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, requester.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Unlock')
+                .withArgs(requester.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(scheduler.address, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(kittyAddress, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(kittyAddress, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
                 .withArgs(taskId);
+
+            const remainingTasksToClaim = expectedVolume - claimedTasks;
             // Task status verification is delegated to related integration test.
+            // Check poco boost balance
             await expectBalance(
                 iexecPocoBoostInstance,
                 iexecPocoBoostInstance.address,
-                initialIexecPocoBalance + taskPrice + schedulerDealStake, // TODO: Remove schedulerStake when kitty reward implemented
+                initialIexecPocoBalance +
+                    taskPrice * remainingTasksToClaim + // requester has 2nd & 3rd task locked
+                    schedulerDealStake, // kitty value since 1st task seized
             );
+            // Check requester balance and frozen
             await expectBalance(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterBalance + taskPrice,
+                initialRequesterBalance + taskPrice * claimedTasks,
             );
             await expectFrozen(
                 iexecPocoBoostInstance,
                 requester.address,
-                initialRequesterFrozen + taskPrice, // 2nd task can still be claimed
+                initialRequesterFrozen + taskPrice * remainingTasksToClaim, // 2nd & 3rd tasks can still be claimed
             );
+            // Check scheduler balance and frozen
             await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
                 scheduler.address,
-                initialSchedulerFrozen + schedulerDealStake, // TODO: Remove schedulerStake when kitty reward implemented
+                initialSchedulerFrozen + schedulerTaskStake * remainingTasksToClaim,
+            );
+            // Check kitty reward balance and frozen
+            await expectBalance(iexecPocoBoostInstance, kittyAddress, initialKitty);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                kittyAddress,
+                initialFrozenKitty + schedulerTaskStake * claimedTasks,
             );
         });
+
+        // TODO: Should claim two tasks
 
         // Different test than other `Should not claim if task not unset` test
         it('Should not claim twice', async function () {
