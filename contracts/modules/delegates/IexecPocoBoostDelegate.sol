@@ -311,7 +311,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
-        requireTaskExists(task.status, index, deal.botSize);
+        requireTaskExistsAndUnset(task.status, index, deal.botSize);
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
         // Enclave challenge required for TEE tasks
         require(
@@ -412,7 +412,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
-        requireTaskExists(task.status, index, deal.botSize);
+        requireTaskExistsAndUnset(task.status, index, deal.botSize);
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
         uint96 workerPoolPrice = deal.workerpoolPrice;
@@ -504,13 +504,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Check if a task exists. Equivalent to task "initialized" in Classic workflow.
-     * In order for the task to exist, its index should be: 0 <= index < deal.botSize.
+     * Check if a task exists and is unset. Such task status is equivalent to
+     * the "initialized" task status in Classic Poco workflow.
+     * In order for the task to exist, its index should be:
+     *   0 <= index < deal.botSize.
      * @param taskStatus The status of the task.
      * @param taskIndex The index of the task.
      * @param botSize The size of the Bag-of-Task in the deal.
      */
-    function requireTaskExists(
+    function requireTaskExistsAndUnset(
         IexecLibCore_v5.TaskStatusEnum taskStatus,
         uint256 taskIndex,
         uint16 botSize
