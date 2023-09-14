@@ -310,11 +310,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
-        //TODO: Verify index belongs to range
-        require(
-            m_tasks[taskId].status == IexecLibCore_v5.TaskStatusEnum.UNSET,
-            "PocoBoost: Task status not unset"
-        );
+        IexecLibCore_v5.Task storage task = m_tasks[taskId];
+        requireTaskExistsAndUnset(task.status, index, deal.botSize);
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
         // Enclave challenge required for TEE tasks
         require(
@@ -349,7 +346,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          * Minimal reuse of Poco Classic task map.
          * Benefit: Fetching task status is unchanged for clients
          */
-        m_tasks[taskId].status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
+        task.status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
 
         // Reward, seize and unlock each parties
         uint96 appPrice = deal.appPrice;
@@ -412,15 +409,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param index The index of the task.
      */
     function claimBoost(bytes32 dealId, uint256 index) external {
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
-        require(
-            task.status == IexecLibCore_v5.TaskStatusEnum.UNSET,
-            "PocoBoost: Task status not unset"
-        );
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        // If deal not found then index < 0.
-        require(index < deal.botSize, "PocoBoost: Unknown task");
+        requireTaskExistsAndUnset(task.status, index, deal.botSize);
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
         uint96 workerPoolPrice = deal.workerpoolPrice;
@@ -509,5 +501,33 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         address expectedAddress
     ) internal pure returns (bool) {
         return identity == address(0) || identity == expectedAddress; // Simple address
+    }
+
+    /**
+     * Check if a task exists and is unset. Such task status is equivalent to
+     * the "initialized" task status in Classic Poco workflow.
+     * In order for the task to exist, its index should be:
+     *   0 <= index < deal.botSize.
+     * @param taskStatus The status of the task.
+     * @param taskIndex The index of the task.
+     * @param botSize The size of the Bag-of-Task in the deal.
+     */
+    function requireTaskExistsAndUnset(
+        IexecLibCore_v5.TaskStatusEnum taskStatus,
+        uint256 taskIndex,
+        uint16 botSize
+    ) private pure {
+        // If deal not found then index < 0.
+        require(taskIndex < botSize, "PocoBoost: Unknown task");
+        /***
+         * @dev The calling method (A) must call this current method (B), then
+         * it must update task to a higher status in (A), to prevent an account
+         * to trigger (A) multiple times. Without that precaution, the contract
+         * could be drained by calling (A) multiple times.
+         */
+        require(
+            taskStatus == IexecLibCore_v5.TaskStatusEnum.UNSET,
+            "PocoBoost: Task status not unset"
+        );
     }
 }
