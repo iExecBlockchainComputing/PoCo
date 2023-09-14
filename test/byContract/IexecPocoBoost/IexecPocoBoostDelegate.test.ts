@@ -2142,7 +2142,7 @@ describe('IexecPocoBoostDelegate', function () {
                     iexecPocoBoostInstance.address,
                     initialIexecPocoBalance +
                         taskPrice * remainingTasksToClaim + // requester has still remainingTasksToClaim task locked
-                        schedulerDealStake, // kitty value since 1st task seized
+                        schedulerDealStake, // stake of remaining tasks to claim + seized stake of claimed tasks moved to kitty
                 );
                 // Check requester balance and frozen.
                 await expectBalance(
