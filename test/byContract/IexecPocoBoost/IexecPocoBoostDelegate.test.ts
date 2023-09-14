@@ -2133,8 +2133,8 @@ describe('IexecPocoBoostDelegate', function () {
             await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
             for (let index = 0; index < tasksToClaim; index++) {
                 await iexecPocoBoostInstance.connect(worker).claimBoost(dealId, index);
-                const remainingTasksToClaim = expectedVolume - (index + 1);
                 const claimedTasks = index + 1;
+                const remainingTasksToClaim = expectedVolume - claimedTasks;
                 // Verifications after claiming "claimedTasks" tasks.
                 // Check poco boost balance
                 await expectBalance(
