@@ -409,9 +409,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param index The index of the task.
      */
     function claimBoost(bytes32 dealId, uint256 index) external {
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         requireTaskExists(task.status, index, deal.botSize);
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
