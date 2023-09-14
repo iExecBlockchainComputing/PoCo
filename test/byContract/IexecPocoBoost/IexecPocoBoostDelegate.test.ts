@@ -2066,7 +2066,7 @@ describe('IexecPocoBoostDelegate', function () {
 
         it('Should claim two tasks', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
-            const claimingTasks = 2;
+            const tasksToClaim = 2;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
