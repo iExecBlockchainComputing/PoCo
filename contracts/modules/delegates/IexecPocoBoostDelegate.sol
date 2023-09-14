@@ -514,11 +514,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         uint256 taskIndex,
         uint16 botSize
     ) private pure {
+        // If deal not found then index < 0.
+        require(taskIndex < botSize, "PocoBoost: Unknown task");
+        /***
+         * @dev The calling method (A) must call this current method (B), then
+         * it must update task to a higher status in (A), to prevent an account
+         * to trigger (A) multiple times. Without that precaution, the contract
+         * could be drained by calling (A) multiple times.
+         */
         require(
             taskStatus == IexecLibCore_v5.TaskStatusEnum.UNSET,
             "PocoBoost: Task status not unset"
         );
-        // If deal not found then index < 0.
-        require(taskIndex < botSize, "PocoBoost: Unknown task");
     }
 }
