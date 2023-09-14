@@ -2127,7 +2127,6 @@ describe('IexecPocoBoostDelegate', function () {
                 scheduler.address,
                 initialSchedulerFrozen + schedulerDealStake,
             );
-
             // Check kitty balance and frozen
             await expectBalance(iexecPocoBoostInstance, kittyAddress, initialKitty);
             await expectFrozen(iexecPocoBoostInstance, kittyAddress, initialFrozenKitty);
