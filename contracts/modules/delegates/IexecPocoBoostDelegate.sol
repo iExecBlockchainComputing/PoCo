@@ -310,7 +310,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
-        requireTaskExists(m_tasks[taskId].status, index, deal.botSize);
+        IexecLibCore_v5.Task storage task = m_tasks[taskId];
+        requireTaskExists(task.status, index, deal.botSize);
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
         // Enclave challenge required for TEE tasks
         require(
@@ -345,7 +346,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          * Minimal reuse of Poco Classic task map.
          * Benefit: Fetching task status is unchanged for clients
          */
-        m_tasks[taskId].status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
+        task.status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
 
         // Reward, seize and unlock each parties
         uint96 appPrice = deal.appPrice;
