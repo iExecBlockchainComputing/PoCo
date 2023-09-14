@@ -2132,7 +2132,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectBalance(iexecPocoBoostInstance, kittyAddress, initialKitty);
             await expectFrozen(iexecPocoBoostInstance, kittyAddress, initialFrozenKitty);
             await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
-            for (let index = 0; index < claimingTasks; index++) {
+            for (let index = 0; index < tasksToClaim; index++) {
                 const taskId = getTaskId(dealId, index);
                 await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, index))
                     .to.emit(iexecPocoBoostInstance, 'Transfer')
