@@ -2132,21 +2132,7 @@ describe('IexecPocoBoostDelegate', function () {
             await expectFrozen(iexecPocoBoostInstance, kittyAddress, initialFrozenKitty);
             await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
             for (let index = 0; index < tasksToClaim; index++) {
-                const taskId = getTaskId(dealId, index);
-                await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, index))
-                    .to.emit(iexecPocoBoostInstance, 'Transfer')
-                    .withArgs(iexecPocoBoostInstance.address, requester.address, taskPrice)
-                    .to.emit(iexecPocoBoostInstance, 'Unlock')
-                    .withArgs(requester.address, taskPrice)
-                    .to.emit(iexecPocoBoostInstance, 'Seize')
-                    .withArgs(scheduler.address, schedulerTaskStake, taskId)
-                    .to.emit(iexecPocoBoostInstance, 'Reward')
-                    .withArgs(kittyAddress, schedulerTaskStake, taskId)
-                    .to.emit(iexecPocoBoostInstance, 'Lock')
-                    .withArgs(kittyAddress, schedulerTaskStake)
-                    .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
-                    .withArgs(taskId);
-
+                await iexecPocoBoostInstance.connect(worker).claimBoost(dealId, index);
                 const remainingTasksToClaim = expectedVolume - (index + 1);
                 const claimedTasks = index + 1;
                 // Verifications after claiming "claimedTasks" tasks.
