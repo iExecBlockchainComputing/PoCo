@@ -181,46 +181,44 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         bytes32 dealId;
         uint256 volume;
         IexecLibCore_v5.DealBoost storage deal;
-        {
-            /**
-             * Compute deal volume and consume orders.
-             * @dev
-             * - Volume of the deal is equal to the smallest unconsumed volume
-             *   among all orders.
-             * - Compute volume:
-             *   - in multiple steps to prevent `Stack too deep`
-             *   - but trying to use as little gas as possible
-             * - Overflows: Solidity 0.8 has built in overflow checking
-             */
-            uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
-            uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
-            // No workerpool variable, else `Stack too deep`
-            // No dataset variable since dataset is optional
-            dealId = keccak256(
-                abi.encodePacked(
-                    requestOrderTypedDataHash,
-                    requestOrderConsumed // index of first task
-                )
-            );
-            volume = appOrder.volume - appOrderConsumed;
-            volume = volume.min(workerpoolOrder.volume - m_consumed[workerpoolOrderTypedDataHash]);
-            volume = volume.min(requestOrder.volume - requestOrderConsumed);
-            if (hasDataset) {
-                volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
-            }
-            require(volume > 0, "PocoBoost: One or more orders consumed");
-            m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // cheaper than `+= volume` here
-            m_consumed[workerpoolOrderTypedDataHash] += volume;
-            m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
-            if (hasDataset) {
-                m_consumed[datasetOrderTypedDataHash] += volume;
-            }
-            /**
-             * Store deal
-             */
-            deal = m_dealsBoost[dealId];
-            deal.botFirst = requestOrderConsumed.toUint16();
+        /**
+         * Compute deal volume and consume orders.
+         * @dev
+         * - Volume of the deal is equal to the smallest unconsumed volume
+         *   among all orders.
+         * - Compute volume:
+         *   - in multiple steps to prevent `Stack too deep`
+         *   - but trying to use as little gas as possible
+         * - Overflows: Solidity 0.8 has built in overflow checking
+         */
+        uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
+        uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
+        // No workerpool variable, else `Stack too deep`
+        // No dataset variable since dataset is optional
+        dealId = keccak256(
+            abi.encodePacked(
+                requestOrderTypedDataHash,
+                requestOrderConsumed // index of first task
+            )
+        );
+        volume = appOrder.volume - appOrderConsumed;
+        volume = volume.min(workerpoolOrder.volume - m_consumed[workerpoolOrderTypedDataHash]);
+        volume = volume.min(requestOrder.volume - requestOrderConsumed);
+        if (hasDataset) {
+            volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
         }
+        require(volume > 0, "PocoBoost: One or more orders consumed");
+        m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // cheaper than `+= volume` here
+        m_consumed[workerpoolOrderTypedDataHash] += volume;
+        m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
+        if (hasDataset) {
+            m_consumed[datasetOrderTypedDataHash] += volume;
+        }
+        /**
+         * Store deal
+         */
+        deal = m_dealsBoost[dealId];
+        deal.botFirst = requestOrderConsumed.toUint16();
         deal.requester = requestOrder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
@@ -251,14 +249,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         deal.shortTag = shortTag;
         deal.callback = requestOrder.callback;
         // Lock
-        {
-            uint256 taskPrice = appPrice + datasetPrice + workerpoolPrice;
-            lock(deal.requester, taskPrice * volume); //TODO gas : use _requester. instead of deal. and update taskPrice
-            // Order is important here. First get percentage by task then
-            // multiply by volume.
-            uint256 workerpoolTaskStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
-            lock(deal.workerpoolOwner, workerpoolTaskStake * volume); // TODO gas : use local vars. instead of deal.
-        }
+        uint256 taskPrice = appPrice + datasetPrice + workerpoolPrice;
+        lock(deal.requester, taskPrice * volume); //TODO gas : use _requester. instead of deal. and update taskPrice
+        // Order is important here. First get percentage by task then
+        // multiply by volume.
+        uint256 workerpoolTaskStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+        lock(deal.workerpoolOwner, workerpoolTaskStake * volume); // TODO gas : use local vars. instead of deal.
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             requestOrder.workerpool,
