@@ -44,10 +44,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * @notice This boost match orders is only compatible with trust = 0.
-     * @param _apporder The order signed by the application developer
-     * @param _datasetorder The order signed by the dataset provider
-     * @param _workerpoolorder The order signed by the workerpool manager
-     * @param _requestorder The order signed by the requester
+     * @param appOrder The order signed by the application developer
+     * @param datasetOrder The order signed by the dataset provider
+     * @param workerpoolOrder The order signed by the workerpool manager
+     * @param requestOrder The order signed by the requester
      *
      * @dev Considering min·max·avg gas values, preferred option for deal storage
      *  is b.:
@@ -57,177 +57,169 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      *   - d. 215729·276197·242985: Write/read everything to/on memory struct and asign memory to storage
      */
     function matchOrdersBoost(
-        IexecLibOrders_v5.AppOrder calldata _apporder,
-        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
-        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
-        IexecLibOrders_v5.RequestOrder calldata _requestorder
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external {
-        require(_requestorder.trust == 0, "PocoBoost: Non-zero trust level");
-        require(
-            _requestorder.category == _workerpoolorder.category,
-            "PocoBoost: Category mismatch"
-        );
-        require(_requestorder.category < m_categories.length, "PocoBoost: Unknown category");
-        uint256 appPrice = _apporder.appprice;
-        require(_requestorder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
-        uint256 datasetPrice = _datasetorder.datasetprice;
-        require(_requestorder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
+        require(requestOrder.trust == 0, "PocoBoost: Non-zero trust level");
+        require(requestOrder.category == workerpoolOrder.category, "PocoBoost: Category mismatch");
+        require(requestOrder.category < m_categories.length, "PocoBoost: Unknown category");
+        uint256 appPrice = appOrder.appprice;
+        require(requestOrder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
+        uint256 datasetPrice = datasetOrder.datasetprice;
+        require(requestOrder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
         // An intermediate variable stored in the stack consumes
         // less gas than accessing calldata each time.
-        uint256 workerpoolPrice = _workerpoolorder.workerpoolprice;
+        uint256 workerpoolPrice = workerpoolOrder.workerpoolprice;
         require(
-            _requestorder.workerpoolmaxprice >= workerpoolPrice,
+            requestOrder.workerpoolmaxprice >= workerpoolPrice,
             "PocoBoost: Overpriced workerpool"
         );
         // Save some local variables in memory with a structure to fix `Stack too deep`.
         IexecLibCore_v5.DealBoost memory vars;
-        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+        bytes32 tag = appOrder.tag | datasetOrder.tag | requestOrder.tag;
         require(
-            tag & ~_workerpoolorder.tag == 0x0,
+            tag & ~workerpoolOrder.tag == 0x0,
             "PocoBoost: Workerpool tag does not match demand"
         );
-        require(
-            (tag ^ _apporder.tag)[31] & 0x01 == 0x0,
-            "PocoBoost: App tag does not match demand"
-        );
+        require((tag ^ appOrder.tag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
 
         // Check match and restriction
-        require(_requestorder.app == _apporder.app, "PocoBoost: App mismatch");
-        require(_requestorder.dataset == _datasetorder.dataset, "PocoBoost: Dataset mismatch");
+        require(requestOrder.app == appOrder.app, "PocoBoost: App mismatch");
+        require(requestOrder.dataset == datasetOrder.dataset, "PocoBoost: Dataset mismatch");
         require(
-            _isNullIdentityOrEquals(_requestorder.workerpool, _workerpoolorder.workerpool),
+            _isNullIdentityOrEquals(requestOrder.workerpool, workerpoolOrder.workerpool),
             "PocoBoost: Workerpool restricted by request order"
         );
         require(
-            _isNullIdentityOrEquals(_apporder.datasetrestrict, _datasetorder.dataset),
+            _isNullIdentityOrEquals(appOrder.datasetrestrict, datasetOrder.dataset),
             "PocoBoost: Dataset restricted by app order"
         );
         require(
-            _isNullIdentityOrEquals(_apporder.workerpoolrestrict, _workerpoolorder.workerpool),
+            _isNullIdentityOrEquals(appOrder.workerpoolrestrict, workerpoolOrder.workerpool),
             "PocoBoost: Workerpool restricted by app order"
         );
         require(
-            _isNullIdentityOrEquals(_apporder.requesterrestrict, _requestorder.requester),
+            _isNullIdentityOrEquals(appOrder.requesterrestrict, requestOrder.requester),
             "PocoBoost: Requester restricted by app order"
         );
         require(
-            _isNullIdentityOrEquals(_datasetorder.apprestrict, _apporder.app),
+            _isNullIdentityOrEquals(datasetOrder.apprestrict, appOrder.app),
             "PocoBoost: App restricted by dataset order"
         );
         require(
-            _isNullIdentityOrEquals(_datasetorder.workerpoolrestrict, _workerpoolorder.workerpool),
+            _isNullIdentityOrEquals(datasetOrder.workerpoolrestrict, workerpoolOrder.workerpool),
             "PocoBoost: Workerpool restricted by dataset order"
         );
         require(
-            _isNullIdentityOrEquals(_datasetorder.requesterrestrict, _requestorder.requester),
+            _isNullIdentityOrEquals(datasetOrder.requesterrestrict, requestOrder.requester),
             "PocoBoost: Requester restricted by dataset order"
         );
         require(
-            _isNullIdentityOrEquals(_workerpoolorder.apprestrict, _apporder.app),
+            _isNullIdentityOrEquals(workerpoolOrder.apprestrict, appOrder.app),
             "PocoBoost: App restricted by workerpool order"
         );
         require(
-            _isNullIdentityOrEquals(_workerpoolorder.datasetrestrict, _datasetorder.dataset),
+            _isNullIdentityOrEquals(workerpoolOrder.datasetrestrict, datasetOrder.dataset),
             "PocoBoost: Dataset restricted by workerpool order"
         );
         require(
-            _isNullIdentityOrEquals(_workerpoolorder.requesterrestrict, _requestorder.requester),
+            _isNullIdentityOrEquals(workerpoolOrder.requesterrestrict, requestOrder.requester),
             "PocoBoost: Requester restricted by workerpool order"
         );
 
-        require(m_appregistry.isRegistered(_apporder.app), "PocoBoost: App not registered");
-        vars.appOwner = IERC5313(_apporder.app).owner();
-        bytes32 appOrderTypedDataHash = _toTypedDataHash(_apporder.hash());
+        require(m_appregistry.isRegistered(appOrder.app), "PocoBoost: App not registered");
+        vars.appOwner = IERC5313(appOrder.app).owner();
+        bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
         require(
-            _verifySignatureOrPresignature(vars.appOwner, appOrderTypedDataHash, _apporder.sign),
+            _verifySignatureOrPresignature(vars.appOwner, appOrderTypedDataHash, appOrder.sign),
             "PocoBoost: Invalid app order signature"
         );
-        bool hasDataset = _requestorder.dataset != address(0);
+        bool hasDataset = requestOrder.dataset != address(0);
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
             require(
-                m_datasetregistry.isRegistered(_datasetorder.dataset),
+                m_datasetregistry.isRegistered(datasetOrder.dataset),
                 "PocoBoost: Dataset not registered"
             );
-            vars.datasetOwner = IERC5313(_datasetorder.dataset).owner();
-            datasetOrderTypedDataHash = _toTypedDataHash(_datasetorder.hash());
+            vars.datasetOwner = IERC5313(datasetOrder.dataset).owner();
+            datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
             require(
                 _verifySignatureOrPresignature(
                     vars.datasetOwner,
                     datasetOrderTypedDataHash,
-                    _datasetorder.sign
+                    datasetOrder.sign
                 ),
                 "PocoBoost: Invalid dataset order signature"
             );
         }
-        address workerpool = _workerpoolorder.workerpool;
+        address workerpool = workerpoolOrder.workerpool;
         require(
             m_workerpoolregistry.isRegistered(workerpool),
             "PocoBoost: Workerpool not registered"
         );
         vars.workerpoolOwner = IERC5313(workerpool).owner();
-        bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(_workerpoolorder.hash());
+        bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(workerpoolOrder.hash());
         require(
             _verifySignatureOrPresignature(
                 vars.workerpoolOwner,
                 workerpoolOrderTypedDataHash,
-                _workerpoolorder.sign
+                workerpoolOrder.sign
             ),
             "PocoBoost: Invalid workerpool order signature"
         );
-        bytes32 requestOrderTypedDataHash = _toTypedDataHash(_requestorder.hash());
+        bytes32 requestOrderTypedDataHash = _toTypedDataHash(requestOrder.hash());
         require(
             _verifySignatureOrPresignature(
-                _requestorder.requester,
+                requestOrder.requester,
                 requestOrderTypedDataHash,
-                _requestorder.sign
+                requestOrder.sign
             ),
             "PocoBoost: Invalid request order signature"
         );
         bytes32 dealId;
         uint256 volume;
         IexecLibCore_v5.DealBoost storage deal;
-        {
-            /**
-             * Compute deal volume and consume orders.
-             * @dev
-             * - Volume of the deal is equal to the smallest unconsumed volume
-             *   among all orders.
-             * - Compute volume:
-             *   - in multiple steps to prevent `Stack too deep`
-             *   - but trying to use as little gas as possible
-             * - Overflows: Solidity 0.8 has built in overflow checking
-             */
-            uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
-            uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
-            // No workerpool variable, else `Stack too deep`
-            // No dataset variable since dataset is optional
-            dealId = keccak256(
-                abi.encodePacked(
-                    requestOrderTypedDataHash,
-                    requestOrderConsumed // index of first task
-                )
-            );
-            volume = _apporder.volume - appOrderConsumed;
-            volume = volume.min(_workerpoolorder.volume - m_consumed[workerpoolOrderTypedDataHash]);
-            volume = volume.min(_requestorder.volume - requestOrderConsumed);
-            if (hasDataset) {
-                volume = volume.min(_datasetorder.volume - m_consumed[datasetOrderTypedDataHash]);
-            }
-            require(volume > 0, "PocoBoost: One or more orders consumed");
-            m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // cheaper than `+= volume` here
-            m_consumed[workerpoolOrderTypedDataHash] += volume;
-            m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
-            if (hasDataset) {
-                m_consumed[datasetOrderTypedDataHash] += volume;
-            }
-            /**
-             * Store deal
-             */
-            deal = m_dealsBoost[dealId];
-            deal.botFirst = requestOrderConsumed.toUint16();
+        /**
+         * Compute deal volume and consume orders.
+         * @dev
+         * - Volume of the deal is equal to the smallest unconsumed volume
+         *   among all orders.
+         * - Compute volume:
+         *   - in multiple steps to prevent `Stack too deep`
+         *   - but trying to use as little gas as possible
+         * - Overflows: Solidity 0.8 has built in overflow checking
+         */
+        uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
+        uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
+        // No workerpool variable, else `Stack too deep`
+        // No dataset variable since dataset is optional
+        dealId = keccak256(
+            abi.encodePacked(
+                requestOrderTypedDataHash,
+                requestOrderConsumed // index of first task
+            )
+        );
+        volume = appOrder.volume - appOrderConsumed;
+        volume = volume.min(workerpoolOrder.volume - m_consumed[workerpoolOrderTypedDataHash]);
+        volume = volume.min(requestOrder.volume - requestOrderConsumed);
+        if (hasDataset) {
+            volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
         }
-        deal.requester = _requestorder.requester;
+        require(volume > 0, "PocoBoost: One or more orders consumed");
+        m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // cheaper than `+= volume` here
+        m_consumed[workerpoolOrderTypedDataHash] += volume;
+        m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
+        if (hasDataset) {
+            m_consumed[datasetOrderTypedDataHash] += volume;
+        }
+        /**
+         * Store deal
+         */
+        deal = m_dealsBoost[dealId];
+        deal.botFirst = requestOrderConsumed.toUint16();
+        deal.requester = requestOrder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.appOwner = vars.appOwner;
@@ -239,7 +231,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
         deal.deadline = (block.timestamp +
-            m_categories[_requestorder.category].workClockTimeRef *
+            m_categories[requestOrder.category].workClockTimeRef *
             CONTRIBUTION_DEADLINE_RATIO).toUint40();
         deal.botSize = volume.toUint16();
         /**
@@ -255,26 +247,24 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             shortTag := shl(232, tag) // 24 = 256 - 232
         }
         deal.shortTag = shortTag;
-        deal.callback = _requestorder.callback;
+        deal.callback = requestOrder.callback;
         // Lock
-        {
-            uint256 taskPrice = appPrice + datasetPrice + workerpoolPrice;
-            lock(deal.requester, taskPrice * volume); //TODO gas : use _requester. instead of deal. and update taskPrice
-            // Order is important here. First get percentage by task then
-            // multiply by volume.
-            uint256 workerpoolTaskStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
-            lock(deal.workerpoolOwner, workerpoolTaskStake * volume); // TODO gas : use local vars. instead of deal.
-        }
+        uint256 taskPrice = appPrice + datasetPrice + workerpoolPrice;
+        lock(deal.requester, taskPrice * volume); //TODO gas : use _requester. instead of deal. and update taskPrice
+        // Order is important here. First get percentage by task then
+        // multiply by volume.
+        uint256 workerpoolTaskStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+        lock(deal.workerpoolOwner, workerpoolTaskStake * volume); // TODO gas : use local vars. instead of deal.
         // Notify workerpool.
         emit SchedulerNoticeBoost(
-            _requestorder.workerpool,
+            requestOrder.workerpool,
             dealId,
-            _requestorder.app,
-            _requestorder.dataset,
-            _requestorder.category,
+            requestOrder.app,
+            requestOrder.dataset,
+            requestOrder.category,
             tag,
-            _requestorder.params,
-            _requestorder.beneficiary
+            requestOrder.params,
+            requestOrder.beneficiary
         );
         // Broadcast consumption of orders.
         emit OrdersMatched(
