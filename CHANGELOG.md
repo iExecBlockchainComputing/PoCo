@@ -41,6 +41,7 @@
     - Lock scheduler stake. (#202)
     - Remove beneficiary from deal storage. (#205)
     - Reduce Boost deal storage from 6 to 5 slots. (#216)
+    - Reduce gas consumption with lock() computation. (#223)
 - Implement `pushResultBoost`:
     - Verify task exists. (#219)
     - Push result before deadline. (#195)
