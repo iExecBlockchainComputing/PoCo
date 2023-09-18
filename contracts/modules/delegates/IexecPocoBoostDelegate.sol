@@ -178,9 +178,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             ),
             "PocoBoost: Invalid request order signature"
         );
-        bytes32 dealId;
-        uint256 volume;
-        IexecLibCore_v5.DealBoost storage deal;
+
+        uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
+        uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
+        // No workerpool variable, else `Stack too deep`
+        // No dataset variable since dataset is optional
+        bytes32 dealId = keccak256(
+            abi.encodePacked(
+                requestOrderTypedDataHash,
+                requestOrderConsumed // index of first task
+            )
+        );
         /**
          * Compute deal volume and consume orders.
          * @dev
@@ -191,17 +199,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
-        uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
-        // No workerpool variable, else `Stack too deep`
-        // No dataset variable since dataset is optional
-        dealId = keccak256(
-            abi.encodePacked(
-                requestOrderTypedDataHash,
-                requestOrderConsumed // index of first task
-            )
-        );
-        volume = appOrder.volume - appOrderConsumed;
+        uint256 volume = appOrder.volume - appOrderConsumed;
         volume = volume.min(workerpoolOrder.volume - m_consumed[workerpoolOrderTypedDataHash]);
         volume = volume.min(requestOrder.volume - requestOrderConsumed);
         if (hasDataset) {
@@ -217,7 +215,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         /**
          * Store deal
          */
-        deal = m_dealsBoost[dealId];
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         deal.botFirst = requestOrderConsumed.toUint16();
         deal.requester = requestOrder.requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
