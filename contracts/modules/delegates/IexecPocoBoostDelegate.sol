@@ -248,13 +248,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
         deal.shortTag = shortTag;
         deal.callback = requestOrder.callback;
-        // Lock
-        uint256 taskPrice = appPrice + datasetPrice + workerpoolPrice;
-        lock(deal.requester, taskPrice * volume); //TODO gas : use _requester. instead of deal. and update taskPrice
+        // Lock deal price from requester balance.
+        lock(requestOrder.requester, (appPrice + datasetPrice + workerpoolPrice) * volume);
+        // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
-        uint256 workerpoolTaskStake = (workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
-        lock(deal.workerpoolOwner, workerpoolTaskStake * volume); // TODO gas : use local vars. instead of deal.
+        lock(vars.workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             requestOrder.workerpool,
