@@ -248,7 +248,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
         deal.shortTag = shortTag;
         deal.callback = requestOrder.callback;
-        // Lock deal price from requester balance..
+        // Lock deal price from requester balance.
         lock(requestOrder.requester, (appPrice + datasetPrice + workerpoolPrice) * volume);
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
