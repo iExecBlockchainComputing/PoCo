@@ -174,8 +174,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             _verifySignatureOrPresignature(requester, requestOrderTypedDataHash, requestOrder.sign),
             "PocoBoost: Invalid request order signature"
         );
-        bytes32 dealId;
-        uint256 volume;
+        bytes32 dealId; //TODO init value directly.
+        uint256 volume; //TODO init value directly.
         IexecLibCore_v5.DealBoost storage deal;
         /**
          * Compute deal volume and consume orders.
