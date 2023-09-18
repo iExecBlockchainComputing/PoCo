@@ -84,13 +84,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             "PocoBoost: Workerpool tag does not match demand"
         );
         require((tag ^ appOrder.tag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
+        // Check match.
         address app = appOrder.app;
-        address workerpool = workerpoolOrder.workerpool;
-        address dataset = datasetOrder.dataset;
-        address requester = requestOrder.requester;
-        // Check match and restriction
         require(requestOrder.app == app, "PocoBoost: App mismatch");
+        address dataset = datasetOrder.dataset;
         require(requestOrder.dataset == dataset, "PocoBoost: Dataset mismatch");
+        // Check restriction.
+        address workerpool = workerpoolOrder.workerpool;
         require(
             _isNullIdentityOrEquals(requestOrder.workerpool, workerpool),
             "PocoBoost: Workerpool restricted by request order"
@@ -103,6 +103,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             _isNullIdentityOrEquals(appOrder.workerpoolrestrict, workerpool),
             "PocoBoost: Workerpool restricted by app order"
         );
+        address requester = requestOrder.requester;
         require(
             _isNullIdentityOrEquals(appOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by app order"
