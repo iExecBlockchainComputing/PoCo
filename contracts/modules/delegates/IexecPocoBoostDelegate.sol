@@ -63,14 +63,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external {
         require(requestOrder.trust == 0, "PocoBoost: Non-zero trust level");
-        require(requestOrder.category == workerpoolOrder.category, "PocoBoost: Category mismatch");
-        require(requestOrder.category < m_categories.length, "PocoBoost: Unknown category");
+        // An intermediate variable stored in the stack consumes
+        // less gas than accessing calldata each time.
+        uint256 category = requestOrder.category;
+        require(category == workerpoolOrder.category, "PocoBoost: Category mismatch");
+        require(category < m_categories.length, "PocoBoost: Unknown category");
         uint256 appPrice = appOrder.appprice;
         require(requestOrder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
         uint256 datasetPrice = datasetOrder.datasetprice;
         require(requestOrder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
-        // An intermediate variable stored in the stack consumes
-        // less gas than accessing calldata each time.
         uint256 workerpoolPrice = workerpoolOrder.workerpoolprice;
         require(
             requestOrder.workerpoolmaxprice >= workerpoolPrice,
@@ -226,7 +227,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
         deal.deadline = (block.timestamp +
-            m_categories[requestOrder.category].workClockTimeRef *
+            m_categories[category].workClockTimeRef *
             CONTRIBUTION_DEADLINE_RATIO).toUint40();
         deal.botSize = volume.toUint16();
         /**
@@ -255,7 +256,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             dealId,
             app,
             dataset,
-            requestOrder.category,
+            category,
             tag,
             requestOrder.params,
             requestOrder.beneficiary
