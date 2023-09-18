@@ -42,7 +42,7 @@
     - Remove beneficiary from deal storage. (#205)
     - Reduce Boost deal storage from 6 to 5 slots. (#216)
     - Reduce gas consumption on `lock()` calls. (#223)
-    - Factorize actors addresses. (#224)
+    - Refactor actors addresses. (#224)
 - Implement `pushResultBoost`:
     - Verify task exists. (#219)
     - Push result before deadline. (#195)
