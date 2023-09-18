@@ -84,53 +84,56 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             "PocoBoost: Workerpool tag does not match demand"
         );
         require((tag ^ appOrder.tag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
-
+        address app = appOrder.app;
+        address workerpool = workerpoolOrder.workerpool;
+        address dataset = datasetOrder.dataset;
+        address requester = requestOrder.requester;
         // Check match and restriction
-        require(requestOrder.app == appOrder.app, "PocoBoost: App mismatch");
-        require(requestOrder.dataset == datasetOrder.dataset, "PocoBoost: Dataset mismatch");
+        require(requestOrder.app == app, "PocoBoost: App mismatch");
+        require(requestOrder.dataset == dataset, "PocoBoost: Dataset mismatch");
         require(
-            _isNullIdentityOrEquals(requestOrder.workerpool, workerpoolOrder.workerpool),
+            _isNullIdentityOrEquals(requestOrder.workerpool, workerpool),
             "PocoBoost: Workerpool restricted by request order"
         );
         require(
-            _isNullIdentityOrEquals(appOrder.datasetrestrict, datasetOrder.dataset),
+            _isNullIdentityOrEquals(appOrder.datasetrestrict, dataset),
             "PocoBoost: Dataset restricted by app order"
         );
         require(
-            _isNullIdentityOrEquals(appOrder.workerpoolrestrict, workerpoolOrder.workerpool),
+            _isNullIdentityOrEquals(appOrder.workerpoolrestrict, workerpool),
             "PocoBoost: Workerpool restricted by app order"
         );
         require(
-            _isNullIdentityOrEquals(appOrder.requesterrestrict, requestOrder.requester),
+            _isNullIdentityOrEquals(appOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by app order"
         );
         require(
-            _isNullIdentityOrEquals(datasetOrder.apprestrict, appOrder.app),
+            _isNullIdentityOrEquals(datasetOrder.apprestrict, app),
             "PocoBoost: App restricted by dataset order"
         );
         require(
-            _isNullIdentityOrEquals(datasetOrder.workerpoolrestrict, workerpoolOrder.workerpool),
+            _isNullIdentityOrEquals(datasetOrder.workerpoolrestrict, workerpool),
             "PocoBoost: Workerpool restricted by dataset order"
         );
         require(
-            _isNullIdentityOrEquals(datasetOrder.requesterrestrict, requestOrder.requester),
+            _isNullIdentityOrEquals(datasetOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by dataset order"
         );
         require(
-            _isNullIdentityOrEquals(workerpoolOrder.apprestrict, appOrder.app),
+            _isNullIdentityOrEquals(workerpoolOrder.apprestrict, app),
             "PocoBoost: App restricted by workerpool order"
         );
         require(
-            _isNullIdentityOrEquals(workerpoolOrder.datasetrestrict, datasetOrder.dataset),
+            _isNullIdentityOrEquals(workerpoolOrder.datasetrestrict, dataset),
             "PocoBoost: Dataset restricted by workerpool order"
         );
         require(
-            _isNullIdentityOrEquals(workerpoolOrder.requesterrestrict, requestOrder.requester),
+            _isNullIdentityOrEquals(workerpoolOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by workerpool order"
         );
 
-        require(m_appregistry.isRegistered(appOrder.app), "PocoBoost: App not registered");
-        vars.appOwner = IERC5313(appOrder.app).owner();
+        require(m_appregistry.isRegistered(app), "PocoBoost: App not registered");
+        vars.appOwner = IERC5313(app).owner();
         bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
         require(
             _verifySignatureOrPresignature(vars.appOwner, appOrderTypedDataHash, appOrder.sign),
@@ -139,11 +142,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         bool hasDataset = requestOrder.dataset != address(0);
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
-            require(
-                m_datasetregistry.isRegistered(datasetOrder.dataset),
-                "PocoBoost: Dataset not registered"
-            );
-            vars.datasetOwner = IERC5313(datasetOrder.dataset).owner();
+            require(m_datasetregistry.isRegistered(dataset), "PocoBoost: Dataset not registered");
+            vars.datasetOwner = IERC5313(dataset).owner();
             datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
             require(
                 _verifySignatureOrPresignature(
@@ -154,7 +154,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
                 "PocoBoost: Invalid dataset order signature"
             );
         }
-        address workerpool = workerpoolOrder.workerpool;
+
         require(
             m_workerpoolregistry.isRegistered(workerpool),
             "PocoBoost: Workerpool not registered"
@@ -171,11 +171,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         );
         bytes32 requestOrderTypedDataHash = _toTypedDataHash(requestOrder.hash());
         require(
-            _verifySignatureOrPresignature(
-                requestOrder.requester,
-                requestOrderTypedDataHash,
-                requestOrder.sign
-            ),
+            _verifySignatureOrPresignature(requester, requestOrderTypedDataHash, requestOrder.sign),
             "PocoBoost: Invalid request order signature"
         );
         bytes32 dealId;
@@ -219,7 +215,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          */
         deal = m_dealsBoost[dealId];
         deal.botFirst = requestOrderConsumed.toUint16();
-        deal.requester = requestOrder.requester;
+        deal.requester = requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.appOwner = vars.appOwner;
@@ -249,17 +245,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         deal.shortTag = shortTag;
         deal.callback = requestOrder.callback;
         // Lock deal price from requester balance.
-        lock(requestOrder.requester, (appPrice + datasetPrice + workerpoolPrice) * volume);
+        lock(requester, (appPrice + datasetPrice + workerpoolPrice) * volume);
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
         lock(vars.workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
         // Notify workerpool.
         emit SchedulerNoticeBoost(
-            requestOrder.workerpool,
+            workerpool,
             dealId,
-            requestOrder.app,
-            requestOrder.dataset,
+            app,
+            dataset,
             requestOrder.category,
             tag,
             requestOrder.params,
