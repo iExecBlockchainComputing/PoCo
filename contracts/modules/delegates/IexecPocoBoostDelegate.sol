@@ -20,6 +20,7 @@ pragma solidity ^0.8.0;
 
 import "@onchain-id/solidity/contracts/interface/IERC734.sol";
 import "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
+import "@openzeppelin/contracts-v4/utils/Address.sol";
 import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
 import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
@@ -35,6 +36,7 @@ import "../interfaces/IexecPocoBoost.sol";
  * @notice Works for deals with requested trust = 0.
  */
 contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
+    using Address for address;
     using ECDSA for bytes32;
     using Math for uint256;
     using SafeCast for uint256;
@@ -495,10 +497,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         return
             identity == address(0) ||
             identity == candidate || // Simple identity address
-            IERC734(identity).keyHasPurpose(
-                bytes32(uint256(uint160(candidate))),
-                GROUPMEMBER_PURPOSE
-            ); // ERC734 identity contract
+            (identity.isContract() &&
+                IERC734(identity).keyHasPurpose(
+                    bytes32(uint256(uint160(candidate))),
+                    GROUPMEMBER_PURPOSE
+                )); // ERC734 identity contract
     }
 
     /**
