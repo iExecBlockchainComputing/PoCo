@@ -485,7 +485,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param identity A simple address to be verified or an ERC734 identity
      * contract that might whitelist a given candidate in a group.
      * @param candidate A simple candidate address or a candidate key of the
-     *  ERC734 identity contract.
+     * ERC734 identity contract.
      */
     // TODO: Rename method
     function _isNullIdentityOrEquals(
