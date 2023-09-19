@@ -64,7 +64,7 @@ const BALANCES = 'm_balances';
 const FROZENS = 'm_frozens';
 const WORKERPOOL_STAKE_RATIO = 30;
 const kittyAddress = '0x99c2268479b93fDe36232351229815DF80837e23';
-const groupMemberPurpose = 4;
+const groupMemberPurpose = 4; // See contracts/Store.v8.sol#GROUPMEMBER_PURPOSE
 const { domain, domainSeparator } = buildDomain();
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
@@ -2466,7 +2466,7 @@ async function createFakeErc734IdentityInstance() {
 }
 
 /**
- * If the ERC734 identity contract called for a given candidate in a group, then
+ * If the ERC734 identity contract is asked if a given candidate is in a group, then
  * return true.
  * @param erc734IdentityContractInstance A fake ERC734 identity contract instance.
  * @param candidate The candidate that should belong to the group.
@@ -2481,7 +2481,7 @@ function whenIdentityContractCalledForCandidateInGroupThenReturnTrue(
 }
 
 /**
- * Expect an ERC734 identity contract has been called a specific number of times
+ * Expect that an ERC734 identity contract has been called a specific number of times
  * for a given candidate in a group.
  * @param erc734IdentityContractInstance A fake ERC734 identity contract instance.
  * @param candidate The candidate that should belong to the group.
@@ -2502,7 +2502,7 @@ function expectIdentityContractCalledForCandidateInGroup(
  * @param address The address to convert to bytes32.
  * @returns The address in bytes32 format.
  */
-function addressToBytes32(address: string): unknown {
+function addressToBytes32(address: string): string {
     return ethers.utils.hexZeroPad(address, 32).toLowerCase();
 }
 
