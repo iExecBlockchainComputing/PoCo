@@ -197,7 +197,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 volume = appOrder.volume - appOrderConsumed;
+        uint256 volume = (appOrder.volume - appOrderConsumed)
+                .min(workerpoolOrder.volume - m_consumed[workerpoolOrderTypedDataHash])
+                .min(requestOrder.volume - requestOrderConsumed);
         volume = volume.min(workerpoolOrder.volume - m_consumed[workerpoolOrderTypedDataHash]);
         volume = volume.min(requestOrder.volume - requestOrderConsumed);
         if (hasDataset) {
