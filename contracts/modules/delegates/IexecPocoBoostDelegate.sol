@@ -179,7 +179,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
         uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
         uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
-        // No workerpool variable, else `Stack too deep`
+        // TODO: Cache workerpoolOrder.volume
         // No dataset variable since dataset is optional
         bytes32 dealId = keccak256(
             abi.encodePacked(
