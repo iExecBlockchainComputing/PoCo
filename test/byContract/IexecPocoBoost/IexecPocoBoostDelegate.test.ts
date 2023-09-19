@@ -24,9 +24,15 @@ import {
     DatasetRegistry__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
+    IERC734,
+    IERC734__factory,
 } from '../../../typechain';
 import constants from '../../../utils/constants';
 import {
+    createEmptyAppOrder,
+    createEmptyDatasetOrder,
+    createEmptyWorkerpoolOrder,
+    createEmptyRequestOrder,
     buildOrders,
     buildDomain,
     signOrder,
@@ -58,6 +64,7 @@ const BALANCES = 'm_balances';
 const FROZENS = 'm_frozens';
 const WORKERPOOL_STAKE_RATIO = 30;
 const kittyAddress = '0x99c2268479b93fDe36232351229815DF80837e23';
+const groupMemberPurpose = 4;
 const { domain, domainSeparator } = buildDomain();
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
@@ -356,6 +363,104 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance,
                 scheduler.address,
                 initialSchedulerFrozen + schedulerStake,
+            );
+        });
+
+        it('Should match orders when assets and requester belongs to identity groups', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            let appOrder = createEmptyAppOrder();
+            let datasetOrder = createEmptyDatasetOrder();
+            let workerpoolOrder = createEmptyWorkerpoolOrder();
+            let requestOrder = createEmptyRequestOrder();
+            // App
+            const appGroupIdentityInstance = await createFakeErc734IdentityInstance();
+            appOrder.app = appInstance.address;
+            datasetOrder.apprestrict = appGroupIdentityInstance.address;
+            workerpoolOrder.apprestrict = appGroupIdentityInstance.address;
+            const expectedCallsToAppGroup = 2;
+            requestOrder.app = appOrder.app;
+            whenIdentityContractCalledForCandidateInGroupThenReturnTrue(
+                appGroupIdentityInstance,
+                appOrder.app,
+            );
+            // Dataset
+            const datasetGroupIdentityInstance = await createFakeErc734IdentityInstance();
+            datasetOrder.dataset = datasetInstance.address;
+            appOrder.datasetrestrict = datasetGroupIdentityInstance.address;
+            workerpoolOrder.datasetrestrict = datasetGroupIdentityInstance.address;
+            const expectedCallsToDatasetGroup = 2;
+            requestOrder.dataset = datasetOrder.dataset;
+            whenIdentityContractCalledForCandidateInGroupThenReturnTrue(
+                datasetGroupIdentityInstance,
+                datasetOrder.dataset,
+            );
+            // Workerpool
+            const workerpoolGroupIdentityInstance = await createFakeErc734IdentityInstance();
+            workerpoolOrder.workerpool = workerpoolInstance.address;
+            appOrder.workerpoolrestrict = workerpoolGroupIdentityInstance.address;
+            datasetOrder.workerpoolrestrict = workerpoolGroupIdentityInstance.address;
+            requestOrder.workerpool = workerpoolGroupIdentityInstance.address;
+            const expectedCallsToWorkerpoolGroup = 3;
+            whenIdentityContractCalledForCandidateInGroupThenReturnTrue(
+                workerpoolGroupIdentityInstance,
+                workerpoolOrder.workerpool,
+            );
+            // Requester
+            const requesterGroupIdentityInstance = await createFakeErc734IdentityInstance();
+            requestOrder.requester = requester.address;
+            appOrder.requesterrestrict = requesterGroupIdentityInstance.address;
+            datasetOrder.requesterrestrict = requesterGroupIdentityInstance.address;
+            workerpoolOrder.requesterrestrict = requesterGroupIdentityInstance.address;
+            const expectedCallsToRequesterGroup = 3;
+            whenIdentityContractCalledForCandidateInGroupThenReturnTrue(
+                requesterGroupIdentityInstance,
+                requester.address,
+            );
+            // Finish orders setup
+            appOrder.volume = volume;
+            datasetOrder.volume = volume;
+            workerpoolOrder.volume = volume;
+            requestOrder.volume = volume;
+            await signOrders(
+                domain,
+                {
+                    app: appOrder,
+                    dataset: datasetOrder,
+                    workerpool: workerpoolOrder,
+                    requester: requestOrder,
+                },
+                ordersActors,
+            );
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.emit(iexecPocoBoostInstance, 'OrdersMatched');
+            expectIdentityContractCalledForCandidateInGroup(
+                appGroupIdentityInstance,
+                appOrder.app,
+                expectedCallsToAppGroup,
+            );
+            expectIdentityContractCalledForCandidateInGroup(
+                datasetGroupIdentityInstance,
+                datasetOrder.dataset,
+                expectedCallsToDatasetGroup,
+            );
+            expectIdentityContractCalledForCandidateInGroup(
+                workerpoolGroupIdentityInstance,
+                workerpoolOrder.workerpool,
+                expectedCallsToWorkerpoolGroup,
+            );
+            expectIdentityContractCalledForCandidateInGroup(
+                requesterGroupIdentityInstance,
+                requestOrder.requester,
+                expectedCallsToRequesterGroup,
             );
         });
 
@@ -2351,6 +2456,55 @@ describe('IexecPocoBoostDelegate', function () {
         ).viewDealBoost(dealId);
     }
 });
+
+/**
+ * Create a fake ERC734 identity contract instance.
+ * @returns A fake ERC734 identity contract instance.
+ */
+async function createFakeErc734IdentityInstance() {
+    return await smock.fake<IERC734>(IERC734__factory);
+}
+
+/**
+ * If the ERC734 identity contract called for a given candidate in a group, then
+ * return true.
+ * @param erc734IdentityContractInstance A fake ERC734 identity contract instance.
+ * @param candidate The candidate that should belong to the group.
+ */
+function whenIdentityContractCalledForCandidateInGroupThenReturnTrue(
+    erc734IdentityContractInstance: FakeContract<IERC734>,
+    candidate: string,
+) {
+    erc734IdentityContractInstance.keyHasPurpose
+        .whenCalledWith(addressToBytes32(candidate), groupMemberPurpose)
+        .returns(true);
+}
+
+/**
+ * Expect an ERC734 identity contract has been called a specific number of times
+ * for a given candidate in a group.
+ * @param erc734IdentityContractInstance A fake ERC734 identity contract instance.
+ * @param candidate The candidate that should belong to the group.
+ * @param expectedCalledCount The expected number of calls.
+ */
+function expectIdentityContractCalledForCandidateInGroup(
+    erc734IdentityContractInstance: FakeContract<IERC734>,
+    candidate: string,
+    expectedCalledCount: number,
+) {
+    expect(erc734IdentityContractInstance.keyHasPurpose)
+        .to.have.been.calledWith(addressToBytes32(candidate), groupMemberPurpose)
+        .callCount(expectedCalledCount);
+}
+
+/**
+ * Convert an address to a bytes32 prefixed with zeros.
+ * @param address The address to convert to bytes32.
+ * @returns The address in bytes32 format.
+ */
+function addressToBytes32(address: string): unknown {
+    return ethers.utils.hexZeroPad(address, 32).toLowerCase();
+}
 
 /**
  * Compute the amount of RLC to be staked by the scheduler
