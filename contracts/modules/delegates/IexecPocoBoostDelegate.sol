@@ -64,14 +64,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external {
         require(requestOrder.trust == 0, "PocoBoost: Non-zero trust level");
-        require(requestOrder.category == workerpoolOrder.category, "PocoBoost: Category mismatch");
-        require(requestOrder.category < m_categories.length, "PocoBoost: Unknown category");
+        // An intermediate variable stored in the stack consumes
+        // less gas than accessing calldata each time.
+        uint256 category = requestOrder.category;
+        require(category == workerpoolOrder.category, "PocoBoost: Category mismatch");
+        require(category < m_categories.length, "PocoBoost: Unknown category");
         uint256 appPrice = appOrder.appprice;
         require(requestOrder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
         uint256 datasetPrice = datasetOrder.datasetprice;
         require(requestOrder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
-        // An intermediate variable stored in the stack consumes
-        // less gas than accessing calldata each time.
         uint256 workerpoolPrice = workerpoolOrder.workerpoolprice;
         require(
             requestOrder.workerpoolmaxprice >= workerpoolPrice,
@@ -176,9 +177,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             _verifySignatureOrPresignature(requester, requestOrderTypedDataHash, requestOrder.sign),
             "PocoBoost: Invalid request order signature"
         );
-        bytes32 dealId; //TODO init value directly.
-        uint256 volume; //TODO init value directly.
-        IexecLibCore_v5.DealBoost storage deal;
+
+        uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
+        uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
+        // TODO: Cache workerpoolOrder.volume
+        // No dataset variable since dataset is optional
+        bytes32 dealId = keccak256(
+            abi.encodePacked(
+                requestOrderTypedDataHash,
+                requestOrderConsumed // index of first task
+            )
+        );
         /**
          * Compute deal volume and consume orders.
          * @dev
@@ -189,17 +198,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
-        uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
-        // No workerpool variable, else `Stack too deep`
-        // No dataset variable since dataset is optional
-        dealId = keccak256(
-            abi.encodePacked(
-                requestOrderTypedDataHash,
-                requestOrderConsumed // index of first task
-            )
-        );
-        volume = appOrder.volume - appOrderConsumed;
+        uint256 volume = appOrder.volume - appOrderConsumed;
         volume = volume.min(workerpoolOrder.volume - m_consumed[workerpoolOrderTypedDataHash]);
         volume = volume.min(requestOrder.volume - requestOrderConsumed);
         if (hasDataset) {
@@ -215,7 +214,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         /**
          * Store deal
          */
-        deal = m_dealsBoost[dealId];
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         deal.botFirst = requestOrderConsumed.toUint16();
         deal.requester = requester;
         deal.workerpoolOwner = vars.workerpoolOwner;
@@ -229,7 +228,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
         deal.deadline = (block.timestamp +
-            m_categories[requestOrder.category].workClockTimeRef *
+            m_categories[category].workClockTimeRef *
             CONTRIBUTION_DEADLINE_RATIO).toUint40();
         deal.botSize = volume.toUint16();
         /**
@@ -258,7 +257,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             dealId,
             app,
             dataset,
-            requestOrder.category,
+            category,
             tag,
             requestOrder.params,
             requestOrder.beneficiary
