@@ -147,6 +147,7 @@ describe('IexecPocoBoostDelegate', function () {
     let appRegistry: FakeContract<AppRegistry>;
     let datasetRegistry: FakeContract<DatasetRegistry>;
     let workerpoolRegistry: FakeContract<WorkerpoolRegistry>;
+    let someContractInstance: MockContract<TestClient>;
     let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
         [] as SignerWithAddress[];
     let ordersActors: OrdersActors;
@@ -174,6 +175,7 @@ describe('IexecPocoBoostDelegate', function () {
         appInstance = await createMock<App__factory, App>('App');
         workerpoolInstance = await createMock<Workerpool__factory, Workerpool>('Workerpool');
         datasetInstance = await createMock<Dataset__factory, Dataset>('Dataset');
+        someContractInstance = await createMock<TestClient__factory, TestClient>('TestClient'); // any other deployed contract would be fine
         ordersAssets = {
             app: appInstance.address,
             dataset: datasetInstance.address,
@@ -1106,7 +1108,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester: requester.address,
             });
             // Request different dataset adress
-            requestOrder.workerpool = '0x0000000000000000000000000000000000000001';
+            requestOrder.workerpool = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1124,7 +1126,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester: requester.address,
             });
             // Request different dataset adress
-            appOrder.datasetrestrict = '0x0000000000000000000000000000000000000001';
+            appOrder.datasetrestrict = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1142,7 +1144,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester: requester.address,
             });
             // Set different workerpool address
-            appOrder.workerpoolrestrict = '0x0000000000000000000000000000000000000001';
+            appOrder.workerpoolrestrict = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1160,7 +1162,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester: requester.address,
             });
             // Set different requester address
-            appOrder.requesterrestrict = '0x0000000000000000000000000000000000000001';
+            appOrder.requesterrestrict = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1178,7 +1180,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester: requester.address,
             });
             // Set different app address
-            datasetOrder.apprestrict = '0x0000000000000000000000000000000000000001';
+            datasetOrder.apprestrict = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1195,7 +1197,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            datasetOrder.workerpoolrestrict = '0x0000000000000000000000000000000000000001';
+            datasetOrder.workerpoolrestrict = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1212,7 +1214,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            datasetOrder.requesterrestrict = '0x0000000000000000000000000000000000000001';
+            datasetOrder.requesterrestrict = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1229,7 +1231,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            workerpoolOrder.apprestrict = '0x0000000000000000000000000000000000000001';
+            workerpoolOrder.apprestrict = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1246,7 +1248,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            workerpoolOrder.datasetrestrict = '0x0000000000000000000000000000000000000001';
+            workerpoolOrder.datasetrestrict = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1263,7 +1265,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            workerpoolOrder.requesterrestrict = '0x0000000000000000000000000000000000000001';
+            workerpoolOrder.requesterrestrict = someContractInstance.address;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
