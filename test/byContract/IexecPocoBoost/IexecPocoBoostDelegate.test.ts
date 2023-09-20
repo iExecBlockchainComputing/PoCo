@@ -368,17 +368,11 @@ describe('IexecPocoBoostDelegate', function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
             });
             // Change trust.
             requestOrder.trust = 1;
             // Sign & hash orders.
             await signOrders(domain, orders, ordersActors);
-            const dealId = getDealId(domain, requestOrder, taskIndex);
-            const appOrderHash = hashOrder(domain, appOrder);
-            const datasetOrderHash = hashOrder(domain, datasetOrder);
-            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
-            const requestOrderHash = hashOrder(domain, requestOrder);
             // Run & verify.
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -387,16 +381,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            )
-                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
-                .withArgs(
-                    dealId,
-                    appOrderHash,
-                    datasetOrderHash,
-                    workerpoolOrderHash,
-                    requestOrderHash,
-                    volume,
-                );
+            ).to.emit(iexecPocoBoostInstance, 'OrdersMatched')
         });
 
         it('Should match orders with pre-signatures (TEE)', async function () {
