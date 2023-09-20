@@ -1107,7 +1107,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request different dataset adress
+            // Request different workerpool adress
             requestOrder.workerpool = someContractInstance.address;
 
             await expect(
