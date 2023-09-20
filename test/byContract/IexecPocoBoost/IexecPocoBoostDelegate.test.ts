@@ -359,6 +359,46 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
+        it('Should match orders with trust == 1', async function () {
+            // Mock owner() method of assets contracts.
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            // Build orders
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+            });
+            // Change trust.
+            requestOrder.trust = 1;
+            // Sign & hash orders.
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const appOrderHash = hashOrder(domain, appOrder);
+            const datasetOrderHash = hashOrder(domain, datasetOrder);
+            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
+            const requestOrderHash = hashOrder(domain, requestOrder);
+            // Run & verify.
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    appOrderHash,
+                    datasetOrderHash,
+                    workerpoolOrderHash,
+                    requestOrderHash,
+                    volume,
+                );
+        });
+
         it('Should match orders with pre-signatures (TEE)', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
@@ -710,13 +750,13 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: One or more orders consumed');
         });
 
-        it('Should fail when trust is not zero', async function () {
+        it('Should fail when trust is greater than 1', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Set non-zero trust
-            requestOrder.trust = 1;
+            // Set bad trust (> 1).
+            requestOrder.trust = 2;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -725,7 +765,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Non-zero trust level');
+            ).to.be.revertedWith('PocoBoost: Bad trust level');
         });
 
         it('Should fail when categories are different', async function () {

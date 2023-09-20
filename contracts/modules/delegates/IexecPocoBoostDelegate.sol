@@ -62,7 +62,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external {
-        require(requestOrder.trust == 0, "PocoBoost: Non-zero trust level");
+        require(requestOrder.trust <= 1, "PocoBoost: Bad trust level");
         require(requestOrder.category == workerpoolOrder.category, "PocoBoost: Category mismatch");
         require(requestOrder.category < m_categories.length, "PocoBoost: Unknown category");
         uint256 appPrice = appOrder.appprice;
