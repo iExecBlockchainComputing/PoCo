@@ -488,18 +488,24 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * ERC734 identity contract.
      */
     // TODO: Rename method
-    function _isNullIdentityOrEquals(
-        address identity,
-        address candidate
-    ) internal view returns (bool) {
-        return
+    function _isNullIdentityOrEquals(address identity, address candidate) internal returns (bool) {
+        if (
             identity == address(0) || // No identity restriction
-            identity == candidate || // Simple identity address restriction
-            (address(identity).code.length > 0 && // ERC734 identity contract restriction
-                IERC734(identity).keyHasPurpose(
+            identity == candidate // Simple identity address restriction
+        ) {
+            return true;
+        }
+        if (address(identity).code.length > 0) {
+            try
+                IERC734(identity).keyHasPurpose( // ERC734 identity contract restriction
                     bytes32(uint256(uint160(candidate))),
                     GROUPMEMBER_PURPOSE
-                ));
+                )
+            returns (bool success) {
+                return success;
+            } catch {}
+        }
+        return false;
     }
 
     /**
