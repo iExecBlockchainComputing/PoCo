@@ -215,18 +215,18 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          * Store deal
          */
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        deal.botFirst = requestOrderConsumed.toUint16();
-        deal.requester = requester;
-        deal.workerpoolOwner = vars.workerpoolOwner;
-        deal.workerpoolPrice = workerpoolPrice.toUint96();
-        deal.appOwner = vars.appOwner;
         deal.appPrice = appPrice.toUint96();
+        deal.appOwner = vars.appOwner;
         if (hasDataset) {
-            deal.datasetOwner = vars.datasetOwner;
             deal.datasetPrice = datasetPrice.toUint96();
+            deal.datasetOwner = vars.datasetOwner;
         }
+        deal.workerpoolPrice = workerpoolPrice.toUint96();
+        deal.workerpoolOwner = vars.workerpoolOwner;
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
+        deal.requester = requester;
+        deal.botFirst = requestOrderConsumed.toUint16();
         deal.deadline = (block.timestamp +
             m_categories[category].workClockTimeRef *
             CONTRIBUTION_DEADLINE_RATIO).toUint40();
