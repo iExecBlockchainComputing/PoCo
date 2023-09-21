@@ -27,7 +27,7 @@
 - Update prettier rules and reformat. (#167, #168, #169, #170)
 - Implement `matchOrdersBoost`:
     - Verify compatibility of orders
-        - trust (#171)
+        - trust (#171, #227)
         - category (#172)
         - price (175)
         - tag (#187)

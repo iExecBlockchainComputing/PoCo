@@ -79,7 +79,7 @@ library IexecLibCore_v5 {
         uint40 deadline; // Max: 1099511627776 => ∞
         uint16 botFirst; // Max: 65535
         uint16 botSize; // Max: 65535
-        bytes3 shortTag; // Max: 111111111111111111111111 (0xFFFFFF)
+        bytes3 shortTag; // Max: 0b111111111111111111111111 (0xFFFFFF)
     }
     /**
      * Tasks
