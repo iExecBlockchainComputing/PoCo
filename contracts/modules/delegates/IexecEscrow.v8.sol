@@ -24,6 +24,8 @@ contract IexecEscrow is DelegateBase {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Lock(address owner, uint256 amount);
     event Unlock(address owner, uint256 amount);
+    event Reward(address owner, uint256 amount, bytes32 ref);
+    event Seize(address owner, uint256 amount, bytes32 ref);
 
     /**
      * Transfer value from a spender account to a receiver account.
@@ -64,5 +66,27 @@ contract IexecEscrow is DelegateBase {
         _transfer(address(this), account, value);
         m_frozens[account] -= value;
         emit Unlock(account, value);
+    }
+
+    /**
+     * Reward an account.
+     * @param account The account to reward.
+     * @param value The reward value.
+     * @param ref A reference of the reward context.
+     */
+    function reward(address account, uint256 value, bytes32 ref) internal {
+        _transfer(address(this), account, value);
+        emit Reward(account, value, ref);
+    }
+
+    /**
+     * Seize value on an account.
+     * @param account The account to seize.
+     * @param value The seize value.
+     * @param ref A reference of the seize context.
+     */
+    function seize(address account, uint256 value, bytes32 ref) internal {
+        m_frozens[account] -= value;
+        emit Seize(account, value, ref);
     }
 }

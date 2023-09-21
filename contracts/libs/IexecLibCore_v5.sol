@@ -62,20 +62,24 @@ library IexecLibCore_v5 {
         uint256 schedulerRewardRatio;
     }
     struct DealBoost {
-        address appOwner; // Offset 0
+        // Offset 0
+        address appOwner;
         uint96 appPrice;
-        address datasetOwner; // Offset 1
+        // Offset 1
+        address datasetOwner;
         uint96 datasetPrice;
-        address workerpoolOwner; // Offset 2
+        // Offset 2
+        address workerpoolOwner;
         uint96 workerpoolPrice;
-        address requester; // Offset 3
+        // Offset 3
+        address requester;
         uint96 workerReward;
-        address beneficiary; // Offset 4
-        uint48 deadline;
-        uint24 botFirst;
-        uint24 botSize;
-        bytes12 shortTag; // Offset 5
+        // Offset 4
         address callback;
+        uint40 deadline; // Max: 1099511627776 => ∞
+        uint16 botFirst; // Max: 65535
+        uint16 botSize; // Max: 65535
+        bytes3 shortTag; // Max: 0b111111111111111111111111 (0xFFFFFF)
     }
     /**
      * Tasks
