@@ -31,6 +31,7 @@ const config: HardhatUserConfig = {
     solidity: {
         compilers: [
             { version: '0.8.19', settings: v8Settings }, // PoCo Boost & ENS contracts
+            { version: '0.8.17', settings: v8Settings }, // onchain-id contracts
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],

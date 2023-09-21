@@ -18,6 +18,7 @@
 
 pragma solidity ^0.8.0;
 
+import "@onchain-id/solidity/contracts/interface/IERC734.sol";
 import "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
 import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
@@ -477,15 +478,33 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Verify that an identity is null or equal to an expected address.
-     * @param identity address to be verified
-     * @param expectedAddress expected address
+     * Verify that an identity address is (1) null or (2) equals to a candidate
+     * or (3) that a candidate key of an ERC734 Key Manager identity contract
+     * has the given `GROUPMEMBER` purpose.
+     * @param identity A simple address to be verified or an ERC734 identity
+     * contract that might whitelist a given candidate in a group.
+     * @param candidate A simple candidate address or a candidate key of the
+     * ERC734 identity contract.
      */
-    function _isNullIdentityOrEquals(
-        address identity,
-        address expectedAddress
-    ) internal pure returns (bool) {
-        return identity == address(0) || identity == expectedAddress; // Simple address
+    // TODO: Rename method
+    function _isNullIdentityOrEquals(address identity, address candidate) internal returns (bool) {
+        if (
+            identity == address(0) || // No identity restriction
+            identity == candidate // Simple identity address restriction
+        ) {
+            return true;
+        }
+        if (address(identity).code.length > 0) {
+            try
+                IERC734(identity).keyHasPurpose( // ERC734 identity contract restriction
+                    bytes32(uint256(uint160(candidate))),
+                    GROUPMEMBER_PURPOSE
+                )
+            returns (bool success) {
+                return success;
+            } catch {}
+        }
+        return false;
     }
 
     /**
