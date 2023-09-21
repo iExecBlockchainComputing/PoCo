@@ -45,6 +45,7 @@
     - Reduce gas consumption on `lock()` calls. (#223)
     - Cache addresses of assets and requester from arguments. (#224)
     - Init local vars and cache order category. (#225)
+    - Optimize deal storing by slot. (#226)
 - Implement `pushResultBoost`:
     - Verify task exists. (#219)
     - Push result before deadline. (#195)
