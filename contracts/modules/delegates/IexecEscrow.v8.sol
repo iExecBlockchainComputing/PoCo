@@ -37,7 +37,7 @@ contract IexecEscrow is DelegateBase {
         require(from != address(0), "IexecEscrow: Transfer from empty address");
         require(to != address(0), "IexecEscrow: Transfer to empty address");
         uint256 fromBalance = m_balances[from];
-        require(value <= fromBalance, "IexecEscrow: transfer amount exceeds balance");
+        require(value <= fromBalance, "IexecEscrow: Transfer amount exceeds balance");
         // This block is guaranteed to not over(under)flow.
         unchecked {
             m_balances[from] = fromBalance - value;
