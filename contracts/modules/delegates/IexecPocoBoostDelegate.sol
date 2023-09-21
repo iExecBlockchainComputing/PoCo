@@ -235,8 +235,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          * Store right part of tag for later use.
          * @dev From the cheapest to the most expensive option:
          * a. Shift left with assembly
-         * b. Shift left in Solidity `tag << 160`
-         * c. Convert to smaller bytes size `uint96(uint256(tag))`, see
+         * b. Shift left in Solidity `tag << 232`
+         * c. Convert to smaller bytes size `uint24(uint256(tag))`, see
          * https://github.com/ethereum/solidity/blob/v0.8.19/docs/types/value-types.rst?plain=1#L222
          */
         bytes3 shortTag;
