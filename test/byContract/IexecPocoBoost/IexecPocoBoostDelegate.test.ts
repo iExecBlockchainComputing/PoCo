@@ -368,7 +368,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
-        it('Should match orders with trust == 1', async function () {
+        it('Should match orders with trust equals 1', async function () {
             // Mock owner() method of assets contracts.
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
