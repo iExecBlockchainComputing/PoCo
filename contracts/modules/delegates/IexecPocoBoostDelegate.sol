@@ -94,44 +94,44 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Check restriction.
         address workerpool = workerpoolOrder.workerpool;
         require(
-            _isNullIdentityOrEquals(requestOrder.workerpool, workerpool),
+            isIdentityAuthorized(requestOrder.workerpool, workerpool),
             "PocoBoost: Workerpool restricted by request order"
         );
         require(
-            _isNullIdentityOrEquals(appOrder.datasetrestrict, dataset),
+            isIdentityAuthorized(appOrder.datasetrestrict, dataset),
             "PocoBoost: Dataset restricted by app order"
         );
         require(
-            _isNullIdentityOrEquals(appOrder.workerpoolrestrict, workerpool),
+            isIdentityAuthorized(appOrder.workerpoolrestrict, workerpool),
             "PocoBoost: Workerpool restricted by app order"
         );
         address requester = requestOrder.requester;
         require(
-            _isNullIdentityOrEquals(appOrder.requesterrestrict, requester),
+            isIdentityAuthorized(appOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by app order"
         );
         require(
-            _isNullIdentityOrEquals(datasetOrder.apprestrict, app),
+            isIdentityAuthorized(datasetOrder.apprestrict, app),
             "PocoBoost: App restricted by dataset order"
         );
         require(
-            _isNullIdentityOrEquals(datasetOrder.workerpoolrestrict, workerpool),
+            isIdentityAuthorized(datasetOrder.workerpoolrestrict, workerpool),
             "PocoBoost: Workerpool restricted by dataset order"
         );
         require(
-            _isNullIdentityOrEquals(datasetOrder.requesterrestrict, requester),
+            isIdentityAuthorized(datasetOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by dataset order"
         );
         require(
-            _isNullIdentityOrEquals(workerpoolOrder.apprestrict, app),
+            isIdentityAuthorized(workerpoolOrder.apprestrict, app),
             "PocoBoost: App restricted by workerpool order"
         );
         require(
-            _isNullIdentityOrEquals(workerpoolOrder.datasetrestrict, dataset),
+            isIdentityAuthorized(workerpoolOrder.datasetrestrict, dataset),
             "PocoBoost: Dataset restricted by workerpool order"
         );
         require(
-            _isNullIdentityOrEquals(workerpoolOrder.requesterrestrict, requester),
+            isIdentityAuthorized(workerpoolOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by workerpool order"
         );
 
@@ -478,26 +478,30 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Verify that an identity address is (1) null or (2) equals to a candidate
-     * or (3) that a candidate key of an ERC734 Key Manager identity contract
-     * has the given `GROUPMEMBER` purpose.
-     * @param identity A simple address to be verified or an ERC734 identity
-     * contract that might whitelist a given candidate in a group.
-     * @param candidate A simple candidate address or a candidate key of the
-     * ERC734 identity contract.
+     * Verify that an identity is authorized based on a given restriction.
+     * The given restriction shall:
+     * (1) authorize any address;
+     * (2) authorize access to a simple address;
+     * (3) authorize access to any address in a group (having the given
+     * `GROUPMEMBER` purpose) inside an ERC734 Key Manager identity contract.
+     * @param identityRestriction A simple address or an ERC734 identity contract
+     * that might whitelist a given address in a group.
+     * @param identityToCheck An address to be checked.
      */
-    // TODO: Rename method
-    function _isNullIdentityOrEquals(address identity, address candidate) internal returns (bool) {
+    function isIdentityAuthorized(
+        address identityRestriction,
+        address identityToCheck
+    ) private view returns (bool) {
         if (
-            identity == address(0) || // No identity restriction
-            identity == candidate // Simple identity address restriction
+            identityRestriction == address(0) || // No identity restriction
+            identityRestriction == identityToCheck // Simple identity address restriction
         ) {
             return true;
         }
-        if (address(identity).code.length > 0) {
+        if (address(identityRestriction).code.length > 0) {
             try
-                IERC734(identity).keyHasPurpose( // ERC734 identity contract restriction
-                    bytes32(uint256(uint160(candidate))),
+                IERC734(identityRestriction).keyHasPurpose( // ERC734 identity contract restriction
+                    bytes32(uint256(uint160(identityToCheck))),
                     GROUPMEMBER_PURPOSE
                 )
             returns (bool success) {
