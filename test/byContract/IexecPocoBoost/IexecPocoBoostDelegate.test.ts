@@ -368,6 +368,31 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
+        it('Should match orders with trust equals 1', async function () {
+            // Mock owner() method of assets contracts.
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            // Build orders
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Change trust.
+            requestOrder.trust = 1;
+            // Sign & hash orders.
+            await signOrders(domain, orders, ordersActors);
+            // Run & verify.
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.emit(iexecPocoBoostInstance, 'OrdersMatched');
+        });
+
         it('Should match orders when assets and requester belongs to identity groups', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
@@ -817,13 +842,13 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: One or more orders consumed');
         });
 
-        it('Should fail when trust is not zero', async function () {
+        it('Should fail when trust is greater than 1', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Set non-zero trust
-            requestOrder.trust = 1;
+            // Set bad trust (> 1).
+            requestOrder.trust = 2;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -832,7 +857,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Non-zero trust level');
+            ).to.be.revertedWith('PocoBoost: Bad trust level');
         });
 
         it('Should fail when categories are different', async function () {

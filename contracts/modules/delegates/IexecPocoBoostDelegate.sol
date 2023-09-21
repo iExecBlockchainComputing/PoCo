@@ -63,7 +63,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external {
-        require(requestOrder.trust == 0, "PocoBoost: Non-zero trust level");
+        require(requestOrder.trust <= 1, "PocoBoost: Bad trust level");
         // An intermediate variable stored in the stack consumes
         // less gas than accessing calldata each time.
         uint256 category = requestOrder.category;
