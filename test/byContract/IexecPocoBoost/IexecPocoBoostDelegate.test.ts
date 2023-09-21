@@ -1391,7 +1391,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('IexecEscrow: transfer amount exceeds balance');
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
