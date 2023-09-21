@@ -218,11 +218,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         deal.appPrice = appPrice.toUint96();
         deal.appOwner = vars.appOwner;
         if (hasDataset) {
-            deal.datasetPrice = datasetPrice.toUint96();
             deal.datasetOwner = vars.datasetOwner;
+            deal.datasetPrice = datasetPrice.toUint96();
         }
-        deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.workerpoolOwner = vars.workerpoolOwner;
+        deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
         deal.requester = requester;
