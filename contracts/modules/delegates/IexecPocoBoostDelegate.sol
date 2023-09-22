@@ -481,9 +481,10 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * Verify that an account is authorized based on a given restriction.
      * The given restriction can be:
      * (1) `0x`: No restriction, accept any address;
-     * (2) `0x<EOA-address>`: Only accept the exact same address;
-     * (3) `0x<contract-address>`: Accept any address in a group (having the given
-     * `GROUPMEMBER` purpose) inside an ERC734 Key Manager identity contract.
+     * (2) `0x<same-address-than-restriction>`: Only accept the exact same address;
+     * (3) `0x<ERC734-contract-address>`: Accept any address in a group (having
+     * the given `GROUPMEMBER` purpose) inside an ERC734 Key Manager identity
+     * contract.
      * @param restriction A simple address or an ERC734 identity contract
      * that might whitelist a given address in a group.
      * @param account An address to be checked.
