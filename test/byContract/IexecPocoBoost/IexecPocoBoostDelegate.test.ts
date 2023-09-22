@@ -368,6 +368,31 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
+        it('Should match orders with trust equals 1', async function () {
+            // Mock owner() method of assets contracts.
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            // Build orders
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Change trust.
+            requestOrder.trust = 1;
+            // Sign & hash orders.
+            await signOrders(domain, orders, ordersActors);
+            // Run & verify.
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.emit(iexecPocoBoostInstance, 'OrdersMatched');
+        });
+
         it('Should match orders when assets and requester belongs to identity groups', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
@@ -817,13 +842,13 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: One or more orders consumed');
         });
 
-        it('Should fail when trust is not zero', async function () {
+        it('Should fail when trust is greater than 1', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Set non-zero trust
-            requestOrder.trust = 1;
+            // Set bad trust (> 1).
+            requestOrder.trust = 2;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -832,7 +857,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Non-zero trust level');
+            ).to.be.revertedWith('PocoBoost: Bad trust level');
         });
 
         it('Should fail when categories are different', async function () {
@@ -1071,7 +1096,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request different app adress
+            // Request another app address
             requestOrder.app = '0x0000000000000000000000000000000000000001';
 
             await expect(
@@ -1089,7 +1114,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request different dataset adress
+            // Request another dataset address
             requestOrder.dataset = '0x0000000000000000000000000000000000000001';
 
             await expect(
@@ -1102,12 +1127,12 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Dataset mismatch');
         });
 
-        it('Should fail when requestorder mismatch workerpool restriction ', async function () {
+        it('Should fail when requestorder mismatch workerpool restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request different workerpool adress
+            // Request another workerpool address
             requestOrder.workerpool = someContractInstance.address;
 
             await expect(
@@ -1120,12 +1145,11 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
         });
 
-        it('Should fail when apporder mismatch dataset restriction ', async function () {
+        it('Should fail when apporder mismatch dataset restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request different dataset adress
             appOrder.datasetrestrict = someContractInstance.address;
 
             await expect(
@@ -1143,7 +1167,6 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Set different workerpool address
             appOrder.workerpoolrestrict = someContractInstance.address;
 
             await expect(
@@ -1161,7 +1184,6 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Set different requester address
             appOrder.requesterrestrict = someContractInstance.address;
 
             await expect(
@@ -1179,7 +1201,6 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Set different app address
             datasetOrder.apprestrict = someContractInstance.address;
 
             await expect(
@@ -1366,7 +1387,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWithPanic(0x11); // TODO change to explicit message.
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
@@ -1406,7 +1427,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWithPanic(0x11); // TODO change to explicit message.
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
     });
 
