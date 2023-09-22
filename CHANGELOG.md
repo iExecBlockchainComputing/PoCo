@@ -32,7 +32,7 @@
         - price (175)
         - tag (#187)
         - restrictions (#189, #190)
-            - Assets or requester belong to groups in ERC734 identity contract. (#226)
+            - Assets or requester belong to groups in ERC734 identity contract. (#226, #229)
     - Verify entries are registered & category exists. (#193)
     - Verify signatures or presignatures of orders. (#185, #186, #191, #192)
     - Compute volume & consume orders. (#194)
@@ -66,6 +66,7 @@
 - Refactor tests. (#177, #178, #179, #181, #188, #200, #209, #210, #211, #221)
 - Add mocha to use test explorer. (#180)
 - Reformat contracts (#222)
+- Check balance in transfer operation (#230)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`

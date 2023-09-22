@@ -1096,7 +1096,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request different app adress
+            // Request another app address
             requestOrder.app = '0x0000000000000000000000000000000000000001';
 
             await expect(
@@ -1114,7 +1114,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request different dataset adress
+            // Request another dataset address
             requestOrder.dataset = '0x0000000000000000000000000000000000000001';
 
             await expect(
@@ -1127,12 +1127,12 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Dataset mismatch');
         });
 
-        it('Should fail when requestorder mismatch workerpool restriction ', async function () {
+        it('Should fail when requestorder mismatch workerpool restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request different workerpool adress
+            // Request another workerpool address
             requestOrder.workerpool = someContractInstance.address;
 
             await expect(
@@ -1145,12 +1145,11 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
         });
 
-        it('Should fail when apporder mismatch dataset restriction ', async function () {
+        it('Should fail when apporder mismatch dataset restriction', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request different dataset adress
             appOrder.datasetrestrict = someContractInstance.address;
 
             await expect(
@@ -1168,7 +1167,6 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Set different workerpool address
             appOrder.workerpoolrestrict = someContractInstance.address;
 
             await expect(
@@ -1186,7 +1184,6 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Set different requester address
             appOrder.requesterrestrict = someContractInstance.address;
 
             await expect(
@@ -1204,7 +1201,6 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Set different app address
             datasetOrder.apprestrict = someContractInstance.address;
 
             await expect(
@@ -1391,7 +1387,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWithPanic(0x11); // TODO change to explicit message.
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
@@ -1431,7 +1427,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWithPanic(0x11); // TODO change to explicit message.
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
     });
 
