@@ -215,18 +215,20 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          * Store deal
          */
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        deal.botFirst = requestOrderConsumed.toUint16();
-        deal.requester = requester;
-        deal.workerpoolOwner = vars.workerpoolOwner;
-        deal.workerpoolPrice = workerpoolPrice.toUint96();
+        // Write all parts of the same storage slot together
+        // for gas optimization purposes.
         deal.appOwner = vars.appOwner;
         deal.appPrice = appPrice.toUint96();
         if (hasDataset) {
             deal.datasetOwner = vars.datasetOwner;
             deal.datasetPrice = datasetPrice.toUint96();
         }
+        deal.workerpoolOwner = vars.workerpoolOwner;
+        deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
+        deal.requester = requester;
+        deal.botFirst = requestOrderConsumed.toUint16();
         deal.deadline = (block.timestamp +
             m_categories[category].workClockTimeRef *
             CONTRIBUTION_DEADLINE_RATIO).toUint40();
@@ -235,8 +237,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          * Store right part of tag for later use.
          * @dev From the cheapest to the most expensive option:
          * a. Shift left with assembly
-         * b. Shift left in Solidity `tag << 160`
-         * c. Convert to smaller bytes size `uint96(uint256(tag))`, see
+         * b. Shift left in Solidity `tag << 232`
+         * c. Convert to smaller bytes size `uint24(uint256(tag))`, see
          * https://github.com/ethereum/solidity/blob/v0.8.19/docs/types/value-types.rst?plain=1#L222
          */
         bytes3 shortTag;
