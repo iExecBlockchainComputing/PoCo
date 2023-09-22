@@ -1387,7 +1387,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWithPanic(0x11); // TODO change to explicit message.
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
@@ -1427,7 +1427,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWithPanic(0x11); // TODO change to explicit message.
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
     });
 
