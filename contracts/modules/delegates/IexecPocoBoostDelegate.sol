@@ -217,8 +217,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         // Write all parts of the same storage slot together
         // for gas optimization purposes.
-        deal.appPrice = appPrice.toUint96();
         deal.appOwner = vars.appOwner;
+        deal.appPrice = appPrice.toUint96();
         if (hasDataset) {
             deal.datasetOwner = vars.datasetOwner;
             deal.datasetPrice = datasetPrice.toUint96();
