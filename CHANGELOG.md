@@ -35,6 +35,7 @@
             - Assets or requester belong to groups in ERC734 identity contract. (#226, #229)
     - Verify entries are registered & category exists. (#193)
     - Verify signatures or presignatures of orders. (#185, #186, #191, #192)
+            - ERC1271 contracts can be signers of orders. (#231)
     - Compute volume & consume orders. (#194)
     - Lock requester deal value. (#196)
     - Store deal. (#174)
