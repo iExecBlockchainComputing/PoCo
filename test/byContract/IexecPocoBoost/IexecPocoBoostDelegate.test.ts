@@ -76,11 +76,6 @@ const someSignature =
     '0000000000000000000000000000000000000000000000000000000000000001' +
     '0000000000000000000000000000000000000000000000000000000000000001' +
     '1c';
-// const someSignature =
-//     '0x' +
-//     '0000000000000000000000000000000000000000000000000000000000000002' +
-//     '0000000000000000000000000000000000000000000000000000000000000002' +
-//     '1c';
 
 async function deployBoostFixture() {
     const [
@@ -2610,15 +2605,20 @@ function addressToBytes32(address: string): string {
 }
 
 /**
- * Create an ERC1271 mock contract which answers a mock "signature is
- * valid/invalid" response.
- * @returns A mock ERC1271 contract instance.
+ * Create a fake ERC1271 contract.
+ * @returns A fake ERC1271 contract instance.
  */
 async function createFakeERC1271() {
     return await smock.fake<TestIERC1271>(TestIERC1271__factory);
-    //return await smock.fake<IERC1271>(IERC1271__factory);
 }
 
+/**
+ * Expect that an ERC1271 contract has been called once and replied that the
+ * signature was invalid.
+ * @param erc1271Instance A fake ERC1271 contract instance.
+ * @param orderHash The hash of the order.
+ * @param signature The signature to be considered as invalid.
+ */
 function whenERC1271CalledThenReplyInvalidSignature(
     erc1271Instance: FakeContract<TestIERC1271>,
     orderHash: string,
@@ -2628,7 +2628,7 @@ function whenERC1271CalledThenReplyInvalidSignature(
 }
 
 /**
- * Expect the ERC1271 has been called once.
+ * Expect an ERC1271 contract to have been called once.
  * @param erc1271Instance A fake ERC1271 contract instance.
  * @param orderHash The hash of the order.
  */
