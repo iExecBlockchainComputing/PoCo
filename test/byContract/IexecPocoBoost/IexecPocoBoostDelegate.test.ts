@@ -26,9 +26,9 @@ import {
     WorkerpoolRegistry__factory,
     IERC734,
     IERC734__factory,
-    TestIERC1271,
-    TestIERC1271__factory,
 } from '../../../typechain';
+import { IERC1271__factory } from '../../../typechain/factories/@openzeppelin/contracts-v4/interfaces';
+import { IERC1271 } from '../../../typechain/@openzeppelin/contracts-v4/interfaces';
 import constants from '../../../utils/constants';
 import {
     createEmptyAppOrder,
@@ -2609,7 +2609,7 @@ function addressToBytes32(address: string): string {
  * @returns A fake ERC1271 contract instance.
  */
 async function createFakeERC1271() {
-    return await smock.fake<TestIERC1271>(TestIERC1271__factory);
+    return await smock.fake<IERC1271>(IERC1271__factory);
 }
 
 /**
@@ -2620,7 +2620,7 @@ async function createFakeERC1271() {
  * @param signature The signature to be considered as invalid.
  */
 function whenERC1271CalledThenReplyInvalidSignature(
-    erc1271Instance: FakeContract<TestIERC1271>,
+    erc1271Instance: FakeContract<IERC1271>,
     orderHash: string,
     signature: string,
 ) {
@@ -2633,7 +2633,7 @@ function whenERC1271CalledThenReplyInvalidSignature(
  * @param orderHash The hash of the order.
  */
 async function expectERC1271CalledOnceWith(
-    erc1271Instance: FakeContract<TestIERC1271>,
+    erc1271Instance: FakeContract<IERC1271>,
     orderHash: string,
     signature: string,
 ) {
