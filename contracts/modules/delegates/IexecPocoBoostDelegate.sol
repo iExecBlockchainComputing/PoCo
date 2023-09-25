@@ -458,13 +458,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             } catch {}
         }
         return false;
-        // if (account.code.length > 0) {
-        //     (bool success, bytes memory result) = account.call(
-        //         abi.encodeCall(IERC1271.isValidSignature, (messageHash, signature))
-        //     );
-        //     return success && bytes4(result) == IERC1271.isValidSignature.selector;
-        // }
-        // return false;
     }
 
     /**
