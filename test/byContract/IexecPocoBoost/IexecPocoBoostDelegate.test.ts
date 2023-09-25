@@ -522,15 +522,11 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.emit(iexecPocoBoostInstance, 'OrdersMatched');
-            const appOrderHash = hashOrder(domain, appOrder);
-            const datasetOrderHash = hashOrder(domain, datasetOrder);
-            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
-            const requestOrderHash = hashOrder(domain, requestOrder);
             expect(erc1271Instance.isValidSignature)
-                .to.have.been.calledWith(appOrderHash, someSignature)
-                .to.have.been.calledWith(datasetOrderHash, someSignature)
-                .to.have.been.calledWith(workerpoolOrderHash, someSignature)
-                .to.have.been.calledWith(requestOrderHash, someSignature)
+                .to.have.been.calledWith(hashOrder(domain, appOrder), someSignature)
+                .to.have.been.calledWith(hashOrder(domain, datasetOrder), someSignature)
+                .to.have.been.calledWith(hashOrder(domain, workerpoolOrder), someSignature)
+                .to.have.been.calledWith(hashOrder(domain, requestOrder), someSignature)
                 .callCount(4);
         });
 
