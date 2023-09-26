@@ -79,17 +79,19 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             requestOrder.workerpoolmaxprice >= workerpoolPrice,
             "PocoBoost: Overpriced workerpool"
         );
-        bytes32 tag = appOrder.tag | datasetOrder.tag | requestOrder.tag;
+        bytes32 appOrderTag = appOrder.tag;
+        bytes32 tag = appOrderTag | datasetOrder.tag | requestOrder.tag;
         require(
             tag & ~workerpoolOrder.tag == 0x0,
             "PocoBoost: Workerpool tag does not match demand"
         );
-        require((tag ^ appOrder.tag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
+        require((tag ^ appOrderTag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
         // Check match.
         address app = appOrder.app;
         require(requestOrder.app == app, "PocoBoost: App mismatch");
         address dataset = datasetOrder.dataset;
-        require(requestOrder.dataset == dataset, "PocoBoost: Dataset mismatch");
+        address requestOrderDataset = requestOrder.dataset;
+        require(requestOrderDataset == dataset, "PocoBoost: Dataset mismatch");
         // Check restriction.
         address workerpool = workerpoolOrder.workerpool;
         require(
@@ -141,7 +143,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, appOrder.sign),
             "PocoBoost: Invalid app order signature"
         );
-        bool hasDataset = requestOrder.dataset != address(0);
+        bool hasDataset = requestOrderDataset != address(0);
         address datasetOwner;
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
@@ -180,7 +182,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
         uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
         uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
-        // TODO: Cache workerpoolOrder.volume
+        uint256 workerpoolOrderConsumed = m_consumed[workerpoolOrderTypedDataHash];
         // No dataset variable since dataset is optional
         bytes32 dealId = keccak256(
             abi.encodePacked(
@@ -199,14 +201,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
         uint256 volume = appOrder.volume - appOrderConsumed;
-        volume = volume.min(workerpoolOrder.volume - m_consumed[workerpoolOrderTypedDataHash]);
+        volume = volume.min(workerpoolOrder.volume - workerpoolOrderConsumed);
         volume = volume.min(requestOrder.volume - requestOrderConsumed);
         if (hasDataset) {
             volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
         }
         require(volume > 0, "PocoBoost: One or more orders consumed");
         m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // cheaper than `+= volume` here
-        m_consumed[workerpoolOrderTypedDataHash] += volume;
+        m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
         if (hasDataset) {
             m_consumed[datasetOrderTypedDataHash] += volume;
