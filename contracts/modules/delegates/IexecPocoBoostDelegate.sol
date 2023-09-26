@@ -19,6 +19,7 @@
 pragma solidity ^0.8.0;
 
 import "@onchain-id/solidity/contracts/interface/IERC734.sol";
+import "@openzeppelin/contracts-v4/interfaces/IERC1271.sol";
 import "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
 import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-v4/utils/math/Math.sol";
@@ -438,7 +439,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Verify that a message is signed by a particular account.
+     * Verify that a message is signed by an EOA or an ERC1271 smart contract.
      * @param account expected signer account
      * @param messageHash message hash that was signed
      * @param signature signature to be verified
@@ -447,8 +448,16 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         address account,
         bytes32 messageHash,
         bytes calldata signature
-    ) internal pure returns (bool) {
-        return messageHash.recover(signature) == account;
+    ) internal view returns (bool) {
+        if (messageHash.recover(signature) == account) {
+            return true;
+        }
+        if (account.code.length > 0) {
+            try IERC1271(account).isValidSignature(messageHash, signature) returns (bytes4 result) {
+                return result == IERC1271.isValidSignature.selector;
+            } catch {}
+        }
+        return false;
     }
 
     /**
@@ -501,7 +510,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         ) {
             return true;
         }
-        if (address(restriction).code.length > 0) {
+        if (restriction.code.length > 0) {
             try
                 IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
                     bytes32(uint256(uint160(account))),
