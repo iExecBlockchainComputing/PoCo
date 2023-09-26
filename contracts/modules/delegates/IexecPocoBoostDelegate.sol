@@ -79,8 +79,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             requestOrder.workerpoolmaxprice >= workerpoolPrice,
             "PocoBoost: Overpriced workerpool"
         );
-        // Save some local variables in memory with a structure to fix `Stack too deep`.
-        IexecLibCore_v5.DealBoost memory vars;
         bytes32 tag = appOrder.tag | datasetOrder.tag | requestOrder.tag;
         require(
             tag & ~workerpoolOrder.tag == 0x0,
@@ -137,21 +135,22 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         );
 
         require(m_appregistry.isRegistered(app), "PocoBoost: App not registered");
-        vars.appOwner = IERC5313(app).owner();
+        address appOwner = IERC5313(app).owner();
         bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
         require(
-            _verifySignatureOrPresignature(vars.appOwner, appOrderTypedDataHash, appOrder.sign),
+            _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, appOrder.sign),
             "PocoBoost: Invalid app order signature"
         );
         bool hasDataset = requestOrder.dataset != address(0);
+        address datasetOwner;
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
             require(m_datasetregistry.isRegistered(dataset), "PocoBoost: Dataset not registered");
-            vars.datasetOwner = IERC5313(dataset).owner();
+            datasetOwner = IERC5313(dataset).owner();
             datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
             require(
                 _verifySignatureOrPresignature(
-                    vars.datasetOwner,
+                    datasetOwner,
                     datasetOrderTypedDataHash,
                     datasetOrder.sign
                 ),
@@ -163,11 +162,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             m_workerpoolregistry.isRegistered(workerpool),
             "PocoBoost: Workerpool not registered"
         );
-        vars.workerpoolOwner = IERC5313(workerpool).owner();
+        address workerpoolOwner = IERC5313(workerpool).owner();
         bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(workerpoolOrder.hash());
         require(
             _verifySignatureOrPresignature(
-                vars.workerpoolOwner,
+                workerpoolOwner,
                 workerpoolOrderTypedDataHash,
                 workerpoolOrder.sign
             ),
@@ -218,13 +217,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         // Write all parts of the same storage slot together
         // for gas optimization purposes.
-        deal.appOwner = vars.appOwner;
+        deal.appOwner = appOwner;
         deal.appPrice = appPrice.toUint96();
         if (hasDataset) {
-            deal.datasetOwner = vars.datasetOwner;
+            deal.datasetOwner = datasetOwner;
             deal.datasetPrice = datasetPrice.toUint96();
         }
-        deal.workerpoolOwner = vars.workerpoolOwner;
+        deal.workerpoolOwner = workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
@@ -253,7 +252,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
-        lock(vars.workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
+        lock(workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             workerpool,
