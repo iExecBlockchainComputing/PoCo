@@ -49,6 +49,7 @@
         - Init local vars and cache order category. (#225)
         - Optimize deal storing by slot. (#228)
         - Change local structure for local variables. (#232)
+        - Store in variable if read multiple times. (#233)
 - Implement `pushResultBoost`:
     - Verify task exists. (#219)
     - Push result before deadline. (#195)
