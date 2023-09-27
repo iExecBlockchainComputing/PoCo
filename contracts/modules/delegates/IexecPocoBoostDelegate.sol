@@ -309,9 +309,19 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         );
         // Check scheduler signature
         address workerpoolOwner = deal.workerpoolOwner;
+        // Determine the address to use based on the condition
+        // Store the value of m_teebroker in a local variable
+        address teeBrokerAddress = m_teebroker;
+
+        // Determine the address to use based on the condition
+        address signerAddress = enclaveChallenge != address(0) && teeBrokerAddress != address(0)
+            ? teeBrokerAddress
+            : workerpoolOwner;
+        // address signerAddress = workerpoolOwner;
+        // Check scheduler signature
         require(
             _verifySignatureOfEthSignedMessage(
-                workerpoolOwner,
+                signerAddress,
                 abi.encodePacked(msg.sender, taskId, enclaveChallenge),
                 authorizationSign
             ),

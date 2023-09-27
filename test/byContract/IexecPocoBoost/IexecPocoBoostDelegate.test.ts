@@ -2080,12 +2080,45 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Invalid scheduler signature');
         });
 
-        it('Should not push result with invalid enclave signature', async function () {
+        it('Should not push result with invalid tee_broker signature', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // await iexecPocoBoostInstance.setVariable('m_teebroker', "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97");
+
+            await signOrders(domain, orders, ordersActors);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const anyoneSignature = anyone.signMessage(constants.NULL.BYTES32);
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        constants.NULL.BYTES32,
+                        anyoneSignature,
+                        enclave.address,
+                        constants.NULL.SIGNATURE,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Invalid scheduler signature');
+            // await iexecPocoBoostInstance.setVariable('m_teebroker', "0x0000000000000000000000000000000000000000");
+        });
+
+        it('Should not push result with invalid enclave signature tee Broker', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
             });
+
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
