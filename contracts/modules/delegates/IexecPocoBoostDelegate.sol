@@ -207,24 +207,21 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
         }
         require(volume > 0, "PocoBoost: One or more orders consumed");
+        // Update consumed
         m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // cheaper than `+= volume` here
         m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         if (hasDataset) {
             m_consumed[datasetOrderTypedDataHash] += volume;
-        }
-        /**
-         * Store deal
-         */
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        // Write all parts of the same storage slot together
-        // for gas optimization purposes.
-        deal.appOwner = appOwner;
-        deal.appPrice = appPrice.toUint96();
-        if (hasDataset) {
+            // Store deal (dataset)
             deal.datasetOwner = datasetOwner;
             deal.datasetPrice = datasetPrice.toUint96();
         }
+        // Store deal (all). Write all parts of the same storage slot together
+        // for gas optimization purposes.
+        deal.appOwner = appOwner;
+        deal.appPrice = appPrice.toUint96();
         deal.workerpoolOwner = workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.workerReward = ((workerpoolPrice * // reward depends on
