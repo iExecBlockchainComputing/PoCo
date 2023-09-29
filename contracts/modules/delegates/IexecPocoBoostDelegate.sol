@@ -311,6 +311,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         address signerAddress = enclaveChallenge != address(0) && teeBrokerAddress != address(0)
             ? teeBrokerAddress
             : workerpoolOwner;
+        // Check scheduler or broker signature
         require(
             _verifySignatureOfEthSignedMessage(
                 signerAddress,
