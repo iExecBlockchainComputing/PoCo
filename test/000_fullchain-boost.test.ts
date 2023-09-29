@@ -531,23 +531,10 @@ describe('IexecPocoBoostDelegate (IT)', function () {
 
         it('Should push result (TEE with worker authorization signed by broker)', async function () {
             await setTeeBroker(teeBroker.address);
-            const volume = 3;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
-                prices: ordersPrices,
-                volume: volume,
             });
-            const taskPrice = appPrice + datasetPrice + workerpoolPrice;
-            const dealPrice = taskPrice * volume;
-            await getRlcAndDeposit(requester, dealPrice);
-            const schedulerDealStake = await computeSchedulerDealStake(
-                iexecInstance,
-                workerpoolPrice,
-                volume,
-            );
-            await getRlcAndDeposit(scheduler, schedulerDealStake);
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
