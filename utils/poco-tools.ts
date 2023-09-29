@@ -36,17 +36,17 @@ export function getTaskId(dealId: string, taskIndex: number): string {
     return ethers.utils.solidityKeccak256(['bytes32', 'uint256'], [dealId, taskIndex]);
 }
 
-export async function buildAndSignSchedulerMessage(
+export async function buildAndSignContributionAuthorizationMessage(
     worker: string,
     taskId: string,
     enclave: string,
-    scheduler: SignerWithAddress,
+    authorizer: SignerWithAddress,
 ) {
-    const schedulerMessage = buildSchedulerMessage(worker, taskId, enclave);
-    return await signMessage(scheduler, schedulerMessage);
+    const schedulerMessage = buildAuthorizerMessage(worker, taskId, enclave);
+    return await signMessage(authorizer, schedulerMessage);
 }
 
-function buildSchedulerMessage(workerAddress: string, taskId: string, enclaveAddress: string) {
+function buildAuthorizerMessage(workerAddress: string, taskId: string, enclaveAddress: string) {
     return ethers.utils.solidityKeccak256(
         ['address', 'bytes32', 'address'],
         [workerAddress, taskId, enclaveAddress],
@@ -124,21 +124,4 @@ export async function setNextBlockTimestamp() {
     const startTime = (await time.latest()) + 10;
     await time.setNextBlockTimestamp(startTime);
     return startTime;
-}
-
-export async function buildAndSignTeeBrokerMessage(
-    worker: string,
-    taskId: string,
-    enclave: string,
-    teeBroker: SignerWithAddress,
-) {
-    const teeBrokerMessage = buildTeeBrokerMessage(worker, taskId, enclave);
-    return await signMessage(teeBroker, teeBrokerMessage);
-}
-
-function buildTeeBrokerMessage(workerAddress: string, taskId: string, enclaveAddress: string) {
-    return ethers.utils.solidityKeccak256(
-        ['address', 'bytes32', 'address'],
-        [workerAddress, taskId, enclaveAddress],
-    );
 }

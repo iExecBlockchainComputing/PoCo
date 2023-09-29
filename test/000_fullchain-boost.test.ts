@@ -51,11 +51,10 @@ import {
     signOrders,
 } from '../utils/createOrders';
 import {
-    buildAndSignSchedulerMessage,
+    buildAndSignContributionAuthorizationMessage,
     buildUtf8ResultAndDigest,
     buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
-    buildAndSignTeeBrokerMessage,
     getDealId,
     getTaskId,
     setNextBlockTimestamp,
@@ -385,7 +384,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 enclave.address,
@@ -448,7 +447,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 enclave.address,
@@ -561,7 +560,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const teeBrokerSignature = await buildAndSignTeeBrokerMessage(
+            const teeBrokerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 enclave.address,
