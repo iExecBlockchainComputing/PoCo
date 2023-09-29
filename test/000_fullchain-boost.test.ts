@@ -196,9 +196,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             workerpool: workerpoolPrice,
         };
         // initialize tee broker to address(0)
-        await IexecMaintenanceDelegate__factory.connect(proxyAddress, owner)
-            .setTeeBroker('0x0000000000000000000000000000000000000000')
-            .then((tx) => tx.wait());
+        await setTeeBroker('0x0000000000000000000000000000000000000000');
     });
 
     describe('MatchOrders', function () {
@@ -531,6 +529,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             //TODO: Eventually add check where scheduler is rewarded with kitty (already covered in UT)
         });
         it('Should push result (TEE with worker authorization signed by broker)', async function () {
+            await setTeeBroker(teeBroker.address);
             await IexecMaintenanceDelegate__factory.connect(proxyAddress, owner)
                 .setTeeBroker(teeBroker.address)
                 .then((tx) => tx.wait());
@@ -720,4 +719,12 @@ async function computeSchedulerDealStake(
 ): Promise<number> {
     const stakeRatio = (await iexecInstance.workerpool_stake_ratio()).toNumber();
     return ((workerpoolPrice * stakeRatio) / 100) * volume;
+}
+
+async function setTeeBroker(brokerAddress: string) {
+    const proxyAddress = await getContractAddress('ERC1538Proxy');
+    const owner = (await hre.ethers.getSigners())[0];
+    await IexecMaintenanceDelegate__factory.connect(proxyAddress, owner)
+        .setTeeBroker(brokerAddress)
+        .then((tx) => tx.wait());
 }
