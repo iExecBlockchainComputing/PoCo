@@ -528,6 +528,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             );
             //TODO: Eventually add check where scheduler is rewarded with kitty (already covered in UT)
         });
+
         it('Should push result (TEE with worker authorization signed by broker)', async function () {
             await setTeeBroker(teeBroker.address);
             const volume = 3;
