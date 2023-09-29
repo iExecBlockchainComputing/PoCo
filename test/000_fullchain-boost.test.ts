@@ -417,7 +417,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await oracleConsumerInstance.store(taskId)).to.be.equal(resultsCallback);
         });
 
-        it('Should push result (TEE with worker authorization signed by scheduler)', async function () {
+        it('Should push result (TEE with contribution authorization signed by scheduler)', async function () {
             const volume = 3;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
@@ -529,7 +529,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             //TODO: Eventually add check where scheduler is rewarded with kitty (already covered in UT)
         });
 
-        it('Should push result (TEE with worker authorization signed by broker)', async function () {
+        it('Should push result (TEE with contribution authorization signed by broker)', async function () {
             await setTeeBroker(teeBroker.address);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,

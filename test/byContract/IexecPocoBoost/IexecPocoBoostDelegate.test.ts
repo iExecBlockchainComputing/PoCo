@@ -1836,7 +1836,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
-        it('Should push result (TEE with worker authorization signed by scheduler)', async function () {
+        it('Should push result (TEE with contribution authorization signed by scheduler)', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1881,7 +1881,7 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(dealId, taskIndex, results);
         });
 
-        it('Should push result (TEE with worker authorization signed by broker)', async function () {
+        it('Should push result (TEE with contribution authorization signed by broker)', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -2171,7 +2171,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Invalid contribution authorization signature');
         });
 
-        it('Should not push result with invalid enclave signature tee Broker', async function () {
+        it('Should not push result with invalid enclave signature', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
