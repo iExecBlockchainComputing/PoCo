@@ -79,19 +79,19 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             requestOrder.workerpoolmaxprice >= workerpoolPrice,
             "PocoBoost: Overpriced workerpool"
         );
-        // Save some local variables in memory with a structure to fix `Stack too deep`.
-        IexecLibCore_v5.DealBoost memory vars;
-        bytes32 tag = appOrder.tag | datasetOrder.tag | requestOrder.tag;
+        bytes32 appOrderTag = appOrder.tag;
+        bytes32 tag = appOrderTag | datasetOrder.tag | requestOrder.tag;
         require(
             tag & ~workerpoolOrder.tag == 0x0,
             "PocoBoost: Workerpool tag does not match demand"
         );
-        require((tag ^ appOrder.tag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
+        require((tag ^ appOrderTag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
         // Check match.
         address app = appOrder.app;
         require(requestOrder.app == app, "PocoBoost: App mismatch");
         address dataset = datasetOrder.dataset;
-        require(requestOrder.dataset == dataset, "PocoBoost: Dataset mismatch");
+        address requestOrderDataset = requestOrder.dataset;
+        require(requestOrderDataset == dataset, "PocoBoost: Dataset mismatch");
         // Check restriction.
         address workerpool = workerpoolOrder.workerpool;
         require(
@@ -137,21 +137,22 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         );
 
         require(m_appregistry.isRegistered(app), "PocoBoost: App not registered");
-        vars.appOwner = IERC5313(app).owner();
+        address appOwner = IERC5313(app).owner();
         bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
         require(
-            _verifySignatureOrPresignature(vars.appOwner, appOrderTypedDataHash, appOrder.sign),
+            _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, appOrder.sign),
             "PocoBoost: Invalid app order signature"
         );
-        bool hasDataset = requestOrder.dataset != address(0);
+        bool hasDataset = requestOrderDataset != address(0);
+        address datasetOwner;
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
             require(m_datasetregistry.isRegistered(dataset), "PocoBoost: Dataset not registered");
-            vars.datasetOwner = IERC5313(dataset).owner();
+            datasetOwner = IERC5313(dataset).owner();
             datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
             require(
                 _verifySignatureOrPresignature(
-                    vars.datasetOwner,
+                    datasetOwner,
                     datasetOrderTypedDataHash,
                     datasetOrder.sign
                 ),
@@ -163,11 +164,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             m_workerpoolregistry.isRegistered(workerpool),
             "PocoBoost: Workerpool not registered"
         );
-        vars.workerpoolOwner = IERC5313(workerpool).owner();
+        address workerpoolOwner = IERC5313(workerpool).owner();
         bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(workerpoolOrder.hash());
         require(
             _verifySignatureOrPresignature(
-                vars.workerpoolOwner,
+                workerpoolOwner,
                 workerpoolOrderTypedDataHash,
                 workerpoolOrder.sign
             ),
@@ -181,7 +182,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
         uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
         uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
-        // TODO: Cache workerpoolOrder.volume
+        uint256 workerpoolOrderConsumed = m_consumed[workerpoolOrderTypedDataHash];
         // No dataset variable since dataset is optional
         bytes32 dealId = keccak256(
             abi.encodePacked(
@@ -200,31 +201,28 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
         uint256 volume = appOrder.volume - appOrderConsumed;
-        volume = volume.min(workerpoolOrder.volume - m_consumed[workerpoolOrderTypedDataHash]);
+        volume = volume.min(workerpoolOrder.volume - workerpoolOrderConsumed);
         volume = volume.min(requestOrder.volume - requestOrderConsumed);
         if (hasDataset) {
             volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
         }
         require(volume > 0, "PocoBoost: One or more orders consumed");
+        // Update consumed
         m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // cheaper than `+= volume` here
-        m_consumed[workerpoolOrderTypedDataHash] += volume;
+        m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         if (hasDataset) {
             m_consumed[datasetOrderTypedDataHash] += volume;
-        }
-        /**
-         * Store deal
-         */
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        // Write all parts of the same storage slot together
-        // for gas optimization purposes.
-        deal.appOwner = vars.appOwner;
-        deal.appPrice = appPrice.toUint96();
-        if (hasDataset) {
-            deal.datasetOwner = vars.datasetOwner;
+            // Store deal (dataset)
+            deal.datasetOwner = datasetOwner;
             deal.datasetPrice = datasetPrice.toUint96();
         }
-        deal.workerpoolOwner = vars.workerpoolOwner;
+        // Store deal (all). Write all parts of the same storage slot together
+        // for gas optimization purposes.
+        deal.appOwner = appOwner;
+        deal.appPrice = appPrice.toUint96();
+        deal.workerpoolOwner = workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
@@ -253,7 +251,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
-        lock(vars.workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
+        lock(workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             workerpool,
