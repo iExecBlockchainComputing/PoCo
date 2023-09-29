@@ -306,7 +306,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             "PocoBoost: Tag requires enclave challenge"
         );
         address workerpoolOwner = deal.workerpoolOwner;
-        // Check scheduler or broker signature
+        // Check scheduler or TEE broker signature
         require(
             _verifySignatureOfEthSignedMessage(
                 enclaveChallenge != address(0) && m_teebroker != address(0)
