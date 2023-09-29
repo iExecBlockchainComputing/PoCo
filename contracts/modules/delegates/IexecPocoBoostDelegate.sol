@@ -315,7 +315,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
                 abi.encodePacked(msg.sender, taskId, enclaveChallenge),
                 authorizationSign
             ),
-            "PocoBoost: Invalid scheduler or broker signature"
+            "PocoBoost: Invalid contribution authorization signature"
         );
         address target = deal.callback;
         bytes32 resultDigest = keccak256(target == address(0) ? results : resultsCallback);

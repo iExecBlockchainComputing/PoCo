@@ -42,11 +42,15 @@ export async function buildAndSignContributionAuthorizationMessage(
     enclave: string,
     authorizer: SignerWithAddress,
 ) {
-    const schedulerMessage = buildAuthorizerMessage(worker, taskId, enclave);
+    const schedulerMessage = buildContributionAuthorizationMessage(worker, taskId, enclave);
     return await signMessage(authorizer, schedulerMessage);
 }
 
-function buildAuthorizerMessage(workerAddress: string, taskId: string, enclaveAddress: string) {
+function buildContributionAuthorizationMessage(
+    workerAddress: string,
+    taskId: string,
+    enclaveAddress: string,
+) {
     return ethers.utils.solidityKeccak256(
         ['address', 'bytes32', 'address'],
         [workerAddress, taskId, enclaveAddress],

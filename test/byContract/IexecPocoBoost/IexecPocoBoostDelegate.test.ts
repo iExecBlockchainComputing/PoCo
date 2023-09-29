@@ -2137,7 +2137,7 @@ describe('IexecPocoBoostDelegate', function () {
                         enclave.address,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Invalid scheduler or broker signature');
+            ).to.be.revertedWith('PocoBoost: Invalid contribution authorization signature');
         });
 
         it('Should not push result with invalid broker signature', async function () {
@@ -2168,7 +2168,7 @@ describe('IexecPocoBoostDelegate', function () {
                         enclave.address,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Invalid scheduler or broker signature');
+            ).to.be.revertedWith('PocoBoost: Invalid contribution authorization signature');
         });
 
         it('Should not push result with invalid enclave signature tee Broker', async function () {
