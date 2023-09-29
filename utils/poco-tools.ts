@@ -125,3 +125,20 @@ export async function setNextBlockTimestamp() {
     await time.setNextBlockTimestamp(startTime);
     return startTime;
 }
+
+export async function buildAndSignTeeBrokerMessage(
+    worker: string,
+    taskId: string,
+    enclave: string,
+    teeBroker: SignerWithAddress,
+) {
+    const teeBrokerMessage = buildTeeBrokerMessage(worker, taskId, enclave);
+    return await signMessage(teeBroker, teeBrokerMessage);
+}
+
+function buildTeeBrokerMessage(workerAddress: string, taskId: string, enclaveAddress: string) {
+    return ethers.utils.solidityKeccak256(
+        ['address', 'bytes32', 'address'],
+        [workerAddress, taskId, enclaveAddress],
+    );
+}

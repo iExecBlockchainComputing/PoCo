@@ -49,6 +49,7 @@ import {
     buildUtf8ResultAndDigest,
     buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
+    buildAndSignTeeBrokerMessage,
     getTaskId,
     getDealId,
     setNextBlockTimestamp,
@@ -89,6 +90,7 @@ async function deployBoostFixture() {
         worker2,
         enclave,
         anyone,
+        teeBroker,
     ] = await ethers.getSigners();
     const iexecLibOrdersInstanceAddress = await new IexecLibOrders_v5__factory()
         .connect(admin)
@@ -131,6 +133,7 @@ async function deployBoostFixture() {
         worker2,
         enclave,
         anyone,
+        teeBroker,
     };
 }
 
@@ -155,8 +158,17 @@ describe('IexecPocoBoostDelegate', function () {
     let datasetRegistry: FakeContract<DatasetRegistry>;
     let workerpoolRegistry: FakeContract<WorkerpoolRegistry>;
     let someContractInstance: MockContract<TestClient>;
-    let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
-        [] as SignerWithAddress[];
+    let [
+        appProvider,
+        datasetProvider,
+        scheduler,
+        worker,
+        enclave,
+        requester,
+        beneficiary,
+        anyone,
+        teeBroker,
+    ] = [] as SignerWithAddress[];
     let ordersActors: OrdersActors;
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
@@ -172,6 +184,7 @@ describe('IexecPocoBoostDelegate', function () {
         requester = fixtures.requester;
         beneficiary = fixtures.beneficiary;
         anyone = fixtures.anyone;
+        teeBroker = fixtures.teeBroker;
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -1824,7 +1837,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
-        it('Should push result (TEE)', async function () {
+        it('Should push result (TEE with worker authorization signed by scheduler)', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1861,6 +1874,54 @@ describe('IexecPocoBoostDelegate', function () {
                         results,
                         constants.NULL.BYTES32,
                         schedulerSignature,
+                        enclave.address,
+                        enclaveSignature,
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                .withArgs(dealId, taskIndex, results);
+        });
+
+        it('Should push result (TEE with worker authorization signed by broker)', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+            });
+            const teeBrokerAddr = teeBroker.address;
+            await iexecPocoBoostInstance.setVariable('m_teebroker', teeBrokerAddr);
+
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const teeBrokerSignature = await buildAndSignTeeBrokerMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                teeBroker,
+            );
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                resultDigest,
+                enclave,
+            );
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        constants.NULL.BYTES32,
+                        teeBrokerSignature,
                         enclave.address,
                         enclaveSignature,
                     ),
@@ -2077,15 +2138,15 @@ describe('IexecPocoBoostDelegate', function () {
                         enclave.address,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Invalid scheduler signature');
+            ).to.be.revertedWith('PocoBoost: Invalid scheduler or broker signature');
         });
 
-        it('Should not push result with invalid tee_broker signature', async function () {
+        it('Should not push result with invalid broker signature', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // await iexecPocoBoostInstance.setVariable('m_teebroker', "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97");
+            await iexecPocoBoostInstance.setVariable('m_teebroker', teeBroker.address);
 
             await signOrders(domain, orders, ordersActors);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -2108,8 +2169,7 @@ describe('IexecPocoBoostDelegate', function () {
                         enclave.address,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Invalid scheduler signature');
-            // await iexecPocoBoostInstance.setVariable('m_teebroker', "0x0000000000000000000000000000000000000000");
+            ).to.be.revertedWith('PocoBoost: Invalid scheduler or broker signature');
         });
 
         it('Should not push result with invalid enclave signature tee Broker', async function () {

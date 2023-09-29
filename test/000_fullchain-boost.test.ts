@@ -36,6 +36,7 @@ import {
     IexecAccessors,
     RLC,
     WorkerpoolInterface__factory,
+    IexecMaintenanceDelegate__factory,
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
@@ -54,6 +55,7 @@ import {
     buildUtf8ResultAndDigest,
     buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
+    buildAndSignTeeBrokerMessage,
     getDealId,
     getTaskId,
     setNextBlockTimestamp,
@@ -102,6 +104,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         worker,
         enclave,
         anyone,
+        teeBroker,
     ] = [] as SignerWithAddress[];
     let ordersActors: OrdersActors;
     let ordersAssets: OrdersAssets;
@@ -121,6 +124,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         worker = signers[6];
         enclave = signers[7];
         anyone = signers[8];
+        teeBroker = signers[9];
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -192,6 +196,10 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
+        // initialize tee broker to address(0)
+        await IexecMaintenanceDelegate__factory.connect(proxyAddress, owner)
+            .setTeeBroker('0x0000000000000000000000000000000000000000')
+            .then((tx) => tx.wait());
     });
 
     describe('MatchOrders', function () {
@@ -412,7 +420,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await oracleConsumerInstance.store(taskId)).to.be.equal(resultsCallback);
         });
 
-        it('Should push result (TEE)', async function () {
+        it('Should push result (TEE with worker authorization signed by scheduler)', async function () {
             const volume = 3;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
@@ -522,6 +530,62 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 schedulerTaskStake * remainingTasksToPush,
             );
             //TODO: Eventually add check where scheduler is rewarded with kitty (already covered in UT)
+        });
+        it('Should push result (TEE with worker authorization signed by broker)', async function () {
+            await IexecMaintenanceDelegate__factory.connect(proxyAddress, owner)
+                .setTeeBroker(teeBroker.address)
+                .then((tx) => tx.wait());
+            const volume = 3;
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+                prices: ordersPrices,
+                volume: volume,
+            });
+            const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+            const dealPrice = taskPrice * volume;
+            await getRlcAndDeposit(requester, dealPrice);
+            const schedulerDealStake = await computeSchedulerDealStake(
+                iexecInstance,
+                workerpoolPrice,
+                volume,
+            );
+            await getRlcAndDeposit(scheduler, schedulerDealStake);
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const teeBrokerSignature = await buildAndSignTeeBrokerMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                teeBroker,
+            );
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                resultDigest,
+                enclave,
+            );
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        constants.NULL.BYTES32,
+                        teeBrokerSignature,
+                        enclave.address,
+                        enclaveSignature,
+                    ),
+            );
         });
     });
 
