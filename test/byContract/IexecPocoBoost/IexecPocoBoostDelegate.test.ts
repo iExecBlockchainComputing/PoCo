@@ -43,6 +43,7 @@ import {
     OrdersActors,
     OrdersAssets,
     OrdersPrices,
+    Orders,
 } from '../../../utils/createOrders';
 import {
     buildAndSignSchedulerMessage,
@@ -276,15 +277,17 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, undefined);
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, undefined);
             const startTime = await setNextBlockTimestamp();
+            const matchOrdersArgs = [
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ] as Orders;
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            )
+            expect(
+                await iexecPocoBoostInstance.callStatic.matchOrdersBoost(...matchOrdersArgs),
+            ).to.equal(dealId);
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...matchOrdersArgs))
                 .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
                 .withArgs(
                     workerpoolInstance.address,

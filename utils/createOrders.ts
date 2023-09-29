@@ -6,6 +6,13 @@ import { IexecLibOrders_v5 } from '../typechain';
 import constants from './constants';
 import { utils } from './odb-tools';
 
+export type Orders = [
+    IexecLibOrders_v5.AppOrderStruct,
+    IexecLibOrders_v5.DatasetOrderStruct,
+    IexecLibOrders_v5.WorkerpoolOrderStruct,
+    IexecLibOrders_v5.RequestOrderStruct,
+];
+
 export interface OrdersAssets {
     app: string;
     dataset: string;
