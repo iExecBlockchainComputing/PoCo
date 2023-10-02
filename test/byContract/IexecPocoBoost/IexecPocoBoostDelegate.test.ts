@@ -45,7 +45,7 @@ import {
     OrdersPrices,
 } from '../../../utils/createOrders';
 import {
-    buildAndSignSchedulerMessage,
+    buildAndSignContributionAuthorizationMessage,
     buildUtf8ResultAndDigest,
     buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
@@ -89,6 +89,7 @@ async function deployBoostFixture() {
         worker2,
         enclave,
         anyone,
+        teeBroker,
     ] = await ethers.getSigners();
     const iexecLibOrdersInstanceAddress = await new IexecLibOrders_v5__factory()
         .connect(admin)
@@ -131,6 +132,7 @@ async function deployBoostFixture() {
         worker2,
         enclave,
         anyone,
+        teeBroker,
     };
 }
 
@@ -155,8 +157,17 @@ describe('IexecPocoBoostDelegate', function () {
     let datasetRegistry: FakeContract<DatasetRegistry>;
     let workerpoolRegistry: FakeContract<WorkerpoolRegistry>;
     let someContractInstance: MockContract<TestClient>;
-    let [appProvider, datasetProvider, scheduler, worker, enclave, requester, beneficiary, anyone] =
-        [] as SignerWithAddress[];
+    let [
+        appProvider,
+        datasetProvider,
+        scheduler,
+        worker,
+        enclave,
+        requester,
+        beneficiary,
+        anyone,
+        teeBroker,
+    ] = [] as SignerWithAddress[];
     let ordersActors: OrdersActors;
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
@@ -172,6 +183,7 @@ describe('IexecPocoBoostDelegate', function () {
         requester = fixtures.requester;
         beneficiary = fixtures.beneficiary;
         anyone = fixtures.anyone;
+        teeBroker = fixtures.teeBroker;
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -1650,7 +1662,7 @@ describe('IexecPocoBoostDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 enclave.address,
@@ -1824,7 +1836,7 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
-        it('Should push result (TEE)', async function () {
+        it('Should push result (TEE with contribution authorization signed by scheduler)', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1839,7 +1851,7 @@ describe('IexecPocoBoostDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 enclave.address,
@@ -1869,6 +1881,54 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(dealId, taskIndex, results);
         });
 
+        it('Should push result (TEE with contribution authorization signed by broker)', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+            });
+            const teeBrokerAddr = teeBroker.address;
+            await iexecPocoBoostInstance.setVariable('m_teebroker', teeBrokerAddr);
+
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const teeBrokerSignature = await buildAndSignContributionAuthorizationMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                teeBroker,
+            );
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                resultDigest,
+                enclave,
+            );
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        constants.NULL.BYTES32,
+                        teeBrokerSignature,
+                        enclave.address,
+                        enclaveSignature,
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                .withArgs(dealId, taskIndex, results);
+        });
+
         it('Should push result', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
@@ -1884,7 +1944,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requestOrder,
             );
             const emptyEnclaveAddress = constants.NULL.ADDRESS;
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 emptyEnclaveAddress,
@@ -1966,7 +2026,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requestOrder,
             );
             const emptyEnclaveAddress = constants.NULL.ADDRESS;
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 emptyEnclaveAddress,
@@ -2077,7 +2137,38 @@ describe('IexecPocoBoostDelegate', function () {
                         enclave.address,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Invalid scheduler signature');
+            ).to.be.revertedWith('PocoBoost: Invalid contribution authorization signature');
+        });
+
+        it('Should not push result with invalid broker signature', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await iexecPocoBoostInstance.setVariable('m_teebroker', teeBroker.address);
+
+            await signOrders(domain, orders, ordersActors);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const anyoneSignature = anyone.signMessage(constants.NULL.BYTES32);
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        constants.NULL.BYTES32,
+                        anyoneSignature,
+                        enclave.address,
+                        constants.NULL.SIGNATURE,
+                    ),
+            ).to.be.revertedWith('PocoBoost: Invalid contribution authorization signature');
         });
 
         it('Should not push result with invalid enclave signature', async function () {
@@ -2086,6 +2177,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester: requester.address,
                 tag: teeDealTag,
             });
+
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             await iexecPocoBoostInstance.matchOrdersBoost(
@@ -2094,7 +2186,7 @@ describe('IexecPocoBoostDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 getTaskId(dealId, taskIndex),
                 enclave.address,
@@ -2133,7 +2225,7 @@ describe('IexecPocoBoostDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 enclave.address,
@@ -2188,7 +2280,7 @@ describe('IexecPocoBoostDelegate', function () {
                         taskIndex,
                         results,
                         resultsCallback,
-                        await buildAndSignSchedulerMessage(
+                        await buildAndSignContributionAuthorizationMessage(
                             worker.address,
                             taskId,
                             enclave.address,
@@ -2232,7 +2324,7 @@ describe('IexecPocoBoostDelegate', function () {
                         taskIndex,
                         results,
                         resultsCallback,
-                        await buildAndSignSchedulerMessage(
+                        await buildAndSignContributionAuthorizationMessage(
                             worker.address,
                             taskId,
                             enclave.address,
@@ -2574,7 +2666,7 @@ describe('IexecPocoBoostDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 constants.NULL.ADDRESS,

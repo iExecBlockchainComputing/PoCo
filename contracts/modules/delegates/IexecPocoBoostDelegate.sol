@@ -305,15 +305,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             enclaveChallenge != address(0) || deal.shortTag[2] & 0x01 == 0,
             "PocoBoost: Tag requires enclave challenge"
         );
-        // Check scheduler signature
         address workerpoolOwner = deal.workerpoolOwner;
+        // Check scheduler or TEE broker signature
         require(
             _verifySignatureOfEthSignedMessage(
-                workerpoolOwner,
+                enclaveChallenge != address(0) && m_teebroker != address(0)
+                    ? m_teebroker
+                    : workerpoolOwner,
                 abi.encodePacked(msg.sender, taskId, enclaveChallenge),
                 authorizationSign
             ),
-            "PocoBoost: Invalid scheduler signature"
+            "PocoBoost: Invalid contribution authorization signature"
         );
         address target = deal.callback;
         bytes32 resultDigest = keccak256(target == address(0) ? results : resultsCallback);
