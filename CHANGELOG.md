@@ -59,6 +59,7 @@
     - Verify signatures
         - scheduler (#173)
         - enclave (#176)
+        - tee broker (#235)
     - Reward worker. (#203)
     - Reward app provider. (#204)
     - Reward dataset provider. (#207)

@@ -36,6 +36,7 @@ import {
     IexecAccessors,
     RLC,
     WorkerpoolInterface__factory,
+    IexecMaintenanceDelegate__factory,
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
@@ -51,7 +52,7 @@ import {
     signOrders,
 } from '../utils/createOrders';
 import {
-    buildAndSignSchedulerMessage,
+    buildAndSignContributionAuthorizationMessage,
     buildUtf8ResultAndDigest,
     buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
@@ -103,6 +104,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         worker,
         enclave,
         anyone,
+        teeBroker,
     ] = [] as SignerWithAddress[];
     let ordersActors: OrdersActors;
     let ordersAssets: OrdersAssets;
@@ -122,6 +124,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         worker = signers[6];
         enclave = signers[7];
         anyone = signers[8];
+        teeBroker = signers[9];
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -193,6 +196,8 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
+        // initialize tee broker to address(0)
+        await setTeeBroker('0x0000000000000000000000000000000000000000');
     });
 
     describe('MatchOrders', function () {
@@ -380,7 +385,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 enclave.address,
@@ -415,7 +420,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await oracleConsumerInstance.store(taskId)).to.be.equal(resultsCallback);
         });
 
-        it('Should push result (TEE)', async function () {
+        it('Should push result (TEE with contribution authorization signed by scheduler)', async function () {
             const volume = 3;
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
@@ -443,7 +448,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const schedulerSignature = await buildAndSignSchedulerMessage(
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
                 enclave.address,
@@ -525,6 +530,48 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 schedulerTaskStake * remainingTasksToPush,
             );
             //TODO: Eventually add check where scheduler is rewarded with kitty (already covered in UT)
+        });
+
+        it('Should push result (TEE with contribution authorization signed by broker)', async function () {
+            await setTeeBroker(teeBroker.address);
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const teeBrokerSignature = await buildAndSignContributionAuthorizationMessage(
+                worker.address,
+                taskId,
+                enclave.address,
+                teeBroker,
+            );
+            const enclaveSignature = await buildAndSignEnclaveMessage(
+                worker.address,
+                taskId,
+                resultDigest,
+                enclave,
+            );
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        constants.NULL.BYTES32,
+                        teeBrokerSignature,
+                        enclave.address,
+                        enclaveSignature,
+                    ),
+            );
         });
     });
 
@@ -629,6 +676,12 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             iexecPocoBoostInstance.address,
             anyone,
         ).viewDealBoost(dealId);
+    }
+
+    async function setTeeBroker(brokerAddress: string) {
+        await IexecMaintenanceDelegate__factory.connect(proxyAddress, owner)
+            .setTeeBroker(brokerAddress)
+            .then((tx) => tx.wait());
     }
 });
 
