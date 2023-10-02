@@ -18,8 +18,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../../modules/delegates/IexecPocoBoostAccessorsDelegate.sol";
-import "../../modules/delegates/IexecPocoBoostDelegate.sol";
+import {IexecPocoBoostAccessorsDelegate} from "../../modules/delegates/IexecPocoBoostAccessorsDelegate.sol";
+import {IexecPocoBoostDelegate} from "../../modules/delegates/IexecPocoBoostDelegate.sol";
 
 /**
  * @notice This contract is dedicated to unit testing.

@@ -18,8 +18,9 @@
 
 pragma solidity ^0.8.0;
 
-import "../DelegateBase.v8.sol";
-import "../interfaces/IexecPocoBoostAccessors.sol";
+import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
+import {DelegateBase} from "../DelegateBase.v8.sol";
+import {IexecPocoBoostAccessors} from "../interfaces/IexecPocoBoostAccessors.sol";
 
 /**
  * @title Access data related to Poco Boost deals.

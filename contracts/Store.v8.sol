@@ -18,12 +18,12 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-v4/access/Ownable.sol";
-import "@openzeppelin/contracts-v4/interfaces/IERC20.sol";
-import "@openzeppelin/contracts-v4/interfaces/IERC721Enumerable.sol";
+import {IERC20} from "@openzeppelin/contracts-v4/interfaces/IERC20.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts-v4/interfaces/IERC721Enumerable.sol";
+import {Ownable} from "@openzeppelin/contracts-v4/access/Ownable.sol";
 
-import "./libs/IexecLibCore_v5.sol";
-import "./libs/IexecLibOrders_v5.sol";
+import {IexecLibCore_v5} from "./libs/IexecLibCore_v5.sol";
+import {IexecLibOrders_v5} from "./libs/IexecLibOrders_v5.sol";
 
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
