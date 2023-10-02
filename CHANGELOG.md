@@ -41,6 +41,7 @@
     - Store deal. (#174)
     - Emit events. (#182, #184, #197)
     - Lock scheduler stake. (#202)
+    - Return `dealId`. (#236)
     - Reduce gas footprint:
         - Remove beneficiary from deal storage. (#205)
         - Reduce Boost deal storage from 6 to 5 slots. (#216)

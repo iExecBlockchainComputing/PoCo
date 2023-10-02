@@ -49,7 +49,7 @@ interface IexecPocoBoost {
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
-    ) external;
+    ) external returns (bytes32);
 
     function pushResultBoost(
         bytes32 dealId,

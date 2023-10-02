@@ -50,7 +50,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param datasetOrder The order signed by the dataset provider
      * @param workerpoolOrder The order signed by the workerpool manager
      * @param requestOrder The order signed by the requester
-     *
+     * @return The ID of the deal.
      * @dev Considering min·max·avg gas values, preferred option for deal storage
      *  is b.:
      *   - a. 213498·273978·240761: Use memory struct and write new struct to storage once
@@ -63,7 +63,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
-    ) external {
+    ) external returns (bytes32) {
         require(requestOrder.trust <= 1, "PocoBoost: Bad trust level");
         // An intermediate variable stored in the stack consumes
         // less gas than accessing calldata each time.
@@ -272,6 +272,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             requestOrderTypedDataHash,
             volume
         );
+        return dealId;
     }
 
     /**

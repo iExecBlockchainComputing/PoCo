@@ -43,6 +43,7 @@ import { extractEventsFromReceipt } from '../utils/tools';
 import { ContractReceipt } from '@ethersproject/contracts';
 
 import {
+    Orders,
     OrdersActors,
     OrdersAssets,
     OrdersPrices,
@@ -229,15 +230,17 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const startTime = await setNextBlockTimestamp();
+            const matchOrdersArgs = [
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ] as Orders;
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            )
+            expect(
+                await iexecPocoBoostInstance.callStatic.matchOrdersBoost(...matchOrdersArgs),
+            ).to.equal(dealId);
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...matchOrdersArgs))
                 .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
                 .withArgs(
                     workerpoolAddress,
