@@ -14,33 +14,33 @@
  * limitations under the License.                                             *
  ******************************************************************************/
 
-import { expect } from 'chai';
-import hre, { ethers, deployments } from 'hardhat';
+import { ContractReceipt } from '@ethersproject/contracts';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
+import hre, { deployments, ethers } from 'hardhat';
 import {
-    IexecOrderManagement__factory,
-    IexecPocoBoostDelegate__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    IexecPocoBoostDelegate,
-    AppRegistry__factory,
     AppRegistry,
-    WorkerpoolRegistry__factory,
-    WorkerpoolRegistry,
+    AppRegistry__factory,
     DatasetRegistry,
     DatasetRegistry__factory,
-    TestClient__factory,
-    RLC__factory,
-    IexecAccessors__factory,
     IexecAccessors,
-    RLC,
-    WorkerpoolInterface__factory,
+    IexecAccessors__factory,
     IexecMaintenanceDelegate__factory,
+    IexecOrderManagement__factory,
+    IexecPocoBoostAccessorsDelegate__factory,
+    IexecPocoBoostDelegate,
+    IexecPocoBoostDelegate__factory,
+    RLC,
+    RLC__factory,
+    TestClient__factory,
+    WorkerpoolInterface__factory,
+    WorkerpoolRegistry,
+    WorkerpoolRegistry__factory,
 } from '../typechain';
 import constants from '../utils/constants';
 import { extractEventsFromReceipt } from '../utils/tools';
-import { ContractReceipt } from '@ethersproject/contracts';
 
 import {
     Orders,
@@ -53,9 +53,9 @@ import {
 } from '../utils/createOrders';
 import {
     buildAndSignContributionAuthorizationMessage,
-    buildUtf8ResultAndDigest,
-    buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
+    buildResultCallbackAndDigest,
+    buildUtf8ResultAndDigest,
     getDealId,
     getTaskId,
     setNextBlockTimestamp,

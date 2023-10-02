@@ -1,57 +1,57 @@
 import { FakeContract, MockContract, smock } from '@defi-wonderland/smock';
-import { FactoryOptions } from '@nomiclabs/hardhat-ethers/types';
+import { Contract, ContractFactory } from '@ethersproject/contracts';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { FactoryOptions } from '@nomiclabs/hardhat-ethers/types';
 import chai, { expect } from 'chai';
 import { assert, ethers } from 'hardhat';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { Contract, ContractFactory } from '@ethersproject/contracts';
 import {
-    IexecPocoBoostCompositeDelegate__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    IexecPocoBoostDelegate,
-    App__factory,
-    Workerpool__factory,
-    Dataset__factory,
-    TestClient,
-    TestClient__factory,
-    IexecLibOrders_v5__factory,
     App,
-    Workerpool,
-    Dataset,
     AppRegistry,
     AppRegistry__factory,
+    App__factory,
+    Dataset,
     DatasetRegistry,
     DatasetRegistry__factory,
-    WorkerpoolRegistry,
-    WorkerpoolRegistry__factory,
+    Dataset__factory,
     IERC734,
     IERC734__factory,
+    IexecLibOrders_v5__factory,
+    IexecPocoBoostAccessorsDelegate__factory,
+    IexecPocoBoostCompositeDelegate__factory,
+    IexecPocoBoostDelegate,
+    TestClient,
+    TestClient__factory,
+    Workerpool,
+    WorkerpoolRegistry,
+    WorkerpoolRegistry__factory,
+    Workerpool__factory,
 } from '../../../typechain';
-import { IERC1271__factory } from '../../../typechain/factories/@openzeppelin/contracts-v4/interfaces';
 import { IERC1271 } from '../../../typechain/@openzeppelin/contracts-v4/interfaces';
+import { IERC1271__factory } from '../../../typechain/factories/@openzeppelin/contracts-v4/interfaces';
 import constants from '../../../utils/constants';
 import {
-    createEmptyAppOrder,
-    createEmptyDatasetOrder,
-    createEmptyWorkerpoolOrder,
-    createEmptyRequestOrder,
-    buildOrders,
-    buildDomain,
-    signOrder,
-    hashOrder,
-    signOrders,
+    Orders,
     OrdersActors,
     OrdersAssets,
     OrdersPrices,
-    Orders,
+    buildDomain,
+    buildOrders,
+    createEmptyAppOrder,
+    createEmptyDatasetOrder,
+    createEmptyRequestOrder,
+    createEmptyWorkerpoolOrder,
+    hashOrder,
+    signOrder,
+    signOrders,
 } from '../../../utils/createOrders';
 import {
     buildAndSignContributionAuthorizationMessage,
-    buildUtf8ResultAndDigest,
-    buildResultCallbackAndDigest,
     buildAndSignEnclaveMessage,
-    getTaskId,
+    buildResultCallbackAndDigest,
+    buildUtf8ResultAndDigest,
     getDealId,
+    getTaskId,
     setNextBlockTimestamp,
 } from '../../../utils/poco-tools';
 
