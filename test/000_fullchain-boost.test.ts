@@ -80,9 +80,11 @@ async function extractRegistryEntryAddress(
     registryInstanceAddress: string,
 ): Promise<string> {
     const events = extractEventsFromReceipt(receipt, registryInstanceAddress, 'Transfer');
-    const lowercaseAddress =
-        events && events[0].args ? events[0].args['tokenId'].toHexString() : '';
-    return ethers.utils.getAddress(lowercaseAddress);
+    if (events && events[0].args) {
+        const lowercaseAddress = events[0].args['tokenId'].toHexString();
+        return ethers.utils.getAddress(lowercaseAddress);
+    }
+    return '';
 }
 
 describe('IexecPocoBoostDelegate (IT)', function () {
