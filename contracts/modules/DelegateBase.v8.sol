@@ -18,16 +18,10 @@
 
 pragma solidity ^0.8.0;
 
-//import "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol";
-import "../Store.v8.sol";
+import {Store} from "../Store.v8.sol";
 
 abstract contract DelegateBase is Store {
     constructor() {
         renounceOwnership();
-    }
-
-    modifier onlyScheduler(bytes32 _taskid) {
-        require(_msgSender() == m_deals[m_tasks[_taskid].dealid].workerpool.owner);
-        _;
     }
 }

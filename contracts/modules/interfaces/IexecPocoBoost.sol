@@ -18,7 +18,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../../libs/IexecLibOrders_v5.sol";
+import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecPocoBoost {
     event SchedulerNoticeBoost(

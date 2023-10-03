@@ -18,18 +18,20 @@
 
 pragma solidity ^0.8.0;
 
-import "@onchain-id/solidity/contracts/interface/IERC734.sol";
-import "@openzeppelin/contracts-v4/interfaces/IERC1271.sol";
-import "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
-import "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts-v4/utils/math/Math.sol";
-import "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
+import {IERC734} from "@onchain-id/solidity/contracts/interface/IERC734.sol";
+import {IERC1271} from "@openzeppelin/contracts-v4/interfaces/IERC1271.sol";
+import {IERC5313} from "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
+import {ECDSA} from "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
+import {Math} from "@openzeppelin/contracts-v4/utils/math/Math.sol";
+import {SafeCast} from "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
 
-import "../../external/interfaces/IOracleConsumer.sol";
-import "../../registries/workerpools/IWorkerpool.v8.sol";
-import "./IexecEscrow.v8.sol";
-import "../DelegateBase.v8.sol";
-import "../interfaces/IexecPocoBoost.sol";
+import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
+import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
+import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
+import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
+import {DelegateBase} from "../DelegateBase.v8.sol";
+import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
+import {IexecEscrow} from "./IexecEscrow.v8.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
@@ -421,7 +423,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * Hash a Typed Data using the configured domain.
      * @param structHash original structure hash
      */
-    function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
+    function _toTypedDataHash(bytes32 structHash) private view returns (bytes32) {
         return ECDSA.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
     }
 
@@ -435,7 +437,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         address account,
         bytes memory message,
         bytes calldata signature
-    ) internal pure returns (bool) {
+    ) private pure returns (bool) {
         return keccak256(message).toEthSignedMessageHash().recover(signature) == account;
     }
 
@@ -449,7 +451,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         address account,
         bytes32 messageHash,
         bytes calldata signature
-    ) internal view returns (bool) {
+    ) private view returns (bool) {
         if (messageHash.recover(signature) == account) {
             return true;
         }
@@ -466,10 +468,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param account expected presigner account
      * @param messageHash message hash that was presigned
      */
-    function _verifyPresignature(
-        address account,
-        bytes32 messageHash
-    ) internal view returns (bool) {
+    function _verifyPresignature(address account, bytes32 messageHash) private view returns (bool) {
         return account != address(0) && account == m_presigned[messageHash];
     }
 
@@ -483,7 +482,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         address account,
         bytes32 messageHash,
         bytes calldata signature
-    ) internal view returns (bool) {
+    ) private view returns (bool) {
         return
             (signature.length != 0 && _verifySignature(account, messageHash, signature)) ||
             _verifyPresignature(account, messageHash);
