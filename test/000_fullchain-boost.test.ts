@@ -40,8 +40,6 @@ import {
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import constants from '../utils/constants';
-import { extractEventsFromReceipt } from '../utils/tools';
-
 import {
     Orders,
     OrdersActors,
@@ -60,6 +58,7 @@ import {
     getTaskId,
     setNextBlockTimestamp,
 } from '../utils/poco-tools';
+import { extractEventsFromReceipt } from '../utils/tools';
 
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
@@ -81,8 +80,11 @@ async function extractRegistryEntryAddress(
     registryInstanceAddress: string,
 ): Promise<string> {
     const events = extractEventsFromReceipt(receipt, registryInstanceAddress, 'Transfer');
-    const lowercaseAddress = events[0].args['tokenId'].toHexString();
-    return ethers.utils.getAddress(lowercaseAddress);
+    if (events && events[0].args) {
+        const lowercaseAddress = events[0].args['tokenId'].toHexString();
+        return ethers.utils.getAddress(lowercaseAddress);
+    }
+    return '';
 }
 
 describe('IexecPocoBoostDelegate (IT)', function () {
