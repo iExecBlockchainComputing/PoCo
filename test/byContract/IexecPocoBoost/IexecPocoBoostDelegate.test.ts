@@ -77,6 +77,7 @@ const someSignature =
     '0000000000000000000000000000000000000000000000000000000000000001' +
     '0000000000000000000000000000000000000000000000000000000000000001' +
     '1c';
+const randomRestrictionEOA = '0xc0ffee254729296a45a3885639AC7E10F9d54979';
 
 async function deployBoostFixture() {
     const [
@@ -1465,6 +1466,24 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.be.revertedWith('PocoBoost: Requester restricted by workerpool order');
+        });
+
+        it('Should fail when restriction is set to an EOA', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Request another workerpool address
+            requestOrder.workerpool = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
         });
 
         it('Should fail when app not registered', async function () {
