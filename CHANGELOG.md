@@ -73,7 +73,7 @@
 - Refactor tests. (#177, #178, #179, #181, #188, #200, #209, #210, #211, #221)
 - Add mocha to use test explorer. (#180)
 - Reformat contracts. (#222, #237)
-- Reformat tests. (#238, #239)
+- Reformat tests. (#238, #239, #241)
 - Check balance in transfer operation (#230)
 - Bump dependencies. (#240, #242)
 
