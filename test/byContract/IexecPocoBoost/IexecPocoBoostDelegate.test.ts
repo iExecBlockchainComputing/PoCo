@@ -1420,37 +1420,6 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Invalid workerpool order signature');
         });
 
-        it('Should fail when invalid request order signature from contract', async function () {
-            const erc1271Instance = await createFakeERC1271();
-            appInstance.owner.returns(appProvider.address);
-            datasetInstance.owner.returns(datasetProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: erc1271Instance.address,
-            });
-            await signOrder(domain, appOrder, appProvider);
-            await signOrder(domain, datasetOrder, datasetProvider);
-            await signOrder(domain, workerpoolOrder, scheduler);
-            requestOrder.sign = someSignature;
-            const requestOrderHash = hashOrder(domain, requestOrder);
-            whenERC1271CalledThenReplyInvalidSignature(
-                erc1271Instance,
-                requestOrderHash,
-                someSignature,
-            );
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: Invalid request order signature');
-            await expectERC1271CalledOnceWith(erc1271Instance, requestOrderHash, someSignature);
-        });
-
         it('Should fail when invalid workerpool order signature from contract', async function () {
             const erc1271Instance = await createFakeERC1271();
             appInstance.owner.returns(appProvider.address);
@@ -1502,6 +1471,37 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.be.revertedWith('PocoBoost: Invalid request order signature');
+        });
+
+        it('Should fail when invalid request order signature from contract', async function () {
+            const erc1271Instance = await createFakeERC1271();
+            appInstance.owner.returns(appProvider.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: erc1271Instance.address,
+            });
+            await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, datasetOrder, datasetProvider);
+            await signOrder(domain, workerpoolOrder, scheduler);
+            requestOrder.sign = someSignature;
+            const requestOrderHash = hashOrder(domain, requestOrder);
+            whenERC1271CalledThenReplyInvalidSignature(
+                erc1271Instance,
+                requestOrderHash,
+                someSignature,
+            );
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid request order signature');
+            await expectERC1271CalledOnceWith(erc1271Instance, requestOrderHash, someSignature);
         });
 
         it('Should fail if one or more orders are consumed', async function () {
