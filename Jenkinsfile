@@ -1,15 +1,13 @@
 // TODO1 Remove useless build stages & use scripted pipeline
 // TODO2 Run unit tests on token AND native? -> IexecEscrowNative.js, all others
 pipeline {
-    agent {
-        docker {
-            label 'docker'
-            image 'node:18'
-        }
+    agent any
+    environment {
+        NODES_JS_IMAGE = 'node:18'
     }
-
     stages {
         stage('Init') {
+            agent { docker { image "$NODES_JS_IMAGE" } }
             steps {
                 script {
                     sh 'npm ci --production=false --no-progress'
@@ -19,7 +17,21 @@ pipeline {
                 }
             }
         }
+        stage('Slither') {
+            agent {
+                docker {
+                    image 'trailofbits/eth-security-toolbox:latest'
+                    args '--entrypoint='
+                }
+            }
+            steps {
+                script {
+                    sh 'solc-select install 0.8.17 && slither contracts/modules/delegates/IexecPocoBoostDelegate.sol'
+                }
+            }
+        }
         stage('Hardhat tests - Public') {
+            agent { docker { image "$NODES_JS_IMAGE" } }
             steps {
                 script {
                     test()
@@ -27,6 +39,7 @@ pipeline {
             }
         }
         stage('Hardhat tests - KYC') {
+            agent { docker { image "$NODES_JS_IMAGE" } }
             environment {
                 KYC = 'true'
             }
@@ -42,7 +55,7 @@ pipeline {
 def test() {
     try {
         sh 'npm run coverage'
-    } catch(Exception e) {
+    } catch (Exception e) {
         echo 'Exception occurred: ' + e.toString()
         runEachTestWithDedicatedLogFile()
     } finally {

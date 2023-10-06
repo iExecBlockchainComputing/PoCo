@@ -1,8 +1,8 @@
-import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
-import 'hardhat-dependency-compiler';
 import '@nomiclabs/hardhat-truffle5';
+import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
+import { HardhatUserConfig } from 'hardhat/config';
 
 const settings = {
     optimizer: {
@@ -154,6 +154,7 @@ const config: HardhatUserConfig = {
             // Used as mock or fake in UTs
             '@openzeppelin/contracts-v4/interfaces/IERC1271.sol',
         ],
+        keep: true, // Slither requires compiled dependencies
     },
 };
 
