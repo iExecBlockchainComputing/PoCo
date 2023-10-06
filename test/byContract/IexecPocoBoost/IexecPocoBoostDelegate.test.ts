@@ -1077,7 +1077,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Dataset mismatch');
         });
 
-        it('Should fail when requestorder mismatch workerpool restriction', async function () {
+        it('Should fail when requestorder mismatch workerpool restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1095,7 +1095,25 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
         });
 
-        it('Should fail when apporder mismatch dataset restriction', async function () {
+        it('Should fail when requestorder mismatch workerpool restriction (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Request another random RestrictionEOA;
+            requestOrder.workerpool = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
+        });
+
+        it('Should fail when apporder mismatch dataset restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1112,7 +1130,24 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Dataset restricted by app order');
         });
 
-        it('Should fail when apporder mismatch workerpool restriction', async function () {
+        it('Should fail when apporder mismatch dataset restriction (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            appOrder.datasetrestrict = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Dataset restricted by app order');
+        });
+
+        it('Should fail when apporder mismatch workerpool restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1129,7 +1164,24 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Workerpool restricted by app order');
         });
 
-        it('Should fail when apporder mismatch requester restriction', async function () {
+        it('Should fail when apporder mismatch workerpool restriction (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            appOrder.workerpoolrestrict = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by app order');
+        });
+
+        it('Should fail when apporder mismatch requester restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1146,7 +1198,24 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Requester restricted by app order');
         });
 
-        it('Should fail when datasetorder mismatch app restriction', async function () {
+        it('Should fail when apporder mismatch requester restriction (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            appOrder.requesterrestrict = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Requester restricted by app order');
+        });
+
+        it('Should fail when datasetorder mismatch app restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1163,7 +1232,24 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: App restricted by dataset order');
         });
 
-        it('Should fail when datasetorder mismatch workerpool restriction', async function () {
+        it('Should fail when datasetorder mismatch app restriction (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            datasetOrder.apprestrict = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: App restricted by dataset order');
+        });
+
+        it('Should fail when datasetorder mismatch workerpool restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1180,7 +1266,24 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Workerpool restricted by dataset order');
         });
 
-        it('Should fail when datasetorder mismatch requester restriction', async function () {
+        it('Should fail when datasetorder mismatch workerpool restriction (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            datasetOrder.workerpoolrestrict = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by dataset order');
+        });
+
+        it('Should fail when datasetorder mismatch requester restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1197,7 +1300,24 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Requester restricted by dataset order');
         });
 
-        it('Should fail when workerpoolorder mismatch app restriction', async function () {
+        it('Should fail when datasetorder mismatch requester restriction (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            datasetOrder.requesterrestrict = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Requester restricted by dataset order');
+        });
+
+        it('Should fail when workerpoolorder mismatch app restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1214,7 +1334,24 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: App restricted by workerpool order');
         });
 
-        it('Should fail when workerpoolorder mismatch dataset restriction', async function () {
+        it('Should fail when workerpoolorder mismatch app restriction (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            workerpoolOrder.apprestrict = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: App restricted by workerpool order');
+        });
+
+        it('Should fail when workerpoolorder mismatch dataset restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1231,7 +1368,24 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Dataset restricted by workerpool order');
         });
 
-        it('Should fail when workerpoolorder mismatch requester restriction', async function () {
+        it('Should fail when workerpoolorder mismatch dataset restriction (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            workerpoolOrder.datasetrestrict = randomRestrictionEOA;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Dataset restricted by workerpool order');
+        });
+
+        it('Should fail when workerpoolorder mismatch requester restriction (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1248,13 +1402,12 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Requester restricted by workerpool order');
         });
 
-        it('Should fail when restriction is set to an EOA', async function () {
+        it('Should fail when workerpoolorder mismatch requester restriction (EOA)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request another workerpool address
-            requestOrder.workerpool = randomRestrictionEOA;
+            workerpoolOrder.requesterrestrict = randomRestrictionEOA;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1263,7 +1416,7 @@ describe('IexecPocoBoostDelegate', function () {
                     workerpoolOrder,
                     requestOrder,
                 ),
-            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
+            ).to.be.revertedWith('PocoBoost: Requester restricted by workerpool order');
         });
 
         it('Should fail when app not registered', async function () {
