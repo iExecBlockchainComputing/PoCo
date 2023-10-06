@@ -77,7 +77,7 @@ const someSignature =
     '0000000000000000000000000000000000000000000000000000000000000001' +
     '0000000000000000000000000000000000000000000000000000000000000001' +
     '1c';
-const randomRestrictionEOA = '0xc0ffee254729296a45a3885639AC7E10F9d54979';
+const randomEOAAddress = '0xc0ffee254729296a45a3885639AC7E10F9d54979';
 
 async function deployBoostFixture() {
     const [
@@ -1101,7 +1101,7 @@ describe('IexecPocoBoostDelegate', function () {
                 requester: requester.address,
             });
             // Request another random RestrictionEOA;
-            requestOrder.workerpool = randomRestrictionEOA;
+            requestOrder.workerpool = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1135,7 +1135,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            appOrder.datasetrestrict = randomRestrictionEOA;
+            appOrder.datasetrestrict = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1169,7 +1169,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            appOrder.workerpoolrestrict = randomRestrictionEOA;
+            appOrder.workerpoolrestrict = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1203,7 +1203,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            appOrder.requesterrestrict = randomRestrictionEOA;
+            appOrder.requesterrestrict = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1237,7 +1237,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            datasetOrder.apprestrict = randomRestrictionEOA;
+            datasetOrder.apprestrict = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1271,7 +1271,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            datasetOrder.workerpoolrestrict = randomRestrictionEOA;
+            datasetOrder.workerpoolrestrict = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1305,7 +1305,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            datasetOrder.requesterrestrict = randomRestrictionEOA;
+            datasetOrder.requesterrestrict = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1339,7 +1339,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            workerpoolOrder.apprestrict = randomRestrictionEOA;
+            workerpoolOrder.apprestrict = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1373,7 +1373,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            workerpoolOrder.datasetrestrict = randomRestrictionEOA;
+            workerpoolOrder.datasetrestrict = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
@@ -1407,7 +1407,7 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            workerpoolOrder.requesterrestrict = randomRestrictionEOA;
+            workerpoolOrder.requesterrestrict = randomEOAAddress;
 
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(
