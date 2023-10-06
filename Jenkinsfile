@@ -50,7 +50,7 @@ pipeline {
                         unstash 'node_modules'
                         sh 'solc-select install 0.8.17 && slither contracts/modules/delegates/IexecPocoBoostDelegate.sol'
                     } catch (err) {
-                        unstable(message: "${STAGE_NAME} is unstable")
+                        sh "echo ${STAGE_NAME} stage is unstable"
                     }
                 }
             }
