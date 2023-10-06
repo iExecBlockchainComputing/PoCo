@@ -662,53 +662,6 @@ describe('IexecPocoBoostDelegate', function () {
             expect(deal.datasetPrice).to.be.equal(0);
         });
 
-        it('Should match orders with low dataset order volume', async function () {
-            appInstance.owner.returns(appProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
-            datasetInstance.owner.returns(datasetProvider.address);
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            // Set volumes
-            appOrder.volume = 6;
-            datasetOrder.volume = 5; // smallest unconsumed volume among all orders
-            workerpoolOrder.volume = 7;
-            requestOrder.volume = 8;
-            const expectedVolume = 5;
-            await signOrders(domain, orders, ordersActors);
-            const dealId = getDealId(domain, requestOrder, taskIndex);
-            const appOrderHash = hashOrder(domain, appOrder);
-            const datasetOrderHash = hashOrder(domain, datasetOrder);
-            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
-            const requestOrderHash = hashOrder(domain, requestOrder);
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            )
-                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
-                .withArgs(
-                    dealId,
-                    appOrderHash,
-                    datasetOrderHash,
-                    workerpoolOrderHash,
-                    requestOrderHash,
-                    expectedVolume,
-                );
-            await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
-            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
-            await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
-            await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
-            const deal = await viewDealBoost(dealId);
-            expect(deal.botFirst).to.be.equal(0);
-            expect(deal.botSize).to.be.equal(expectedVolume);
-        });
-
         it('Should match orders with low workerpool order volume', async function () {
             appInstance.owner.returns(appProvider.address);
             workerpoolInstance.owner.returns(scheduler.address);
@@ -770,6 +723,53 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOrder.volume = 5;
             requestOrder.volume = 4; // smallest unconsumed volume among all orders
             const expectedVolume = 4;
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const appOrderHash = hashOrder(domain, appOrder);
+            const datasetOrderHash = hashOrder(domain, datasetOrder);
+            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
+            const requestOrderHash = hashOrder(domain, requestOrder);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    appOrderHash,
+                    datasetOrderHash,
+                    workerpoolOrderHash,
+                    requestOrderHash,
+                    expectedVolume,
+                );
+            await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
+            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
+            await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
+            await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
+            const deal = await viewDealBoost(dealId);
+            expect(deal.botFirst).to.be.equal(0);
+            expect(deal.botSize).to.be.equal(expectedVolume);
+        });
+
+        it('Should match orders with low dataset order volume', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Set volumes
+            appOrder.volume = 6;
+            datasetOrder.volume = 5; // smallest unconsumed volume among all orders
+            workerpoolOrder.volume = 7;
+            requestOrder.volume = 8;
+            const expectedVolume = 5;
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
@@ -873,28 +873,6 @@ describe('IexecPocoBoostDelegate', function () {
             expect(deal2.botSize).to.be.equal(5);
             // Verify request is fully consumed
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, 8);
-        });
-
-        it('Should not match orders if one or more orders are consumed', async function () {
-            appInstance.owner.returns(appProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
-            datasetInstance.owner.returns(datasetProvider.address);
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            // Set volumes
-            appOrder.volume = 0; // nothing to consume
-            await signOrders(domain, orders, ordersActors);
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: One or more orders consumed');
         });
 
         it('Should fail when trust is greater than 1', async function () {
@@ -1009,204 +987,6 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.be.revertedWith('PocoBoost: Overpriced workerpool');
-        });
-
-        it('Should fail when invalid app order signature from EOA', async function () {
-            appInstance.owner.returns(appProvider.address);
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            await signOrder(domain, appOrder, anyone);
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: Invalid app order signature');
-        });
-
-        it('Should fail when invalid app order signature from contract', async function () {
-            const erc1271Instance = await createFakeERC1271();
-            appInstance.owner.returns(erc1271Instance.address);
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            appOrder.sign = someSignature;
-            const appOrderHash = hashOrder(domain, appOrder);
-            whenERC1271CalledThenReplyInvalidSignature(
-                erc1271Instance,
-                appOrderHash,
-                someSignature,
-            );
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: Invalid app order signature');
-            await expectERC1271CalledOnceWith(erc1271Instance, appOrderHash, someSignature);
-        });
-
-        it('Should fail when invalid dataset order signature from EOA', async function () {
-            appInstance.owner.returns(appProvider.address);
-            datasetInstance.owner.returns(datasetProvider.address);
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            await signOrder(domain, appOrder, appProvider);
-            await signOrder(domain, datasetOrder, anyone);
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: Invalid dataset order signature');
-        });
-
-        it('Should fail when invalid dataset order signature from contract', async function () {
-            const erc1271Instance = await createFakeERC1271();
-            appInstance.owner.returns(appProvider.address);
-            datasetInstance.owner.returns(erc1271Instance.address);
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            await signOrder(domain, appOrder, appProvider);
-            datasetOrder.sign = someSignature;
-            const datasetOrderHash = hashOrder(domain, datasetOrder);
-            whenERC1271CalledThenReplyInvalidSignature(
-                erc1271Instance,
-                datasetOrderHash,
-                someSignature,
-            );
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: Invalid dataset order signature');
-            await expectERC1271CalledOnceWith(erc1271Instance, datasetOrderHash, someSignature);
-        });
-
-        it('Should fail when invalid workerpool order signature from EOA', async function () {
-            appInstance.owner.returns(appProvider.address);
-            datasetInstance.owner.returns(datasetProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            await signOrder(domain, appOrder, appProvider);
-            await signOrder(domain, datasetOrder, datasetProvider);
-            await signOrder(domain, workerpoolOrder, anyone);
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: Invalid workerpool order signature');
-        });
-
-        it('Should fail when invalid workerpool order signature from contract', async function () {
-            const erc1271Instance = await createFakeERC1271();
-            appInstance.owner.returns(appProvider.address);
-            datasetInstance.owner.returns(datasetProvider.address);
-            workerpoolInstance.owner.returns(erc1271Instance.address);
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            await signOrder(domain, appOrder, appProvider);
-            await signOrder(domain, datasetOrder, datasetProvider);
-            workerpoolOrder.sign = someSignature;
-            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
-            whenERC1271CalledThenReplyInvalidSignature(
-                erc1271Instance,
-                workerpoolOrderHash,
-                someSignature,
-            );
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: Invalid workerpool order signature');
-            await expectERC1271CalledOnceWith(erc1271Instance, workerpoolOrderHash, someSignature);
-        });
-
-        it('Should fail when invalid request order signature from EOA', async function () {
-            appInstance.owner.returns(appProvider.address);
-            datasetInstance.owner.returns(datasetProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            await signOrder(domain, appOrder, appProvider);
-            await signOrder(domain, datasetOrder, datasetProvider);
-            await signOrder(domain, workerpoolOrder, scheduler);
-            await signOrder(domain, requestOrder, anyone);
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: Invalid request order signature');
-        });
-
-        it('Should fail when invalid request order signature from contract', async function () {
-            const erc1271Instance = await createFakeERC1271();
-            appInstance.owner.returns(appProvider.address);
-            datasetInstance.owner.returns(datasetProvider.address);
-            workerpoolInstance.owner.returns(scheduler.address);
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: erc1271Instance.address,
-            });
-            await signOrder(domain, appOrder, appProvider);
-            await signOrder(domain, datasetOrder, datasetProvider);
-            await signOrder(domain, workerpoolOrder, scheduler);
-            requestOrder.sign = someSignature;
-            const requestOrderHash = hashOrder(domain, requestOrder);
-            whenERC1271CalledThenReplyInvalidSignature(
-                erc1271Instance,
-                requestOrderHash,
-                someSignature,
-            );
-
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith('PocoBoost: Invalid request order signature');
-            await expectERC1271CalledOnceWith(erc1271Instance, requestOrderHash, someSignature);
         });
 
         it('Should fail when the workerpool tag does not provide what app, dataset and request expect', async function () {
@@ -1504,6 +1284,50 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: App not registered');
         });
 
+        it('Should fail when invalid app order signature from EOA', async function () {
+            appInstance.owner.returns(appProvider.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrder(domain, appOrder, anyone);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid app order signature');
+        });
+
+        it('Should fail when invalid app order signature from contract', async function () {
+            const erc1271Instance = await createFakeERC1271();
+            appInstance.owner.returns(erc1271Instance.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            appOrder.sign = someSignature;
+            const appOrderHash = hashOrder(domain, appOrder);
+            whenERC1271CalledThenReplyInvalidSignature(
+                erc1271Instance,
+                appOrderHash,
+                someSignature,
+            );
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid app order signature');
+            await expectERC1271CalledOnceWith(erc1271Instance, appOrderHash, someSignature);
+        });
+
         it('Should fail when dataset not registered', async function () {
             appInstance.owner.returns(appProvider.address);
             datasetRegistry.isRegistered.whenCalledWith(datasetInstance.address).returns(false);
@@ -1521,6 +1345,54 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.be.revertedWith('PocoBoost: Dataset not registered');
+        });
+
+        it('Should fail when invalid dataset order signature from EOA', async function () {
+            appInstance.owner.returns(appProvider.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, datasetOrder, anyone);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid dataset order signature');
+        });
+
+        it('Should fail when invalid dataset order signature from contract', async function () {
+            const erc1271Instance = await createFakeERC1271();
+            appInstance.owner.returns(appProvider.address);
+            datasetInstance.owner.returns(erc1271Instance.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrder(domain, appOrder, appProvider);
+            datasetOrder.sign = someSignature;
+            const datasetOrderHash = hashOrder(domain, datasetOrder);
+            whenERC1271CalledThenReplyInvalidSignature(
+                erc1271Instance,
+                datasetOrderHash,
+                someSignature,
+            );
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid dataset order signature');
+            await expectERC1271CalledOnceWith(erc1271Instance, datasetOrderHash, someSignature);
         });
 
         it('Should fail when workerpool not registered', async function () {
@@ -1543,6 +1415,134 @@ describe('IexecPocoBoostDelegate', function () {
                     requestOrder,
                 ),
             ).to.be.revertedWith('PocoBoost: Workerpool not registered');
+        });
+
+        it('Should fail when invalid workerpool order signature from EOA', async function () {
+            appInstance.owner.returns(appProvider.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, datasetOrder, datasetProvider);
+            await signOrder(domain, workerpoolOrder, anyone);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid workerpool order signature');
+        });
+
+        it('Should fail when invalid workerpool order signature from contract', async function () {
+            const erc1271Instance = await createFakeERC1271();
+            appInstance.owner.returns(appProvider.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            workerpoolInstance.owner.returns(erc1271Instance.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, datasetOrder, datasetProvider);
+            workerpoolOrder.sign = someSignature;
+            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
+            whenERC1271CalledThenReplyInvalidSignature(
+                erc1271Instance,
+                workerpoolOrderHash,
+                someSignature,
+            );
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid workerpool order signature');
+            await expectERC1271CalledOnceWith(erc1271Instance, workerpoolOrderHash, someSignature);
+        });
+
+        it('Should fail when invalid request order signature from EOA', async function () {
+            appInstance.owner.returns(appProvider.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, datasetOrder, datasetProvider);
+            await signOrder(domain, workerpoolOrder, scheduler);
+            await signOrder(domain, requestOrder, anyone);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid request order signature');
+        });
+
+        it('Should fail when invalid request order signature from contract', async function () {
+            const erc1271Instance = await createFakeERC1271();
+            appInstance.owner.returns(appProvider.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: erc1271Instance.address,
+            });
+            await signOrder(domain, appOrder, appProvider);
+            await signOrder(domain, datasetOrder, datasetProvider);
+            await signOrder(domain, workerpoolOrder, scheduler);
+            requestOrder.sign = someSignature;
+            const requestOrderHash = hashOrder(domain, requestOrder);
+            whenERC1271CalledThenReplyInvalidSignature(
+                erc1271Instance,
+                requestOrderHash,
+                someSignature,
+            );
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Invalid request order signature');
+            await expectERC1271CalledOnceWith(erc1271Instance, requestOrderHash, someSignature);
+        });
+
+        it('Should fail if one or more orders are consumed', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Set volumes
+            appOrder.volume = 0; // nothing to consume
+            await signOrders(domain, orders, ordersActors);
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: One or more orders consumed');
         });
 
         it('Should fail when requester has insufficient balance', async () => {
@@ -1990,6 +1990,102 @@ describe('IexecPocoBoostDelegate', function () {
                 .withArgs(dealId, taskIndex, results);
         });
 
+        it('Should push result even if callback target is not a contract', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+                callback: ethers.Wallet.createRandom().address,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const resultsCallback = '0xab';
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        await buildAndSignContributionAuthorizationMessage(
+                            worker.address,
+                            taskId,
+                            enclave.address,
+                            scheduler,
+                        ),
+                        enclave.address,
+                        await buildAndSignEnclaveMessage(
+                            worker.address,
+                            taskId,
+                            ethers.utils.keccak256(resultsCallback),
+                            enclave,
+                        ),
+                    ),
+            ).to.emit(iexecPocoBoostInstance, 'ResultPushedBoost');
+        });
+
+        it('Should push result even if callback reverts', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+                callback: oracleConsumerInstance.address,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const resultsCallback = '0xab';
+            oracleConsumerInstance.receiveResult.reverts();
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        await buildAndSignContributionAuthorizationMessage(
+                            worker.address,
+                            taskId,
+                            enclave.address,
+                            scheduler,
+                        ),
+                        enclave.address,
+                        await buildAndSignEnclaveMessage(
+                            worker.address,
+                            taskId,
+                            ethers.utils.keccak256(resultsCallback),
+                            enclave,
+                        ),
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                /**
+                 * Oracle consumer has been called but did not succeed.
+                 */
+                .to.not.emit(oracleConsumerInstance, 'GotResult');
+            expect(oracleConsumerInstance.receiveResult).to.have.been.calledOnceWith(
+                taskId,
+                resultsCallback,
+            );
+        });
+
         it('Should not push result if wrong deal ID', async function () {
             await expect(
                 iexecPocoBoostInstance
@@ -2274,102 +2370,6 @@ describe('IexecPocoBoostDelegate', function () {
                         enclaveSignature,
                     ),
             ).to.be.revertedWith('PocoBoost: Callback requires data');
-        });
-
-        it('Should push result even if callback target is not a contract', async function () {
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-                tag: teeDealTag,
-                callback: ethers.Wallet.createRandom().address,
-            });
-            await signOrders(domain, orders, ordersActors);
-            const dealId = getDealId(domain, requestOrder, taskIndex);
-            const taskId = getTaskId(dealId, taskIndex);
-            await iexecPocoBoostInstance.matchOrdersBoost(
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            );
-            const resultsCallback = '0xab';
-
-            await expect(
-                iexecPocoBoostInstance
-                    .connect(worker)
-                    .pushResultBoost(
-                        getDealId(domain, requestOrder, taskIndex),
-                        taskIndex,
-                        results,
-                        resultsCallback,
-                        await buildAndSignContributionAuthorizationMessage(
-                            worker.address,
-                            taskId,
-                            enclave.address,
-                            scheduler,
-                        ),
-                        enclave.address,
-                        await buildAndSignEnclaveMessage(
-                            worker.address,
-                            taskId,
-                            ethers.utils.keccak256(resultsCallback),
-                            enclave,
-                        ),
-                    ),
-            ).to.emit(iexecPocoBoostInstance, 'ResultPushedBoost');
-        });
-
-        it('Should push result even if callback reverts', async function () {
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-                tag: teeDealTag,
-                callback: oracleConsumerInstance.address,
-            });
-            await signOrders(domain, orders, ordersActors);
-            const dealId = getDealId(domain, requestOrder, taskIndex);
-            const taskId = getTaskId(dealId, taskIndex);
-            await iexecPocoBoostInstance.matchOrdersBoost(
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            );
-            const resultsCallback = '0xab';
-            oracleConsumerInstance.receiveResult.reverts();
-
-            await expect(
-                iexecPocoBoostInstance
-                    .connect(worker)
-                    .pushResultBoost(
-                        getDealId(domain, requestOrder, taskIndex),
-                        taskIndex,
-                        results,
-                        resultsCallback,
-                        await buildAndSignContributionAuthorizationMessage(
-                            worker.address,
-                            taskId,
-                            enclave.address,
-                            scheduler,
-                        ),
-                        enclave.address,
-                        await buildAndSignEnclaveMessage(
-                            worker.address,
-                            taskId,
-                            ethers.utils.keccak256(resultsCallback),
-                            enclave,
-                        ),
-                    ),
-            )
-                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
-                /**
-                 * Oracle consumer has been called but did not succeed.
-                 */
-                .to.not.emit(oracleConsumerInstance, 'GotResult');
-            expect(oracleConsumerInstance.receiveResult).to.have.been.calledOnceWith(
-                taskId,
-                resultsCallback,
-            );
         });
     });
 
