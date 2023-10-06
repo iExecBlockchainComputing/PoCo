@@ -2,21 +2,41 @@
 // TODO2 Run unit tests on token AND native? -> IexecEscrowNative.js, all others
 pipeline {
     agent any
-    environment {
-        NODES_JS_IMAGE = 'node:18'
-    }
     stages {
-        stage('Init') {
-            agent { docker { image "$NODES_JS_IMAGE" } }
-            steps {
-                script {
-                    sh 'npm ci --production=false --no-progress'
-                    sh 'npm run test-storage-layout'
-                    // Verify basic deployment. Might be removed at some point.
-                    sh 'npm run deploy'
+        stage('Test') {
+            agent { docker { image 'node:18' } }
+            stages {
+                stage('Init') {
+                    steps {
+                        script {
+                            sh 'npm ci --production=false --no-progress'
+                            sh 'npm run test-storage-layout'
+                            // Verify basic deployment. Might be removed at some point.
+                            sh 'npm run deploy'
+                            stash includes: 'node_modules/**/*', name: 'node_modules'
+                        }
+                    }
+                }
+                stage('Hardhat tests - Public') {
+                    steps {
+                        script {
+                            test()
+                        }
+                    }
+                }
+                stage('Hardhat tests - KYC') {
+                    environment {
+                        KYC = 'true'
+                    }
+                    steps {
+                        script {
+                            test()
+                        }
+                    }
                 }
             }
         }
+
         stage('Slither') {
             agent {
                 docker {
@@ -26,26 +46,12 @@ pipeline {
             }
             steps {
                 script {
-                    sh 'solc-select install 0.8.17 && slither contracts/modules/delegates/IexecPocoBoostDelegate.sol'
-                }
-            }
-        }
-        stage('Hardhat tests - Public') {
-            agent { docker { image "$NODES_JS_IMAGE" } }
-            steps {
-                script {
-                    test()
-                }
-            }
-        }
-        stage('Hardhat tests - KYC') {
-            agent { docker { image "$NODES_JS_IMAGE" } }
-            environment {
-                KYC = 'true'
-            }
-            steps {
-                script {
-                    test()
+                    try {
+                        unstash 'node_modules'
+                        sh 'solc-select install 0.8.17 && slither contracts/modules/delegates/IexecPocoBoostDelegate.sol'
+                    } catch (err) {
+                        unstable(message: "${STAGE_NAME} is unstable")
+                    }
                 }
             }
         }
