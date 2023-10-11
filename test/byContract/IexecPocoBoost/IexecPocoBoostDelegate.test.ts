@@ -1288,6 +1288,51 @@ describe('IexecPocoBoostDelegate', function () {
             });
         });
 
+        it('Should fail when restrictions are not matched', async function () {
+            for (const orderName of ['app', 'workerpool', 'dataset']) {
+                // No request order
+                for (const assetName of ['requester', 'app', 'workerpool', 'dataset']) {
+                    for (const restrictionAddress of [
+                        randomEOAAddress,
+                        someContractInstance.address,
+                    ]) {
+                        // EOA or SC
+                        // Filter irrelevant cases. E.g. no need to change the app address in the app order.
+                        if (orderName.includes(assetName)) {
+                            continue;
+                        }
+                        console.log(`Testing ${assetName} restriction in ${orderName} order.`);
+                        await verifyRestriction(orderName, assetName, restrictionAddress);
+                    }
+                }
+            }
+        });
+
+        async function verifyRestriction(
+            orderName: string,
+            assetName: string,
+            restrictionAddress: string,
+        ) {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Change target asset address.
+            const order: any = orders[orderName as keyof typeof orders]; // e.g. orders['app']
+            const restrictionName: string = assetName + 'restrict'; // e.g. apprestrict
+            order[restrictionName as keyof typeof order] = restrictionAddress; // e.g. order['apprestrict'] = 0xabc
+            const capitalizedAssetName = assetName.charAt(0).toUpperCase() + assetName.substring(1); // app => App
+            const revertMessage = `PocoBoost: ${capitalizedAssetName} restricted by ${orderName} order`;
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith(revertMessage);
+        }
+
         it('Should fail when app not registered', async function () {
             appRegistry.isRegistered.whenCalledWith(appInstance.address).returns(false);
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
