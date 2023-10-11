@@ -1288,6 +1288,24 @@ describe('IexecPocoBoostDelegate', function () {
             });
         });
 
+        it('Should fail when requestorder mismatch workerpool restriction', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Request another workerpool address
+            requestOrder.workerpool = someContractInstance.address;
+
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
+        });
+
         it('Should fail when restrictions are not matched', async function () {
             for (const orderName of ['app', 'workerpool', 'dataset']) {
                 // No request order
