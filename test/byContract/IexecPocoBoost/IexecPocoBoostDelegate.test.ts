@@ -1113,46 +1113,30 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
         });
 
+        /**
+         * Dynamically generated tests for all different restrictions in orders
+         * (requesterrestrict, apprestrict, workerpoolrestrict, datasetrestrict).
+         */
+
+        // No request order
         ['app', 'workerpool', 'dataset'].forEach((orderName) => {
-            // No request order
             ['requester', 'app', 'workerpool', 'dataset'].forEach((assetName) => {
                 // Filter irrelevant cases. E.g. no need to change the app address in the app order.
                 if (orderName.includes(assetName)) {
                     return;
                 }
                 it(`Should fail when ${orderName} order mismatch ${assetName} restriction (EOA)`, async function () {
-                    await verifyRestriction(orderName, assetName, randomEOAAddress);
+                    await verifyOrderRestriction(orderName, assetName, randomEOAAddress);
                 });
                 it(`Should fail when ${orderName} order mismatch ${assetName} restriction (SC)`, async function () {
-                    await verifyRestriction(orderName, assetName, someContractInstance.address);
+                    await verifyOrderRestriction(
+                        orderName,
+                        assetName,
+                        someContractInstance.address,
+                    );
                 });
             });
         });
-
-        async function verifyRestriction(
-            orderName: string,
-            assetName: string,
-            restrictionAddress: string,
-        ) {
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            // Change target asset address.
-            const order: any = orders[orderName as keyof typeof orders]; // e.g. orders['app']
-            const restrictionName: string = assetName + 'restrict'; // e.g. apprestrict
-            order[restrictionName as keyof typeof order] = restrictionAddress; // e.g. order['apprestrict'] = 0xabc
-            const capitalizedAssetName = assetName.charAt(0).toUpperCase() + assetName.substring(1); // app => App
-            const revertMessage = `PocoBoost: ${capitalizedAssetName} restricted by ${orderName} order`;
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
-            ).to.be.revertedWith(revertMessage);
-        }
 
         it('Should fail when app not registered', async function () {
             appRegistry.isRegistered.whenCalledWith(appInstance.address).returns(false);
@@ -2633,6 +2617,31 @@ describe('IexecPocoBoostDelegate', function () {
             iexecPocoBoostInstance.address,
             anyone,
         ).viewDealBoost(dealId);
+    }
+
+    async function verifyOrderRestriction(
+        orderName: string,
+        assetName: string,
+        restrictionAddress: string,
+    ) {
+        const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+        });
+        // Change target asset address.
+        const order: any = orders[orderName as keyof typeof orders]; // e.g. orders['app']
+        const restrictionName: string = assetName + 'restrict'; // e.g. apprestrict
+        order[restrictionName as keyof typeof order] = restrictionAddress; // e.g. order['apprestrict'] = 0xabc
+        const capitalizedAssetName = assetName.charAt(0).toUpperCase() + assetName.substring(1); // app => App
+        const revertMessage = `PocoBoost: ${capitalizedAssetName} restricted by ${orderName} order`;
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
+        ).to.be.revertedWith(revertMessage);
     }
 });
 
