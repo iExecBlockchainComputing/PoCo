@@ -1077,7 +1077,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Dataset mismatch');
         });
 
-        it('Should fail when requestOrder.workerpool mismatches workerpoolOrder.workerpool (EOA)', async function () {
+        it('Should fail when request order workerpool mismatches workerpool order workerpool (EOA)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1095,7 +1095,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
         });
 
-        it('Should fail when requestOrder.workerpool mismatches workerpoolOrder.workerpool (SC)', async function () {
+        it('Should fail when request order workerpool mismatches workerpool order workerpool (SC)', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
