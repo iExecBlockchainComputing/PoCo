@@ -76,6 +76,7 @@
 - Reformat tests. (#238, #239, #241)
 - Check balance in transfer operation (#230)
 - Bump dependencies. (#240, #242)
+- Clean poco-chain files. (#246)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
