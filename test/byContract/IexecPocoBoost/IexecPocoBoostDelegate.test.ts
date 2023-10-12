@@ -16,7 +16,6 @@ import {
     Dataset__factory,
     IERC734,
     IERC734__factory,
-    IexecLibOrders_v5,
     IexecLibOrders_v5__factory,
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostCompositeDelegate__factory,
@@ -1078,212 +1077,63 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Dataset mismatch');
         });
 
-        const addressesTypes = [
-            {
-                addressType: '(SC)',
-            },
-            {
-                addressType: '(EOA)',
-            },
-        ];
+        it('Should fail when request order workerpool mismatches workerpool order workerpool (EOA)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Request another workerpool address
+            requestOrder.workerpool = randomEOAAddress;
 
-        const testCases = [
-            {
-                testDescription: 'Should fail when requestorder mismatch workerpool restriction',
-                errorMessage: 'Workerpool restricted by request order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        requestOrder.workerpool = randomEOAAddress;
-                    } else {
-                        requestOrder.workerpool = someContractInstance.address;
-                    }
-                },
-            },
-            {
-                testDescription: 'Should fail when apporder mismatch dataset restriction',
-                errorMessage: 'Dataset restricted by app order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        appOrder.datasetrestrict = randomEOAAddress;
-                    } else {
-                        appOrder.datasetrestrict = someContractInstance.address;
-                    }
-                },
-            },
-            {
-                testDescription: 'Should fail when apporder mismatch workerpool restriction',
-                errorMessage: 'Workerpool restricted by app order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        appOrder.workerpoolrestrict = randomEOAAddress;
-                    } else {
-                        appOrder.workerpoolrestrict = someContractInstance.address;
-                    }
-                },
-            },
-            {
-                testDescription: 'Should fail when apporder mismatch requester restriction ',
-                errorMessage: 'Requester restricted by app order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        appOrder.requesterrestrict = randomEOAAddress;
-                    } else {
-                        appOrder.requesterrestrict = someContractInstance.address;
-                    }
-                },
-            },
-            {
-                testDescription: 'Should fail when datasetorder mismatch app restriction',
-                errorMessage: 'App restricted by dataset order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        datasetOrder.apprestrict = randomEOAAddress;
-                    } else {
-                        datasetOrder.apprestrict = someContractInstance.address;
-                    }
-                },
-            },
-            {
-                testDescription: 'Should fail when datasetorder mismatch workerpool restriction',
-                errorMessage: 'Workerpool restricted by dataset order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        datasetOrder.workerpoolrestrict = randomEOAAddress;
-                    } else {
-                        datasetOrder.workerpoolrestrict = someContractInstance.address;
-                    }
-                },
-            },
-            {
-                testDescription: 'Should fail when datasetorder mismatch requester restriction',
-                errorMessage: 'Requester restricted by dataset order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        datasetOrder.requesterrestrict = randomEOAAddress;
-                    } else {
-                        datasetOrder.requesterrestrict = someContractInstance.address;
-                    }
-                },
-            },
-            {
-                testDescription: 'Should fail when workerpoolorder mismatch app restriction',
-                errorMessage: 'App restricted by workerpool order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        workerpoolOrder.apprestrict = randomEOAAddress;
-                    } else {
-                        workerpoolOrder.apprestrict = someContractInstance.address;
-                    }
-                },
-            },
-            {
-                testDescription: 'Should fail when workerpoolorder mismatch dataset restriction',
-                errorMessage: 'Dataset restricted by workerpool order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        workerpoolOrder.datasetrestrict = randomEOAAddress;
-                    } else {
-                        workerpoolOrder.datasetrestrict = someContractInstance.address;
-                    }
-                },
-            },
-            {
-                testDescription: 'Should fail when workerpoolorder mismatch requester restriction',
-                errorMessage: 'Requester restricted by workerpool order',
-                modifyOrder: (
-                    appOrder: IexecLibOrders_v5.AppOrderStruct,
-                    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-                    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-                    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-                    addressType: string,
-                ) => {
-                    if (addressType == '(EOA)') {
-                        workerpoolOrder.requesterrestrict = randomEOAAddress;
-                    } else {
-                        workerpoolOrder.requesterrestrict = someContractInstance.address;
-                    }
-                },
-            },
-        ];
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
+        });
 
-        testCases.forEach((testCase) => {
-            addressesTypes.forEach((address) => {
-                it(`Should fail when ${testCase.testDescription} ${address.addressType}`, async function () {
-                    const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                        assets: ordersAssets,
-                        requester: requester.address,
-                    });
+        it('Should fail when request order workerpool mismatches workerpool order workerpool (SC)', async function () {
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            // Request another workerpool address
+            requestOrder.workerpool = someContractInstance.address;
 
-                    testCase.modifyOrder(
-                        appOrder,
-                        datasetOrder,
-                        workerpoolOrder,
-                        requestOrder,
-                        address.addressType,
+            await expect(
+                iexecPocoBoostInstance.matchOrdersBoost(
+                    appOrder,
+                    datasetOrder,
+                    workerpoolOrder,
+                    requestOrder,
+                ),
+            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
+        });
+
+        /**
+         * Dynamically generated tests for all different restrictions in orders
+         * (requesterrestrict, apprestrict, workerpoolrestrict, datasetrestrict).
+         */
+
+        // No request order
+        ['app', 'workerpool', 'dataset'].forEach((orderName) => {
+            ['requester', 'app', 'workerpool', 'dataset'].forEach((assetName) => {
+                // Filter irrelevant cases. E.g. no need to change the app address in the app order.
+                if (orderName.includes(assetName)) {
+                    return;
+                }
+                it(`Should fail when ${orderName} order mismatch ${assetName} restriction (EOA)`, async function () {
+                    await verifyOrderRestriction(orderName, assetName, randomEOAAddress);
+                });
+                it(`Should fail when ${orderName} order mismatch ${assetName} restriction (SC)`, async function () {
+                    await verifyOrderRestriction(
+                        orderName,
+                        assetName,
+                        someContractInstance.address,
                     );
-
-                    await expect(
-                        iexecPocoBoostInstance.matchOrdersBoost(
-                            appOrder,
-                            datasetOrder,
-                            workerpoolOrder,
-                            requestOrder,
-                        ),
-                    ).to.be.revertedWith(`PocoBoost: ${testCase.errorMessage}`);
                 });
             });
         });
@@ -2767,6 +2617,31 @@ describe('IexecPocoBoostDelegate', function () {
             iexecPocoBoostInstance.address,
             anyone,
         ).viewDealBoost(dealId);
+    }
+
+    async function verifyOrderRestriction(
+        orderName: string,
+        assetName: string,
+        restrictionAddress: string,
+    ) {
+        const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+        });
+        // Change target asset address.
+        const order: any = orders[orderName as keyof typeof orders]; // e.g. orders['app']
+        const restrictionName: string = assetName + 'restrict'; // e.g. apprestrict
+        order[restrictionName as keyof typeof order] = restrictionAddress; // e.g. order['apprestrict'] = 0xabc
+        const capitalizedAssetName = assetName.charAt(0).toUpperCase() + assetName.substring(1); // app => App
+        const revertMessage = `PocoBoost: ${capitalizedAssetName} restricted by ${orderName} order`;
+        await expect(
+            iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ),
+        ).to.be.revertedWith(revertMessage);
     }
 });
 
