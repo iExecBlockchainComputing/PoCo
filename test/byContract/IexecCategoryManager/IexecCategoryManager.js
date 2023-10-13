@@ -91,7 +91,9 @@ contract('CategoryManager', async (accounts) => {
 		describe("invalid index", async () => {
 			it("reverts", async () => {
 				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
-				await expectRevert.unspecified(IexecInstance.viewCategory(5));
+                // Needs to be checked as an assertion not a revert because it fails
+                // with the error "VM Exception while processing transaction: invalid opcode"
+				await expectRevert.assertion(IexecInstance.viewCategory(5));
 				assert.equal(await IexecInstance.countCategory(), 5, "Error in category count");
 			});
 		});
