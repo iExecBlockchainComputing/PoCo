@@ -77,6 +77,7 @@
 - Check balance in transfer operation (#230)
 - Bump dependencies. (#240, #242)
 - Clean poco-chain files. (#246)
+- Remove patched test helpers (#249)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
