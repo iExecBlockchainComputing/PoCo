@@ -21,6 +21,19 @@ pragma solidity ^0.8.0;
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecPocoBoost {
+    /**
+     * This event is watched by all workerpools, precisely schedulers. Each scheduler
+     * responds only to events with their own workerpool address. This triggers the
+     * offchain computation process.
+     * @param workerpool address of the target workerpool.
+     * @param dealId id of the deal resulting from the match orders operation.
+     * @param app address of the application to run.
+     * @param dataset address of the dataset to use. Can be address(0) for deals without dataset.
+     * @param category size of the deal (duration in time).
+     * @param tag type of the deal. Must be TEE tag for Boost module.
+     * @param params requester input of the execution.
+     * @param beneficiary address of the execution beneficiary. Used later for result encryption.
+     */
     event SchedulerNoticeBoost(
         address indexed workerpool,
         bytes32 dealId,
