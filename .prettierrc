@@ -4,13 +4,9 @@
     "tabWidth": 4,
     "trailingComma": "all",
     "endOfLine": "auto",
-    "plugins": [
-        "prettier-plugin-organize-imports",
-        "prettier-plugin-solidity"
-    ],
+    "plugins": ["prettier-plugin-organize-imports"],
     "pluginsComments": {
-        "prettier-plugin-organize-import": "Supports .ts files (not .sol)",
-        "prettier-plugin-solidity": "Does not support imports sorting yet. See prettier-solidity/prettier-plugin-solidity#918"
+        "prettier-plugin-organize-import": "Supports .ts files (not .sol)"
     },
     "overrides": [
         {
