@@ -66,11 +66,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external returns (bytes32) {
-        /**
-         * Check orders compatibility
-         */
+        /// Check orders compatibility
 
-        // Ensure the trust level is within an acceptable range.
         require(requestOrder.trust <= 1, "PocoBoost: Bad trust level");
 
         /// @dev An intermediate variable stored in the stack consumes
@@ -96,13 +93,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             "PocoBoost: Workerpool tag does not match demand"
         );
         require((tag ^ appOrderTag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
-        // Verify that app and dataset match the orders.
+        // Verify that app and dataset match requester order.
         address app = appOrder.app;
         require(requestOrder.app == app, "PocoBoost: App mismatch");
         address dataset = datasetOrder.dataset;
         address requestOrderDataset = requestOrder.dataset;
         require(requestOrderDataset == dataset, "PocoBoost: Dataset mismatch");
-        // Check restriction.
+        // Check all possible restrictions .
         address workerpool = workerpoolOrder.workerpool;
         require(
             _isAccountAuthorizedByRestriction(requestOrder.workerpool, workerpool),
