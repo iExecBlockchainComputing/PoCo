@@ -9,7 +9,7 @@ fi
 logs_dir="logs/$sub_dir"
 mkdir -p $logs_dir
 exit_code=0
-for f in $(find test/ -regex '.*\(js\|ts\)' | sort); do
+for f in $(find test/ -type f | sort); do
     log_file=$logs_dir$(basename "$f").logs
     echo "Running $sub_dir: $f ($log_file)"
     npx hardhat test "$f" &>"$log_file" # redirect stdout and stderr
