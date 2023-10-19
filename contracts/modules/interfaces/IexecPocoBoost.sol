@@ -22,11 +22,14 @@ import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecPocoBoost {
     /**
-     * This event is watched by all workerpools, precisely schedulers. Each scheduler
+     * Emitted when a set of compatible orders are matched and a new deal is created.
+     * The event is watched by all workerpools, more precisely schedulers. Each scheduler
      * responds only to events with their own workerpool address. This triggers the
      * offchain computation process.
+     * Note: This event has to be different from "SchedulerNotice" of Poco Classic so schedulers
+     * are able to distinguish deals (Classic vs Boost).
      * @param workerpool address of the target workerpool.
-     * @param dealId id of the deal resulting from the match orders operation.
+     * @param dealId id of the deal created by match orders operation
      * @param app address of the application to run.
      * @param dataset address of the dataset to use. Can be address(0) for deals without dataset.
      * @param category size of the deal (duration in time).
@@ -44,7 +47,20 @@ interface IexecPocoBoost {
         string params,
         address beneficiary
     );
-    // Same event than classic Poco for cross-compatibility
+
+    /**
+     * Emitted when a set of compatible orders are matched and a new deal is created.
+     * An event that is watched by different actors especially the offchain marketplace
+     * to update remaining volumes of available orders.
+     * Note: This is the same event as Poco Classic for compatibility purposes. No need
+     * to use a new different event name.
+     * @param dealid id of the deal created by match orders operation.
+     * @param appHash hash of the app order.
+     * @param datasetHash hash of the dataset order. Can be empty for deals without a dataset.
+     * @param workerpoolHash hash of the workerpool order.
+     * @param requestHash hash of the request order.
+     * @param volume consumed volume. It should be the minimum volume of all orders.
+     */
     event OrdersMatched(
         bytes32 dealid,
         bytes32 appHash,
@@ -53,6 +69,14 @@ interface IexecPocoBoost {
         bytes32 requestHash,
         uint256 volume
     );
+
+    /**
+     * Emitted when a worker pushes the result of computing a task.
+     * @notice The name of this event have to be specific for PoCo boost workflow.
+     * @param dealId id of the deal created by match orders operation.
+     * @param index index of the task in the deal.
+     * @param results bytes of the result.
+     */
     event ResultPushedBoost(bytes32 dealId, uint256 index, bytes results);
     // Same event than classic Poco for cross-compatibility
     event TaskClaimed(bytes32 indexed taskid);
