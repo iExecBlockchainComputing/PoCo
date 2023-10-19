@@ -66,13 +66,21 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external returns (bytes32) {
+        /**
+         * Check orders compatibility
+         */
+
+        // Ensure the trust level is within an acceptable range.
         require(requestOrder.trust <= 1, "PocoBoost: Bad trust level");
-        // An intermediate variable stored in the stack consumes
-        // less gas than accessing calldata each time.
+
+        /// @dev An intermediate variable stored in the stack consumes
+        /// less gas than accessing calldata each time.
         uint256 category = requestOrder.category;
+        // Check if the category matches and is valid.
         require(category == workerpoolOrder.category, "PocoBoost: Category mismatch");
         require(category < m_categories.length, "PocoBoost: Unknown category");
         uint256 appPrice = appOrder.appprice;
+        // Check if the app, dataset, and workerpool prices are within acceptable limits.
         require(requestOrder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
         uint256 datasetPrice = datasetOrder.datasetprice;
         require(requestOrder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
@@ -88,7 +96,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             "PocoBoost: Workerpool tag does not match demand"
         );
         require((tag ^ appOrderTag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
-        // Check match.
+        // Verify that app and dataset match the orders.
         address app = appOrder.app;
         require(requestOrder.app == app, "PocoBoost: App mismatch");
         address dataset = datasetOrder.dataset;
@@ -137,7 +145,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             _isAccountAuthorizedByRestriction(workerpoolOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by workerpool order"
         );
-
+        // Check ownership, registration, and signatures for app and dataset.
         require(m_appregistry.isRegistered(app), "PocoBoost: App not registered");
         address appOwner = IERC5313(app).owner();
         bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
@@ -161,7 +169,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
                 "PocoBoost: Invalid dataset order signature"
             );
         }
-
+        // Check ownership, registration, and signatures for workerpool.
         require(
             m_workerpoolregistry.isRegistered(workerpool),
             "PocoBoost: Workerpool not registered"
@@ -186,6 +194,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
         uint256 workerpoolOrderConsumed = m_consumed[workerpoolOrderTypedDataHash];
         // No dataset variable since dataset is optional
+
+        // Compute a unique deal identifier.
         bytes32 dealId = keccak256(
             abi.encodePacked(
                 requestOrderTypedDataHash,
@@ -210,10 +220,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
         require(volume > 0, "PocoBoost: One or more orders consumed");
         // Update consumed
-        m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // cheaper than `+= volume` here
+        m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; /// @dev cheaper than `+= volume` here
         m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
+        // Handle dataset-specific logic if a dataset is used.
         if (hasDataset) {
             m_consumed[datasetOrderTypedDataHash] += volume;
             // Store deal (dataset)
@@ -299,11 +310,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         bytes calldata enclaveSign
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
+        // Compute a unique task identifier based on deal id and task's index.
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
+        // Ensure that the task exists and is in the correct state
         requireTaskExistsAndUnset(task.status, index, deal.botSize);
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
-        // Enclave challenge required for TEE tasks
+        // Check if enclave challenge is required for TEE tasks
         require(
             enclaveChallenge != address(0) || deal.shortTag[2] & 0x01 == 0,
             "PocoBoost: Tag requires enclave challenge"
@@ -396,7 +409,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Claim task to get a refund if task is not completed after deadline.
+     * @notice Claim task to get a refund if task is not completed after deadline.
      * @param dealId The ID of the deal.
      * @param index The index of the task.
      */
@@ -428,7 +441,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Verify that an Ethereum Signed Message is signed by a particular account.
+     * @notice Verify that an Ethereum Signed Message is signed by a particular account.
      * @param account expected signer account
      * @param message original message that was signed
      * @param signature signature to be verified
@@ -442,7 +455,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Verify that a message is signed by an EOA or an ERC1271 smart contract.
+     * @notice Verify that a message is signed by an EOA or an ERC1271 smart contract.
      * @param account expected signer account
      * @param messageHash message hash that was signed
      * @param signature signature to be verified
@@ -464,7 +477,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Verify that a message hash is presigned by a particular account.
+     * @notice Verify that a message hash is presigned by a particular account.
      * @param account expected presigner account
      * @param messageHash message hash that was presigned
      */
@@ -473,7 +486,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Verify that a message hash is signed or presigned by a particular account.
+     * @notice Verify that a message hash is signed or presigned by a particular account.
      * @param account expected signer or presigner account
      * @param messageHash message hash that was signed or presigned
      * @param signature signature to be verified. Not required for a presignature.
@@ -489,7 +502,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Verify that an account is authorized based on a given restriction.
+     * @notice Verify that an account is authorized based on a given restriction.
      * The given restriction can be:
      * (1) `0x`: No restriction, accept any address;
      * (2) `0x<same-address-than-restriction>`: Only accept the exact same address;
@@ -513,9 +526,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         if (restriction.code.length > 0) {
             try
                 IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
-                    bytes32(uint256(uint160(account))),
-                    GROUPMEMBER_PURPOSE
-                )
+                        bytes32(uint256(uint160(account))),
+                        GROUPMEMBER_PURPOSE
+                    )
             returns (bool success) {
                 return success;
             } catch {}
@@ -524,7 +537,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     }
 
     /**
-     * Check if a task exists and is unset. Such task status is equivalent to
+     * @notice Check if a task exists and is unset. Such task status is equivalent to
      * the "initialized" task status in Classic Poco workflow.
      * In order for the task to exist, its index should be:
      *   0 <= index < deal.botSize.
