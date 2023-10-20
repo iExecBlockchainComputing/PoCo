@@ -20,13 +20,16 @@ pragma solidity ^0.8.0;
 
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 
+/**
+ * @title Interface definition of the PoCo Boost module.
+ */
 interface IexecPocoBoost {
     /**
-     * Emitted when a set of compatible orders are matched and a new deal is created.
+     * @notice Emitted when a set of compatible orders are matched and a new deal is created.
      * The event is watched by all workerpools, more precisely schedulers. Each scheduler
      * responds only to events with their own workerpool address. This triggers the
      * offchain computation process.
-     * Note: This event has to be different from "SchedulerNotice" of Poco Classic so schedulers
+     * @dev This event has to be different from "SchedulerNotice" of Poco Classic so schedulers
      * are able to distinguish deals (Classic vs Boost).
      * @param workerpool address of the target workerpool.
      * @param dealId id of the deal created by match orders operation
@@ -49,10 +52,10 @@ interface IexecPocoBoost {
     );
 
     /**
-     * Emitted when a set of compatible orders are matched and a new deal is created.
+     * @notice Emitted when a set of compatible orders are matched and a new deal is created.
      * An event that is watched by different actors especially the offchain marketplace
      * to update remaining volumes of available orders.
-     * Note: This is the same event as Poco Classic for compatibility purposes. No need
+     * Note: This is the same event as Poco Classic for cross-compatibility purposes. No need
      * to use a new different event name.
      * @param dealid id of the deal created by match orders operation.
      * @param appHash hash of the app order.
@@ -71,14 +74,18 @@ interface IexecPocoBoost {
     );
 
     /**
-     * Emitted when a worker pushes the result of computing a task.
-     * @notice The name of this event have to be specific for PoCo boost workflow.
+     * @notice Emitted when a worker pushes the result of computing a task.
      * @param dealId id of the deal created by match orders operation.
      * @param index index of the task in the deal.
      * @param results bytes of the result.
      */
     event ResultPushedBoost(bytes32 dealId, uint256 index, bytes results);
-    // Same event than classic Poco for cross-compatibility
+
+    /**
+     * @notice Emitted when a task is claimed and funds are seized or released.
+     * @dev The same event as PoCo classic for cross-compatibility purposes.
+     * @param taskid id of the task to be claimed.
+     */
     event TaskClaimed(bytes32 indexed taskid);
 
     function matchOrdersBoost(
