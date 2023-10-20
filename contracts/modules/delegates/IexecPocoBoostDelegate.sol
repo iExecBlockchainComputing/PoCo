@@ -47,7 +47,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
     /**
-     * @notice This boost match orders is only compatible with trust = 0.
+     * @notice This boost match orders is only compatible with trust <= 1.
      * @param appOrder The order signed by the application developer
      * @param datasetOrder The order signed by the dataset provider
      * @param workerpoolOrder The order signed by the workerpool manager
@@ -68,6 +68,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     ) external returns (bytes32) {
         /// Check orders compatibility
 
+        // Ensure the trust level is within an acceptable range.
+        // A sample TEE task with no replication [trust <= 1].
         require(requestOrder.trust <= 1, "PocoBoost: Bad trust level");
 
         /// @dev An intermediate variable stored in the stack consumes
@@ -77,7 +79,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         require(category == workerpoolOrder.category, "PocoBoost: Category mismatch");
         require(category < m_categories.length, "PocoBoost: Unknown category");
         uint256 appPrice = appOrder.appprice;
-        // Check if the app, dataset, and workerpool prices are within acceptable limits.
+        // Check if the app, dataset, and workerpool prices are within acceptable price limits.
         require(requestOrder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
         uint256 datasetPrice = datasetOrder.datasetprice;
         require(requestOrder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
@@ -99,7 +101,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         address dataset = datasetOrder.dataset;
         address requestOrderDataset = requestOrder.dataset;
         require(requestOrderDataset == dataset, "PocoBoost: Dataset mismatch");
-        // Check all possible restrictions .
+        // Check all possible restrictions.
         address workerpool = workerpoolOrder.workerpool;
         require(
             _isAccountAuthorizedByRestriction(requestOrder.workerpool, workerpool),
@@ -190,12 +192,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
         uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
         uint256 workerpoolOrderConsumed = m_consumed[workerpoolOrderTypedDataHash];
-        // No dataset variable since dataset is optional
+        /// @dev No dataset variable since dataset is optional
 
         // Compute a unique deal identifier.
         bytes32 dealId = keccak256(
             abi.encodePacked(
-                requestOrderTypedDataHash,
+                requestOrderTypedDataHash, // requestHash
                 requestOrderConsumed // index of first task
             )
         );
