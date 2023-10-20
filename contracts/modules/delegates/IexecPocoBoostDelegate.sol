@@ -310,7 +310,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         bytes calldata enclaveSign
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        // Compute a unique task identifier based on deal id and task's index.
+        // Compute the unique task identifier based on deal id and task's index.
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
         // Ensure that the task exists and is in the correct state
