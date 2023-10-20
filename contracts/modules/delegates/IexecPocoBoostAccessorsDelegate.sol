@@ -23,12 +23,12 @@ import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPocoBoostAccessors} from "../interfaces/IexecPocoBoostAccessors.sol";
 
 /**
- * @title Access data related to Poco Boost deals.
- * @notice Access to PoCo Boost tasks must be done with classic `IexecAccessors`.
+ * @title Getters contract for PoCo Boost module.
+ * @notice Access to PoCo Boost tasks must be done with PoCo Classic `IexecAccessors`.
  */
 contract IexecPocoBoostAccessorsDelegate is IexecPocoBoostAccessors, DelegateBase {
     /**
-     * Read deal Boost information.
+     * Get a deal created by PoCo Boost module.
      * @param id The ID of the deal.
      */
     function viewDealBoost(
