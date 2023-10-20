@@ -316,7 +316,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Ensure that the task exists and is in the correct state
         requireTaskExistsAndUnset(task.status, index, deal.botSize);
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
-        // Check if enclave challenge is required for TEE tasks
+        // Check that the enclave challenge is present for TEE tasks
         require(
             enclaveChallenge != address(0) || deal.shortTag[2] & 0x01 == 0,
             "PocoBoost: Tag requires enclave challenge"
