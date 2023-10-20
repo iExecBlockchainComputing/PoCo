@@ -195,7 +195,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         uint256 workerpoolOrderConsumed = m_consumed[workerpoolOrderTypedDataHash];
         // @dev No dataset variable since dataset is optional
 
-        // Compute a unique deal identifier.
+        // Compute the unique deal identifier.
         bytes32 dealId = keccak256(
             abi.encodePacked(
                 requestOrderTypedDataHash, // requestHash
