@@ -80,7 +80,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Check if the requested category is valid.
         require(category < m_categories.length, "PocoBoost: Unknown category");
         uint256 appPrice = appOrder.appprice;
-        // Check if the app, dataset, and workerpool prices are within acceptable price limits.
+        // Check if the app, dataset, and workerpool prices are within requester price limits.
         require(requestOrder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
         uint256 datasetPrice = datasetOrder.datasetprice;
         require(requestOrder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
