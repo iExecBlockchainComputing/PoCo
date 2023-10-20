@@ -68,8 +68,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     ) external returns (bytes32) {
         // Check orders compatibility
 
-        // Ensure the trust level is within an acceptable range.
-        // A sample TEE task with no replication [trust <= 1].
+        // Ensure the trust level is within the acceptable range.
+        // Only accept tasks with no replication [trust <= 1].
         require(requestOrder.trust <= 1, "PocoBoost: Bad trust level");
 
         // @dev An intermediate variable stored in the stack consumes
