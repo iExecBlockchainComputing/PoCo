@@ -77,6 +77,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         uint256 category = requestOrder.category;
         // Check if the requested category is matched.
         require(category == workerpoolOrder.category, "PocoBoost: Category mismatch");
+        // Check if the requested category is valid.
         require(category < m_categories.length, "PocoBoost: Unknown category");
         uint256 appPrice = appOrder.appprice;
         // Check if the app, dataset, and workerpool prices are within acceptable price limits.
