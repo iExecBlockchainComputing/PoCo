@@ -75,7 +75,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // @dev An intermediate variable stored in the stack consumes
         // less gas than accessing calldata each time.
         uint256 category = requestOrder.category;
-        // Check if the category matches and is valid.
+        // Check if the requested category is matched.
         require(category == workerpoolOrder.category, "PocoBoost: Category mismatch");
         require(category < m_categories.length, "PocoBoost: Unknown category");
         uint256 appPrice = appOrder.appprice;
