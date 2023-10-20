@@ -9,7 +9,12 @@ fi
 logs_dir="logs/$sub_dir"
 mkdir -p $logs_dir
 exit_code=0
-for f in $(find test/ -type f | sort); do
+if [[ $OSTYPE == 'darwin'* ]]; then
+  files=$(find test/ -type f | sort)
+else 
+    files=$(find test/ -regex '.*\(js\|ts\)' | sort)
+fi
+for f in $files; do
     log_file=$logs_dir$(basename "$f").logs
     echo "Running $sub_dir: $f ($log_file)"
     npx hardhat test "$f" &>"$log_file" # redirect stdout and stderr
