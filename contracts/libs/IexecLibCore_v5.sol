@@ -61,6 +61,10 @@ library IexecLibCore_v5 {
         uint256 workerStake;
         uint256 schedulerRewardRatio;
     }
+
+    /**
+     * Simplified deals for PoCo Boost module.
+     */
     struct DealBoost {
         // Offset 0
         address appOwner;
