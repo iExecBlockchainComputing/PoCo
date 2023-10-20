@@ -66,14 +66,14 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external returns (bytes32) {
-        /// Check orders compatibility
+        // Check orders compatibility
 
         // Ensure the trust level is within an acceptable range.
         // A sample TEE task with no replication [trust <= 1].
         require(requestOrder.trust <= 1, "PocoBoost: Bad trust level");
 
-        /// @dev An intermediate variable stored in the stack consumes
-        /// less gas than accessing calldata each time.
+        // @dev An intermediate variable stored in the stack consumes
+        // less gas than accessing calldata each time.
         uint256 category = requestOrder.category;
         // Check if the category matches and is valid.
         require(category == workerpoolOrder.category, "PocoBoost: Category mismatch");
@@ -192,7 +192,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
         uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
         uint256 workerpoolOrderConsumed = m_consumed[workerpoolOrderTypedDataHash];
-        /// @dev No dataset variable since dataset is optional
+        // @dev No dataset variable since dataset is optional
 
         // Compute a unique deal identifier.
         bytes32 dealId = keccak256(
@@ -219,7 +219,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
         require(volume > 0, "PocoBoost: One or more orders consumed");
         // Update consumed
-        m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; /// @dev cheaper than `+= volume` here
+        m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // @dev cheaper than `+= volume` here
         m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
@@ -378,7 +378,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         if (kitty > 0) {
             kitty = KITTY_MIN // 1. retrieve bare minimum from kitty
             .max( // 2. or eventually a fraction of kitty if bigger
-                /// @dev As long as `KITTY_RATIO = 10`, we can introduce this small
+                // @dev As long as `KITTY_RATIO = 10`, we can introduce this small
                 kitty / KITTY_RATIO // optimization for `kitty * KITTY_RATIO / 100`
             ).min(kitty); // 3. but no more than available
             seize(KITTY_ADDRESS, kitty, taskId);
