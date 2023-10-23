@@ -60,7 +60,7 @@ module.exports = async function () {
     const { address: ensRegistryAddress } = await ensRegistry.deployed();
     saveDeployedAddress('ENSRegistry', ensRegistryAddress);
     const { address: ensPublicResolverAddress } = await ensPublicResolver.deployed();
-    saveDeployedAddress('PublicResolver', ensPublicResolverAddress);
+    saveDeployedAddress('ENSPublicResolver', ensPublicResolverAddress);
 
     console.log('Deploying PoCo Boost..');
     const [owner] = await hre.ethers.getSigners();
