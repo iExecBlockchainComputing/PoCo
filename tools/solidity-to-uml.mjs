@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 
-// Usage: "npm run sol-to-uml" or "npx run tools/sol-to-uml.mjs"
+// Usage: "npm run sol-to-uml" or "npx zx tools/solidity-to-uml.mjs"
 // For sol2uml documentation, see https://github.com/naddison36/sol2uml#usage
 
 
