@@ -30,6 +30,11 @@ await generateClassDiagramOfContracts(
     'IexecEscrows',
 )
 
+await generateClassDiagramOfContracts(
+    ['IexecPocoBoostDelegate'],
+    'IexecPocoBoostDelegate',
+)
+
 /**
  * Generate UML class diagrams for contracts in a given directory.
  * @param directory 
