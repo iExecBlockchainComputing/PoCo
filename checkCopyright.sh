@@ -1,6 +1,7 @@
 #!/bin/bash
 
-expected='Copyright 2020 IEXEC BLOCKCHAIN TECH'
+copyrightRegex='Copyright 202[0-9] IEXEC BLOCKCHAIN TECH'
+
 folders=(
 	'contracts'
 	'migrations'
@@ -9,8 +10,7 @@ folders=(
 	'utils'
 )
 
-for i in ${folders[@]};
-do
-	echo "# Checking copyrights in $i"
-	git grep -L "$expected"	-- $i
+for folder in ${folders[@]}; do
+	echo "# Checking copyrights in $folder"
+    grep --recursive --files-without-match --regexp "${copyrightRegex}" ${folder} | sort
 done
