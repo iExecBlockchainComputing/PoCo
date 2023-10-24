@@ -526,9 +526,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         if (restriction.code.length > 0) {
             try
                 IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
-                        bytes32(uint256(uint160(account))),
-                        GROUPMEMBER_PURPOSE
-                    )
+                    bytes32(uint256(uint160(account))),
+                    GROUPMEMBER_PURPOSE
+                )
             returns (bool success) {
                 return success;
             } catch {}
