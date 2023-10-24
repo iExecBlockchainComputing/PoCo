@@ -74,7 +74,7 @@ interface IexecPocoBoost {
     );
 
     /**
-     * @notice Emitted when a worker pushes the result of computing a task in the Boost module.
+     * @notice Emitted when a worker pushes the result of a computed task in the Boost module.
      * It serves as a notification of task completion and result submission.
      * @param dealId id of the deal created by match orders operation.
      * @param index index of the task in the deal.
@@ -83,7 +83,7 @@ interface IexecPocoBoost {
     event ResultPushedBoost(bytes32 dealId, uint256 index, bytes results);
 
     /**
-     * @notice Emitted when a task is claimed, and funds are either seized or released.
+     * @notice Emitted when a task is claimed. Workerpool funds are seized. Requester is refunded.
      * It indicates the transfer of funds and reflects the outcome of the task.
      * @dev The same event as PoCo classic for cross-compatibility purposes.
      * @param taskid id of the task to be claimed.
