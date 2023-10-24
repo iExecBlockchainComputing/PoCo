@@ -15,7 +15,7 @@ await generateClassDiagramOfDirectory('registries')
 await generateClassDiagramOfContracts(
     [
         'IexecPoco1Delegate',
-        'IexecPoco2Delegate',
+        'IexecPoco2Delegate'
     ],
     'IexecPocoDelegates',
 )
@@ -28,11 +28,6 @@ await generateClassDiagramOfContracts(
         'IexecEscrowTokenSwapDelegate'
     ],
     'IexecEscrows',
-)
-
-await generateClassDiagramOfContracts(
-    ['IexecPocoBoostDelegate'],
-    'IexecPocoBoost',
 )
 
 /**
