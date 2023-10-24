@@ -19,6 +19,10 @@ generateClassDiagramForDirectory('registries')
 //     IexecEscrowNativeDelegate,IexecEscrowTokenDelegateKYC,IexecEscrowTokenDelegate,IexecEscrowTokenSwapDelegate \
 //     IexecEscrows # out
 
+/**
+ * Generate UML class diagrams for contracts in a given directory.
+ * @param dirName name of the target directory.
+ */
 async function generateClassDiagramForDirectory(dirName) {
     console.log(`Generating class diagram for directory : ${dirName}`);
     const filename = dirName.replace('/', '-');
@@ -33,6 +37,3 @@ async function generateClassDiagramForDirectory(dirName) {
 //     # only output contracts connected to these comma separated base contract names
 //     $SOL2UML class . -b "$base_contracts_to_display" -o "$ROOT/uml/class-uml-$output_filename.svg"
 // }
-
-
-    
