@@ -81,6 +81,7 @@
 - Clean poco-chain files. (#246)
 - Remove patched test helpers. (#249)
 - Fix prettier solidity plugin resolution. (#250)
+- Use a single 0.8.19 solidity version to compile latest contracts. (#255)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`

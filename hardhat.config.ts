@@ -1,8 +1,8 @@
-import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
-import 'hardhat-dependency-compiler';
 import '@nomiclabs/hardhat-truffle5';
+import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
+import { HardhatUserConfig } from 'hardhat/config';
 
 const settings = {
     optimizer: {
@@ -30,8 +30,7 @@ const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechai
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: '0.8.19', settings: v8Settings }, // PoCo Boost & ENS contracts
-            { version: '0.8.17', settings: v8Settings }, // onchain-id contracts
+            { version: '0.8.19', settings: v8Settings }, // PoCo Boost (and ENS contracts >=0.8.4)
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],
