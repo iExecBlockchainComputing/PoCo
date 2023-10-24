@@ -425,7 +425,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        //TODO: factorize this in a function
         m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
         emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
@@ -526,9 +525,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         if (restriction.code.length > 0) {
             try
                 IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
-                    bytes32(uint256(uint160(account))),
-                    GROUPMEMBER_PURPOSE
-                )
+                        bytes32(uint256(uint160(account))),
+                        GROUPMEMBER_PURPOSE
+                    )
             returns (bool success) {
                 return success;
             } catch {}
