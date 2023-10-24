@@ -12,13 +12,13 @@
 <!-- 0 -->
 <g id="node1" class="node">
 <title>0</title>
-<polygon fill="#f2f2f2" stroke="black" points="1005.82,-847.5 1005.82,-947.5 1235.28,-947.5 1235.28,-847.5 1005.82,-847.5"/>
-<text text-anchor="middle" x="1120.55" y="-930.9" font-family="Times,serif" font-size="14.00">&lt;&lt;Interface&gt;&gt;</text>
+<polygon fill="#f2f2f2" stroke="black" points="968.27,-847.5 968.27,-947.5 1272.83,-947.5 1272.83,-847.5 968.27,-847.5"/>
+<text text-anchor="middle" x="1120.55" y="-930.9" font-family="Times,serif" font-size="14.00">&lt;&lt;Abstract&gt;&gt;</text>
 <text text-anchor="middle" x="1120.55" y="-914.1" font-family="Times,serif" font-size="14.00">IRegistry</text>
-<text text-anchor="middle" x="1120.55" y="-897.3" font-family="Times,serif" font-size="14.00">contracts/registries/IRegistry.sol</text>
-<polyline fill="none" stroke="black" points="1005.82,-889.1 1235.28,-889.1 "/>
-<text text-anchor="start" x="1013.82" y="-872.5" font-family="Times,serif" font-size="14.00">External:</text>
-<text text-anchor="start" x="1013.82" y="-855.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&#160;isRegistered(_entry: address): bool</text>
+<text text-anchor="middle" x="1120.55" y="-897.3" font-family="Times,serif" font-size="14.00">registries/IRegistry.sol</text>
+<polyline fill="none" stroke="black" points="968.27,-889.1 1272.83,-889.1 "/>
+<text text-anchor="start" x="976.27" y="-872.5" font-family="Times,serif" font-size="14.00">External:</text>
+<text text-anchor="start" x="976.27" y="-855.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&lt;&lt;abstract&gt;&gt; isRegistered(_entry: address): bool</text>
 </g>
 <!-- 1 -->
 <g id="node2" class="node">
@@ -26,7 +26,7 @@
 <polygon fill="#f2f2f2" stroke="black" points="933.5,-204.7 933.5,-547.9 1307.6,-547.9 1307.6,-204.7 933.5,-204.7"/>
 <text text-anchor="middle" x="1120.55" y="-531.3" font-family="Times,serif" font-size="14.00">&lt;&lt;Abstract&gt;&gt;</text>
 <text text-anchor="middle" x="1120.55" y="-514.5" font-family="Times,serif" font-size="14.00">Registry</text>
-<text text-anchor="middle" x="1120.55" y="-497.7" font-family="Times,serif" font-size="14.00">contracts/registries/Registry.sol</text>
+<text text-anchor="middle" x="1120.55" y="-497.7" font-family="Times,serif" font-size="14.00">registries/Registry.sol</text>
 <polyline fill="none" stroke="black" points="933.5,-489.5 1307.6,-489.5 "/>
 <text text-anchor="start" x="941.5" y="-472.9" font-family="Times,serif" font-size="14.00">Public:</text>
 <text text-anchor="start" x="941.5" y="-456.1" font-family="Times,serif" font-size="14.00"> &#160;&#160;master: address</text>
@@ -49,7 +49,7 @@
 <!-- 1&#45;&gt;0 -->
 <g id="edge1" class="edge">
 <title>1&#45;&gt;0</title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1120.55,-548.02C1120.55,-638.76 1120.55,-745.96 1120.55,-817.27"/>
+<path fill="none" stroke="black" d="M1120.55,-548.02C1120.55,-638.76 1120.55,-745.96 1120.55,-817.27"/>
 <polygon fill="none" stroke="black" points="1110.05,-817.32 1120.55,-847.32 1131.05,-817.32 1110.05,-817.32"/>
 </g>
 <!-- 2 -->
@@ -58,7 +58,7 @@
 <polygon fill="#f2f2f2" stroke="black" points="1411.05,-584.9 1411.05,-810.5 1756.05,-810.5 1756.05,-584.9 1411.05,-584.9"/>
 <text text-anchor="middle" x="1583.55" y="-793.9" font-family="Times,serif" font-size="14.00">&lt;&lt;Abstract&gt;&gt;</text>
 <text text-anchor="middle" x="1583.55" y="-777.1" font-family="Times,serif" font-size="14.00">RegistryEntry</text>
-<text text-anchor="middle" x="1583.55" y="-760.3" font-family="Times,serif" font-size="14.00">contracts/registries/RegistryEntry.sol</text>
+<text text-anchor="middle" x="1583.55" y="-760.3" font-family="Times,serif" font-size="14.00">registries/RegistryEntry.sol</text>
 <polyline fill="none" stroke="black" points="1411.05,-752.1 1756.05,-752.1 "/>
 <text text-anchor="start" x="1419.05" y="-735.5" font-family="Times,serif" font-size="14.00">Public:</text>
 <text text-anchor="start" x="1419.05" y="-718.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;registry: IRegistry</text>
@@ -82,7 +82,7 @@
 <title>3</title>
 <polygon fill="#f2f2f2" stroke="black" points="215.59,-280.3 215.59,-472.3 915.51,-472.3 915.51,-280.3 215.59,-280.3"/>
 <text text-anchor="middle" x="565.55" y="-455.7" font-family="Times,serif" font-size="14.00">App</text>
-<text text-anchor="middle" x="565.55" y="-438.9" font-family="Times,serif" font-size="14.00">contracts/registries/apps/App.sol</text>
+<text text-anchor="middle" x="565.55" y="-438.9" font-family="Times,serif" font-size="14.00">registries/apps/App.sol</text>
 <polyline fill="none" stroke="black" points="215.59,-430.7 915.51,-430.7 "/>
 <text text-anchor="start" x="223.59" y="-414.1" font-family="Times,serif" font-size="14.00">Public:</text>
 <text text-anchor="start" x="223.59" y="-397.3" font-family="Times,serif" font-size="14.00"> &#160;&#160;m_appName: string</text>
@@ -105,7 +105,7 @@
 <title>4</title>
 <polygon fill="#f2f2f2" stroke="black" points="0,-0.5 0,-167.7 867.1,-167.7 867.1,-0.5 0,-0.5"/>
 <text text-anchor="middle" x="433.55" y="-151.1" font-family="Times,serif" font-size="14.00">AppRegistry</text>
-<text text-anchor="middle" x="433.55" y="-134.3" font-family="Times,serif" font-size="14.00">contracts/registries/apps/AppRegistry.sol</text>
+<text text-anchor="middle" x="433.55" y="-134.3" font-family="Times,serif" font-size="14.00">registries/apps/AppRegistry.sol</text>
 <polyline fill="none" stroke="black" points="0,-126.1 867.1,-126.1 "/>
 <text text-anchor="start" x="8" y="-109.5" font-family="Times,serif" font-size="14.00">Internal:</text>
 <text text-anchor="start" x="8" y="-92.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;encodeInitializer(_appName: string, _appType: string, _appMultiaddr: bytes, _appChecksum: bytes32, _appMREnclave: bytes): bytes</text>
@@ -132,7 +132,7 @@
 <title>5</title>
 <polygon fill="#f2f2f2" stroke="black" points="1325.75,-297.1 1325.75,-455.5 1841.35,-455.5 1841.35,-297.1 1325.75,-297.1"/>
 <text text-anchor="middle" x="1583.55" y="-438.9" font-family="Times,serif" font-size="14.00">Dataset</text>
-<text text-anchor="middle" x="1583.55" y="-422.1" font-family="Times,serif" font-size="14.00">contracts/registries/datasets/Dataset.sol</text>
+<text text-anchor="middle" x="1583.55" y="-422.1" font-family="Times,serif" font-size="14.00">registries/datasets/Dataset.sol</text>
 <polyline fill="none" stroke="black" points="1325.75,-413.9 1841.35,-413.9 "/>
 <text text-anchor="start" x="1333.75" y="-397.3" font-family="Times,serif" font-size="14.00">Public:</text>
 <text text-anchor="start" x="1333.75" y="-380.5" font-family="Times,serif" font-size="14.00"> &#160;&#160;m_datasetName: string</text>
@@ -153,7 +153,7 @@
 <title>6</title>
 <polygon fill="#f2f2f2" stroke="black" points="884.96,-0.5 884.96,-167.7 1622.14,-167.7 1622.14,-0.5 884.96,-0.5"/>
 <text text-anchor="middle" x="1253.55" y="-151.1" font-family="Times,serif" font-size="14.00">DatasetRegistry</text>
-<text text-anchor="middle" x="1253.55" y="-134.3" font-family="Times,serif" font-size="14.00">contracts/registries/datasets/DatasetRegistry.sol</text>
+<text text-anchor="middle" x="1253.55" y="-134.3" font-family="Times,serif" font-size="14.00">registries/datasets/DatasetRegistry.sol</text>
 <polyline fill="none" stroke="black" points="884.96,-126.1 1622.14,-126.1 "/>
 <text text-anchor="start" x="892.96" y="-109.5" font-family="Times,serif" font-size="14.00">Internal:</text>
 <text text-anchor="start" x="892.96" y="-92.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;encodeInitializer(_datasetName: string, _datasetMultiaddr: bytes, _datasetChecksum: bytes32): bytes</text>
@@ -178,20 +178,9 @@
 <!-- 7 -->
 <g id="node8" class="node">
 <title>7</title>
-<polygon fill="#f2f2f2" stroke="black" points="2220.98,-34.1 2220.98,-134.1 2530.12,-134.1 2530.12,-34.1 2220.98,-34.1"/>
-<text text-anchor="middle" x="2375.55" y="-117.5" font-family="Times,serif" font-size="14.00">&lt;&lt;Interface&gt;&gt;</text>
-<text text-anchor="middle" x="2375.55" y="-100.7" font-family="Times,serif" font-size="14.00">IWorkerpool</text>
-<text text-anchor="middle" x="2375.55" y="-83.9" font-family="Times,serif" font-size="14.00">contracts/registries/workerpools/IWorkerpool.v8.sol</text>
-<polyline fill="none" stroke="black" points="2220.98,-75.7 2530.12,-75.7 "/>
-<text text-anchor="start" x="2228.98" y="-59.1" font-family="Times,serif" font-size="14.00">External:</text>
-<text text-anchor="start" x="2228.98" y="-42.3" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&#160;m_schedulerRewardRatioPolicy(): uint256</text>
-</g>
-<!-- 8 -->
-<g id="node9" class="node">
-<title>8</title>
 <polygon fill="#f2f2f2" stroke="black" points="1859.44,-271.9 1859.44,-480.7 2955.66,-480.7 2955.66,-271.9 1859.44,-271.9"/>
 <text text-anchor="middle" x="2407.55" y="-464.1" font-family="Times,serif" font-size="14.00">Workerpool</text>
-<text text-anchor="middle" x="2407.55" y="-447.3" font-family="Times,serif" font-size="14.00">contracts/registries/workerpools/Workerpool.sol</text>
+<text text-anchor="middle" x="2407.55" y="-447.3" font-family="Times,serif" font-size="14.00">registries/workerpools/Workerpool.sol</text>
 <polyline fill="none" stroke="black" points="1859.44,-439.1 2955.66,-439.1 "/>
 <text text-anchor="start" x="1867.44" y="-422.5" font-family="Times,serif" font-size="14.00">Public:</text>
 <text text-anchor="start" x="1867.44" y="-405.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;m_workerpoolDescription: string</text>
@@ -204,18 +193,18 @@
 <text text-anchor="start" x="1867.44" y="-296.9" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&lt;&lt;event&gt;&gt; PolicyUpdate(oldWorkerStakeRatioPolicy: uint256, newWorkerStakeRatioPolicy: uint256, oldSchedulerRewardRatioPolicy: uint256, newSchedulerRewardRatioPolicy: uint256)</text>
 <text text-anchor="start" x="1867.44" y="-280.1" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;initialize(_workerpoolDescription: string)</text>
 </g>
-<!-- 8&#45;&gt;2 -->
+<!-- 7&#45;&gt;2 -->
 <g id="edge9" class="edge">
-<title>8&#45;&gt;2</title>
+<title>7&#45;&gt;2</title>
 <path fill="none" stroke="black" d="M2140.59,-480.78C2024.84,-525.65 1891.58,-577.3 1784.43,-618.84"/>
 <polygon fill="none" stroke="black" points="1780.53,-609.08 1756.36,-629.72 1788.12,-628.66 1780.53,-609.08"/>
 </g>
-<!-- 9 -->
-<g id="node10" class="node">
-<title>9</title>
+<!-- 8 -->
+<g id="node9" class="node">
+<title>8</title>
 <polygon fill="#f2f2f2" stroke="black" points="1640.04,-0.5 1640.04,-167.7 2203.06,-167.7 2203.06,-0.5 1640.04,-0.5"/>
 <text text-anchor="middle" x="1921.55" y="-151.1" font-family="Times,serif" font-size="14.00">WorkerpoolRegistry</text>
-<text text-anchor="middle" x="1921.55" y="-134.3" font-family="Times,serif" font-size="14.00">contracts/registries/workerpools/WorkerpoolRegistry.sol</text>
+<text text-anchor="middle" x="1921.55" y="-134.3" font-family="Times,serif" font-size="14.00">registries/workerpools/WorkerpoolRegistry.sol</text>
 <polyline fill="none" stroke="black" points="1640.04,-126.1 2203.06,-126.1 "/>
 <text text-anchor="start" x="1648.04" y="-109.5" font-family="Times,serif" font-size="14.00">Internal:</text>
 <text text-anchor="start" x="1648.04" y="-92.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;encodeInitializer(_workerpoolDescription: string): bytes</text>
@@ -225,15 +214,15 @@
 <text text-anchor="start" x="1648.04" y="-25.5" font-family="Times,serif" font-size="14.00">Public:</text>
 <text text-anchor="start" x="1648.04" y="-8.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;constructor()</text>
 </g>
-<!-- 9&#45;&gt;1 -->
+<!-- 8&#45;&gt;1 -->
 <g id="edge10" class="edge">
-<title>9&#45;&gt;1</title>
+<title>8&#45;&gt;1</title>
 <path fill="none" stroke="black" d="M1639.67,-166.55C1636.96,-167.11 1634.25,-167.66 1631.55,-168.2 1503.07,-193.77 1452.64,-153.72 1335.41,-197.03"/>
 <polygon fill="none" stroke="black" points="1331.43,-187.31 1307.6,-208.35 1339.35,-206.76 1331.43,-187.31"/>
 </g>
-<!-- 9&#45;&gt;8 -->
+<!-- 8&#45;&gt;7 -->
 <g id="edge11" class="edge">
-<title>9&#45;&gt;8</title>
+<title>8&#45;&gt;7</title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M2060.17,-167.87C2111.57,-198.56 2170.66,-233.85 2225.36,-266.51"/>
 <polygon fill="black" stroke="black" points="2223.72,-269.61 2234.1,-271.73 2227.31,-263.6 2223.72,-269.61"/>
 </g>
