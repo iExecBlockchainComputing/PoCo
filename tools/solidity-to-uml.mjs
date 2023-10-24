@@ -8,11 +8,11 @@ $.verbose = false // Disable bash commands logging.
 
 const rootDir = await $`dirname ${__dirname}`
 
-await generateClassDiagramForDirectory('libs')
-await generateClassDiagramForDirectory('modules')
-await generateClassDiagramForDirectory('registries')
+await generateClassDiagramOfDirectory('libs')
+await generateClassDiagramOfDirectory('modules')
+await generateClassDiagramOfDirectory('registries')
 
-await generateClassDiagramForContracts(
+await generateClassDiagramOfContracts(
     [
         'IexecPoco1Delegate',
         'IexecPoco2Delegate'
@@ -20,7 +20,7 @@ await generateClassDiagramForContracts(
     'IexecPocoDelegates',
 )
 
-await generateClassDiagramForContracts(
+await generateClassDiagramOfContracts(
     [
         'IexecEscrowNativeDelegate',
         'IexecEscrowTokenDelegateKYC',
@@ -34,7 +34,7 @@ await generateClassDiagramForContracts(
  * Generate UML class diagrams for contracts in a given directory.
  * @param directory 
  */
-async function generateClassDiagramForDirectory(directory) {
+async function generateClassDiagramOfDirectory(directory) {
     console.log(`Generating class diagram for directory : ${directory}`);
     const filename = directory.replace('/', '-');
     await $`npx sol2uml class contracts/${directory}/ -o ${rootDir}/uml/class-uml-dir-${filename}.svg`
@@ -45,7 +45,7 @@ async function generateClassDiagramForDirectory(directory) {
  * @param contractsList 
  * @param filename 
  */
-async function generateClassDiagramForContracts(contractsList, filename) {
+async function generateClassDiagramOfContracts(contractsList, filename) {
     console.log(`Generating class diagram for contracts : ${contractsList}`);
     const baseContracts = contractsList.join(','); // => c1,c2,c3
     // -b, --baseContractNames <value> 
