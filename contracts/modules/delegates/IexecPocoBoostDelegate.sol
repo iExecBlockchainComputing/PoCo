@@ -414,18 +414,34 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param index The index of the task.
      */
     function claimBoost(bytes32 dealId, uint256 index) external {
+        // Retrieve the deal and task information from storage.
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
+
+        // Ensure that the task exists and is in the unset status.
         requireTaskExistsAndUnset(task.status, index, deal.botSize);
+
+        // Check if the current time has reached or passed the deadline of the deal.
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
+
+        // Mark the task as failed since it was not completed within the deadline.
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
+
+        // Calculate the worker pool's price and task stake.
         uint96 workerPoolPrice = deal.workerpoolPrice;
         uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+
+        // Refund the requester by unlocking the locked funds.
         unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
+
+        // Seize the task stake from the worker pool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
+
         // Reward kitty and lock the rewarded amount.
         m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
+
+        // Emit events to notify the state changes.
         emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
         emit TaskClaimed(taskId);
