@@ -3,13 +3,13 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC734} from "@onchain-id/solidity/contracts/interface/IERC734.sol";
 import {IERC1271} from "@openzeppelin/contracts-v4/interfaces/IERC1271.sol";
 import {IERC5313} from "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
 import {ECDSA} from "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
 import {Math} from "@openzeppelin/contracts-v4/utils/math/Math.sol";
 import {SafeCast} from "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
 
+import {IERC734} from "../../external/interfaces/IERC734.sol";
 import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
