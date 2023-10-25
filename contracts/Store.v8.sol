@@ -109,16 +109,16 @@ abstract contract Store is ERC1538Store {
 
     /**
      * @dev In order to use the protocol, users have to deposit RLC
-     * and allow the PoCo's smart contract to manage them. This state
+     * and allow PoCo smart contracts to manage them. This state
      * variable keeps track of users balances.
      */
     mapping(address => uint256) internal m_balances;
 
     /**
      * @dev When a deal is created, the protocol temporarily blocks an amount
-     * of RLC tokens from the requester's and workerpool's balances. This is
-     * to guarantee the payment of different actors later. Frozen funds are
-     * released when the computation is completed and the result is pushed.
+     * of RLC tokens from the balances of the requester and the workerpool owner.
+     * This is to guarantee the payment of different actors later. Frozen funds
+     * are released when the computation is completed and the result is pushed.
      */
     mapping(address => uint256) internal m_frozens;
 
@@ -152,14 +152,14 @@ abstract contract Store is ERC1538Store {
     // Poco - Storage
 
     /**
-     * @dev Mapping an order's hash to its owner. Since a smart contract cannot sign orders
+     * @dev Mapping an order hash to its owner. Since a smart contract cannot sign orders
      * with a private key, it adds an entry to this mapping to provide presigned orders.
      */
     mapping(bytes32 => address) internal m_presigned;
 
     /**
      * @dev Each order has a volume (>=1). This tracks how much is consumed from
-     * the volume of each order. Mapping an order's hash to its consumed amount.
+     * the volume of each order. Mapping an order hash to its consumed amount.
      */
     mapping(bytes32 => uint256) internal m_consumed;
 
