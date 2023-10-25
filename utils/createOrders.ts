@@ -1,5 +1,5 @@
+// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH
 
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
