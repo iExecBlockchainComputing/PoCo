@@ -24,7 +24,7 @@ pragma solidity ^0.8.0;
  */
 interface IOracleConsumer {
     /**
-     * Function called by the PoCo's contract to consume the callback value.
+     * Function called by PoCo contracts to consume the callback value.
      * @param taskId id of the task.
      * @param resultsCallback payload of the callback value.
      */
