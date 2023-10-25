@@ -28,12 +28,12 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 
 ## PoCo UML
 
-- [Contracts and Actors Architecture](./docs/uml/README.md#contracts-and-actors-architecture)
-- [State diagrams](./docs/uml/statuses.md)
-- [Nominal workflow sequence](./docs/uml/README.md#nominal)
-- [Nominal workflow sequence w/ TEE](./docs/uml/README.md#nominaltee)
-- [Boost workflow sequence](./docs/uml/README.md#boost)
-- Class UMLs related to:
+- [Contracts and Actors Architecture](./docs/README.md#contracts-and-actors-architecture)
+- [State diagrams](./docs/Statuses.md)
+- [Nominal workflow sequence](./docs/README.md#nominal)
+- [Nominal workflow sequence w/ TEE](./docs/README.md#nominaltee)
+- [Boost workflow sequence](./docs/README.md#boost)
+- UML classes related to:
     - [IexecPocoDelegates](./docs/uml/class-uml-IexecPocoDelegates.svg)
     - [IexecPocoBoostDelegate](./docs/uml/class-uml-IexecPocoBoostDelegate.svg)
     - [IexecEscrows](./docs/uml/class-uml-IexecEscrows.svg)
