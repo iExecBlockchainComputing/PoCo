@@ -83,6 +83,7 @@
 - Remove patched test helpers. (#249)
 - Fix prettier solidity plugin resolution. (#250)
 - Use a single 0.8.19 solidity version to compile latest contracts. (#255)
+- Compile latest contracts with 0.8.20. (#258)
 - Introduce zx for task scripting. (#256)
 
 ## v5.4.2
