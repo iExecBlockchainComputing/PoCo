@@ -43,7 +43,7 @@ async function generateClassDiagramOfDirectory(directory) {
 /**
  * Generate class UML only connected to set of given contracts
  * @param contractsList 
- * @param filename 
+ * @param filename Output file name.
  */
 async function generateClassDiagramOfContracts(contractsList, filename) {
     console.log(`Generating class diagram for contracts : ${contractsList}`);
