@@ -17,7 +17,7 @@
     "verify": "npx hardhat verify",
     "uml": "sol-to-uml && puml2links",
     "solidity-to-uml": "npx zx tools/solidity-to-uml.mjs",
-    "puml2links": "./uml/puml2links.sh"
+    "puml2links": "npx zx tools/puml-to-links.mjs"
   },
   "lint-staged": {
     "*.{ts,sol}": [
