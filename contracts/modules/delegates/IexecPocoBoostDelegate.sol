@@ -18,12 +18,12 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC1271} from "@openzeppelin/contracts-v4/interfaces/IERC1271.sol";
-import {IERC5313} from "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
-import {ECDSA} from "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
-import {MessageHashUtils} from "@openzeppelin/contracts-v4/utils/cryptography/MessageHashUtils.sol";
-import {Math} from "@openzeppelin/contracts-v4/utils/math/Math.sol";
-import {SafeCast} from "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
+import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
+import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
+import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
+import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
+import {SafeCast} from "@openzeppelin/contracts-v5/utils/math/SafeCast.sol";
 
 import {IERC734} from "../../external/interfaces/IERC734.sol";
 import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";

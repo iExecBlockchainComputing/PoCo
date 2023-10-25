@@ -27,8 +27,8 @@ import {
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../../typechain';
-import { IERC1271 } from '../../../typechain/@openzeppelin/contracts-v4/interfaces';
-import { IERC1271__factory } from '../../../typechain/factories/@openzeppelin/contracts-v4/interfaces';
+import { IERC1271 } from '../../../typechain/@openzeppelin/contracts-v5/interfaces';
+import { IERC1271__factory } from '../../../typechain/factories/@openzeppelin/contracts-v5/interfaces';
 import constants from '../../../utils/constants';
 import {
     Orders,
