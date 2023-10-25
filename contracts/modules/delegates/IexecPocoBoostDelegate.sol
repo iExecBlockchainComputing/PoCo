@@ -48,17 +48,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * @notice This boost match orders is only compatible with trust <= 1.
-     * @param appOrder The order signed by the application developer
-     * @param datasetOrder The order signed by the dataset provider
-     * @param workerpoolOrder The order signed by the workerpool manager
-     * @param requestOrder The order signed by the requester
+     * @param appOrder The order signed by the application developer.
+     * @param datasetOrder The order signed by the dataset provider.
+     * @param workerpoolOrder The order signed by the workerpool manager.
+     * @param requestOrder The order signed by the requester.
      * @return The ID of the deal.
      * @dev Considering min·max·avg gas values, preferred option for deal storage
      *  is b.:
-     *   - a. 213498·273978·240761: Use memory struct and write new struct to storage once
-     *   - b. 213803·274283·240615: Use memory struct and write to storage field per field
-     *   - c. 213990·274470·240732: Write/read everything to/on storage
-     *   - d. 215729·276197·242985: Write/read everything to/on memory struct and asign memory to storage
+     *   - a. Use memory struct and write new struct to storage once
+     *   - b. Use memory struct and write to storage field per field
+     *   - c. Write/read everything to/on storage
+     *   - d. Write/read everything to/on memory struct and asign memory to storage
      */
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,
@@ -290,15 +290,15 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * @notice Accept results of a task computed by a worker during Boost workflow.
-     * @param dealId id of the target deal
-     * @param index index of the target task of the deal
-     * @param results results of the task computed by the worker
-     * @param resultsCallback results of the task computed by the worker that will
-     * be forwarded as call data to the callback address set by the requester.
-     * @param authorizationSign authorization signed by the scheduler authorizing
-     * the worker to push a result
-     * @param enclaveChallenge enclave address which can produce enclave signature
-     * @param enclaveSign signature generated from the enclave
+     * @param dealId The id of the target deal.
+     * @param index The index of the target task of the deal.
+     * @param results The results of the task computed by the worker.
+     * @param resultsCallback The results of the task computed by the worker that
+     * will be forwarded as call data to the callback address set by the requester.
+     * @param authorizationSign The authorization signed by the scheduler.
+     * authorizing the worker to push a result.
+     * @param enclaveChallenge The enclave address which can produce enclave signature.
+     * @param enclaveSign The signature generated from the enclave.
      */
     function pushResultBoost(
         bytes32 dealId,
@@ -310,7 +310,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         bytes calldata enclaveSign
     ) external {
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        // Compute the unique task identifier based on deal id and task's index.
+        // Compute the unique task identifier based on deal id and task index.
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
         // Ensure that the task exists and is in the correct state
@@ -434,7 +434,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * Hash a Typed Data using the configured domain.
-     * @param structHash original structure hash
+     * @param structHash The original structure hash.
      */
     function _toTypedDataHash(bytes32 structHash) private view returns (bytes32) {
         return ECDSA.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
@@ -442,9 +442,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * @notice Verify that an Ethereum Signed Message is signed by a particular account.
-     * @param account expected signer account
-     * @param message original message that was signed
-     * @param signature signature to be verified
+     * @param account The expected signer account.
+     * @param message The original message that was signed.
+     * @param signature The signature to be verified.
      */
     function _verifySignatureOfEthSignedMessage(
         address account,
@@ -456,9 +456,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * @notice Verify that a message is signed by an EOA or an ERC1271 smart contract.
-     * @param account expected signer account
-     * @param messageHash message hash that was signed
-     * @param signature signature to be verified
+     * @param account The expected signer account.
+     * @param messageHash The message hash that was signed.
+     * @param signature The signature to be verified.
      */
     function _verifySignature(
         address account,
@@ -478,8 +478,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * @notice Verify that a message hash is presigned by a particular account.
-     * @param account expected presigner account
-     * @param messageHash message hash that was presigned
+     * @param account The expected presigner account.
+     * @param messageHash The message hash that was presigned.
      */
     function _verifyPresignature(address account, bytes32 messageHash) private view returns (bool) {
         return account != address(0) && account == m_presigned[messageHash];
@@ -487,9 +487,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * @notice Verify that a message hash is signed or presigned by a particular account.
-     * @param account expected signer or presigner account
-     * @param messageHash message hash that was signed or presigned
-     * @param signature signature to be verified. Not required for a presignature.
+     * @param account The expected signer or presigner account.
+     * @param messageHash The message hash that was signed or presigned.
+     * @param signature The signature to be verified. Not required for a presignature.
      */
     function _verifySignatureOrPresignature(
         address account,
