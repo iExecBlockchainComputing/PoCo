@@ -115,8 +115,8 @@ abstract contract Store is ERC1538Store {
     mapping(address => uint256) internal m_balances;
 
     /**
-     * @dev When a deal is created, the protocol temporarily blocks an amount
-     * of RLC tokens from the balances of the requester and the workerpool owner.
+     * @dev When a deal is created, the protocol temporarily locks an amount
+     * of RLC tokens from the balances of both the requester and the workerpool owners.
      * This is to guarantee the payment of different actors later. Frozen funds
      * are released when the computation is completed and the result is pushed.
      */

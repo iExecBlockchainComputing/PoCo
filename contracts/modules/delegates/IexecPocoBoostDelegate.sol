@@ -295,7 +295,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param results The results of the task computed by the worker.
      * @param resultsCallback The results of the task computed by the worker that
      * will be forwarded as call data to the callback address set by the requester.
-     * @param authorizationSign The authorization signed by the scheduler
+     * @param authorizationSign The authorization signed by the scheduler.
      * authorizing the worker to push a result.
      * @param enclaveChallenge The enclave address which can produce enclave signature.
      * @param enclaveSign The signature generated from the enclave.
