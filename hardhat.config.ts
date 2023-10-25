@@ -24,13 +24,19 @@ v8Settings.optimizer.details = {
         optimizerSteps: 'u',
     },
 };
+/**
+ * @dev The 0.8.20 compiler switches the default target EVM version to Shanghai.
+ * At this time, the iExec Bellecour blockchain does not support new OPCODES
+ * brought by the Shanghai fork, hence the target must be lowered.
+ */
+v8Settings.evmVersion = 'paris';
 
 const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
 
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: '0.8.19', settings: v8Settings }, // PoCo Boost (and ENS contracts >=0.8.4)
+            { version: '0.8.20', settings: v8Settings }, // PoCo Boost (and ENS contracts >=0.8.4)
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],
