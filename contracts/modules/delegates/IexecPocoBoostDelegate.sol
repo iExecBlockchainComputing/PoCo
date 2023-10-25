@@ -429,11 +429,11 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
         // Refund the requester by unlocking the locked funds.
         unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
-        // Seize the task stake from the workerpool.
+        // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
         m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
-        // Emit events to notify the state changes.
+        // Emit events to publish state changes.
         emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
         emit TaskClaimed(taskId);

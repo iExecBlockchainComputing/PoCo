@@ -74,7 +74,7 @@ interface IexecPocoBoost {
     );
 
     /**
-     * @notice Emitted when a worker pushes the result of a computed task in the Boost module.
+     * @notice Emitted when a worker pushes the result of a computed task in Boost mode.
      * It serves as a notification of task completion and result submission.
      * @param dealId id of the deal created by match orders operation.
      * @param index index of the task in the deal.
