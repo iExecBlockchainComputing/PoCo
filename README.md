@@ -28,21 +28,22 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 
 ## PoCo UML
 
-- [Contracts and Actors Architecture](./uml/README.md#contracts-and-actors-architecture)
-- [State diagrams](./uml/statuses.md)
-- [Nominal workflow sequence](./uml/README.md#nominal)
-- [Nominal workflow sequence w/ TEE](./uml/README.md#nominaltee)
-- [Boost workflow sequence](./uml/README.md#boost)
+- [Contracts and Actors Architecture](./docs/uml/README.md#contracts-and-actors-architecture)
+- [State diagrams](./docs/uml/statuses.md)
+- [Nominal workflow sequence](./docs/uml/README.md#nominal)
+- [Nominal workflow sequence w/ TEE](./docs/uml/README.md#nominaltee)
+- [Boost workflow sequence](./docs/uml/README.md#boost)
 - Class UMLs related to:
-    - [IexecPocoDelegates](./uml/class-uml-IexecPocoDelegates.svg)
-    - [IexecEscrows](./uml/class-uml-IexecEscrows.svg)
-    - [iExec PoCo registries](./uml/class-uml-dir-registries.svg)
-    - [iExec PoCo libraries](./uml/class-uml-dir-libs.svg)
-    - [iExec PoCo modules](./uml/class-uml-dir-modules.svg)
+    - [IexecPocoDelegates](./docs/uml/class-uml-IexecPocoDelegates.svg)
+    - [IexecPocoBoostDelegate](./docs/uml/class-uml-IexecPocoBoostDelegate.svg)
+    - [IexecEscrows](./docs/uml/class-uml-IexecEscrows.svg)
+    - [iExec PoCo registries](./docs/uml/class-uml-dir-registries.svg)
+    - [iExec PoCo libraries](./docs/uml/class-uml-dir-libs.svg)
+    - [iExec PoCo modules](./docs/uml/class-uml-dir-modules.svg)
 
 ## Documentation
 
-- [Full PoCo documentaion](https://docs.iex.ec/key-concepts/proof-of-contribution)
+- [Full PoCo documentaion](https://protocol.docs.iex.ec/key-concepts/proof-of-contribution)
 
 # How to?
 
@@ -139,14 +140,21 @@ Example of "complexe" deployment:
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001 KYC=1 npm run migrate -- --network goerli ---skip-dry-run
 ```
 
-## Render .puml files
+## Render UML diagrams
 
-```
-npm run puml2links
-```
-
-## Generate documentation
-
+To render all UML diagrams:
 ```
 npm run uml
+```
+
+### Render only class diagrams
+
+```
+npm run sol-to-uml
+```
+
+### Render only .puml files
+
+```
+npm run puml-to-links
 ```
