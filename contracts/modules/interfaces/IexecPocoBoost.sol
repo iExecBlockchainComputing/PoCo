@@ -84,7 +84,6 @@ interface IexecPocoBoost {
 
     /**
      * @notice Emitted when a task is claimed. Workerpool funds are seized. Requester is refunded.
-     * It indicates the transfer of funds and reflects the outcome of the task.
      * @dev The same event as PoCo classic for cross-compatibility purposes.
      * @param taskid id of the task to be claimed.
      */
