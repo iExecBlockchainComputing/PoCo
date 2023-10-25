@@ -81,6 +81,7 @@
 - Clean poco-chain files. (#246)
 - Remove patched test helpers. (#249)
 - Fix prettier solidity plugin resolution. (#250)
+- Introduce zx for task scripting. (#256)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
