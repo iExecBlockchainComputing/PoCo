@@ -71,6 +71,7 @@
     - Seize workerpool and reward kitty. (#218)
 - Documentation:
     - Add inline solidity documentation. (#251, #252)
+    - Update class diagrams. (#257)
 - Add dedicated Poco Boost accessors. (#206)
 - Refactor tests. (#177, #178, #179, #181, #188, #200, #209, #210, #211, #221, #243)
 - Add mocha to use test explorer. (#180)
@@ -82,6 +83,7 @@
 - Remove patched test helpers. (#249)
 - Fix prettier solidity plugin resolution. (#250)
 - Use a single 0.8.19 solidity version to compile latest contracts. (#255)
+- Introduce zx for task scripting. (#256)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
