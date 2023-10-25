@@ -15,7 +15,8 @@
     "autotest": "./test.sh",
     "coverage": "npx hardhat coverage",
     "verify": "npx hardhat verify",
-    "uml": "npx zx tools/solidity-to-uml.mjs",
+    "uml": "sol-to-uml && puml2links",
+    "solidity-to-uml": "npx zx tools/solidity-to-uml.mjs",
     "puml2links": "./uml/puml2links.sh"
   },
   "lint-staged": {
