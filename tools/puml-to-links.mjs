@@ -19,4 +19,4 @@
 const projectRootDir = await $`dirname ${__dirname}`
 
 // Search for markdown files and update puml links.
-await $`npx puml-for-markdown -x ${projectRootDir}`
+await $`npx puml-for-markdown -x ${projectRootDir}/uml/`
