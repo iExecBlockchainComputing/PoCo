@@ -6,7 +6,7 @@
 
 $.verbose = false // Disable bash commands logging.
 
-const rootDir = await $`dirname ${__dirname}`
+const projectRootDir = await $`dirname ${__dirname}`
 
 await generateClassDiagramOfDirectory('libs')
 await generateClassDiagramOfDirectory('modules')
@@ -43,7 +43,7 @@ await generateClassDiagramOfContracts(
 async function generateClassDiagramOfDirectory(directory) {
     console.log(`Generating class diagram for directory : ${directory}`);
     const filename = directory.replace('/', '-');
-    await $`npx sol2uml class contracts/${directory}/ -o ${rootDir}/uml/class-uml-dir-${filename}.svg`
+    await $`npx sol2uml class contracts/${directory}/ -o ${projectRootDir}/uml/class-uml-dir-${filename}.svg`
 }
 
 /**
@@ -56,5 +56,5 @@ async function generateClassDiagramOfContracts(contractsList, filename) {
     const baseContracts = contractsList.join(','); // => c1,c2,c3
     // -b, --baseContractNames <value> 
     // only output contracts connected to these comma separated base contract names
-    await $`npx sol2uml class contracts/ -b ${baseContracts} -o ${rootDir}/uml/class-uml-${filename}.svg`
+    await $`npx sol2uml class contracts/ -b ${baseContracts} -o ${projectRootDir}/uml/class-uml-${filename}.svg`
 }

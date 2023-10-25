@@ -15,8 +15,9 @@
 // included child diagrams.
 
 
-// $.verbose = false // Disable bash commands logging.
-const projectRootDir = await $`dirname ${__dirname}`
+$.verbose = false // Disable bash commands logging.
 
+const projectRootDir = await $`dirname ${__dirname}`
 // Search for markdown files and update puml links.
-await $`npx puml-for-markdown -x ${projectRootDir}/uml/`
+const output = await $`npx puml-for-markdown -x ${projectRootDir}/uml/`
+console.log(output.toString());
