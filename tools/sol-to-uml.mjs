@@ -43,7 +43,7 @@ await generateClassDiagramOfContracts(
 async function generateClassDiagramOfDirectory(directory) {
     console.log(`Generating class diagram for directory : ${directory}`);
     const filename = directory.replace('/', '-');
-    await $`npx sol2uml class contracts/${directory}/ -o ${projectRootDir}/uml/class-uml-dir-${filename}.svg`
+    await $`npx sol2uml class contracts/${directory}/ -o ${projectRootDir}/docs/uml/class-uml-dir-${filename}.svg`
 }
 
 /**
@@ -56,5 +56,5 @@ async function generateClassDiagramOfContracts(contractsList, filename) {
     const baseContracts = contractsList.join(','); // => c1,c2,c3
     // -b, --baseContractNames <value> 
     // only output contracts connected to these comma separated base contract names
-    await $`npx sol2uml class contracts/ -b ${baseContracts} -o ${projectRootDir}/uml/class-uml-${filename}.svg`
+    await $`npx sol2uml class contracts/ -b ${baseContracts} -o ${projectRootDir}/docs/uml/class-uml-${filename}.svg`
 }
