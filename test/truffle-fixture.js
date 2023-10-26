@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
 
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { deployAllContracts } = require('../scripts/truffle-fixture-deployer')

@@ -1,20 +1,5 @@
+// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
-
-/******************************************************************************
- * Copyright 2023 IEXEC BLOCKCHAIN TECH                                       *
- *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *                                                                            *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- *                                                                            *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
- ******************************************************************************/
 
 pragma solidity ^0.8.0;
 
@@ -74,7 +59,8 @@ interface IexecPocoBoost {
     );
 
     /**
-     * @notice Emitted when a worker pushes the result of computing a task.
+     * @notice Emitted when a worker pushes the result of a computed task in Boost mode.
+     * It serves as a notification of task completion and result submission.
      * @param dealId id of the deal created by match orders operation.
      * @param index index of the task in the deal.
      * @param results bytes of the result.
@@ -82,7 +68,7 @@ interface IexecPocoBoost {
     event ResultPushedBoost(bytes32 dealId, uint256 index, bytes results);
 
     /**
-     * @notice Emitted when a task is claimed and funds are seized or released.
+     * @notice Emitted when a task is claimed. Workerpool funds are seized. Requester is refunded.
      * @dev The same event as PoCo classic for cross-compatibility purposes.
      * @param taskid id of the task to be claimed.
      */

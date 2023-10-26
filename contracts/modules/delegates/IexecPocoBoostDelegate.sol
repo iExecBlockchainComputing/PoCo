@@ -1,20 +1,5 @@
+// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
-
-/******************************************************************************
- * Copyright 2023 IEXEC BLOCKCHAIN TECH                                       *
- *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *                                                                            *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- *                                                                            *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
- ******************************************************************************/
 
 pragma solidity ^0.8.0;
 
@@ -419,19 +404,26 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param index The index of the task.
      */
     function claimBoost(bytes32 dealId, uint256 index) external {
+        // Retrieve deal and task information from storage.
         IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
         IexecLibCore_v5.Task storage task = m_tasks[taskId];
+        // Ensure that the task exists and has the unset status.
         requireTaskExistsAndUnset(task.status, index, deal.botSize);
+        // Check if the current time has reached or passed the deadline of the deal.
         require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
+        // Mark the task as failed since it was not completed within the deadline.
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
+        // Calculate workerpool price and task stake.
         uint96 workerPoolPrice = deal.workerpoolPrice;
         uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+        // Refund the requester by unlocking the locked funds.
         unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
+        // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        //TODO: factorize this in a function
         m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
+        // Emit events to publish state changes.
         emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
         emit TaskClaimed(taskId);
