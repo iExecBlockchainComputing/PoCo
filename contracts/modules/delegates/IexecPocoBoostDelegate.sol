@@ -219,25 +219,13 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
         }
         require(volume > 0, "PocoBoost: One or more orders consumed");
-        // Update consumed
-        m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // @dev cheaper than `+= volume` here
-        m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
-        m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
-        // Handle dataset-specific logic if a dataset is used.
-        if (hasDataset) {
-            m_consumed[datasetOrderTypedDataHash] += volume;
-            // Store deal (dataset)
-            deal.datasetOwner = datasetOwner;
-            deal.datasetPrice = datasetPrice.toUint96();
-        }
         // Store deal (all). Write all parts of the same storage slot together
         // for gas optimization purposes.
+        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
         deal.appOwner = appOwner;
         deal.appPrice = appPrice.toUint96();
         deal.workerpoolOwner = workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
-        deal.requester = requester;
         deal.botFirst = requestOrderConsumed.toUint16();
         deal.deadline = (block.timestamp +
             m_categories[category].workClockTimeRef *
@@ -257,8 +245,25 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
         deal.shortTag = shortTag;
         deal.callback = requestOrder.callback;
+        deal.requester = requester;
         deal.workerReward = ((workerpoolPrice * // reward depends on
             (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
+        if (hasDataset) {
+            // Store deal (dataset)
+            deal.datasetOwner = datasetOwner;
+            deal.datasetPrice = datasetPrice.toUint96();
+            // Update consumed (dataset)
+            m_consumed[datasetOrderTypedDataHash] += volume;
+        }
+        /**
+         * Update consumed.
+         * @dev Update all consumed after external call on workerpool contract
+         * to prevent reentrency.
+         */
+        m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // @dev cheaper than `+= volume` here
+        m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
+        m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
+        // Handle dataset-specific logic if a dataset is used.
         // Lock deal price from requester balance.
         lock(requester, (appPrice + datasetPrice + workerpoolPrice) * volume);
         // Lock deal stake from scheduler balance.
