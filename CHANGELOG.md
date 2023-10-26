@@ -79,7 +79,7 @@
 - Reformat contracts. (#222, #237)
 - Reformat tests. (#238, #239, #241)
 - Check balance in transfer operation (#230)
-- Bump dependencies. (#240, #242, #267)
+- Bump dependencies. (#240, #242, #267, #268)
 - Clean poco-chain files. (#246)
 - Remove patched test helpers. (#249)
 - Fix prettier solidity plugin resolution. (#250)
