@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 import { FakeContract, MockContract, smock } from '@defi-wonderland/smock';
 import { Contract, ContractFactory } from '@ethersproject/contracts';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';

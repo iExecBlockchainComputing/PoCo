@@ -72,19 +72,22 @@
 - Documentation:
     - Add inline solidity documentation. (#251, #252, #259)
     - Update class diagrams. (#257)
+    - Create folder docs that contains all documentation material. (#261)
 - Add dedicated Poco Boost accessors. (#206)
 - Refactor tests. (#177, #178, #179, #181, #188, #200, #209, #210, #211, #221, #243)
 - Add mocha to use test explorer. (#180)
 - Reformat contracts. (#222, #237)
 - Reformat tests. (#238, #239, #241)
 - Check balance in transfer operation (#230)
-- Bump dependencies. (#240, #242)
+- Bump dependencies. (#240, #242, #267)
 - Clean poco-chain files. (#246)
 - Remove patched test helpers. (#249)
 - Fix prettier solidity plugin resolution. (#250)
 - Use a single 0.8.19 solidity version to compile latest contracts. (#255)
-- Compile latest contracts with 0.8.20. (#258)
+- Compile latest contracts with 0.8.21. (#258, #263)
 - Introduce zx for task scripting. (#256)
+- Update copyright and license notices. (#254)
+- Migrate puml2links.sh to zx. (#260)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`

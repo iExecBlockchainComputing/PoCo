@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 const { TruffleDeployer: Deployer } = require('../../utils/FactoryDeployer');
 
 /*****************************************************************************

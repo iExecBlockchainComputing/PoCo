@@ -36,12 +36,20 @@ const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechai
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: '0.8.20', settings: v8Settings }, // PoCo Boost (and ENS contracts >=0.8.4)
+            { version: '0.8.21', settings: v8Settings }, // PoCo Boost (and ENS contracts >=0.8.4)
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],
     },
     networks: {
+        hardhat: {
+            /**
+             * Starting from Hardhat v2.14.0, Shanghai is the default hardfork
+             * used by the Hardhat Network. This fork is not compatible with the
+             * iExec Bellecour blockchain.
+             */
+            hardfork: 'merge',
+        },
         'dev-native': {
             chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
