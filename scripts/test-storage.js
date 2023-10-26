@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 const fs = require('fs');
 const path = require('path');
 const semver = require('semver');

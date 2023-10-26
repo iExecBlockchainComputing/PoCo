@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 const initial_migration = require('../migrations/1_initial_migration.js')
 const deploy_token = require('../migrations/3_deploy_token.js')
 const deploy_core = require('../migrations/4_deploy_core.js')
