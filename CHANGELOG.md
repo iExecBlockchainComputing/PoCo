@@ -38,7 +38,7 @@
             - ERC1271 contracts can be signers of orders. (#231)
     - Compute volume & consume orders. (#194)
     - Lock requester deal value. (#196)
-    - Store deal. (#174)
+    - Store deal. (#174, #264)
     - Emit events. (#182, #184, #197)
     - Lock scheduler stake. (#202)
     - Return `dealId`. (#236)
