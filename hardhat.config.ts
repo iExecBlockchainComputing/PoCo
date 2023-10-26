@@ -42,6 +42,14 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
+        hardhat: {
+            /**
+             * Starting from Hardhat v2.14.0, Shanghai is the default hardfork
+             * used by the Hardhat Network. This fork is not compatible with the
+             * iExec Bellecour blockchain.
+             */
+            hardfork: 'merge',
+        },
         'dev-native': {
             chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
