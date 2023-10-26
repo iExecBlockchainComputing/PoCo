@@ -86,6 +86,7 @@
 - Use a single 0.8.19 solidity version to compile latest contracts. (#255)
 - Compile latest contracts with 0.8.21. (#258, #263)
 - Introduce zx for task scripting. (#256)
+- Update copyright and license notices. (#254)
 - Migrate puml2links.sh to zx. (#260)
 
 ## v5.4.2
