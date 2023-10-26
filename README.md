@@ -144,3 +144,9 @@ npm run sol-to-uml
 ```
 npm run puml-to-links
 ```
+
+### Render only storage diagrams
+
+```
+npm run storage-to-diagrams
+```
