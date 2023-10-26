@@ -18,17 +18,16 @@
 
 pragma solidity ^0.8.0;
 
-import {Store} from "../Store.v8.sol";
-
 /**
- * @title Base contract of all Delegate contracts.
- * @dev Every module must inherit from this contract.
+ * @notice The IERC734 interface of onchain-id requires a static version of solidity:
+ * https://github.com/onchain-id/solidity/blob/2.2.0/contracts/interface/IERC734.sol
+ * Pragma of the interface is updated here to maintain consistency accross the project.
+ * @dev Relevant part of ERC734 interface (Key Holder) standard as defined in the EIP.
  */
-abstract contract DelegateBase is Store {
+interface IERC734 {
     /**
-     * @dev Constructor used by all PoCo modules.
+     * @dev Returns TRUE if a key is present and has the given purpose. If the key is not
+     * present or does not have the given purpose it returns FALSE.
      */
-    constructor() {
-        renounceOwnership();
-    }
+    function keyHasPurpose(bytes32 key, uint256 purpose) external view returns (bool exists);
 }

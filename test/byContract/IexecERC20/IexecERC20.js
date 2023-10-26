@@ -29,7 +29,7 @@ var Workerpool         = artifacts.require("Workerpool");
 
 var TestReceiver       = artifacts.require("TestReceiver");
 
-const { BN, expectEvent, expectRevert } = require("patched-openzeppelin-test-helpers");
+const { BN, expectEvent, expectRevert } = require("@openzeppelin/test-helpers");
 const tools     = require("../../../utils/tools");
 const enstools  = require("../../../utils/ens-tools");
 const odbtools  = require("../../../utils/odb-tools");

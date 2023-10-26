@@ -1,5 +1,5 @@
-import hre from 'hardhat';
 import fs from 'fs';
+import hre from 'hardhat';
 import path from 'path';
 import initial_migration from '../migrations/1_initial_migration';
 import deploy_token from '../migrations/3_deploy_token';
@@ -9,18 +9,25 @@ import whitelisting from '../migrations/6_whitelisting';
 import functions from '../migrations/999_functions';
 import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
 import {
+    ENSRegistry,
     ERC1538Proxy,
-    IexecLibOrders_v5,
-    IexecPocoBoostDelegate__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    ERC1538Update,
-    ERC1538Update__factory,
     ERC1538Query,
     ERC1538Query__factory,
+    ERC1538Update,
+    ERC1538Update__factory,
+    IexecLibOrders_v5,
+    IexecPocoBoostAccessorsDelegate__factory,
+    IexecPocoBoostDelegate__factory,
+    PublicResolver,
 } from '../typechain';
 const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy');
 const IexecLibOrders: IexecLibOrders_v5 = hre.artifacts.require('IexecLibOrders_v5');
-
+const ensRegistry: ENSRegistry = hre.artifacts.require(
+    '@ensdomains/ens-contracts/contracts/registry/ENSRegistry',
+);
+const ensPublicResolver: PublicResolver = hre.artifacts.require(
+    '@ensdomains/ens-contracts/contracts/registry/PublicResolver',
+);
 /**
  * @dev Deploying contracts with `npx hardhat deploy` task brought by
  * `hardhat-deploy` plugin.
@@ -48,6 +55,12 @@ module.exports = async function () {
     console.log(`ERC1538Proxy found: ${erc1538ProxyAddress}`);
     // Save addresses of deployed PoCo Nominal contracts for later use
     saveDeployedAddress('ERC1538Proxy', erc1538ProxyAddress);
+
+    // Save addresses of deployed ENS contracts for later use
+    const { address: ensRegistryAddress } = await ensRegistry.deployed();
+    saveDeployedAddress('ENSRegistry', ensRegistryAddress);
+    const { address: ensPublicResolverAddress } = await ensPublicResolver.deployed();
+    saveDeployedAddress('ENSPublicResolver', ensPublicResolverAddress);
 
     console.log('Deploying PoCo Boost..');
     const [owner] = await hre.ethers.getSigners();
