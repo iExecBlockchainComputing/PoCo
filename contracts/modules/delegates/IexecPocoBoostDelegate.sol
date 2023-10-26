@@ -244,7 +244,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         /**
          * Update consumed.
          * @dev Update all consumed after external call on workerpool contract
-         * to prevent reentrency.
+         * to prevent reentrancy.
          */
         m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // @dev cheaper than `+= volume` here
         m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
