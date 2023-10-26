@@ -57,7 +57,7 @@ const workerpoolPrice = 1_000_000_000;
 
 /**
  * Extract address of a newly created entry in a registry contract
- * from the tx's receipt.
+ * from the tx receipt.
  * @param receipt contract receipt
  * @param registryInstanceAddress address of the registry contract
  * @returns address of the entry in checksum format.

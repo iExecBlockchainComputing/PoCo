@@ -11,7 +11,7 @@ import {Store} from "../Store.v8.sol";
  */
 abstract contract DelegateBase is Store {
     /**
-     * @dev constructor used by all PoCo modules.
+     * @dev Constructor used by all PoCo modules.
      */
     constructor() {
         renounceOwnership();
