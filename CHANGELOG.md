@@ -84,7 +84,7 @@
 - Remove patched test helpers. (#249)
 - Fix prettier solidity plugin resolution. (#250)
 - Use a single 0.8.19 solidity version to compile latest contracts. (#255)
-- Compile latest contracts with 0.8.20. (#258)
+- Compile latest contracts with 0.8.21. (#258, #263)
 - Introduce zx for task scripting. (#256)
 - Migrate puml2links.sh to zx. (#260)
 
