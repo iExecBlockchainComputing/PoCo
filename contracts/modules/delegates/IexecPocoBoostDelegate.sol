@@ -211,6 +211,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         deal.appPrice = appPrice.toUint96();
         deal.workerpoolOwner = workerpoolOwner;
         deal.workerpoolPrice = workerpoolPrice.toUint96();
+        deal.workerReward = ((workerpoolPrice * // reward depends on
+            (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
+        deal.requester = requester;
         deal.botFirst = requestOrderConsumed.toUint16();
         deal.deadline = (block.timestamp +
             m_categories[category].workClockTimeRef *
@@ -230,9 +233,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         }
         deal.shortTag = shortTag;
         deal.callback = requestOrder.callback;
-        deal.requester = requester;
-        deal.workerReward = ((workerpoolPrice * // reward depends on
-            (100 - IWorkerpool(workerpool).m_schedulerRewardRatioPolicy())) / 100).toUint96(); // worker reward ratio
         // Handle dataset-specific logic if a dataset is used.
         if (hasDataset) {
             // Store deal (dataset)
