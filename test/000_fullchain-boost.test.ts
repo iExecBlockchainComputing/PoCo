@@ -127,9 +127,8 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         proxyAddress = await getContractAddress('ERC1538Proxy');
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
-        const tokenAddress = await iexecInstance.token();
         if (DEPLOYMENT.asset != 'Native') {
-            rlcInstance = RLC__factory.connect(tokenAddress, owner);
+            rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
         }
         domain = {
             name: 'iExecODB',
