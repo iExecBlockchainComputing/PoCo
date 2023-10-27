@@ -91,6 +91,7 @@
 - Migrate puml2links.sh to zx. (#260)
 - Make Poco Boost ITs runnable with "native" mode. (#271)
 - Add Slither config. Run single contract Slither analysis on CI. (#244)
+- Remove useless files. (#273)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
