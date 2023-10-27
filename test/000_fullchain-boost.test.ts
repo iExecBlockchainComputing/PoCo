@@ -7,6 +7,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
 import hre, { deployments, ethers } from 'hardhat';
+import config from '../config/config.json';
 import {
     AppRegistry,
     AppRegistry__factory,
@@ -14,6 +15,7 @@ import {
     DatasetRegistry__factory,
     IexecAccessors,
     IexecAccessors__factory,
+    IexecInterfaceNative__factory,
     IexecMaintenanceDelegate__factory,
     IexecOrderManagement__factory,
     IexecPocoBoostAccessorsDelegate__factory,
@@ -47,6 +49,7 @@ import {
 } from '../utils/poco-tools';
 import { extractEventsFromReceipt } from '../utils/tools';
 
+const DEPLOYMENT = config.chains.default;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
@@ -124,7 +127,9 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         proxyAddress = await getContractAddress('ERC1538Proxy');
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
-        rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
+        if (DEPLOYMENT.asset != 'Native') {
+            rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
+        }
         domain = {
             name: 'iExecODB',
             version: '5.0.0',
@@ -204,7 +209,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
-            await getRlcAndDeposit(requester, dealPrice);
+            await depositInIexecAccount(requester, dealPrice);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
             // Deposit RLC in the scheduler's account.
@@ -213,7 +218,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 workerpoolPrice,
                 volume,
             );
-            await getRlcAndDeposit(scheduler, schedulerStake);
+            await depositInIexecAccount(scheduler, schedulerStake);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
             await signOrders(domain, orders, ordersActors);
@@ -420,14 +425,14 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             });
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * volume;
-            await getRlcAndDeposit(requester, dealPrice);
+            await depositInIexecAccount(requester, dealPrice);
             const schedulerDealStake = await computeSchedulerDealStake(
                 iexecInstance,
                 workerpoolPrice,
                 volume,
             );
             const schedulerTaskStake = schedulerDealStake / volume;
-            await getRlcAndDeposit(scheduler, schedulerDealStake);
+            await depositInIexecAccount(scheduler, schedulerDealStake);
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -580,7 +585,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
-            await getRlcAndDeposit(requester, dealPrice);
+            await depositInIexecAccount(requester, dealPrice);
             // Deposit RLC in the scheduler's account.
             const schedulerDealStake = await computeSchedulerDealStake(
                 iexecInstance,
@@ -591,7 +596,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
 
             const kittyAddress = await iexecInstance.kitty_address();
 
-            await getRlcAndDeposit(scheduler, schedulerDealStake);
+            await depositInIexecAccount(scheduler, schedulerDealStake);
             const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -649,15 +654,27 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     });
 
     /**
-     * Transfer RLC from owner to recipient and deposit recipient value on iExec.
+     * Deposit value in iExec account.
      * @param value The value to deposit.
      * @param account Deposit value for an account.
      */
-    async function getRlcAndDeposit(account: SignerWithAddress, value: number) {
-        await rlcInstance.transfer(account.address, value);
-        await rlcInstance
-            .connect(account)
-            .approveAndCall(iexecPocoBoostInstance.address, value, '0x');
+    async function depositInIexecAccount(account: SignerWithAddress, value: number) {
+        if (rlcInstance) {
+            // Token
+            // Transfer RLC from owner to recipient
+            await rlcInstance.transfer(account.address, value);
+            // Deposit
+            await rlcInstance
+                .connect(account)
+                .approveAndCall(iexecPocoBoostInstance.address, value, '0x');
+        } else {
+            // Native
+            await IexecInterfaceNative__factory.connect(proxyAddress, account)
+                .deposit({
+                    value: (value * 10 ** 9).toString(),
+                })
+                .then((tx) => tx.wait());
+        }
     }
 
     async function viewDealBoost(dealId: string) {
