@@ -1,5 +1,4 @@
-// TODO1 Remove useless build stages & use scripted pipeline
-// TODO2 Run unit tests on token AND native? -> IexecEscrowNative.js, all others
+// TODO[optionnal]: Use scripted pipeline
 def slitherRequested = false
 pipeline {
     agent any
@@ -10,10 +9,7 @@ pipeline {
                 stage('Init') {
                     steps {
                         script {
-                            sh "echo ${env.GIT_BRANCH}"
-                            println slitherRequested
                             slitherRequested = "${env.GIT_BRANCH}" == 'feature/slither-ci'
-                            println slitherRequested
                             sh 'npm ci --production=false --no-progress'
                             sh 'npm run test-storage-layout'
                             // Verify basic deployment. Might be removed at some point.
@@ -24,6 +20,7 @@ pipeline {
                         }
                     }
                 }
+                // TODO: Run tests in native mode (Not required in KYC)
                 stage('Hardhat tests - Public') {
                     steps {
                         script {
@@ -47,22 +44,27 @@ pipeline {
         /**
          * Usage example:
          * docker run --rm --entrypoint /bin/bash -v $(pwd):/share \
-         *  trailofbits/eth-security-toolbox -c \
-         *  'cd /share && solc-select install <solc-version> && slither <contract-path>'
+         *  -e SOLC='<solc-version>' trailofbits/eth-security-toolbox -c \
+         *  'cd /share && solc-select install $SOLC && \
+         *  slither --solc-solcs-select $SOLC <contract-path>'
          */
         stage('Slither') {
             when { expression { return slitherRequested } }
             agent {
                 docker {
                     image 'trailofbits/eth-security-toolbox:latest'
-                    args '--entrypoint='
+                    args '--entrypoint= -e SOLC=0.8.21'
                 }
             }
             steps {
                 script {
                     try {
                         unstash 'node_modules'
-                        sh 'solc-select install 0.8.21 && slither contracts/modules/delegates/IexecPocoBoostDelegate.sol'
+                        sh """
+                        cd /share && solc-select install $SOLC &&
+                        slither --solc-solcs-select $SOLC
+                        contracts/modules/delegates/IexecPocoBoostDelegate.sol
+                        """
                     } catch (err) {
                         sh "echo ${STAGE_NAME} stage is unstable"
                     }
