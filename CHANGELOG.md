@@ -52,6 +52,7 @@
         - Change local structure for local variables. (#232)
         - Store in variable if read multiple times. (#233)
         - Group `hasDataset` block. (#234)
+    - Remove useless variable. (#272)
 - Implement `pushResultBoost`:
     - Verify task exists. (#219)
     - Push result before deadline. (#195)
