@@ -87,8 +87,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         address app = appOrder.app;
         require(requestOrder.app == app, "PocoBoost: App mismatch");
         address dataset = datasetOrder.dataset;
-        address requestOrderDataset = requestOrder.dataset;
-        require(requestOrderDataset == dataset, "PocoBoost: Dataset mismatch");
+        require(requestOrder.dataset == dataset, "PocoBoost: Dataset mismatch");
         // Check all possible restrictions.
         address workerpool = workerpoolOrder.workerpool;
         require(
@@ -140,7 +139,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, appOrder.sign),
             "PocoBoost: Invalid app order signature"
         );
-        bool hasDataset = requestOrderDataset != address(0);
+        bool hasDataset = dataset != address(0);
         address datasetOwner;
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
