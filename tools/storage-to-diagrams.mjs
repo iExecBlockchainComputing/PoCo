@@ -7,16 +7,14 @@
 // $.verbose = false // Disable bash commands logging.
 
 const projectRootDir = await $`dirname ${__dirname}`
-// generateStorageDiagram('IexecPocoBoostDelegate', 'IexecPocoClassic')
-generateStorageDiagram('IexecPocoBoostDelegate', 'IexecPocoBoost')
+generateStorageDiagram('IexecPocoBoostDelegate')
 
 /**
  * Generate storage diagram of a given contract.
  * @param contractName 
- * @param filename Output file name.
  */
-async function generateStorageDiagram(contractName, filename) {
+async function generateStorageDiagram(contractName) {
     console.log(`Generating storage diagram for contract : ${contractName}`);
-    // await $`npx sol2uml storage -c ${contractName} -o ${projectRootDir}/uml/storage-${filename}.svg contracts/`
-    await $`npx sol2uml storage contracts/ -c Store`
+    await $`cd ${projectRootDir} && 
+        npx sol2uml storage -c ${contractName} contracts/ -v`
 }
