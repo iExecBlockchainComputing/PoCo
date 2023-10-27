@@ -1,0 +1,11 @@
+{
+    "solc_remaps": "@=node_modules/@",
+    "filter_paths": "node_modules",
+    "solc_args": "--optimize --via-ir",
+    "_comments": [
+        "For some reasons `compile_force_framework: hardhat` is not working.",
+        "Error is https://github.com/crytic/slither/issues/1391#issue-1393210665",
+        "Hence we manually compile with `solc_solcs_select` option and",
+        "target a single contract when performing a Slither analysis."
+    ]
+}

@@ -167,6 +167,7 @@ const config: HardhatUserConfig = {
             // Used as mock or fake in UTs
             '@openzeppelin/contracts-v4/interfaces/IERC1271.sol',
         ],
+        keep: true, // Slither requires compiled dependencies
     },
 };
 
