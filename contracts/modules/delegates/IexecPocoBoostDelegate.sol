@@ -3,11 +3,12 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC1271} from "@openzeppelin/contracts-v4/interfaces/IERC1271.sol";
-import {IERC5313} from "@openzeppelin/contracts-v4/interfaces/IERC5313.sol";
-import {ECDSA} from "@openzeppelin/contracts-v4/utils/cryptography/ECDSA.sol";
-import {Math} from "@openzeppelin/contracts-v4/utils/math/Math.sol";
-import {SafeCast} from "@openzeppelin/contracts-v4/utils/math/SafeCast.sol";
+import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
+import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
+import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
+import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
+import {SafeCast} from "@openzeppelin/contracts-v5/utils/math/SafeCast.sol";
 
 import {IERC734} from "../../external/interfaces/IERC734.sol";
 import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
@@ -24,6 +25,7 @@ import {IexecEscrow} from "./IexecEscrow.v8.sol";
  */
 contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
     using ECDSA for bytes32;
+    using MessageHashUtils for bytes32;
     using Math for uint256;
     using SafeCast for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
@@ -434,7 +436,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
      * @param structHash The original structure hash.
      */
     function _toTypedDataHash(bytes32 structHash) private view returns (bytes32) {
-        return ECDSA.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
+        return MessageHashUtils.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
     }
 
     /**
