@@ -11,25 +11,31 @@ const settings = {
     },
     outputSelection: { '*': { '*': ['storageLayout'] } },
 };
-/**
- * Enable Intermediate Representation (IR) to reduce `Stack too deep` occurrences
- * at compile time (e.g.: too many local variables in `matchOrdersBoost`).
- * https://hardhat.org/hardhat-runner/docs/reference/solidity-support#support-for-ir-based-codegen
- */
-const v8Settings = JSON.parse(JSON.stringify(settings));
-v8Settings.viaIR = true;
-v8Settings.optimizer.details = {
-    yul: true,
-    yulDetails: {
-        optimizerSteps: 'u',
+
+const v8Settings = {
+    ...settings,
+    /**
+     * Enable Intermediate Representation (IR) to reduce `Stack too deep` occurrences
+     * at compile time (e.g.: too many local variables in `matchOrdersBoost`).
+     * https://hardhat.org/hardhat-runner/docs/reference/solidity-support#support-for-ir-based-codegen
+     */
+    viaIR: true,
+    optimizer: {
+        ...settings.optimizer,
+        details: {
+            yul: true,
+            yulDetails: {
+                optimizerSteps: 'u',
+            },
+        },
     },
+    /**
+     * @dev The 0.8.20 compiler switches the default target EVM version to Shanghai.
+     * At this time, the iExec Bellecour blockchain does not support new OPCODES
+     * brought by the Shanghai fork, hence the target must be lowered.
+     */
+    evmVersion: 'paris',
 };
-/**
- * @dev The 0.8.20 compiler switches the default target EVM version to Shanghai.
- * At this time, the iExec Bellecour blockchain does not support new OPCODES
- * brought by the Shanghai fork, hence the target must be lowered.
- */
-v8Settings.evmVersion = 'paris';
 
 const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
 
@@ -165,8 +171,9 @@ const config: HardhatUserConfig = {
             '@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar.sol',
             '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol',
             // Used as mock or fake in UTs
-            '@openzeppelin/contracts-v4/interfaces/IERC1271.sol',
+            '@openzeppelin/contracts-v5/interfaces/IERC1271.sol',
         ],
+        keep: true, // Slither requires compiled dependencies
     },
 };
 

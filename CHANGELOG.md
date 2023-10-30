@@ -13,6 +13,9 @@
     - Update TEE workflow sequence diagram. (#147)
     - Update actors diagram. (#148)
     - Rename UMLs.md file to standard README.md. (#150)
+    - Add inline solidity documentation. (#251, #252, #259)
+    - Update class diagrams. (#257)
+    - Create folder docs that contains all documentation material. (#261)
 - Add `Store` contract compatible with solidity `^0.8.0`. (#138 #154)
 - Add Boost module. (#149 #151 #153)
     - Add interfaces. (#156)   
@@ -52,6 +55,7 @@
         - Change local structure for local variables. (#232)
         - Store in variable if read multiple times. (#233)
         - Group `hasDataset` block. (#234)
+    - Remove useless variable. (#272)
 - Implement `pushResultBoost`:
     - Verify task exists. (#219)
     - Push result before deadline. (#195)
@@ -69,17 +73,13 @@
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)
     - Seize workerpool and reward kitty. (#218)
-- Documentation:
-    - Add inline solidity documentation. (#251, #252, #259)
-    - Update class diagrams. (#257)
-    - Create folder docs that contains all documentation material. (#261)
 - Add dedicated Poco Boost accessors. (#206)
 - Refactor tests. (#177, #178, #179, #181, #188, #200, #209, #210, #211, #221, #243)
 - Add mocha to use test explorer. (#180)
 - Reformat contracts. (#222, #237)
 - Reformat tests. (#238, #239, #241)
 - Check balance in transfer operation (#230)
-- Bump dependencies. (#240, #242, #267)
+- Bump dependencies. (#240, #242, #267, #270, #262)
 - Clean poco-chain files. (#246)
 - Remove patched test helpers. (#249)
 - Fix prettier solidity plugin resolution. (#250)
@@ -88,6 +88,10 @@
 - Introduce zx for task scripting. (#256)
 - Update copyright and license notices. (#254)
 - Migrate puml2links.sh to zx. (#260)
+- Make Poco Boost ITs runnable with "native" mode. (#271)
+- Add Slither config. Run single contract Slither analysis on CI. (#244)
+- Remove useless files. (#273)
+- Merge settings and v8Settings using object spread. (#274)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
