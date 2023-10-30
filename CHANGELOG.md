@@ -13,6 +13,9 @@
     - Update TEE workflow sequence diagram. (#147)
     - Update actors diagram. (#148)
     - Rename UMLs.md file to standard README.md. (#150)
+    - Add inline solidity documentation. (#251, #252, #259)
+    - Update class diagrams. (#257)
+    - Create folder docs that contains all documentation material. (#261)
 - Add `Store` contract compatible with solidity `^0.8.0`. (#138 #154)
 - Add Boost module. (#149 #151 #153)
     - Add interfaces. (#156)   
@@ -70,10 +73,6 @@
 - Implement `claimBoost`:
     - Refund requester. (#198, #201)
     - Seize workerpool and reward kitty. (#218)
-- Documentation:
-    - Add inline solidity documentation. (#251, #252, #259)
-    - Update class diagrams. (#257)
-    - Create folder docs that contains all documentation material. (#261)
 - Add dedicated Poco Boost accessors. (#206)
 - Refactor tests. (#177, #178, #179, #181, #188, #200, #209, #210, #211, #221, #243)
 - Add mocha to use test explorer. (#180)
@@ -92,6 +91,7 @@
 - Make Poco Boost ITs runnable with "native" mode. (#271)
 - Add Slither config. Run single contract Slither analysis on CI. (#244)
 - Remove useless files. (#273)
+- Merge settings and v8Settings using object spread. (#274)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
