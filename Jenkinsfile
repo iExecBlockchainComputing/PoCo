@@ -64,8 +64,10 @@ pipeline {
                 docker {
                     reuseNode true
                     // At this time, trailofbits/eth-security-toolbox packages
-                    // an old slither version, hence we use a fresher one
-                    image 'docker-regis.iex.ec/eth-security-toolbox:0.1.0'
+                    // an old slither version, hence we use another Docker image
+                    // (which is less user-friendly. Example: node not included)
+                    // See https://github.com/crytic/slither/issues/2207#issuecomment-1787222979
+                    image 'ghcr.io/crytic/slither:0.10.0'
                     args "-e SOLC='0.8.21' --entrypoint="
                 }
             }
