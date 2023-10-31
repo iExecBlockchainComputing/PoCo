@@ -63,7 +63,9 @@ pipeline {
             agent {
                 docker {
                     reuseNode true
-                    image 'trailofbits/eth-security-toolbox:latest'
+                    // At this time, trailofbits/eth-security-toolbox packages
+                    // an old slither version, hence we use a fresher one
+                    image 'docker-regis.iex.ec/eth-security-toolbox:0.1.0'
                     args "-e SOLC='0.8.21' --entrypoint="
                 }
             }
