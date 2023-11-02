@@ -3,6 +3,7 @@ import '@nomiclabs/hardhat-truffle5';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
 import { HardhatUserConfig } from 'hardhat/config';
+import { HARDHAT_NETWORK_MNEMONIC } from 'hardhat/internal/core/config/default-config';
 
 const settings = {
     optimizer: {
@@ -55,6 +56,9 @@ const config: HardhatUserConfig = {
              * iExec Bellecour blockchain.
              */
             hardfork: 'merge',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            },
         },
         'dev-native': {
             chainId: 65535,
