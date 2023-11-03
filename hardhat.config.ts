@@ -3,7 +3,11 @@ import '@nomiclabs/hardhat-truffle5';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
 import { HardhatUserConfig } from 'hardhat/config';
-import { HARDHAT_NETWORK_MNEMONIC } from 'hardhat/internal/core/config/default-config';
+import {
+    HARDHAT_NETWORK_MNEMONIC,
+    defaultHardhatNetworkParams,
+    defaultLocalhostNetworkParams,
+} from 'hardhat/internal/core/config/default-config';
 
 const settings = {
     optimizer: {
@@ -39,6 +43,7 @@ const v8Settings = {
 };
 
 const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
+const envOrHardhatMnemonic = process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC;
 
 const config: HardhatUserConfig = {
     solidity: {
@@ -57,7 +62,14 @@ const config: HardhatUserConfig = {
              */
             hardfork: 'merge',
             accounts: {
-                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+                mnemonic: envOrHardhatMnemonic,
+            },
+        },
+        'external-hardhat': {
+            chainId: defaultHardhatNetworkParams.chainId,
+            url: defaultLocalhostNetworkParams.url,
+            accounts: {
+                mnemonic: envOrHardhatMnemonic,
             },
         },
         'dev-native': {
