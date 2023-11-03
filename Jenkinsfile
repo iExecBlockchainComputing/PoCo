@@ -67,6 +67,7 @@ pipeline {
                     // an old slither version, hence we use another Docker image
                     // (which is less user-friendly. Example: node not included)
                     // See https://github.com/crytic/slither/issues/2207#issuecomment-1787222979
+                    // As discribed in the issue, version 0.8.3 is not compatible
                     image 'ghcr.io/crytic/slither:0.10.0'
                     args "-e SOLC='0.8.21' --entrypoint="
                 }
