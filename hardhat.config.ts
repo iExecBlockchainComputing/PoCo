@@ -41,7 +41,7 @@ const v8Settings = {
      * At this time, the iExec Bellecour blockchain does not support new OPCODES
      * brought by the Shanghai fork, hence the target must be lowered.
      */
-    ...(isNativeChainType && { evmVersion: 'paris' }),
+    evmVersion: 'paris',
 };
 
 const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
