@@ -15,7 +15,8 @@
  ******************************************************************************/
 
 const { ethers } = require('ethers');
-const FACTORY    = require('@iexec/solidity/deployment/factory.json')
+const DEPLOYMENT_FACTORY = require('@iexec/solidity/deployment/factory.json')
+const FACTORY = require('@iexec/solidity/build/contracts/GenericFactory.json')
 
 async function waitTx(txPromise) { await (await txPromise).wait() }
 
@@ -28,7 +29,8 @@ class EthersDeployer
 	{
 		this.options = options;
 		this.factoryAsPromise = new Promise(async (resolve, reject) => {
-			if (await wallet.provider.getCode(FACTORY.address) !== "0x")
+			let factoryAddress = DEPLOYMENT_FACTORY.address;
+			if (await wallet.provider.getCode(factoryAddress) !== "0x")
 			{
 				console.debug(`→ Factory is available on this network`);
 			}
@@ -37,8 +39,11 @@ class EthersDeployer
 				try
 				{
 					console.debug(`→ Factory is not yet deployed on this network`);
-					await waitTx(wallet.sendTransaction({ to: FACTORY.deployer, value: FACTORY.cost }));
-					await waitTx(wallet.provider.sendTransaction(FACTORY.tx));
+					const contract = await new ethers
+						.ContractFactory(FACTORY.abi, FACTORY.bytecode, wallet)
+						.deploy();
+					await contract.deployTransaction.wait();
+					factoryAddress = contract.address;
 					console.debug(`→ Factory successfully deployed`);
 				}
 				catch (e)
@@ -47,7 +52,7 @@ class EthersDeployer
 					reject(e);
 				}
 			}
-			this.factory = new ethers.Contract(FACTORY.address, FACTORY.abi, wallet);
+			this.factory = new ethers.Contract(factoryAddress, FACTORY.abi, wallet);
 			resolve(this.factory);
 		})
 	}

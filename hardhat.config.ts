@@ -8,7 +8,9 @@ import {
     defaultHardhatNetworkParams,
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
+import chainConfig from './config/config.json';
 
+const isNativeChainType = chainConfig.chains.default.asset == 'Native';
 const settings = {
     optimizer: {
         enabled: true,
@@ -39,11 +41,10 @@ const v8Settings = {
      * At this time, the iExec Bellecour blockchain does not support new OPCODES
      * brought by the Shanghai fork, hence the target must be lowered.
      */
-    evmVersion: 'paris',
+    ...(isNativeChainType && { evmVersion: 'paris' }),
 };
 
 const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
-const envOrHardhatMnemonic = process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC;
 
 const config: HardhatUserConfig = {
     solidity: {
@@ -55,21 +56,22 @@ const config: HardhatUserConfig = {
     },
     networks: {
         hardhat: {
+            accounts: {
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            },
             /**
              * Starting from Hardhat v2.14.0, Shanghai is the default hardfork
              * used by the Hardhat Network. This fork is not compatible with the
              * iExec Bellecour blockchain.
              */
-            hardfork: 'merge',
-            accounts: {
-                mnemonic: envOrHardhatMnemonic,
-            },
+            ...(isNativeChainType && { hardfork: 'berlin' }), // No EIP-1559 before London fork
+            ...(isNativeChainType && { blockGasLimit: 6_700_000 }),
         },
         'external-hardhat': {
-            chainId: defaultHardhatNetworkParams.chainId,
+            ...defaultHardhatNetworkParams,
             url: defaultLocalhostNetworkParams.url,
             accounts: {
-                mnemonic: envOrHardhatMnemonic,
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
         },
         'dev-native': {
