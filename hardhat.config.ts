@@ -60,12 +60,20 @@ const config: HardhatUserConfig = {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
             /**
-             * Starting from Hardhat v2.14.0, Shanghai is the default hardfork
-             * used by the Hardhat Network. This fork is not compatible with the
-             * iExec Bellecour blockchain.
+             * Create an internal hardhat network as close as possible to the iExec
+             * Bellecour blockchain where PoCo will be deployed in `native` mode.
              */
-            ...(isNativeChainType && { hardfork: 'berlin' }), // No EIP-1559 before London fork
-            ...(isNativeChainType && { blockGasLimit: 6_700_000 }),
+            ...(isNativeChainType && {
+                /**
+                 * Any fresh version of Hardhat uses for its default hardhat
+                 * network a configuration from a recent Ethereum fork. EIPs
+                 * brought by such recent fork are not necessarily supported by
+                 * the iExec Bellecour blockchain.
+                 */
+                hardfork: 'berlin', // No EIP-1559 before London fork
+                gasPrice: 0,
+                blockGasLimit: 6_700_000,
+            }),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
