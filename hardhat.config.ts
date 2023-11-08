@@ -59,21 +59,32 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            /**
-             * Create an internal hardhat network as close as possible to the iExec
-             * Bellecour blockchain where PoCo will be deployed in `native` mode.
-             */
-            ...(isNativeChainType && {
-                /**
-                 * Any fresh version of Hardhat uses for its default hardhat
-                 * network a configuration from a recent Ethereum fork. EIPs
-                 * brought by such recent fork are not necessarily supported by
-                 * the iExec Bellecour blockchain.
-                 */
-                hardfork: 'berlin', // No EIP-1559 before London fork
-                gasPrice: 0,
-                blockGasLimit: 6_700_000,
-            }),
+            ...(isNativeChainType
+                ? {
+                      /**
+                       * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
+                       * @note Any fresh version of Hardhat uses for its default
+                       * hardhat network a configuration from a recent Ethereum
+                       * fork. EIPs brought by such recent fork are not necessarily
+                       * supported by the iExec Bellecour blockchain.
+                       */
+                      hardfork: 'berlin', // No EIP-1559 before London fork
+                      gasPrice: 0,
+                      blockGasLimit: 6_700_000,
+                  }
+                : {
+                      /**
+                       * @dev Token mode. As close as possible to mainnet.
+                       * @note Hardfork should be at least `shanghai` to look like mainnet.
+                       * Error with this fork: "Error deploying the factory
+                       * Transaction reverted: trying to deploy a contract whose code is too large"
+                       * Starting from Shanghai, gas cost changed and following tx
+                       * https://github.com/iExecBlockchainComputing/iexec-solidity/blob/0.1.1/deployment/factory.json
+                       * must be updated with a higher `gasLimit`. In the meantime,
+                       * a previous hardfork is used.
+                       */
+                      hardfork: 'merge',
+                  }),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
