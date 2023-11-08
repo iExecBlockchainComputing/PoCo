@@ -15,7 +15,9 @@
  ******************************************************************************/
 
 const { ethers } = require('ethers');
-const FACTORY    = require('@iexec/solidity/deployment/factory.json')
+const FACTORY = require('../config/config.json').chains.default.asset == "Native"
+	? require('@amxx/factory/deployments/GenericFactory.json')
+	: require('@amxx/factory/deployments/GenericFactory_shanghai.json')
 
 async function waitTx(txPromise) { await (await txPromise).wait() }
 
