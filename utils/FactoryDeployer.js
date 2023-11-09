@@ -15,9 +15,10 @@
  ******************************************************************************/
 
 const { ethers } = require('ethers');
-const FACTORY = require('../config/config.json').chains.default.asset == "Native"
-	? require('@amxx/factory/deployments/GenericFactory.json')
-	: require('@amxx/factory/deployments/GenericFactory_shanghai.json')
+const FACTORY = require('../config/config.json').chains.default.asset == "Token"
+	&& hre.network.name.includes('hardhat') // Required until dev-token chain EIPs are updated
+		?  require('@amxx/factory/deployments/GenericFactory_shanghai.json')
+		:  require('@amxx/factory/deployments/GenericFactory.json')
 
 async function waitTx(txPromise) { await (await txPromise).wait() }
 
