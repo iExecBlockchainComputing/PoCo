@@ -92,6 +92,7 @@
 - Add Slither config. Run single contract Slither analysis on CI. (#244, #275)
 - Remove useless files. (#273)
 - Merge settings and v8Settings using object spread. (#274)
+- Create a hardhat network close to the iExec Bellecour blockchain. (#276)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
