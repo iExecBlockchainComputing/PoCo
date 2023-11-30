@@ -3,7 +3,14 @@ import '@nomiclabs/hardhat-truffle5';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
 import { HardhatUserConfig } from 'hardhat/config';
+import {
+    HARDHAT_NETWORK_MNEMONIC,
+    defaultHardhatNetworkParams,
+    defaultLocalhostNetworkParams,
+} from 'hardhat/internal/core/config/default-config';
+import chainConfig from './config/config.json';
 
+const isNativeChainType = chainConfig.chains.default.asset == 'Native';
 const settings = {
     optimizer: {
         enabled: true,
@@ -49,12 +56,28 @@ const config: HardhatUserConfig = {
     },
     networks: {
         hardhat: {
-            /**
-             * Starting from Hardhat v2.14.0, Shanghai is the default hardfork
-             * used by the Hardhat Network. This fork is not compatible with the
-             * iExec Bellecour blockchain.
-             */
-            hardfork: 'merge',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            },
+            ...(isNativeChainType && {
+                /**
+                 * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
+                 * @note Any fresh version of Hardhat uses for its default
+                 * hardhat network a configuration from a recent Ethereum
+                 * fork. EIPs brought by such recent fork are not necessarily
+                 * supported by the iExec Bellecour blockchain.
+                 */
+                hardfork: 'berlin', // No EIP-1559 before London fork
+                gasPrice: 0,
+                blockGasLimit: 6_700_000,
+            }),
+        },
+        'external-hardhat': {
+            ...defaultHardhatNetworkParams,
+            url: defaultLocalhostNetworkParams.url,
+            accounts: {
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            },
         },
         'dev-native': {
             chainId: 65535,
