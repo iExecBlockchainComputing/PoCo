@@ -16,6 +16,7 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 
 - [Contracts and Actors Architecture](./docs/README.md#contracts-and-actors-architecture)
 - [State diagrams](./docs/Statuses.md)
+- [Storage diagram (Boost)](./docs/uml/storage-IexecPocoBoostDelegate.svg)
 - [Nominal workflow sequence](./docs/README.md#nominal)
 - [Nominal workflow sequence w/ TEE](./docs/README.md#nominaltee)
 - [Boost workflow sequence](./docs/README.md#boost)
