@@ -4,7 +4,7 @@
 // Check sol2uml documentation at https://github.com/naddison36/sol2uml#storage-usage.
 
 
-// $.verbose = false // Disable bash commands logging.
+$.verbose = false // Disable bash commands logging.
 
 const projectRootDir = await $`dirname ${__dirname}`
 generateStorageDiagram('IexecPocoBoostDelegate')
@@ -16,5 +16,5 @@ generateStorageDiagram('IexecPocoBoostDelegate')
 async function generateStorageDiagram(contractName) {
     console.log(`Generating storage diagram for contract : ${contractName}`);
     await $`cd ${projectRootDir} && 
-        npx sol2uml storage -c ${contractName} contracts/ -v`
+        npx sol2uml storage -c ${contractName} .`
 }
