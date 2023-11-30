@@ -16,5 +16,5 @@ generateStorageDiagram('IexecPocoBoostDelegate')
 async function generateStorageDiagram(contractName) {
     console.log(`Generating storage diagram for contract : ${contractName}`);
     await $`cd ${projectRootDir} && 
-        npx sol2uml storage -c ${contractName} .`
+        npx sol2uml storage -c ${contractName} -o docs/uml/storage-${contractName}.svg .`
 }
