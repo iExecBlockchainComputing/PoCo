@@ -56,6 +56,9 @@ contract('Fullchain', async (accounts) => {
 	var WorkerpoolRegistryInstance = null;
 
 	var AppInstance        = null;
+
+
+    
 	var DatasetInstance    = null;
 	var WorkerpoolInstance = null;
 
