@@ -21,7 +21,7 @@
     "storage-to-diagrams": "npx zx tools/storage-to-diagrams.mjs"
   },
   "lint-staged": {
-    "*.{ts,sol}": [
+    "*.{js,ts,sol}": [
       "prettier --write"
     ]
   },
