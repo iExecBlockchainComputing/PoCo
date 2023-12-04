@@ -16,6 +16,7 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 
 - [Contracts and Actors Architecture](./docs/README.md#contracts-and-actors-architecture)
 - [State diagrams](./docs/Statuses.md)
+- [Storage diagram (Boost)](./docs/uml/storage-IexecPocoBoostDelegate.svg)
 - [Nominal workflow sequence](./docs/README.md#nominal)
 - [Nominal workflow sequence w/ TEE](./docs/README.md#nominaltee)
 - [Boost workflow sequence](./docs/README.md#boost)
@@ -35,7 +36,7 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 
 ## Configure a deployment
 
-Starting from version 5, the PoCo uses a modular design based on [ERC1538](https://github.com/ethereum/EIPs/issues/1538). The migration scripts and tests will use different modules and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated Sidechains (Native token based RLC).
+Starting from version 5, the PoCo uses a modular design based on [ERC1538](https://github.com/ethereum/EIPs/issues/1538). The migration scripts and tests will use different modules and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated sidechains (Native token based RLC).
 
 The configuration file is located in `./config/config.json`.
 
@@ -143,4 +144,10 @@ npm run sol-to-uml
 
 ```
 npm run puml-to-links
+```
+
+### Render only storage diagrams
+
+```
+npm run storage-to-diagrams
 ```

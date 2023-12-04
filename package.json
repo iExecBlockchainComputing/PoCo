@@ -15,9 +15,10 @@
     "autotest": "./test.sh",
     "coverage": "npx hardhat coverage",
     "verify": "npx hardhat verify",
-    "uml": "npm run sol-to-uml && npm run puml-to-links",
+    "uml": "npm run sol-to-uml && npm run puml-to-links && npm run storage-to-diagrams",
     "sol-to-uml": "npx zx tools/sol-to-uml.mjs",
-    "puml-to-links": "npx zx tools/puml-to-links.mjs"
+    "puml-to-links": "npx zx tools/puml-to-links.mjs",
+    "storage-to-diagrams": "npx zx tools/storage-to-diagrams.mjs"
   },
   "lint-staged": {
     "*.{js,ts,sol}": [
@@ -63,7 +64,7 @@
     "prettier-plugin-organize-imports": "^3.2.3",
     "prettier-plugin-solidity": "^1.1.3",
     "puml-for-markdown": "^1.2.1",
-    "sol2uml": "^2.5.16",
+    "sol2uml": "^2.5.20",
     "web3": "^1.10.3",
     "zx": "^7.2.3"
   },
