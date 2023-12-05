@@ -55,7 +55,7 @@ async function generateClassDiagramOfDirectory(directory) {
 async function generateClassDiagramOfContracts(contractsList, diagramName) {
     console.log(`Generating class diagram for contracts : ${contractsList}`);
     const baseContracts = contractsList.join(','); // => c1,c2,c3
-    // -b, --baseContractNames <value> 
+    // -b, --baseContractNames <name1,name2> 
     // only output contracts connected to these comma separated base contract names
     await $`cd ${projectRootDir}/ &&
         npx sol2uml class contracts/ -b ${baseContracts} -o docs/uml/class-uml-${diagramName}.svg`

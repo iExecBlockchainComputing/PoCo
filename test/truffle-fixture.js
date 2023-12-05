@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
-const { deployAllContracts } = require('../scripts/truffle-fixture-deployer')
+const { loadFixture } = require('@nomicfoundation/hardhat-network-helpers');
+const { deployAllContracts } = require('../scripts/truffle-fixture-deployer');
 
 module.exports = async () => {
-    console.log("Running truffle-fixture hook before hardhat-truffle test")
+    console.log('Running truffle-fixture hook before hardhat-truffle test');
     // Running all tests at once with`npx hardhat test` requires some fixtures:
     // 1. In `factory deployment` mode a custom truffle-fixture deployer is required
     // Used resources:
