@@ -614,7 +614,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await gasWasterClientInstance.counter()).to.equal(0);
         });
 
-        it.only('Should not push result if not enough gas is forwarded', async function () {
+        it('Should not push result if not enough gas is forwarded', async function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
