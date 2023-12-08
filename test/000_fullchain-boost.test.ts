@@ -613,6 +613,48 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect((await iexecInstance.viewTask(taskId)).status).to.equal(3); // COMPLETED
             expect(await gasWasterClientInstance.counter()).to.equal(0);
         });
+
+        it.only('Should not push result if not enough gas is forwarded', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            });
+            const gasWasterClientInstance = await new GasWasterClient__factory()
+                .connect(anyone)
+                .deploy()
+                .then((contract) => contract.deployed());
+            requestOrder.callback = gasWasterClientInstance.address;
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+                worker.address,
+                taskId,
+                constants.NULL.ADDRESS,
+                scheduler,
+            );
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        buildResultCallbackAndDigest(123).resultsCallback,
+                        schedulerSignature,
+                        constants.NULL.ADDRESS,
+                        constants.NULL.SIGNATURE,
+                        { gasLimit: 160_000 },
+                    ),
+            ).to.be.revertedWith('PocoBoost: Not enough gas after callback');
+        });
     });
 
     describe('Claim', function () {
