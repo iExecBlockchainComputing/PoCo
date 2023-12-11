@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { BigNumberish } from '@ethersproject/bignumber';
+import { BytesLike } from '@ethersproject/bytes';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -639,20 +641,26 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 constants.NULL.ADDRESS,
                 scheduler,
             );
+            const pushResultArgs = [
+                dealId,
+                taskIndex,
+                results,
+                buildResultCallbackAndDigest(123).resultsCallback,
+                schedulerSignature,
+                constants.NULL.ADDRESS,
+                constants.NULL.SIGNATURE,
+            ] as [BytesLike, BigNumberish, BytesLike, BytesLike, BytesLike, string, BytesLike];
+            const successfulTxGasLimit = await iexecPocoBoostInstance
+                .connect(worker)
+                .estimateGas.pushResultBoost(...pushResultArgs);
+            const failingTxGaslimit = successfulTxGasLimit.sub(
+                (await iexecInstance.callbackgas()).div(63),
+            ); // Forward to consumer contract less gas than it has the right to consume
 
             await expect(
                 iexecPocoBoostInstance
                     .connect(worker)
-                    .pushResultBoost(
-                        dealId,
-                        taskIndex,
-                        results,
-                        buildResultCallbackAndDigest(123).resultsCallback,
-                        schedulerSignature,
-                        constants.NULL.ADDRESS,
-                        constants.NULL.SIGNATURE,
-                        { gasLimit: 160_000 },
-                    ),
+                    .pushResultBoost(...pushResultArgs, { gasLimit: failingTxGaslimit }),
             ).to.be.revertedWith('PocoBoost: Not enough gas after callback');
         });
     });
