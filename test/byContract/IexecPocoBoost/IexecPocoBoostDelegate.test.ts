@@ -19,6 +19,7 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
+    GasWasterClient,
     GasWasterClient__factory,
     IERC734,
     IERC734__factory,
@@ -159,6 +160,7 @@ async function createMock<CF extends ContractFactory, C extends Contract>(
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: MockContract<IexecPocoBoostDelegate>;
     let oracleConsumerInstance: FakeContract<TestClient>;
+    let gasWasterClientInstance: MockContract<GasWasterClient>;
     let appInstance: MockContract<App>;
     let workerpoolInstance: MockContract<Workerpool>;
     let datasetInstance: MockContract<Dataset>;
@@ -200,6 +202,9 @@ describe('IexecPocoBoostDelegate', function () {
             requester: requester,
         };
         oracleConsumerInstance = await smock.fake<TestClient>(TestClient__factory);
+        gasWasterClientInstance = await createMock<GasWasterClient__factory, GasWasterClient>(
+            'GasWasterClient',
+        ); // Deploy a real but nevertheless observable contract
         appInstance = await createMock<App__factory, App>('App');
         workerpoolInstance = await createMock<Workerpool__factory, Workerpool>('Workerpool');
         datasetInstance = await createMock<Dataset__factory, Dataset>('Dataset');
@@ -1965,6 +1970,52 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
+        it('Should push result even if callback consumes maximum gas', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                callback: gasWasterClientInstance.address,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const resultsCallback = buildResultCallbackAndDigest(123).resultsCallback;
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        getDealId(domain, requestOrder, taskIndex),
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        await buildAndSignContributionAuthorizationMessage(
+                            worker.address,
+                            taskId,
+                            constants.NULL.ADDRESS,
+                            scheduler,
+                        ),
+                        constants.NULL.ADDRESS,
+                        constants.NULL.SIGNATURE,
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                /**
+                 * Gas waster client has been called but run out-of-gas.
+                 */
+                .to.not.emit(gasWasterClientInstance, 'GotResult');
+            expect(gasWasterClientInstance.receiveResult).to.have.been.calledOnceWith(
+                taskId,
+                resultsCallback,
+            );
+        });
+
         it('Should not push result if wrong deal ID', async function () {
             await expect(
                 iexecPocoBoostInstance
@@ -2256,10 +2307,6 @@ describe('IexecPocoBoostDelegate', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            const gasWasterClientInstance = await new GasWasterClient__factory()
-                .connect(anyone)
-                .deploy()
-                .then((contract) => contract.deployed());
             requestOrder.callback = gasWasterClientInstance.address;
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
