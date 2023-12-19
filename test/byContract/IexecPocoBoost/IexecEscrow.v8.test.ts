@@ -4,65 +4,122 @@ import { ethers, expect } from 'hardhat';
 import { IexecEscrowTestContract, IexecEscrowTestContract__factory } from '../../../typechain';
 
 const BALANCES = 'm_balances';
+const FROZENS = 'm_frozens';
 
-describe('IexecEscrow.v8', async function () {
+describe('IexecEscrow.v8', function () {
     const addressZero = '0x0000000000000000000000000000000000000000';
-    const initialAdminBalance = 10;
-    const initialWallet0Balance = 1;
+    const initialEscrowBalance = 10; // using 0 causes an error when checking balance.
+    const initialUserBalance = 20;
+    const initialUserFrozen = 30;
     const amount = 3;
-    let admin: SignerWithAddress;
-    let wallet0: SignerWithAddress;
+
+    let deployer: SignerWithAddress;
+    let user: SignerWithAddress;
     let iexecEscrow: MockContract<IexecEscrowTestContract>;
 
     beforeEach(async function () {
-        [admin, wallet0] = await ethers.getSigners();
+        // Create wallets.
+        [deployer, user] = await ethers.getSigners();
+        // Deploy the contract to be tested as a mock.
         iexecEscrow = (await smock
             .mock<IexecEscrowTestContract__factory>('IexecEscrowTestContract')
             .then((instance) => instance.deploy())
             .then((contract) => contract.deployed())) as MockContract<IexecEscrowTestContract>;
-        iexecEscrow.setVariable(BALANCES, {
-            [iexecEscrow.address]: initialAdminBalance,
-            [wallet0.address]: initialWallet0Balance,
+        // Set contract's initial state.
+        await iexecEscrow.setVariables({
+            [BALANCES]: {
+                [iexecEscrow.address]: initialEscrowBalance,
+                [user.address]: initialUserBalance,
+            },
+            [FROZENS]: {
+                [user.address]: initialUserFrozen,
+            },
         });
     });
 
-    describe('Transfer', function () {
-        it('Should transfer between balances', async function () {
-            // Check balances before the transfer.
+    describe('Lock', function () {
+        it('Should lock funds', async function () {
+            // Check balances before the operation.
             expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
-                initialAdminBalance,
+                initialEscrowBalance,
             );
-            expect(await iexecEscrow.getVariable(BALANCES, [wallet0.address])).to.be.equal(
-                initialWallet0Balance,
+            expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
+                initialUserBalance,
             );
-            // Do the transfer.
-            await doTransfer(wallet0.address, amount);
-            // Check balances after the transfer.
+            expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
+                initialUserFrozen,
+            );
+            // Run operation.
+            await expect(iexecEscrow.lock_(user.address, amount))
+                .to.emit(iexecEscrow, 'Transfer')
+                .withArgs(user.address, iexecEscrow.address, amount)
+                .to.emit(iexecEscrow, 'Lock')
+                .withArgs(user.address, amount);
+            // Check balances after the operation.
             expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
-                initialAdminBalance - amount,
+                initialEscrowBalance + amount,
             );
-            expect(await iexecEscrow.getVariable(BALANCES, [wallet0.address])).to.be.equal(
-                initialWallet0Balance + amount,
+            expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
+                initialUserBalance - amount,
+            );
+            expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
+                initialUserFrozen + amount,
             );
         });
 
-        it('Should not transfer when from is address(0)', async function () {
-            await expect(iexecEscrow.transfer__(addressZero, amount)).to.be.revertedWith(
+        it('Should not lock funds for address(0)', async function () {
+            await expect(iexecEscrow.lock_(addressZero, amount)).to.be.revertedWith(
+                'IexecEscrow: Transfer from empty address',
+            );
+        });
+
+        it('Should not lock funds when insufficient balance', async function () {
+            await expect(iexecEscrow.lock_(user.address, 1000)).to.be.revertedWith(
+                'IexecEscrow: Transfer amount exceeds balance',
+            );
+        });
+    });
+
+    describe('Unlock', function () {
+        it('Should unlock funds', async function () {
+            // Check balances before the operation.
+            expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
+                initialEscrowBalance,
+            );
+            expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
+                initialUserBalance,
+            );
+            expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
+                initialUserFrozen,
+            );
+            // Run operation.
+            await expect(iexecEscrow.unlock_(user.address, amount))
+                .to.emit(iexecEscrow, 'Transfer')
+                .withArgs(iexecEscrow.address, user.address, amount)
+                .to.emit(iexecEscrow, 'Unlock')
+                .withArgs(user.address, amount);
+            // Check balances after the operation.
+            expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
+                initialEscrowBalance - amount,
+            );
+            expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
+                initialUserBalance + amount,
+            );
+            expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
+                initialUserFrozen - amount,
+            );
+        });
+
+        it('Should not unlock funds for address(0)', async function () {
+            await expect(iexecEscrow.unlock_(addressZero, amount)).to.be.revertedWith(
                 'IexecEscrow: Transfer to empty address',
             );
         });
 
-        it('Should not transfer when to is address(0)', async function () {
-            await expect(iexecEscrow.transfer__(addressZero, amount)).to.be.revertedWith(
-                'IexecEscrow: Transfer to empty address',
+        it('Should not unlock funds when insufficient balance', async function () {
+            await expect(iexecEscrow.unlock_(user.address, 1000)).to.be.revertedWith(
+                'IexecEscrow: Transfer amount exceeds balance',
             );
         });
     });
-
-    async function doTransfer(to: string, amount: number) {
-        const tx = await iexecEscrow.transfer__(to, amount);
-        const txReceipt = await tx.wait();
-        await expect(tx).to.emit(iexecEscrow, 'Transfer').withArgs(iexecEscrow.address, to, amount);
-        return txReceipt.gasUsed.toBigInt();
-    }
 });
