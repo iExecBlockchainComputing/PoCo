@@ -40,15 +40,7 @@ describe('IexecEscrow.v8', function () {
     describe('Lock', function () {
         it('Should lock funds', async function () {
             // Check balances before the operation.
-            expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
-                initialEscrowBalance,
-            );
-            expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
-                initialUserBalance,
-            );
-            expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
-                initialUserFrozen,
-            );
+            await checkInitialBalances();
             // Run operation.
             await expect(iexecEscrow.lock_(user.address, amount))
                 .to.emit(iexecEscrow, 'Transfer')
@@ -56,13 +48,9 @@ describe('IexecEscrow.v8', function () {
                 .to.emit(iexecEscrow, 'Lock')
                 .withArgs(user.address, amount);
             // Check balances after the operation.
-            expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
+            await checkPostOperationBalances(
                 initialEscrowBalance + amount,
-            );
-            expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
                 initialUserBalance - amount,
-            );
-            expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
                 initialUserFrozen + amount,
             );
         });
@@ -83,15 +71,7 @@ describe('IexecEscrow.v8', function () {
     describe('Unlock', function () {
         it('Should unlock funds', async function () {
             // Check balances before the operation.
-            expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
-                initialEscrowBalance,
-            );
-            expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
-                initialUserBalance,
-            );
-            expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
-                initialUserFrozen,
-            );
+            await checkInitialBalances();
             // Run operation.
             await expect(iexecEscrow.unlock_(user.address, amount))
                 .to.emit(iexecEscrow, 'Transfer')
@@ -99,13 +79,9 @@ describe('IexecEscrow.v8', function () {
                 .to.emit(iexecEscrow, 'Unlock')
                 .withArgs(user.address, amount);
             // Check balances after the operation.
-            expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
+            await checkPostOperationBalances(
                 initialEscrowBalance - amount,
-            );
-            expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
                 initialUserBalance + amount,
-            );
-            expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
                 initialUserFrozen - amount,
             );
         });
@@ -122,4 +98,28 @@ describe('IexecEscrow.v8', function () {
             );
         });
     });
+
+    async function checkInitialBalances() {
+        expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
+            initialEscrowBalance,
+        );
+        expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
+            initialUserBalance,
+        );
+        expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
+            initialUserFrozen,
+        );
+    }
+
+    async function checkPostOperationBalances(
+        escrowBalance: number,
+        userBalance: number,
+        userFrozen: number,
+    ) {
+        expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
+            escrowBalance,
+        );
+        expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(userBalance);
+        expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(userFrozen);
+    }
 });
