@@ -1985,22 +1985,23 @@ describe('IexecPocoBoostDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             );
-            const resultsCallback = buildResultCallbackAndDigest(123).resultsCallback;
+            const { resultsCallback } = buildResultCallbackAndDigest(123);
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+                worker.address,
+                taskId,
+                constants.NULL.ADDRESS,
+                scheduler,
+            );
 
             await expect(
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(
-                        getDealId(domain, requestOrder, taskIndex),
+                        dealId,
                         taskIndex,
                         results,
                         resultsCallback,
-                        await buildAndSignContributionAuthorizationMessage(
-                            worker.address,
-                            taskId,
-                            constants.NULL.ADDRESS,
-                            scheduler,
-                        ),
+                        schedulerSignature,
                         constants.NULL.ADDRESS,
                         constants.NULL.SIGNATURE,
                     ),
@@ -2306,8 +2307,8 @@ describe('IexecPocoBoostDelegate', function () {
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
+                callback: gasWasterClientInstance.address,
             });
-            requestOrder.callback = gasWasterClientInstance.address;
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -2317,6 +2318,7 @@ describe('IexecPocoBoostDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             );
+            const { resultsCallback } = buildResultCallbackAndDigest(123);
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
@@ -2327,7 +2329,7 @@ describe('IexecPocoBoostDelegate', function () {
                 dealId,
                 taskIndex,
                 results,
-                buildResultCallbackAndDigest(123).resultsCallback,
+                resultsCallback,
                 schedulerSignature,
                 constants.NULL.ADDRESS,
                 constants.NULL.SIGNATURE,

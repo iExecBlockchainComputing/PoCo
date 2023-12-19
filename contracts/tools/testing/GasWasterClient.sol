@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
 /**
  * @title Gas Waster Client
  * @notice This client is for testing purposes only. It simulates a callback
- * consummer client which try to consume as much gas as available.
+ * consummer client which tries to consume as much gas as available.
  */
 contract GasWasterClient {
     event GotResult(bytes32 indexed id, bytes result);
