@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { FakeContract, MockContract, smock } from '@defi-wonderland/smock';
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
+import { BytesLike } from '@ethersproject/bytes';
 import { Contract, ContractFactory } from '@ethersproject/contracts';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -17,6 +19,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
+    GasWasterClient,
+    GasWasterClient__factory,
     IERC734,
     IERC734__factory,
     IexecLibOrders_v5__factory,
@@ -69,6 +73,7 @@ const EIP712DOMAIN_SEPARATOR = 'EIP712DOMAIN_SEPARATOR';
 const BALANCES = 'm_balances';
 const FROZENS = 'm_frozens';
 const WORKERPOOL_STAKE_RATIO = 30;
+const CALLBACK_GAS = 100000;
 const kittyAddress = '0x99c2268479b93fDe36232351229815DF80837e23';
 const groupMemberPurpose = 4; // See contracts/Store.v8.sol#GROUPMEMBER_PURPOSE
 const { domain, domainSeparator } = buildDomain();
@@ -114,7 +119,7 @@ async function deployBoostFixture() {
         .then((instance) => instance.deployed())) as MockContract<IexecPocoBoostDelegate>;
     // A global domain separator needs to be set since current contract is being
     // unit tested here (hence no proxy)
-    await iexecPocoBoostInstance.setVariable('m_callbackgas', 100000);
+    await iexecPocoBoostInstance.setVariable('m_callbackgas', CALLBACK_GAS);
     await iexecPocoBoostInstance.setVariable(EIP712DOMAIN_SEPARATOR, domainSeparator);
     await iexecPocoBoostInstance.setVariable('m_categories', [
         {
@@ -155,6 +160,7 @@ async function createMock<CF extends ContractFactory, C extends Contract>(
 describe('IexecPocoBoostDelegate', function () {
     let iexecPocoBoostInstance: MockContract<IexecPocoBoostDelegate>;
     let oracleConsumerInstance: FakeContract<TestClient>;
+    let gasWasterClientInstance: MockContract<GasWasterClient>;
     let appInstance: MockContract<App>;
     let workerpoolInstance: MockContract<Workerpool>;
     let datasetInstance: MockContract<Dataset>;
@@ -196,6 +202,9 @@ describe('IexecPocoBoostDelegate', function () {
             requester: requester,
         };
         oracleConsumerInstance = await smock.fake<TestClient>(TestClient__factory);
+        gasWasterClientInstance = await createMock<GasWasterClient__factory, GasWasterClient>(
+            'GasWasterClient',
+        ); // Deploy a real but nevertheless observable contract
         appInstance = await createMock<App__factory, App>('App');
         workerpoolInstance = await createMock<Workerpool__factory, Workerpool>('Workerpool');
         datasetInstance = await createMock<Dataset__factory, Dataset>('Dataset');
@@ -1961,6 +1970,53 @@ describe('IexecPocoBoostDelegate', function () {
             );
         });
 
+        it('Should push result even if callback consumes maximum gas', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                callback: gasWasterClientInstance.address,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const { resultsCallback } = buildResultCallbackAndDigest(123);
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+                worker.address,
+                taskId,
+                constants.NULL.ADDRESS,
+                scheduler,
+            );
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        schedulerSignature,
+                        constants.NULL.ADDRESS,
+                        constants.NULL.SIGNATURE,
+                    ),
+            )
+                .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
+                /**
+                 * Gas waster client has been called but run out-of-gas.
+                 */
+                .to.not.emit(gasWasterClientInstance, 'GotResult');
+            expect(gasWasterClientInstance.receiveResult).to.have.been.calledOnceWith(
+                taskId,
+                resultsCallback,
+            );
+        });
+
         it('Should not push result if wrong deal ID', async function () {
             await expect(
                 iexecPocoBoostInstance
@@ -2245,6 +2301,51 @@ describe('IexecPocoBoostDelegate', function () {
                         enclaveSignature,
                     ),
             ).to.be.revertedWith('PocoBoost: Callback requires data');
+        });
+
+        it('Should not push result without enough gas for callback', async function () {
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                callback: gasWasterClientInstance.address,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecPocoBoostInstance.matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            );
+            const { resultsCallback } = buildResultCallbackAndDigest(123);
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+                worker.address,
+                taskId,
+                constants.NULL.ADDRESS,
+                scheduler,
+            );
+            const pushResultArgs = [
+                dealId,
+                taskIndex,
+                results,
+                resultsCallback,
+                schedulerSignature,
+                constants.NULL.ADDRESS,
+                constants.NULL.SIGNATURE,
+            ] as [BytesLike, BigNumberish, BytesLike, BytesLike, BytesLike, string, BytesLike];
+            const successfulTxGasLimit = await iexecPocoBoostInstance
+                .connect(worker)
+                .estimateGas.pushResultBoost(...pushResultArgs);
+            const failingTxGaslimit = successfulTxGasLimit.sub(
+                BigNumber.from(CALLBACK_GAS).div(63),
+            ); // Forward to consumer contract less gas than it has the right to consume
+
+            await expect(
+                iexecPocoBoostInstance
+                    .connect(worker)
+                    .pushResultBoost(...pushResultArgs, { gasLimit: failingTxGaslimit }),
+            ).to.be.revertedWith('PocoBoost: Not enough gas after callback');
         });
     });
 
