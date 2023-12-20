@@ -501,8 +501,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * @notice
-     * Important note: this function makes external calls to untrusted contracts. It has to
-     * be used carefully to avoid creating re-entrancy vulnerabilities. Calls to this function
+     * This function makes an external call to an untrusted contract. It has to
+     * be carefully called to avoid creating re-entrancy vulnerabilities. Calls to this function
      * has to be done before updating state variables.
      *
      * @notice Verify that an account is authorized based on a given restriction.
