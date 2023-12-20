@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import {console} from "hardhat/console.sol";
-
 pragma solidity ^0.8.0;
 
 /**
