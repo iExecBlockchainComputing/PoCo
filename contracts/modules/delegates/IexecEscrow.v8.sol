@@ -61,6 +61,13 @@ contract IexecEscrow is DelegateBase {
 
     /**
      * Transfer value from a spender account to a receiver account.
+     * @notice
+     * This function does not check for self-transfers
+     * because its current usage does not require such verification.
+     * Indeed, all operations that use this function are always between
+     * the proxy contract and another actor of the platform (requester,
+     * owner of dataset/application/workerpool).
+     *
      * @param from The address of the spender account.
      * @param to The address of the receiver account.
      * @param value The value to transfer.

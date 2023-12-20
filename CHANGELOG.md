@@ -95,6 +95,7 @@
 - Create a hardhat network close to the iExec Bellecour blockchain. (#276)
 - Reformat JS files. (#278, #281)
 - Add tests around callback feature verifying interests of actors are guaranteed. (#282)
+- Add IexecEscrow.v8 tests and developer notices. (#283)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
