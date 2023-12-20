@@ -13,7 +13,6 @@ describe('IexecEscrow.v8', function () {
     const initialUserBalance = 20;
     const initialUserFrozen = 30;
     const amount = 3;
-    const bigAmount = 9999;
     const ref = constants.HashZero;
 
     let deployer: SignerWithAddress;
@@ -65,9 +64,9 @@ describe('IexecEscrow.v8', function () {
         });
 
         it('Should not lock funds when insufficient balance', async function () {
-            await expect(iexecEscrow.lock_(user.address, bigAmount)).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
-            );
+            await expect(
+                iexecEscrow.lock_(user.address, initialUserBalance + 1),
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
     });
 
@@ -96,9 +95,9 @@ describe('IexecEscrow.v8', function () {
         });
 
         it('Should not unlock funds when insufficient balance', async function () {
-            await expect(iexecEscrow.unlock_(user.address, bigAmount)).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
-            );
+            await expect(
+                iexecEscrow.unlock_(user.address, initialUserFrozen + 1),
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
     });
 
@@ -127,9 +126,9 @@ describe('IexecEscrow.v8', function () {
         });
 
         it('Should not reward when insufficient balance', async function () {
-            await expect(iexecEscrow.reward_(user.address, bigAmount, ref)).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
-            );
+            await expect(
+                iexecEscrow.reward_(user.address, initialEscrowBalance + 1, ref),
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
     });
 
@@ -156,9 +155,9 @@ describe('IexecEscrow.v8', function () {
         });
 
         it('Should not seize funds when insufficient balance', async function () {
-            await expect(iexecEscrow.seize_(user.address, bigAmount, ref)).to.be.revertedWithPanic(
-                0x11,
-            );
+            await expect(
+                iexecEscrow.seize_(user.address, initialUserFrozen + 1, ref),
+            ).to.be.revertedWithPanic(0x11);
         });
     });
 
