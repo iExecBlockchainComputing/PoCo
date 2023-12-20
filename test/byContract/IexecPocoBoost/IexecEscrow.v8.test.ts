@@ -119,7 +119,7 @@ describe('IexecEscrow.v8', function () {
             );
         });
 
-        it('Should not reward address(0)', async function () {
+        it('Should not reward empty address', async function () {
             await expect(
                 iexecEscrow.reward_(constants.AddressZero, amount, ref),
             ).to.be.revertedWith('IexecEscrow: Transfer to empty address');
