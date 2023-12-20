@@ -20,7 +20,7 @@ describe('IexecEscrow.v8', function () {
     let iexecEscrow: MockContract<IexecEscrowTestContract>;
 
     beforeEach(async function () {
-        // Create wallets.
+        // Get wallets.
         [deployer, user] = await ethers.getSigners();
         // Deploy the contract to be tested as a mock.
         iexecEscrow = (await smock
