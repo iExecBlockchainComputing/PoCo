@@ -42,7 +42,7 @@ describe('IexecEscrow.v8', function () {
     describe('Lock', function () {
         it('Should lock funds', async function () {
             // Check balances before the operation.
-            await checkInitialBalances();
+            await checkInitialBalancesAndFrozens();
             // Run operation.
             await expect(iexecEscrow.lock_(user.address, amount))
                 .to.emit(iexecEscrow, 'Transfer')
@@ -50,7 +50,7 @@ describe('IexecEscrow.v8', function () {
                 .to.emit(iexecEscrow, 'Lock')
                 .withArgs(user.address, amount);
             // Check balances after the operation.
-            await checkPostOperationBalances(
+            await checkBalancesAndFrozens(
                 initialEscrowBalance + amount,
                 initialUserBalance - amount,
                 initialUserFrozen + amount,
@@ -73,7 +73,7 @@ describe('IexecEscrow.v8', function () {
     describe('Unlock', function () {
         it('Should unlock funds', async function () {
             // Check balances before the operation.
-            await checkInitialBalances();
+            await checkInitialBalancesAndFrozens();
             // Run operation.
             await expect(iexecEscrow.unlock_(user.address, amount))
                 .to.emit(iexecEscrow, 'Transfer')
@@ -81,7 +81,7 @@ describe('IexecEscrow.v8', function () {
                 .to.emit(iexecEscrow, 'Unlock')
                 .withArgs(user.address, amount);
             // Check balances after the operation.
-            await checkPostOperationBalances(
+            await checkBalancesAndFrozens(
                 initialEscrowBalance - amount,
                 initialUserBalance + amount,
                 initialUserFrozen - amount,
@@ -104,7 +104,7 @@ describe('IexecEscrow.v8', function () {
     describe('Reward', function () {
         it('Should reward', async function () {
             // Check balances before the operation.
-            await checkInitialBalances();
+            await checkInitialBalancesAndFrozens();
             // Run operation.
             await expect(iexecEscrow.reward_(user.address, amount, ref))
                 .to.emit(iexecEscrow, 'Transfer')
@@ -112,7 +112,7 @@ describe('IexecEscrow.v8', function () {
                 .to.emit(iexecEscrow, 'Reward')
                 .withArgs(user.address, amount, ref);
             // Check balances after the operation.
-            await checkPostOperationBalances(
+            await checkBalancesAndFrozens(
                 initialEscrowBalance - amount,
                 initialUserBalance + amount,
                 initialUserFrozen,
@@ -135,13 +135,13 @@ describe('IexecEscrow.v8', function () {
     describe('Seize', function () {
         it('Should seize funds', async function () {
             // Check balances before the operation.
-            await checkInitialBalances();
+            await checkInitialBalancesAndFrozens();
             // Run operation.
             await expect(iexecEscrow.seize_(user.address, amount, ref))
                 .to.emit(iexecEscrow, 'Seize')
                 .withArgs(user.address, amount, ref);
             // Check balances after the operation.
-            await checkPostOperationBalances(
+            await checkBalancesAndFrozens(
                 initialEscrowBalance,
                 initialUserBalance,
                 initialUserFrozen - amount,
@@ -161,19 +161,11 @@ describe('IexecEscrow.v8', function () {
         });
     });
 
-    async function checkInitialBalances() {
-        expect(await iexecEscrow.getVariable(BALANCES, [iexecEscrow.address])).to.be.equal(
-            initialEscrowBalance,
-        );
-        expect(await iexecEscrow.getVariable(BALANCES, [user.address])).to.be.equal(
-            initialUserBalance,
-        );
-        expect(await iexecEscrow.getVariable(FROZENS, [user.address])).to.be.equal(
-            initialUserFrozen,
-        );
+    async function checkInitialBalancesAndFrozens() {
+        checkBalancesAndFrozens(initialEscrowBalance, initialUserBalance, initialUserFrozen);
     }
 
-    async function checkPostOperationBalances(
+    async function checkBalancesAndFrozens(
         escrowBalance: number,
         userBalance: number,
         userFrozen: number,
