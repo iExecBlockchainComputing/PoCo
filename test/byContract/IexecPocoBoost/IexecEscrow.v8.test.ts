@@ -58,7 +58,7 @@ describe('IexecEscrow.v8', function () {
             );
         });
 
-        it('Should not lock funds for address(0)', async function () {
+        it('Should not lock funds for empty address', async function () {
             await expect(iexecEscrow.lock_(constants.AddressZero, amount)).to.be.revertedWith(
                 'IexecEscrow: Transfer from empty address',
             );
@@ -89,7 +89,7 @@ describe('IexecEscrow.v8', function () {
             );
         });
 
-        it('Should not unlock funds for address(0)', async function () {
+        it('Should not unlock funds for empty address', async function () {
             await expect(iexecEscrow.unlock_(constants.AddressZero, amount)).to.be.revertedWith(
                 'IexecEscrow: Transfer to empty address',
             );
@@ -149,7 +149,7 @@ describe('IexecEscrow.v8', function () {
             );
         });
 
-        it('Should not seize funds for address(0)', async function () {
+        it('Should not seize funds for empty address', async function () {
             await expect(
                 iexecEscrow.seize_(constants.AddressZero, amount, ref),
             ).to.be.revertedWithPanic(0x11);
