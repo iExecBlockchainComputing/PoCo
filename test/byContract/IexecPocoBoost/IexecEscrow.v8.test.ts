@@ -126,7 +126,7 @@ describe('IexecEscrow.v8', function () {
             ).to.be.revertedWith('IexecEscrow: Transfer to empty address');
         });
 
-        it('Should not lock funds when insufficient balance', async function () {
+        it('Should not reward when insufficient balance', async function () {
             await expect(iexecEscrow.reward_(user.address, bigAmount, ref)).to.be.revertedWith(
                 'IexecEscrow: Transfer amount exceeds balance',
             );
