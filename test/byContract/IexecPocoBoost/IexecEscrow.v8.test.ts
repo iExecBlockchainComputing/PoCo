@@ -27,7 +27,7 @@ describe('IexecEscrow.v8', function () {
             .mock<IexecEscrowTestContract__factory>('IexecEscrowTestContract')
             .then((instance) => instance.deploy())
             .then((contract) => contract.deployed())) as MockContract<IexecEscrowTestContract>;
-        // Set contract's initial state.
+        // Set initial state of contract.
         await iexecEscrow.setVariables({
             [BALANCES]: {
                 [iexecEscrow.address]: initialEscrowBalance,
