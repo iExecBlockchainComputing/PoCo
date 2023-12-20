@@ -12,14 +12,10 @@ pragma solidity ^0.8.0;
  */
 contract GasWasterClient {
     event GotResult(bytes32 indexed id, bytes result);
-    bool enabledLogs = false;
     uint256 public counter;
 
     function receiveResult(bytes32 id, bytes calldata result) external {
-        for (uint i; i < 100; i++) {
-            if (enabledLogs) {
-                console.log("For i =", i, ": gasleft =", gasleft());
-            }
+        for (uint i; i < 1000; i++) {
             counter++;
         }
         emit GotResult(id, result);
