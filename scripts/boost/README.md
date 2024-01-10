@@ -9,9 +9,9 @@ LOCAL_FORK=true npx hardhat node --no-deploy
 
 1. Deploy modules and add to proxy
 ```
-LOCAL_FORK=true; \
+(export LOCAL_FORK=true; \
 npx hardhat run scripts/boost/0_deploy-modules.ts --network external-hardhat && \
-npx hardhat run scripts/boost/1_add-modules-to-proxy.ts --network external-hardhat
+npx hardhat run scripts/boost/1_add-modules-to-proxy.ts --network external-hardhat)
 ```
 
 For later production deployment, either
