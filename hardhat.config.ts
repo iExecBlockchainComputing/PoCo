@@ -85,10 +85,14 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
+            ...((isNativeChainType || isLocalFork) && {
+                // See « @dev Native mode » note above
+                hardfork: 'berlin',
+                gasPrice: 0,
+                blockGasLimit: 6_700_000,
+            }),
             ...(isLocalFork && {
                 accounts: 'remote', // Override defaults accounts for impersonating
-                hardfork: 'berlin', // No EIP-1559 before London fork
-                gasPrice: 0,
                 chainId: 134,
             }),
         },
