@@ -11,6 +11,7 @@ import {
 import chainConfig from './config/config.json';
 
 const isNativeChainType = chainConfig.chains.default.asset == 'Native';
+const isLocalFork = process.env.LOCAL_FORK == 'true';
 const settings = {
     optimizer: {
         enabled: true,
@@ -46,6 +47,19 @@ const v8Settings = {
 
 const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
 
+/**
+ * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
+ * @note Any fresh version of Hardhat uses for its default
+ * hardhat network a configuration from a recent Ethereum
+ * fork. EIPs brought by such recent fork are not necessarily
+ * supported by the iExec Bellecour blockchain.
+ */
+const bellecourNetworkConfig = {
+    hardfork: 'berlin', // No EIP-1559 before London fork
+    gasPrice: 0,
+    blockGasLimit: 6_700_000,
+};
+
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
@@ -56,21 +70,16 @@ const config: HardhatUserConfig = {
     },
     networks: {
         hardhat: {
+            ...(isLocalFork && {
+                forking: {
+                    url: 'https://bellecour.iex.ec',
+                },
+                chainId: 134,
+            }),
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            ...(isNativeChainType && {
-                /**
-                 * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
-                 * @note Any fresh version of Hardhat uses for its default
-                 * hardhat network a configuration from a recent Ethereum
-                 * fork. EIPs brought by such recent fork are not necessarily
-                 * supported by the iExec Bellecour blockchain.
-                 */
-                hardfork: 'berlin', // No EIP-1559 before London fork
-                gasPrice: 0,
-                blockGasLimit: 6_700_000,
-            }),
+            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
@@ -78,6 +87,11 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
+            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
+            ...(isLocalFork && {
+                accounts: 'remote', // Override defaults accounts for impersonating
+                chainId: 134,
+            }),
         },
         'dev-native': {
             chainId: 65535,
@@ -195,6 +209,8 @@ const config: HardhatUserConfig = {
             '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol',
             // Used as mock or fake in UTs
             '@openzeppelin/contracts-v5/interfaces/IERC1271.sol',
+            // Used in deployment
+            '@amxx/factory/contracts/v6/GenericFactory.sol',
         ],
         keep: true, // Slither requires compiled dependencies
     },
