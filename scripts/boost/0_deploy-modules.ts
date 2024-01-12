@@ -10,7 +10,7 @@ const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.
 (async () => {
     console.log('Deploying Boost modules..');
     const [owner] = await ethers.getSigners();
-    const chainId = ethers.provider.network.chainId;
+    const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = CONFIG.chains[chainId].v5;
     const salt = deploymentOptions.salt;
     const modules = [

@@ -17,7 +17,7 @@ import {
 import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
 
 (async () => {
-    const chainId = (await ethers.provider._networkPromise).chainId;
+    const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = CONFIG.chains[chainId].v5;
     console.log('Link Boost functions to proxy:');
     const timelockAdminAddress = '0x0B3a38b0A47aB0c5E8b208A703de366751Df5916';
