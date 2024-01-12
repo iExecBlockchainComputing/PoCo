@@ -20,7 +20,6 @@ import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = CONFIG.chains[chainId].v5;
     console.log('Link Boost functions to proxy:');
-    const timelockAdminAddress = '0x0B3a38b0A47aB0c5E8b208A703de366751Df5916';
     const erc1538ProxyAddress = deploymentOptions.ERC1538Proxy;
     const iexecPocoBoostDelegateAddress = (await hre.deployments.get('IexecPocoBoostDelegate'))
         .address; // Bellecour: 0x8425229f979AB3b0dDDe00D475D762cA4d6a5eFc
@@ -29,7 +28,6 @@ import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/
     ).address; // Bellecour: 0x56185a2b0dc8b556BBfBAFB702BC971Ed75e868C
     const [account] = await hre.ethers.getSigners();
     const timelockAddress = await Ownable__factory.connect(erc1538ProxyAddress, account).owner(); // Bellecour: 0x4611B943AA1d656Fc669623b5DA08756A7e288E9
-    const timelockAdminSigner = await ethers.getImpersonatedSigner(timelockAdminAddress);
     const iexecPocoBoostProxyUpdate = encodeModuleProxyUpdate(
         IexecPocoBoost__factory.createInterface(),
         iexecPocoBoostDelegateAddress,
@@ -50,7 +48,15 @@ import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/
     ] as [string[], BigNumber[], BytesLike[], BytesLike, BytesLike];
     console.log('Scheduling proxy update..');
     await printBlockTime();
-    await TimelockController__factory.connect(timelockAddress, timelockAdminSigner)
+    const timelockInstance = TimelockController__factory.connect(timelockAddress, account);
+    const timelockAdminAddress = await timelockInstance.getRoleMember(
+        await timelockInstance.PROPOSER_ROLE(),
+        0,
+    );
+    console.log(`Timelock proposer: ${timelockAdminAddress}`);
+    const timelockAdminSigner = await ethers.getImpersonatedSigner(timelockAdminAddress);
+    await timelockInstance
+        .connect(timelockAdminSigner)
         .scheduleBatch(...updateProxyArgs, delay)
         .then((tx) => {
             logTxData(tx);
@@ -61,7 +67,8 @@ import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/
     await printBlockTime();
     await printFunctions(erc1538ProxyAddress, account);
     console.log('Executing proxy update..');
-    await TimelockController__factory.connect(timelockAddress, timelockAdminSigner)
+    await timelockInstance
+        .connect(timelockAdminSigner)
         .executeBatch(...updateProxyArgs)
         .then((x) => {
             logTxData(x);
