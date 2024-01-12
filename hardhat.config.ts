@@ -47,6 +47,19 @@ const v8Settings = {
 
 const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
 
+/**
+ * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
+ * @note Any fresh version of Hardhat uses for its default
+ * hardhat network a configuration from a recent Ethereum
+ * fork. EIPs brought by such recent fork are not necessarily
+ * supported by the iExec Bellecour blockchain.
+ */
+const bellecourNetworkConfig = {
+    hardfork: 'berlin', // No EIP-1559 before London fork
+    gasPrice: 0,
+    blockGasLimit: 6_700_000,
+};
+
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
@@ -66,18 +79,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            ...((isNativeChainType || isLocalFork) && {
-                /**
-                 * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
-                 * @note Any fresh version of Hardhat uses for its default
-                 * hardhat network a configuration from a recent Ethereum
-                 * fork. EIPs brought by such recent fork are not necessarily
-                 * supported by the iExec Bellecour blockchain.
-                 */
-                hardfork: 'berlin', // No EIP-1559 before London fork
-                gasPrice: 0,
-                blockGasLimit: 6_700_000,
-            }),
+            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
@@ -85,12 +87,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            ...((isNativeChainType || isLocalFork) && {
-                // See « @dev Native mode » note above
-                hardfork: 'berlin',
-                gasPrice: 0,
-                blockGasLimit: 6_700_000,
-            }),
+            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
             ...(isLocalFork && {
                 accounts: 'remote', // Override defaults accounts for impersonating
                 chainId: 134,
