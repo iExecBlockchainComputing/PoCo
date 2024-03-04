@@ -97,6 +97,7 @@
 - Add tests around callback feature verifying interests of actors are guaranteed. (#282)
 - Add IexecEscrow.v8 tests and developer notices. (#283)
 - Add PoCo Boost modules to a timelock controlled proxy. (#284)
+- Remove KYC tests stage from Jenkinsfile. (#51)
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`
