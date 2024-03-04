@@ -22,28 +22,12 @@ pipeline {
                 }
             }
         }
-        stage('Hardhat tests - Public') {
+        stage('Hardhat tests') {
             agent {
                 docker {
                     reuseNode true
                     image nodeJsImage
                 }
-            }
-            steps {
-                script {
-                    test()
-                }
-            }
-        }
-        stage('Hardhat tests - KYC') {
-            agent {
-                docker {
-                    reuseNode true
-                    image nodeJsImage
-                }
-            }
-            environment {
-                KYC = 'true'
             }
             steps {
                 script {
