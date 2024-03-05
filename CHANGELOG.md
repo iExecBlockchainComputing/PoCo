@@ -2,7 +2,7 @@
 
 ## vNEXT
 - Remove KYC tests stage from Jenkinsfile. (#51)
-- Accept any chainId in dev networks #53
+- Accept any chainId in dev networks. #53
 
 ## v5.5.0 - PoCo Boost
 - Migrate to Hardhat:
