@@ -2,6 +2,7 @@
 
 ## vNEXT
 - Remove KYC tests stage from Jenkinsfile. (#51)
+- Update headers & reformat Poco1 contracts. (#52)
 
 ## v5.5.0 - PoCo Boost
 - Migrate to Hardhat:
