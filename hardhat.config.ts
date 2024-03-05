@@ -94,7 +94,6 @@ const config: HardhatUserConfig = {
             }),
         },
         'dev-native': {
-            chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
@@ -102,7 +101,6 @@ const config: HardhatUserConfig = {
             gasPrice: zeroGasPrice, // Get closer to Bellecour network
         },
         'dev-token': {
-            chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
