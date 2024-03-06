@@ -3,6 +3,9 @@
 ## vNEXT
 - Remove KYC tests stage from Jenkinsfile. (#51)
 - Update headers & reformat Poco1 contracts. (#52)
+- Upgrade Poco1 to solidity `^0.8.0` (#54):
+    - Migrate to `openzeppelin@v5`
+    - Migrate to `SignatureVerifier.v8`
 
 ## v5.5.0 - PoCo Boost
 - Migrate to Hardhat:
