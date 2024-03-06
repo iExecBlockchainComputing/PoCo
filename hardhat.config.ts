@@ -45,8 +45,6 @@ const v8Settings = {
     evmVersion: 'paris',
 };
 
-const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
-
 /**
  * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
  * @note Any fresh version of Hardhat uses for its default
@@ -70,26 +68,26 @@ const config: HardhatUserConfig = {
     },
     networks: {
         hardhat: {
+            accounts: {
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            },
+            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
             ...(isLocalFork && {
                 forking: {
                     url: 'https://bellecour.iex.ec',
                 },
                 chainId: 134,
             }),
-            accounts: {
-                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
-            },
-            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
-            url: defaultLocalhostNetworkParams.url,
+            ...defaultLocalhostNetworkParams,
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
             ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
             ...(isLocalFork && {
-                accounts: 'remote', // Override defaults accounts for impersonating
+                accounts: 'remote', // Override defaults accounts for impersonation
                 chainId: 134,
             }),
         },
@@ -98,7 +96,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: zeroGasPrice, // Get closer to Bellecour network
+            gasPrice: 0, // Get closer to Bellecour network
         },
         'dev-token': {
             url: process.env.DEV_NODE || 'http://localhost:8545',
@@ -152,7 +150,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: zeroGasPrice,
+            gasPrice: 0,
             gas: 6700000,
         },
         bellecour: {
@@ -161,7 +159,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: zeroGasPrice,
+            gasPrice: 0,
             gas: 6700000,
         },
     },
