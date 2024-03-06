@@ -1,14 +1,20 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "./IexecERC20Core.sol";
-import "./SignatureVerifier.sol";
-import "../DelegateBase.sol";
-import "../interfaces/IexecPoco1.sol";
+import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
+import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 
+import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
+import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
+import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
+import {DelegateBase} from "../DelegateBase.v8.sol";
+import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
+import {IexecEscrow} from "./IexecEscrow.v8.sol";
+import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
+
+//TODO: Remove each asset struct from Matching
 struct Matching {
     bytes apporderStruct;
     bytes32 apporderHash;
@@ -24,8 +30,8 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, SignatureVerifier {
-    using SafeMathExtended for uint256;
+contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureVerifier {
+    using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
@@ -39,14 +45,14 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
         bytes32 _hash,
         bytes calldata _signature
     ) external view override returns (bool) {
-        return _checkSignature(_identity, _hash, _signature);
+        return _verifySignature(_identity, _hash, _signature);
     }
 
     function verifyPresignature(
         address _identity,
         bytes32 _hash
     ) external view override returns (bool) {
-        return _checkPresignature(_identity, _hash);
+        return _verifyPresignature(_identity, _hash);
     }
 
     function verifyPresignatureOrSignature(
@@ -54,7 +60,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
         bytes32 _hash,
         bytes calldata _signature
     ) external view override returns (bool) {
-        return _checkPresignatureOrSignature(_identity, _hash, _signature);
+        return _verifySignatureOrPresignature(_identity, _hash, _signature);
     }
 
     /***************************************************************************
@@ -62,10 +68,10 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
      ***************************************************************************/
     // should be external
     function matchOrders(
-        IexecLibOrders_v5.AppOrder memory _apporder,
-        IexecLibOrders_v5.DatasetOrder memory _datasetorder,
-        IexecLibOrders_v5.WorkerpoolOrder memory _workerpoolorder,
-        IexecLibOrders_v5.RequestOrder memory _requestorder
+        IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
+        IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) public override returns (bytes32) {
         /**
          * Check orders compatibility
@@ -92,84 +98,73 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
         require(_requestorder.app == _apporder.app, "iExecV5-matchOrders-0x10");
         require(_requestorder.dataset == _datasetorder.dataset, "iExecV5-matchOrders-0x11");
         require(
-            _requestorder.workerpool == address(0) ||
-                _checkIdentity(
+            _requestorder.workerpool == address(0) || // TODO: Remove this everywhere since already checked right after
+                _isAccountAuthorizedByRestriction(
                     _requestorder.workerpool,
-                    _workerpoolorder.workerpool,
-                    GROUPMEMBER_PURPOSE
+                    _workerpoolorder.workerpool
                 ),
             "iExecV5-matchOrders-0x12"
         ); // requestorder.workerpool is a restriction
         require(
             _apporder.datasetrestrict == address(0) ||
-                _checkIdentity(
-                    _apporder.datasetrestrict,
-                    _datasetorder.dataset,
-                    GROUPMEMBER_PURPOSE
-                ),
+                _isAccountAuthorizedByRestriction(_apporder.datasetrestrict, _datasetorder.dataset),
             "iExecV5-matchOrders-0x13"
         );
         require(
             _apporder.workerpoolrestrict == address(0) ||
-                _checkIdentity(
+                _isAccountAuthorizedByRestriction(
                     _apporder.workerpoolrestrict,
-                    _workerpoolorder.workerpool,
-                    GROUPMEMBER_PURPOSE
+                    _workerpoolorder.workerpool
                 ),
             "iExecV5-matchOrders-0x14"
         );
         require(
             _apporder.requesterrestrict == address(0) ||
-                _checkIdentity(
+                _isAccountAuthorizedByRestriction(
                     _apporder.requesterrestrict,
-                    _requestorder.requester,
-                    GROUPMEMBER_PURPOSE
+                    _requestorder.requester
                 ),
             "iExecV5-matchOrders-0x15"
         );
         require(
             _datasetorder.apprestrict == address(0) ||
-                _checkIdentity(_datasetorder.apprestrict, _apporder.app, GROUPMEMBER_PURPOSE),
+                _isAccountAuthorizedByRestriction(_datasetorder.apprestrict, _apporder.app),
             "iExecV5-matchOrders-0x16"
         );
         require(
             _datasetorder.workerpoolrestrict == address(0) ||
-                _checkIdentity(
+                _isAccountAuthorizedByRestriction(
                     _datasetorder.workerpoolrestrict,
-                    _workerpoolorder.workerpool,
-                    GROUPMEMBER_PURPOSE
+                    _workerpoolorder.workerpool
                 ),
             "iExecV5-matchOrders-0x17"
         );
         require(
             _datasetorder.requesterrestrict == address(0) ||
-                _checkIdentity(
+                _isAccountAuthorizedByRestriction(
                     _datasetorder.requesterrestrict,
-                    _requestorder.requester,
-                    GROUPMEMBER_PURPOSE
+                    _requestorder.requester
                 ),
             "iExecV5-matchOrders-0x18"
         );
         require(
             _workerpoolorder.apprestrict == address(0) ||
-                _checkIdentity(_workerpoolorder.apprestrict, _apporder.app, GROUPMEMBER_PURPOSE),
+                _isAccountAuthorizedByRestriction(_workerpoolorder.apprestrict, _apporder.app),
             "iExecV5-matchOrders-0x19"
         );
         require(
             _workerpoolorder.datasetrestrict == address(0) ||
-                _checkIdentity(
+                _isAccountAuthorizedByRestriction(
                     _workerpoolorder.datasetrestrict,
-                    _datasetorder.dataset,
-                    GROUPMEMBER_PURPOSE
+                    _datasetorder.dataset
                 ),
             "iExecV5-matchOrders-0x1a"
         );
         require(
             _workerpoolorder.requesterrestrict == address(0) ||
-                _checkIdentity(
+                _isAccountAuthorizedByRestriction(
                     _workerpoolorder.requesterrestrict,
-                    _requestorder.requester,
-                    GROUPMEMBER_PURPOSE
+                    _requestorder.requester
                 ),
             "iExecV5-matchOrders-0x1b"
         );
@@ -181,13 +176,12 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
         ids.hasDataset = _datasetorder.dataset != address(0);
 
         // app
-        ids.apporderStruct = _toEthTypedStruct(_apporder.hash(), EIP712DOMAIN_SEPARATOR);
-        ids.apporderHash = keccak256(ids.apporderStruct);
-        ids.appOwner = App(_apporder.app).owner();
+        ids.apporderHash = _toTypedDataHash(_apporder.hash());
+        ids.appOwner = IERC5313(_apporder.app).owner();
 
         require(m_appregistry.isRegistered(_apporder.app), "iExecV5-matchOrders-0x20");
         require(
-            _checkPresignatureOrSignature(ids.appOwner, ids.apporderStruct, _apporder.sign),
+            _verifySignatureOrPresignature(ids.appOwner, ids.apporderHash, _apporder.sign),
             "iExecV5-matchOrders-0x21"
         );
         require(_isAuthorized(ids.appOwner), "iExecV5-matchOrders-0x22");
@@ -195,21 +189,17 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
         // dataset
         if (ids.hasDataset) {
             // only check if dataset is enabled
-            ids.datasetorderStruct = _toEthTypedStruct(
-                _datasetorder.hash(),
-                EIP712DOMAIN_SEPARATOR
-            );
-            ids.datasetorderHash = keccak256(ids.datasetorderStruct);
-            ids.datasetOwner = Dataset(_datasetorder.dataset).owner();
+            ids.datasetorderHash = _toTypedDataHash(_datasetorder.hash());
+            ids.datasetOwner = IERC5313(_datasetorder.dataset).owner();
 
             require(
                 m_datasetregistry.isRegistered(_datasetorder.dataset),
                 "iExecV5-matchOrders-0x30"
             );
             require(
-                _checkPresignatureOrSignature(
+                _verifySignatureOrPresignature(
                     ids.datasetOwner,
-                    ids.datasetorderStruct,
+                    ids.datasetorderHash,
                     _datasetorder.sign
                 ),
                 "iExecV5-matchOrders-0x31"
@@ -218,21 +208,17 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
         }
 
         // workerpool
-        ids.workerpoolorderStruct = _toEthTypedStruct(
-            _workerpoolorder.hash(),
-            EIP712DOMAIN_SEPARATOR
-        );
-        ids.workerpoolorderHash = keccak256(ids.workerpoolorderStruct);
-        ids.workerpoolOwner = Workerpool(_workerpoolorder.workerpool).owner();
+        ids.workerpoolorderHash = _toTypedDataHash(_workerpoolorder.hash());
+        ids.workerpoolOwner = IERC5313(_workerpoolorder.workerpool).owner();
 
         require(
             m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),
             "iExecV5-matchOrders-0x40"
         );
         require(
-            _checkPresignatureOrSignature(
+            _verifySignatureOrPresignature(
                 ids.workerpoolOwner,
-                ids.workerpoolorderStruct,
+                ids.workerpoolorderHash,
                 _workerpoolorder.sign
             ),
             "iExecV5-matchOrders-0x41"
@@ -240,12 +226,11 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
         require(_isAuthorized(ids.workerpoolOwner), "iExecV5-matchOrders-0x42");
 
         // request
-        ids.requestorderStruct = _toEthTypedStruct(_requestorder.hash(), EIP712DOMAIN_SEPARATOR);
-        ids.requestorderHash = keccak256(ids.requestorderStruct);
+        ids.requestorderHash = _toTypedDataHash(_requestorder.hash());
         require(
-            _checkPresignatureOrSignature(
+            _verifySignatureOrPresignature(
                 _requestorder.requester,
-                ids.requestorderStruct,
+                ids.requestorderHash,
                 _requestorder.sign
             ),
             "iExecV5-matchOrders-0x50"
@@ -256,12 +241,12 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
          * Check availability
          */
         uint256 volume;
-        volume = _apporder.volume.sub(m_consumed[ids.apporderHash]);
+        volume = _apporder.volume - m_consumed[ids.apporderHash];
         volume = ids.hasDataset
-            ? volume.min(_datasetorder.volume.sub(m_consumed[ids.datasetorderHash]))
+            ? volume.min(_datasetorder.volume - m_consumed[ids.datasetorderHash])
             : volume;
-        volume = volume.min(_workerpoolorder.volume.sub(m_consumed[ids.workerpoolorderHash]));
-        volume = volume.min(_requestorder.volume.sub(m_consumed[ids.requestorderHash]));
+        volume = volume.min(_workerpoolorder.volume - m_consumed[ids.workerpoolorderHash]);
+        volume = volume.min(_requestorder.volume - m_consumed[ids.requestorderHash]);
         require(volume > 0, "iExecV5-matchOrders-0x60");
 
         /**
@@ -291,41 +276,36 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
         deal.beneficiary = _requestorder.beneficiary;
         deal.callback = _requestorder.callback;
         deal.params = _requestorder.params;
-        deal.startTime = now;
+        deal.startTime = block.timestamp;
         deal.botFirst = m_consumed[ids.requestorderHash];
         deal.botSize = volume;
-        deal.workerStake = _workerpoolorder.workerpoolprice.percentage(
-            Workerpool(_workerpoolorder.workerpool).m_workerStakeRatioPolicy()
-        );
-        deal.schedulerRewardRatio = Workerpool(_workerpoolorder.workerpool)
+        deal.workerStake =
+            (_workerpoolorder.workerpoolprice *
+                IWorkerpool(_workerpoolorder.workerpool).m_workerStakeRatioPolicy()) /
+            100;
+        deal.schedulerRewardRatio = IWorkerpool(_workerpoolorder.workerpool)
             .m_schedulerRewardRatioPolicy();
 
         /**
          * Update consumed
          */
-        m_consumed[ids.apporderHash] = m_consumed[ids.apporderHash].add(volume);
-        m_consumed[ids.datasetorderHash] = m_consumed[ids.datasetorderHash].add(
-            ids.hasDataset ? volume : 0
-        );
-        m_consumed[ids.workerpoolorderHash] = m_consumed[ids.workerpoolorderHash].add(volume);
-        m_consumed[ids.requestorderHash] = m_consumed[ids.requestorderHash].add(volume);
+        m_consumed[ids.apporderHash] = m_consumed[ids.apporderHash] + volume;
+        m_consumed[ids.datasetorderHash] =
+            m_consumed[ids.datasetorderHash] +
+            (ids.hasDataset ? volume : 0);
+        m_consumed[ids.workerpoolorderHash] = m_consumed[ids.workerpoolorderHash] + volume;
+        m_consumed[ids.requestorderHash] = m_consumed[ids.requestorderHash] + volume;
 
         /**
          * Lock
          */
         lock(
             deal.requester,
-            deal.app.price.add(deal.dataset.price).add(deal.workerpool.price).mul(volume)
+            (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume
         );
         lock(
             deal.workerpool.owner,
-            deal
-                .workerpool
-                .price
-                .percentage(
-                    WORKERPOOL_STAKE_RATIO // ORDER IS IMPORTANT HERE!
-                )
-                .mul(volume) // ORDER IS IMPORTANT HERE!
+            ((deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
         );
 
         /**
@@ -346,5 +326,10 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, Signatu
         );
 
         return dealid;
+    }
+
+    // TODO: Remove method and related usages
+    function _isAuthorized(address) internal virtual returns (bool) {
+        return true;
     }
 }
