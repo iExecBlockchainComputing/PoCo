@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 const deployer = require('../scripts/hardhat-truffle-utils');
@@ -34,7 +34,8 @@ var IexecMaintenance = artifacts.require('IexecMaintenanceDelegate');
 var IexecMaintenanceExtra = artifacts.require('IexecMaintenanceExtraDelegate');
 var IexecOrderManagement = artifacts.require('IexecOrderManagementDelegate');
 var IexecPoco1 = artifacts.require('IexecPoco1Delegate');
-var IexecPoco1KYC = artifacts.require('IexecPoco1DelegateKYC');
+// TODO: Remove
+var IexecPoco1KYC;
 var IexecPoco2 = artifacts.require('IexecPoco2Delegate');
 var IexecPoco2KYC = artifacts.require('IexecPoco2DelegateKYC');
 var IexecRelay = artifacts.require('IexecRelayDelegate');

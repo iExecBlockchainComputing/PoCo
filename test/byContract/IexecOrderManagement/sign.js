@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 // Config
@@ -240,15 +240,15 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isFalse(await IexecInstance.verifyPresignature(appProvider.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     apporder.sign,
                 ),
             );
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     appProvider.address,
                     hash,
                     apporder.sign,
@@ -279,15 +279,15 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isFalse(await IexecInstance.verifyPresignature(appProvider.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     apporder.sign,
                 ),
             );
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     appProvider.address,
                     hash,
                     apporder.sign,
@@ -316,8 +316,8 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isTrue(await IexecInstance.verifyPresignature(appProvider.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     apporder.sign,
@@ -353,8 +353,8 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isTrue(await IexecInstance.verifyPresignature(appProvider.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     apporder.sign,
@@ -399,15 +399,15 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isFalse(await IexecInstance.verifyPresignature(datasetProvider.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     datasetorder.sign,
                 ),
             );
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     datasetProvider.address,
                     hash,
                     datasetorder.sign,
@@ -440,15 +440,15 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isFalse(await IexecInstance.verifyPresignature(datasetProvider.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     datasetorder.sign,
                 ),
             );
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     datasetProvider.address,
                     hash,
                     datasetorder.sign,
@@ -479,8 +479,8 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isTrue(await IexecInstance.verifyPresignature(datasetProvider.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     datasetorder.sign,
@@ -518,8 +518,8 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isTrue(await IexecInstance.verifyPresignature(datasetProvider.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     datasetorder.sign,
@@ -564,15 +564,15 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isFalse(await IexecInstance.verifyPresignature(scheduler.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     workerpoolorder.sign,
                 ),
             );
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     scheduler.address,
                     hash,
                     workerpoolorder.sign,
@@ -605,15 +605,15 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isFalse(await IexecInstance.verifyPresignature(scheduler.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     workerpoolorder.sign,
                 ),
             );
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     scheduler.address,
                     hash,
                     workerpoolorder.sign,
@@ -644,8 +644,8 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isTrue(await IexecInstance.verifyPresignature(scheduler.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     workerpoolorder.sign,
@@ -683,8 +683,8 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isTrue(await IexecInstance.verifyPresignature(scheduler.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     workerpoolorder.sign,
@@ -729,15 +729,19 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isFalse(await IexecInstance.verifyPresignature(user.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     requestorder.sign,
                 ),
             );
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(user.address, hash, requestorder.sign),
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
+                    user.address,
+                    hash,
+                    requestorder.sign,
+                ),
             );
         });
 
@@ -766,15 +770,19 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isFalse(await IexecInstance.verifyPresignature(user.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     requestorder.sign,
                 ),
             );
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(user.address, hash, requestorder.sign),
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
+                    user.address,
+                    hash,
+                    requestorder.sign,
+                ),
             );
         });
 
@@ -801,8 +809,8 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isTrue(await IexecInstance.verifyPresignature(user.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     requestorder.sign,
@@ -838,8 +846,8 @@ contract('OrderManagement', async (accounts) => {
             );
             assert.isFalse(await IexecInstance.verifyPresignature(iexecAdmin.address, hash));
             assert.isTrue(await IexecInstance.verifyPresignature(user.address, hash));
-            await expectRevert.unspecified(
-                IexecInstance.verifyPresignatureOrSignature(
+            assert.isFalse(
+                await IexecInstance.verifyPresignatureOrSignature(
                     iexecAdmin.address,
                     hash,
                     requestorder.sign,

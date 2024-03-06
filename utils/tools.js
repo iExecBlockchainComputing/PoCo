@@ -39,6 +39,9 @@ module.exports = {
     },
 
     compactSignature: function (signature) {
+        // https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v4.7.3
+        // https://github.com/OpenZeppelin/openzeppelin-contracts/pull/4915
+        return signature;
         let split = ethers.utils.splitSignature(signature);
         let vs = ethers.utils.arrayify(split.s);
         if (split.v == 1 || split.v == 28) {
