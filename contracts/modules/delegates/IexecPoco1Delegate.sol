@@ -98,74 +98,61 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
         require(_requestorder.app == _apporder.app, "iExecV5-matchOrders-0x10");
         require(_requestorder.dataset == _datasetorder.dataset, "iExecV5-matchOrders-0x11");
         require(
-            _requestorder.workerpool == address(0) || // TODO: Remove this everywhere since already checked right after
-                _isAccountAuthorizedByRestriction(
-                    _requestorder.workerpool,
-                    _workerpoolorder.workerpool
-                ),
+            _isAccountAuthorizedByRestriction(
+                _requestorder.workerpool,
+                _workerpoolorder.workerpool
+            ),
             "iExecV5-matchOrders-0x12"
         ); // requestorder.workerpool is a restriction
         require(
-            _apporder.datasetrestrict == address(0) ||
-                _isAccountAuthorizedByRestriction(_apporder.datasetrestrict, _datasetorder.dataset),
+            _isAccountAuthorizedByRestriction(_apporder.datasetrestrict, _datasetorder.dataset),
             "iExecV5-matchOrders-0x13"
         );
         require(
-            _apporder.workerpoolrestrict == address(0) ||
-                _isAccountAuthorizedByRestriction(
-                    _apporder.workerpoolrestrict,
-                    _workerpoolorder.workerpool
-                ),
+            _isAccountAuthorizedByRestriction(
+                _apporder.workerpoolrestrict,
+                _workerpoolorder.workerpool
+            ),
             "iExecV5-matchOrders-0x14"
         );
         require(
-            _apporder.requesterrestrict == address(0) ||
-                _isAccountAuthorizedByRestriction(
-                    _apporder.requesterrestrict,
-                    _requestorder.requester
-                ),
+            _isAccountAuthorizedByRestriction(_apporder.requesterrestrict, _requestorder.requester),
             "iExecV5-matchOrders-0x15"
         );
         require(
-            _datasetorder.apprestrict == address(0) ||
-                _isAccountAuthorizedByRestriction(_datasetorder.apprestrict, _apporder.app),
+            _isAccountAuthorizedByRestriction(_datasetorder.apprestrict, _apporder.app),
             "iExecV5-matchOrders-0x16"
         );
         require(
-            _datasetorder.workerpoolrestrict == address(0) ||
-                _isAccountAuthorizedByRestriction(
-                    _datasetorder.workerpoolrestrict,
-                    _workerpoolorder.workerpool
-                ),
+            _isAccountAuthorizedByRestriction(
+                _datasetorder.workerpoolrestrict,
+                _workerpoolorder.workerpool
+            ),
             "iExecV5-matchOrders-0x17"
         );
         require(
-            _datasetorder.requesterrestrict == address(0) ||
-                _isAccountAuthorizedByRestriction(
-                    _datasetorder.requesterrestrict,
-                    _requestorder.requester
-                ),
+            _isAccountAuthorizedByRestriction(
+                _datasetorder.requesterrestrict,
+                _requestorder.requester
+            ),
             "iExecV5-matchOrders-0x18"
         );
         require(
-            _workerpoolorder.apprestrict == address(0) ||
-                _isAccountAuthorizedByRestriction(_workerpoolorder.apprestrict, _apporder.app),
+            _isAccountAuthorizedByRestriction(_workerpoolorder.apprestrict, _apporder.app),
             "iExecV5-matchOrders-0x19"
         );
         require(
-            _workerpoolorder.datasetrestrict == address(0) ||
-                _isAccountAuthorizedByRestriction(
-                    _workerpoolorder.datasetrestrict,
-                    _datasetorder.dataset
-                ),
+            _isAccountAuthorizedByRestriction(
+                _workerpoolorder.datasetrestrict,
+                _datasetorder.dataset
+            ),
             "iExecV5-matchOrders-0x1a"
         );
         require(
-            _workerpoolorder.requesterrestrict == address(0) ||
-                _isAccountAuthorizedByRestriction(
-                    _workerpoolorder.requesterrestrict,
-                    _requestorder.requester
-                ),
+            _isAccountAuthorizedByRestriction(
+                _workerpoolorder.requesterrestrict,
+                _requestorder.requester
+            ),
             "iExecV5-matchOrders-0x1b"
         );
 
