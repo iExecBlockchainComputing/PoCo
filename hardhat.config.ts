@@ -113,7 +113,7 @@ const config: HardhatUserConfig = {
             chainId: 1,
             url: process.env.MAINNET_NODE || '',
             accounts: {
-                mnemonic: process.env.MNEMONIC || '',
+                mnemonic: process.env.PROD_MNEMONIC || '',
             },
         },
         ropsten: {
@@ -157,7 +157,7 @@ const config: HardhatUserConfig = {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
             accounts: {
-                mnemonic: process.env.MNEMONIC || '',
+                mnemonic: process.env.PROD_MNEMONIC || '',
             },
             gasPrice: 0,
             gas: 6700000,
