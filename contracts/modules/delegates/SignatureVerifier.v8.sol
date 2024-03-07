@@ -12,11 +12,8 @@ import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 
-// TODO: Drain IexecPocoBoostDelegate and make it inheriting from SignatureVerifier
-// since body below is copied from signature methods of IexecPocoBoostDelegate.
 contract SignatureVerifier is DelegateBase {
     using ECDSA for bytes32;
-    using MessageHashUtils for bytes32;
 
     /**
      * Hash a Typed Data using the configured domain.
@@ -25,6 +22,8 @@ contract SignatureVerifier is DelegateBase {
     function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
         return MessageHashUtils.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
     }
+
+    // TODO: Add `_verifySignatureOfEthSignedMessage` here
 
     /**
      * @notice Verify that a message is signed by an EOA or an ERC1271 smart contract.
