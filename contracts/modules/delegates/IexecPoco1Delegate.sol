@@ -14,18 +14,13 @@ import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
-//TODO: Remove each asset struct from Matching
 struct Matching {
-    bytes apporderStruct;
     bytes32 apporderHash;
     address appOwner;
-    bytes datasetorderStruct;
     bytes32 datasetorderHash;
     address datasetOwner;
-    bytes workerpoolorderStruct;
     bytes32 workerpoolorderHash;
     address workerpoolOwner;
-    bytes requestorderStruct;
     bytes32 requestorderHash;
     bool hasDataset;
 }
