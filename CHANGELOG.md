@@ -1,8 +1,9 @@
 # Changelog
 
 ## vNEXT
+- Accept any chainId in dev networks. (#53)
+- Update headers & reformat Poco1 contracts. (#52)
 - Remove KYC tests stage from Jenkinsfile. (#51)
-- Accept any chainId in dev networks. #53
 
 ## v5.5.0 - PoCo Boost
 - Migrate to Hardhat:
