@@ -122,29 +122,31 @@ contract('Poco', async (accounts) => {
                 entry.sign,
             ),
         );
+        const hex32 = 'ff'.repeat(32);
         await expectRevert(
             IexecInstance.verifyPresignatureOrSignature(
                 iexecAdmin.address,
                 entry.hash,
-                web3.utils.randomHex(64),
+                '0x' + hex32 + hex32,
             ),
-            'ECDSAInvalidSignatureLength(64)',
+            'ECDSAInvalidSignatureS("0x7f' + hex32.substring(2, hex32.length) + '")',
         );
-        await expectRevert.unspecified(
+        const hex31 = web3.utils.randomHex(31).replace('0x', '');
+        await expectRevert(
             IexecInstance.verifyPresignatureOrSignature(
                 iexecAdmin.address,
                 entry.hash,
-                web3.utils.randomHex(64) + '1b',
+                '0x' + hex32 + '8f' + hex31 + '1b',
             ),
-            '',
+            'ECDSAInvalidSignatureS("0x8f' + hex31 + '")',
         );
-        await expectRevert.unspecified(
+        await expectRevert(
             IexecInstance.verifyPresignatureOrSignature(
                 iexecAdmin.address,
                 entry.hash,
-                web3.utils.randomHex(64) + '1a',
+                '0x' + hex32 + '6e' + hex31 + '1a',
             ),
-            '',
+            'ECDSAInvalidSignature()',
         );
         await expectRevert(
             IexecInstance.verifySignature(iexecAdmin.address, entry.hash, constants.NULL.SIGNATURE),

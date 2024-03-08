@@ -27,6 +27,11 @@ contract SignatureVerifier is DelegateBase {
 
     /**
      * @notice Verify that a message is signed by an EOA or an ERC1271 smart contract.
+     *
+     * It supports short signatures.
+     * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
+     * & https://github.com/OpenZeppelin/openzeppelin-contracts/pull/4915
+     *
      * @param account The expected signer account.
      * @param messageHash The message hash that was signed.
      * @param signature The signature to be verified.
@@ -36,7 +41,10 @@ contract SignatureVerifier is DelegateBase {
         bytes32 messageHash,
         bytes calldata signature
     ) internal view returns (bool) {
-        if (messageHash.recover(signature) == account) {
+        address recoveredAddress = signature.length == 64 // short signature
+            ? messageHash.recover(bytes32(signature[:32]), bytes32(signature[32:]))
+            : messageHash.recover(signature);
+        if (recoveredAddress == account) {
             return true;
         }
         if (account.code.length > 0) {
