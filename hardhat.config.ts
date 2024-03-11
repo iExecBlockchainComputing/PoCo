@@ -45,8 +45,6 @@ const v8Settings = {
     evmVersion: 'paris',
 };
 
-const zeroGasPrice = 0; // 0 Gwei. No EIP-1559 on Bellecour (Production sidechain).
-
 /**
  * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
  * @note Any fresh version of Hardhat uses for its default
@@ -70,26 +68,26 @@ const config: HardhatUserConfig = {
     },
     networks: {
         hardhat: {
+            accounts: {
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            },
+            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
             ...(isLocalFork && {
                 forking: {
                     url: 'https://bellecour.iex.ec',
                 },
                 chainId: 134,
             }),
-            accounts: {
-                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
-            },
-            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
-            url: defaultLocalhostNetworkParams.url,
+            ...defaultLocalhostNetworkParams,
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
             ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
             ...(isLocalFork && {
-                accounts: 'remote', // Override defaults accounts for impersonating
+                accounts: 'remote', // Override defaults accounts for impersonation
                 chainId: 134,
             }),
         },
@@ -99,7 +97,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: zeroGasPrice, // Get closer to Bellecour network
+            gasPrice: 0, // Get closer to Bellecour network
         },
         'dev-token': {
             chainId: 65535,
@@ -117,33 +115,12 @@ const config: HardhatUserConfig = {
             chainId: 1,
             url: process.env.MAINNET_NODE || '',
             accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-        },
-        ropsten: {
-            chainId: 3,
-            url: process.env.ROPSTEN_NODE || '',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-        },
-        rinkeby: {
-            chainId: 4,
-            url: process.env.RINKEBY_NODE || '',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
+                mnemonic: process.env.PROD_MNEMONIC || '',
             },
         },
         goerli: {
             chainId: 5,
             url: process.env.GOERLI_NODE || '',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-        },
-        kovan: {
-            chainId: 42,
-            url: process.env.KOVAN_NODE || '',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
@@ -154,16 +131,16 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: zeroGasPrice,
+            gasPrice: 0,
             gas: 6700000,
         },
         bellecour: {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
             accounts: {
-                mnemonic: process.env.MNEMONIC || '',
+                mnemonic: process.env.PROD_MNEMONIC || '',
             },
-            gasPrice: zeroGasPrice,
+            gasPrice: 0,
             gas: 6700000,
         },
     },
