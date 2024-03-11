@@ -118,30 +118,9 @@ const config: HardhatUserConfig = {
                 mnemonic: process.env.PROD_MNEMONIC || '',
             },
         },
-        ropsten: {
-            chainId: 3,
-            url: process.env.ROPSTEN_NODE || '',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-        },
-        rinkeby: {
-            chainId: 4,
-            url: process.env.RINKEBY_NODE || '',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-        },
         goerli: {
             chainId: 5,
             url: process.env.GOERLI_NODE || '',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-        },
-        kovan: {
-            chainId: 42,
-            url: process.env.KOVAN_NODE || '',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
