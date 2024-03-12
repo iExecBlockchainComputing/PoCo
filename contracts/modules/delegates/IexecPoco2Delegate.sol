@@ -39,9 +39,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecERC20Core, Signatu
         if (kitty > 0) {
             kitty = kitty
             // fraction
-            .percentage(KITTY_RATIO)
+            .percentage(KITTY_RATIO).max(KITTY_MIN).min(kitty);
             // at least this
-            .max(KITTY_MIN).min(kitty);
             // but not more than available
             seize(KITTY_ADDRESS, kitty, _taskid);
             reward(deal.workerpool.owner, kitty, _taskid);
@@ -249,10 +248,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecERC20Core, Signatu
         executeCallback(_taskid, _resultsCallback);
     }
 
-    function reveal(
-        bytes32 _taskid,
-        bytes32 _resultDigest // worker
-    ) external override {
+    function reveal(bytes32 _taskid, bytes32 _resultDigest) external override {
         IexecLibCore_v5.Task storage task = m_tasks[_taskid];
         IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
         require(task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
