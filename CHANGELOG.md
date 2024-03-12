@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Format PoCo2 solidity files & update copyright notices. (#54)
 - Change MNEMONIC var name for production & clean Hardhat file. (#53)
 - Update headers & reformat Poco1 contracts. (#52)
 - Remove KYC tests stage from Jenkinsfile. (#51)
