@@ -37,7 +37,12 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecERC20Core, Signatu
         // Retrieve part of the kitty
         uint256 kitty = m_frozens[KITTY_ADDRESS];
         if (kitty > 0) {
-            kitty = kitty.percentage(KITTY_RATIO).max(KITTY_MIN).min(kitty); // fraction // at least this // but not more than available
+            kitty = kitty
+            // fraction
+            .percentage(KITTY_RATIO)
+            // at least this
+            .max(KITTY_MIN).min(kitty);
+            // but not more than available
             seize(KITTY_ADDRESS, kitty, _taskid);
             reward(deal.workerpool.owner, kitty, _taskid);
         }
