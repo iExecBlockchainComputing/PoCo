@@ -12,7 +12,7 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 - [PoCo Series #6 — Smart Contract Upgradeability and Governance](https://medium.com/iex-ec/poco-series-6-smart-contract-upgradeability-and-governance-68d2cdecd120)
 - [PoCo Series #8 — Future-proofing iExec - Smart Contract Interoperability and Modularity](https://medium.com/iex-ec/poco-series-8-future-proofing-iexec-smart-contract-interoperability-and-modularity-37a3d3613f11)
 
-## PoCo UML
+## PoCo UMLs
 
 - [Contracts and Actors Architecture](./docs/README.md#contracts-and-actors-architecture)
 - [State diagrams](./docs/Statuses.md)
@@ -65,6 +65,8 @@ Environment variable can be used to alter the configuration of a deployment:
 - **SALT**: if set, the `SALT` envvar will overwrite the salt parameter from the config. This can be useful to distinguish public and enterprise deployment without modifying the config.
 
 Additionally, the migration process will look for some smart contracts before deploying new instances. This is true of the application, dataset and workerpool registries. Thus, if both an enterprise and a public marketplace are deployed to the same network, they will share these registries.
+
+# Development
 
 ## Build
 
@@ -125,6 +127,13 @@ Example of "complex" deployment:
 
 ```
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001 KYC=1 npx hardhat deploy --network hardhat
+```
+
+## Formatting
+
+Format a specific file or files in a directory:
+```
+npm run format <filePath|folderPath>
 ```
 
 ## Render UML diagrams
