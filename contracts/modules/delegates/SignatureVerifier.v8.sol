@@ -31,7 +31,8 @@ contract SignatureVerifier is DelegateBase {
      * It supports short signatures.
      * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
      * & https://github.com/OpenZeppelin/openzeppelin-contracts/pull/4915
-     *
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/cryptography/ECDSA.sol#L112
+     * 
      * @param account The expected signer account.
      * @param messageHash The message hash that was signed.
      * @param signature The signature to be verified.
