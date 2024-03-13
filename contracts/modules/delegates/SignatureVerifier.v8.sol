@@ -5,23 +5,14 @@ pragma solidity ^0.8.0;
 
 import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
 import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
-import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
 
 import {IERC734} from "../../external/interfaces/IERC734.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 
-contract SignatureVerifier is DelegateBase {
+library SignatureVerifier {
     using ECDSA for bytes32;
-
-    /**
-     * Hash a Typed Data using the configured domain.
-     * @param structHash The original structure hash.
-     */
-    function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
-        return MessageHashUtils.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
-    }
 
     // TODO: Add `_verifySignatureOfEthSignedMessage` here
 
@@ -32,7 +23,7 @@ contract SignatureVerifier is DelegateBase {
      * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
      * & https://github.com/OpenZeppelin/openzeppelin-contracts/pull/4915
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/cryptography/ECDSA.sol#L112
-     * 
+     *
      * @param account The expected signer account.
      * @param messageHash The message hash that was signed.
      * @param signature The signature to be verified.
@@ -60,10 +51,12 @@ contract SignatureVerifier is DelegateBase {
      * @notice Verify that a message hash is presigned by a particular account.
      * @param account The expected presigner account.
      * @param messageHash The message hash that was presigned.
+     * @param m_presigned The mapping to fetch the account of a presigned hash.
      */
     function _verifyPresignature(
         address account,
-        bytes32 messageHash
+        bytes32 messageHash,
+        mapping(bytes32 => address) storage m_presigned
     ) internal view returns (bool) {
         return account != address(0) && account == m_presigned[messageHash];
     }
@@ -73,15 +66,17 @@ contract SignatureVerifier is DelegateBase {
      * @param account The expected signer or presigner account.
      * @param messageHash The message hash that was signed or presigned.
      * @param signature The signature to be verified. Not required for a presignature.
+     * @param m_presigned The mapping to fetch the account of a presigned hash. Only required for a presignature.
      */
     function _verifySignatureOrPresignature(
         address account,
         bytes32 messageHash,
-        bytes calldata signature
+        bytes calldata signature,
+        mapping(bytes32 => address) storage m_presigned
     ) internal view returns (bool) {
         return
             (signature.length != 0 && _verifySignature(account, messageHash, signature)) ||
-            _verifyPresignature(account, messageHash);
+            _verifyPresignature(account, messageHash, m_presigned);
     }
 
     /**
@@ -100,10 +95,12 @@ contract SignatureVerifier is DelegateBase {
      * @param restriction A simple address or an ERC734 identity contract
      * that might whitelist a given address in a group.
      * @param account An address to be checked.
+     * @param groupMemberPurpose The `GROUPMEMBER` purpose the account should belong to.
      */
     function _isAccountAuthorizedByRestriction(
         address restriction,
-        address account
+        address account,
+        uint256 groupMemberPurpose
     ) internal view returns (bool) {
         if (
             restriction == address(0) || // No restriction
@@ -115,7 +112,7 @@ contract SignatureVerifier is DelegateBase {
             try
                 IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
                         bytes32(uint256(uint160(account))),
-                        GROUPMEMBER_PURPOSE
+                        groupMemberPurpose
                     )
             returns (bool success) {
                 return success;
