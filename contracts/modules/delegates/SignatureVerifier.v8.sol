@@ -7,9 +7,6 @@ import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
 import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
 
 import {IERC734} from "../../external/interfaces/IERC734.sol";
-import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
-import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
-import {DelegateBase} from "../DelegateBase.v8.sol";
 
 library SignatureVerifier {
     using ECDSA for bytes32;
