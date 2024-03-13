@@ -32,6 +32,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow {
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
+    using SignatureVerifier for address;
 
     /***************************************************************************
      *                           ODB order signature                           *
@@ -41,14 +42,14 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow {
         bytes32 _hash,
         bytes calldata _signature
     ) external view override returns (bool) {
-        return SignatureVerifier._verifySignature(_identity, _hash, _signature);
+        return _identity._verifySignature(_hash, _signature);
     }
 
     function verifyPresignature(
         address _identity,
         bytes32 _hash
     ) external view override returns (bool) {
-        return SignatureVerifier._verifyPresignature(_identity, _hash, m_presigned);
+        return _identity._verifyPresignature(_hash, m_presigned);
     }
 
     function verifyPresignatureOrSignature(
@@ -56,13 +57,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow {
         bytes32 _hash,
         bytes calldata _signature
     ) external view override returns (bool) {
-        return
-            SignatureVerifier._verifySignatureOrPresignature(
-                _identity,
-                _hash,
-                _signature,
-                m_presigned
-            );
+        return _identity._verifySignatureOrPresignature(_hash, _signature, m_presigned);
     }
 
     /***************************************************************************
@@ -100,80 +95,70 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow {
         require(_requestorder.app == _apporder.app, "iExecV5-matchOrders-0x10");
         require(_requestorder.dataset == _datasetorder.dataset, "iExecV5-matchOrders-0x11");
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _requestorder.workerpool,
+            _requestorder.workerpool._isAccountAuthorizedByRestriction(
                 _workerpoolorder.workerpool,
                 GROUPMEMBER_PURPOSE
             ),
             "iExecV5-matchOrders-0x12"
         ); // requestorder.workerpool is a restriction
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _apporder.datasetrestrict,
+            _apporder.datasetrestrict._isAccountAuthorizedByRestriction(
                 _datasetorder.dataset,
                 GROUPMEMBER_PURPOSE
             ),
             "iExecV5-matchOrders-0x13"
         );
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _apporder.workerpoolrestrict,
+            _apporder.workerpoolrestrict._isAccountAuthorizedByRestriction(
                 _workerpoolorder.workerpool,
                 GROUPMEMBER_PURPOSE
             ),
             "iExecV5-matchOrders-0x14"
         );
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _apporder.requesterrestrict,
+            _apporder.requesterrestrict._isAccountAuthorizedByRestriction(
                 _requestorder.requester,
                 GROUPMEMBER_PURPOSE
             ),
             "iExecV5-matchOrders-0x15"
         );
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _datasetorder.apprestrict,
+            _datasetorder.apprestrict._isAccountAuthorizedByRestriction(
                 _apporder.app,
                 GROUPMEMBER_PURPOSE
             ),
             "iExecV5-matchOrders-0x16"
         );
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _datasetorder.workerpoolrestrict,
+            _datasetorder.workerpoolrestrict._isAccountAuthorizedByRestriction(
                 _workerpoolorder.workerpool,
                 GROUPMEMBER_PURPOSE
             ),
             "iExecV5-matchOrders-0x17"
         );
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _datasetorder.requesterrestrict,
+            _datasetorder.requesterrestrict._isAccountAuthorizedByRestriction(
                 _requestorder.requester,
                 GROUPMEMBER_PURPOSE
             ),
             "iExecV5-matchOrders-0x18"
         );
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _workerpoolorder.apprestrict,
+            _workerpoolorder.apprestrict._isAccountAuthorizedByRestriction(
                 _apporder.app,
                 GROUPMEMBER_PURPOSE
             ),
             "iExecV5-matchOrders-0x19"
         );
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _workerpoolorder.datasetrestrict,
+            _workerpoolorder.datasetrestrict._isAccountAuthorizedByRestriction(
                 _datasetorder.dataset,
                 GROUPMEMBER_PURPOSE
             ),
             "iExecV5-matchOrders-0x1a"
         );
         require(
-            SignatureVerifier._isAccountAuthorizedByRestriction(
-                _workerpoolorder.requesterrestrict,
+            _workerpoolorder.requesterrestrict._isAccountAuthorizedByRestriction(
                 _requestorder.requester,
                 GROUPMEMBER_PURPOSE
             ),
