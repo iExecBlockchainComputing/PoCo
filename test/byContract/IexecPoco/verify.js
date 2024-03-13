@@ -122,29 +122,35 @@ contract('Poco', async (accounts) => {
                 entry.sign,
             ),
         );
-        const hex32 = 'ff'.repeat(32);
         await expectRevert(
             IexecInstance.verifyPresignatureOrSignature(
                 iexecAdmin.address,
                 entry.hash,
-                '0x' + hex32 + hex32,
+                '0x' +
+                    'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
+                    'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', // Short signature
             ),
-            'ECDSAInvalidSignatureS("0x7f' + hex32.substring(2, hex32.length) + '")',
-        );
-        const hex31 = web3.utils.randomHex(31).replace('0x', '');
-        await expectRevert(
-            IexecInstance.verifyPresignatureOrSignature(
-                iexecAdmin.address,
-                entry.hash,
-                '0x' + hex32 + '8f' + hex31 + '1b',
-            ),
-            'ECDSAInvalidSignatureS("0x8f' + hex31 + '")',
+            'ECDSAInvalidSignatureS("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")',
         );
         await expectRevert(
             IexecInstance.verifyPresignatureOrSignature(
                 iexecAdmin.address,
                 entry.hash,
-                '0x' + hex32 + '6e' + hex31 + '1a',
+                '0x' +
+                    'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
+                    '8fa5d88ef522d83b79f01e3a285cb59e1fb745679d2d845cc48d7f686b9ac02f' +
+                    '1b',
+            ),
+            'ECDSAInvalidSignatureS("0x8fa5d88ef522d83b79f01e3a285cb59e1fb745679d2d845cc48d7f686b9ac02f")',
+        );
+        await expectRevert(
+            IexecInstance.verifyPresignatureOrSignature(
+                iexecAdmin.address,
+                entry.hash,
+                '0x' +
+                    'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
+                    '6fa5d88ef522d83b79f01e3a285cb59e1fb745679d2d845cc48d7f686b9ac02f' +
+                    '1a',
             ),
             'ECDSAInvalidSignature()',
         );
