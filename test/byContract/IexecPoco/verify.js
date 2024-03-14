@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 // Config
@@ -122,41 +122,34 @@ contract('Poco', async (accounts) => {
                 entry.sign,
             ),
         );
-        await expectRevert(
-            IexecInstance.verifyPresignatureOrSignature(
+        assert.isFalse(
+            await IexecInstance.verifyPresignatureOrSignature(
                 iexecAdmin.address,
                 entry.hash,
-                '0x' +
-                    'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
-                    'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', // Short signature
+                web3.utils.randomHex(64),
             ),
-            'ECDSAInvalidSignatureS("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")',
+        );
+        assert.isFalse(
+            await IexecInstance.verifyPresignatureOrSignature(
+                iexecAdmin.address,
+                entry.hash,
+                web3.utils.randomHex(64) + '1b',
+            ),
+        );
+        assert.isFalse(
+            await IexecInstance.verifyPresignatureOrSignature(
+                iexecAdmin.address,
+                entry.hash,
+                web3.utils.randomHex(64) + '1a',
+            ),
         );
         await expectRevert(
             IexecInstance.verifyPresignatureOrSignature(
                 iexecAdmin.address,
                 entry.hash,
-                '0x' +
-                    'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
-                    '8fa5d88ef522d83b79f01e3a285cb59e1fb745679d2d845cc48d7f686b9ac02f' +
-                    '1b',
+                constants.NULL.SIGNATURE,
             ),
-            'ECDSAInvalidSignatureS("0x8fa5d88ef522d83b79f01e3a285cb59e1fb745679d2d845cc48d7f686b9ac02f")',
-        );
-        await expectRevert(
-            IexecInstance.verifyPresignatureOrSignature(
-                iexecAdmin.address,
-                entry.hash,
-                '0x' +
-                    'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
-                    '6fa5d88ef522d83b79f01e3a285cb59e1fb745679d2d845cc48d7f686b9ac02f' +
-                    '1a',
-            ),
-            'ECDSAInvalidSignature()',
-        );
-        await expectRevert(
-            IexecInstance.verifySignature(iexecAdmin.address, entry.hash, constants.NULL.SIGNATURE),
-            'ECDSAInvalidSignatureLength(0)',
+            'invalid-signature-format',
         );
     });
 
@@ -389,7 +382,7 @@ contract('Poco', async (accounts) => {
                 }),
                 constants.NULL.SIGNATURE,
             ),
-            'ECDSAInvalidSignatureLength(0)',
+            'invalid-signature-format',
         );
     });
 
@@ -583,7 +576,7 @@ contract('Poco', async (accounts) => {
                 }),
                 constants.NULL.SIGNATURE,
             ),
-            'ECDSAInvalidSignatureLength(0)',
+            'invalid-signature-format',
         );
     });
 
@@ -817,7 +810,7 @@ contract('Poco', async (accounts) => {
                 }),
                 constants.NULL.SIGNATURE,
             ),
-            'ECDSAInvalidSignatureLength(0)',
+            'invalid-signature-format',
         );
     });
 
@@ -1249,7 +1242,7 @@ contract('Poco', async (accounts) => {
                 }),
                 constants.NULL.SIGNATURE,
             ),
-            'ECDSAInvalidSignatureLength(0)',
+            'invalid-signature-format',
         );
     });
 });

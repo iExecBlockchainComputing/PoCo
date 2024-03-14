@@ -32,7 +32,7 @@ contract SignatureVerifier is DelegateBase {
      * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
      * & https://github.com/OpenZeppelin/openzeppelin-contracts/pull/4915
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/cryptography/ECDSA.sol#L112
-     * 
+     *
      * @param account The expected signer account.
      * @param messageHash The message hash that was signed.
      * @param signature The signature to be verified.
@@ -42,9 +42,17 @@ contract SignatureVerifier is DelegateBase {
         bytes32 messageHash,
         bytes calldata signature
     ) internal view returns (bool) {
-        address recoveredAddress = signature.length == 64 // short signature
-            ? messageHash.recover(bytes32(signature[:32]), bytes32(signature[32:]))
-            : messageHash.recover(signature);
+        address recoveredAddress;
+        if (signature.length == 65) {
+            (recoveredAddress, , ) = messageHash.tryRecover(signature);
+        } else if (signature.length == 64) {
+            (recoveredAddress, , ) = messageHash.tryRecover( // short signature
+                    bytes32(signature[:32]),
+                    bytes32(signature[32:])
+                );
+        } else {
+            revert("invalid-signature-format");
+        }
         if (recoveredAddress == account) {
             return true;
         }
@@ -80,8 +88,8 @@ contract SignatureVerifier is DelegateBase {
         bytes calldata signature
     ) internal view returns (bool) {
         return
-            (signature.length != 0 && _verifySignature(account, messageHash, signature)) ||
-            _verifyPresignature(account, messageHash);
+            _verifyPresignature(account, messageHash) ||
+            _verifySignature(account, messageHash, signature);
     }
 
     /**
