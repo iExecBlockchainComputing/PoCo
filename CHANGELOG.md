@@ -1,6 +1,9 @@
 # Changelog
 
 ## vNEXT
+- Upgrade Poco1 to solidity `^0.8.0` (#55):
+    - Migrate to `openzeppelin@v5`
+    - Migrate to `SignatureVerifier.v8`
 - Format PoCo2 solidity files & update copyright notices. (#54)
 - Change MNEMONIC var name for production & clean Hardhat file. (#53)
 - Update headers & reformat Poco1 contracts. (#52)

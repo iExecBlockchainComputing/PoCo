@@ -136,13 +136,12 @@ contract('Poco', async (accounts) => {
                 web3.utils.randomHex(64) + '1b',
             ),
         );
-        await expectRevert(
-            IexecInstance.verifyPresignatureOrSignature(
+        assert.isFalse(
+            await IexecInstance.verifyPresignatureOrSignature(
                 iexecAdmin.address,
                 entry.hash,
                 web3.utils.randomHex(64) + '1a',
             ),
-            'invalid-signature-v',
         );
         await expectRevert(
             IexecInstance.verifyPresignatureOrSignature(
