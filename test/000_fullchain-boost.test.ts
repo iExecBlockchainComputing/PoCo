@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { BigNumber } from '@ethersproject/bignumber';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -71,7 +72,10 @@ async function extractRegistryEntryAddress(
 ): Promise<string> {
     const events = extractEventsFromReceipt(receipt, registryInstanceAddress, 'Transfer');
     if (events && events[0].args) {
-        const lowercaseAddress = events[0].args['tokenId'].toHexString();
+        const lowercaseAddress = ethers.utils.hexZeroPad(
+            BigNumber.from(events[0].args['tokenId']).toHexString(),
+            20,
+        );
         return ethers.utils.getAddress(lowercaseAddress);
     }
     return '';
