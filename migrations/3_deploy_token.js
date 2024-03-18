@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 const deployer = require('../scripts/hardhat-truffle-utils');
@@ -6,7 +6,6 @@ const deployer = require('../scripts/hardhat-truffle-utils');
 const CONFIG = require('../config/config.json');
 // Token
 var RLC = artifacts.require('rlc-faucet-contract/RLC');
-var ERLCTokenSwap = artifacts.require('@iexec/erlc/ERLCTokenSwap');
 
 /*****************************************************************************
  *                                   Main                                    *
@@ -20,7 +19,6 @@ module.exports = async function (accounts) {
     console.log('Deployer is:', accounts[0]);
 
     const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
-    deploymentOptions.v5.usekyc = !!process.env.KYC;
 
     switch (deploymentOptions.asset) {
         case 'Token':
@@ -29,28 +27,9 @@ module.exports = async function (accounts) {
             } else {
                 RLC.isDeployed() || (await deployer.deploy(RLC));
             }
-            if (deploymentOptions.v5.usekyc) {
-                if (deploymentOptions.etoken) {
-                    ERLCTokenSwap.address = deploymentOptions.etoken;
-                } else {
-                    ERLCTokenSwap.isDeployed() ||
-                        (await deployer.deploy(
-                            ERLCTokenSwap,
-                            (await RLC.deployed()).address,
-                            'iExec ERLC Token',
-                            'ERLC',
-                            0,
-                            [accounts[0]],
-                            [],
-                        ));
-                }
-            }
             break;
 
         case 'Native':
-            if (deploymentOptions.v5.usekyc) {
-                throw 'ERROR: KYC is not supported in native mode.';
-            }
             break;
     }
 };

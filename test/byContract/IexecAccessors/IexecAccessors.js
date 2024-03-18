@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 // Config
@@ -88,14 +88,11 @@ contract('Accessors', async (accounts) => {
 
         describe('ERC20 metadata', async () => {
             it('name', async () => {
-                assert.equal(
-                    await IexecInstance.name(),
-                    !!process.env.KYC ? 'Staked eRLC' : 'Staked RLC',
-                );
+                assert.equal(await IexecInstance.name(), 'Staked RLC');
             });
 
             it('symbol', async () => {
-                assert.equal(await IexecInstance.symbol(), !!process.env.KYC ? 'SeRLC' : 'SRLC');
+                assert.equal(await IexecInstance.symbol(), 'SRLC');
             });
 
             it('decimals', async () => {
