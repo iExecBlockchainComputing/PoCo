@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-- Sponsor match orders. (#56):
+- Sponsor match orders. (#57)
 - Upgrade Poco1 to solidity `^0.8.0` (#55):
     - Migrate to `openzeppelin@v5`
     - Migrate to `SignatureVerifier.v8`
