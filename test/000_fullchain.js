@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 // Config
@@ -664,6 +664,7 @@ contract('Fullchain', async (accounts) => {
                         5,
                         'check deal (deal.schedulerRewardRatio)',
                     );
+                    assert.equal(deal.sponsor, user.address);
                 });
 
                 it('balances', async () => {

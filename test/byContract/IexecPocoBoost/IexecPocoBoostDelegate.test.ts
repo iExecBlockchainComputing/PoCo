@@ -1,13 +1,11 @@
-// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { FakeContract, MockContract, smock } from '@defi-wonderland/smock';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
-import { Contract, ContractFactory } from '@ethersproject/contracts';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { FactoryOptions } from '@nomiclabs/hardhat-ethers/types';
 import chai, { expect } from 'chai';
 import { assert, ethers } from 'hardhat';
 import {
@@ -52,6 +50,7 @@ import {
     signOrder,
     signOrders,
 } from '../../../utils/createOrders';
+import { createMock } from '../../../utils/mock-tools';
 import {
     buildAndSignContributionAuthorizationMessage,
     buildAndSignEnclaveMessage,
@@ -144,17 +143,6 @@ async function deployBoostFixture() {
         anyone,
         teeBroker,
     };
-}
-
-async function createMock<CF extends ContractFactory, C extends Contract>(
-    contractName: string,
-    factoryOptions?: FactoryOptions,
-    ...args: Parameters<CF['deploy']>
-): Promise<MockContract<C>> {
-    return (await smock
-        .mock<CF>(contractName, factoryOptions)
-        .then((contract) => contract.deploy(...args))
-        .then((instance) => instance.deployed())) as MockContract<C>;
 }
 
 describe('IexecPocoBoostDelegate', function () {
