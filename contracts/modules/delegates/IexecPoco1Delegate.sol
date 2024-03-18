@@ -125,7 +125,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
     }
 
     /**
-     * [Internal] Match orders and specify a sponsor in charge of paying for the deal.
+     * Match orders and specify a sponsor in charge of paying for the deal.
      *
      * @param _apporder The app order.
      * @param _datasetorder The dataset order.
@@ -139,7 +139,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder,
         address _sponsor
-    ) internal returns (bytes32) {
+    ) private returns (bytes32) {
         /**
          * Check orders compatibility
          */
