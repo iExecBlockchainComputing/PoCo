@@ -45,7 +45,6 @@ It contains:
 - For each chain id, a quick configuration:
 	- **"asset":** can be "Token" or "Native", select which escrow to use.
 	- **"token":** the address of the token to use. If asset is set to token, and no token address is provided, a mock will be deployed on the fly.
-	- **"etoken:"** the address of the enterprise token (with KYC) to use in the case of an enterprise deployment. If asset is set to token, and no etoken address is provider, an instance of the eRLC token (backed by the token described earlier) will automatically be deployed.
 	- **"v3":** a list of resources from a previous (v3) deployment. This allows previous resources to be automatically available. It also enables score transfer from v3 to v5. [optional]
 	- **"v5":** deployment parameters for the new version. If usefactory is set to true, and no salt is provided, `bytes32(0)` will be used by default.
 
@@ -61,10 +60,9 @@ If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the
 ## Additional configuration & environment variables
 
 Environment variable can be used to alter the configuration of a deployment:
-- **KYC**: if set, the `KYC` envvar will enable the kyc mechanism of the enterprise marketplace during migration and testing. This is only compatible with `asset="Token"`.
-- **SALT**: if set, the `SALT` envvar will overwrite the salt parameter from the config. This can be useful to distinguish public and enterprise deployment without modifying the config.
+- **SALT**: if set, the `SALT` envvar will overwrite the salt parameter from the config. This can be useful to distinguish different deployments without modifying the config.
 
-Additionally, the migration process will look for some smart contracts before deploying new instances. This is true of the application, dataset and workerpool registries. Thus, if both an enterprise and a public marketplace are deployed to the same network, they will share these registries.
+Additionally, the migration process will look for some smart contracts before deploying new instances. This is true of the application, dataset and workerpool registries. Thus, if different marketplaces are deployed to the same network, they will share these registries.
 
 # Development
 
@@ -126,7 +124,7 @@ npx hardhat deploy --network <your network name>
 Example of "complex" deployment:
 
 ```
-SALT=0x0000000000000000000000000000000000000000000000000000000000000001 KYC=1 npx hardhat deploy --network hardhat
+SALT=0x0000000000000000000000000000000000000000000000000000000000000001 npx hardhat deploy --network hardhat
 ```
 
 ## Formatting

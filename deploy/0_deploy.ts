@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 import fs from 'fs';
 import hre from 'hardhat';
 import path from 'path';
@@ -5,7 +8,6 @@ import initial_migration from '../migrations/1_initial_migration';
 import deploy_token from '../migrations/3_deploy_token';
 import deploy_core from '../migrations/4_deploy_core';
 import deploy_ens from '../migrations/5_deploy_ens';
-import whitelisting from '../migrations/6_whitelisting';
 import functions from '../migrations/999_functions';
 import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
 import {
@@ -45,7 +47,6 @@ module.exports = async function () {
     await deploy_token(accounts);
     await deploy_core(accounts);
     await deploy_ens(accounts);
-    await whitelisting(accounts);
     // Retrieve proxy address from previous truffle-fixture deployment
     const { address: erc1538ProxyAddress } = await erc1538Proxy.deployed();
     if (!erc1538ProxyAddress) {

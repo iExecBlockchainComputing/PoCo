@@ -37,7 +37,6 @@
     "/contracts"
   ],
   "dependencies": {
-    "@iexec/erlc": "1.0.0",
     "@iexec/interface": "3.0.35-8",
     "@iexec/solidity": "^0.1.1",
     "@openzeppelin/contracts": "3.3.0",
@@ -65,11 +64,12 @@
     "prettier-plugin-organize-imports": "^3.2.3",
     "prettier-plugin-solidity": "^1.1.3",
     "puml-for-markdown": "^1.2.1",
-    "sol2uml": "^2.5.20",
+    "sol2uml": "^2.5.19",
     "web3": "^1.10.3",
     "zx": "^7.2.3"
   },
   "devDependenciesComment": {
-    "mocha": "Mocha Test Explorer in VSCode"
+    "mocha": "Mocha Test Explorer in VSCode",
+    "sol2uml": "After 2.5.19, see https://github.com/naddison36/sol2uml/issues/183"
   }
 }

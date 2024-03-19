@@ -1,15 +1,15 @@
-const BASE_FOLDER = './coverage'
+const BASE_FOLDER = './coverage';
 
 module.exports = {
     /**
-     * See https://github.com/sc-forks/solidity-coverage/issues/715 issue if 
+     * See https://github.com/sc-forks/solidity-coverage/issues/715 issue if
      * coverage is 0% when IR enabled.
      */
     configureYulOptimizer: true,
     solcOptimizerDetails: {
         yul: true,
         yulDetails: {
-            optimizerSteps: ''
+            optimizerSteps: '',
         },
     },
     mocha: {
@@ -20,5 +20,5 @@ module.exports = {
         'tools/testing/TestClient.sol',
         'tools/testing/TestReceiver.sol',
     ],
-    istanbulFolder: process.env.KYC? BASE_FOLDER + '/kyc' : BASE_FOLDER
+    istanbulFolder: BASE_FOLDER,
 };

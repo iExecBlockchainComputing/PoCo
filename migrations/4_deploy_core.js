@@ -10,7 +10,6 @@ const { TruffleDeployer: Deployer } = require('../utils/FactoryDeployer');
 const { getFunctionSignatures } = require('./utils/getFunctionSignatures');
 // Token
 var RLC = artifacts.require('rlc-faucet-contract/RLC');
-var ERLCTokenSwap = artifacts.require('@iexec/erlc/ERLCTokenSwap');
 // ERC1538 core & delegates
 var ERC1538Proxy = artifacts.require('@iexec/solidity/ERC1538Proxy');
 var ERC1538Update = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate');
@@ -25,19 +24,14 @@ var IexecAccessors = artifacts.require('IexecAccessorsDelegate');
 var IexecAccessorsABILegacy = artifacts.require('IexecAccessorsABILegacyDelegate');
 var IexecCategoryManager = artifacts.require('IexecCategoryManagerDelegate');
 var IexecERC20 = artifacts.require('IexecERC20Delegate');
-var IexecERC20KYC = artifacts.require('IexecERC20DelegateKYC');
 var IexecEscrowNative = artifacts.require('IexecEscrowNativeDelegate');
 var IexecEscrowToken = artifacts.require('IexecEscrowTokenDelegate');
-var IexecEscrowTokenKYC = artifacts.require('IexecEscrowTokenDelegateKYC');
 var IexecEscrowTokenSwap = artifacts.require('IexecEscrowTokenSwapDelegate');
 var IexecMaintenance = artifacts.require('IexecMaintenanceDelegate');
 var IexecMaintenanceExtra = artifacts.require('IexecMaintenanceExtraDelegate');
 var IexecOrderManagement = artifacts.require('IexecOrderManagementDelegate');
 var IexecPoco1 = artifacts.require('IexecPoco1Delegate');
-// TODO: Remove
-var IexecPoco1KYC;
 var IexecPoco2 = artifacts.require('IexecPoco2Delegate');
-var IexecPoco2KYC = artifacts.require('IexecPoco2DelegateKYC');
 var IexecRelay = artifacts.require('IexecRelayDelegate');
 var ENSIntegration = artifacts.require('ENSIntegrationDelegate');
 // Other contracts
@@ -61,7 +55,6 @@ module.exports = async function (accounts) {
 
     /* ------------------------- Existing deployment ------------------------- */
     const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
-    deploymentOptions.v5.usekyc = !!process.env.KYC;
 
     const factoryDeployer = deploymentOptions.v5.usefactory && new Deployer(web3, accounts[0]);
     const salt = process.env.SALT || deploymentOptions.v5.salt;
@@ -74,10 +67,7 @@ module.exports = async function (accounts) {
         }
     } else {
         const iexecLibOrders = await deployer.deploy(IexecLibOrders);
-        await deployer.link(
-            iexecLibOrders,
-            deploymentOptions.v5.usekyc ? IexecPoco1KYC : IexecPoco1,
-        );
+        await deployer.link(iexecLibOrders, IexecPoco1);
         await deployer.link(iexecLibOrders, IexecMaintenance);
         await deployer.link(iexecLibOrders, IexecOrderManagement);
     }
@@ -89,18 +79,14 @@ module.exports = async function (accounts) {
         IexecAccessors,
         IexecAccessorsABILegacy,
         IexecCategoryManager,
-        deploymentOptions.v5.usekyc ? IexecERC20KYC : IexecERC20,
+        IexecERC20,
         deploymentOptions.asset == 'Native' && IexecEscrowNative,
-        deploymentOptions.asset == 'Token' && deploymentOptions.v5.usekyc && IexecEscrowTokenKYC,
-        deploymentOptions.asset == 'Token' && !deploymentOptions.v5.usekyc && IexecEscrowToken,
-        deploymentOptions.asset == 'Token' &&
-            !deploymentOptions.v5.usekyc &&
-            deploymentOptions.uniswap &&
-            IexecEscrowTokenSwap,
+        deploymentOptions.asset == 'Token' && IexecEscrowToken,
+        deploymentOptions.asset == 'Token' && deploymentOptions.uniswap && IexecEscrowTokenSwap,
         IexecMaintenance,
         IexecOrderManagement,
-        deploymentOptions.v5.usekyc ? IexecPoco1KYC : IexecPoco1,
-        deploymentOptions.v5.usekyc ? IexecPoco2KYC : IexecPoco2,
+        IexecPoco1,
+        IexecPoco2,
         IexecRelay,
         ENSIntegration,
         chainid != 1 && IexecMaintenanceExtra,
@@ -179,11 +165,7 @@ module.exports = async function (accounts) {
 
     switch (deploymentOptions.asset) {
         case 'Token':
-            if (deploymentOptions.v5.usekyc) {
-                TokenInstance = await ERLCTokenSwap.deployed();
-            } else {
-                TokenInstance = await RLC.deployed();
-            }
+            TokenInstance = await RLC.deployed();
             break;
 
         case 'Native':
@@ -228,8 +210,8 @@ module.exports = async function (accounts) {
     !IexecInterfaceInitialized &&
         (await IexecInterfaceInstance.configure(
             TokenInstance.address,
-            deploymentOptions.v5.usekyc ? 'Staked eRLC' : 'Staked RLC',
-            deploymentOptions.v5.usekyc ? 'SeRLC' : 'SRLC',
+            'Staked RLC',
+            'SRLC',
             9, // TODO: generic ?
             AppRegistryInstance.address,
             DatasetRegistryInstance.address,

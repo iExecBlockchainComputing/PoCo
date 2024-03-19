@@ -238,7 +238,6 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
             _verifySignatureOrPresignature(ids.appOwner, ids.apporderHash, _apporder.sign),
             "iExecV5-matchOrders-0x21"
         );
-        require(_isAuthorized(ids.appOwner), "iExecV5-matchOrders-0x22");
 
         // dataset
         if (ids.hasDataset) {
@@ -258,7 +257,6 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
                 ),
                 "iExecV5-matchOrders-0x31"
             );
-            require(_isAuthorized(ids.datasetOwner), "iExecV5-matchOrders-0x32");
         }
 
         // workerpool
@@ -277,7 +275,6 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
             ),
             "iExecV5-matchOrders-0x41"
         );
-        require(_isAuthorized(ids.workerpoolOwner), "iExecV5-matchOrders-0x42");
 
         // request
         ids.requestorderHash = _toTypedDataHash(_requestorder.hash());
@@ -289,7 +286,6 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
             ),
             "iExecV5-matchOrders-0x50"
         );
-        require(_isAuthorized(_requestorder.requester), "iExecV5-matchOrders-0x51");
 
         /**
          * Check availability
@@ -380,8 +376,4 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
         return dealid;
     }
 
-    // TODO: Remove method and related usages
-    function _isAuthorized(address) internal virtual returns (bool) {
-        return true;
-    }
 }
