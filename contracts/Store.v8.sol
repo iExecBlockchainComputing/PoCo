@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -45,33 +45,6 @@ interface IRegistry is IERC721Enumerable {
     function isRegistered(address _entry) external view returns (bool);
 }
 
-/// @dev IERC20KYC
-interface IERC1404 {
-    function detectTransferRestriction(
-        address from,
-        address to,
-        uint256 value
-    ) external view returns (uint8);
-
-    function messageForTransferRestriction(
-        uint8 restrictionCode
-    ) external view returns (string memory);
-}
-
-interface IKYC {
-    function KYC_ADMIN_ROLE() external view returns (bytes32);
-
-    function KYC_MEMBER_ROLE() external view returns (bytes32);
-
-    function isKYC(address) external view returns (bool);
-
-    function grantKYC(address[] calldata) external;
-
-    function revokeKYC(address[] calldata) external;
-}
-
-interface IERC20KYC is IERC1404, IKYC, IERC20 {}
-
 /// @dev Poco store
 /**
  * @title Central storage of all modules contracts. It follows the transparent
@@ -86,7 +59,7 @@ abstract contract Store is ERC1538Store {
     IRegistry internal m_workerpoolregistry;
 
     // Escrow
-    IERC20KYC internal m_baseToken;
+    IERC20 internal m_baseToken;
     string internal m_name;
     string internal m_symbol;
     uint8 internal m_decimals;

@@ -2,8 +2,7 @@ import '@nomicfoundation/hardhat-toolbox';
 import '@nomiclabs/hardhat-truffle5';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
-import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from 'hardhat/builtin-tasks/task-names';
-import { HardhatUserConfig, subtask } from 'hardhat/config';
+import { HardhatUserConfig } from 'hardhat/config';
 import {
     HARDHAT_NETWORK_MNEMONIC,
     defaultHardhatNetworkParams,
@@ -176,7 +175,6 @@ const config: HardhatUserConfig = {
     dependencyCompiler: {
         paths: [
             'rlc-faucet-contract/contracts/RLC.sol',
-            '@iexec/erlc/contracts/ERLCTokenSwap.sol',
             '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Update.sol',
             '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Query.sol',
             '@iexec/solidity/contracts/ERC1538/ERC1538Proxy/ERC1538Proxy.sol',
@@ -193,20 +191,5 @@ const config: HardhatUserConfig = {
         keep: true, // Slither requires compiled dependencies
     },
 };
-
-/**
- * Ignore some contracts from compilation. Credits to:
- * https://kennysliding.medium.com/how-to-ignore-solidity-files-in-hardhat-compilation-6162963f8c84
- */
-subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper) => {
-    const paths = await runSuper();
-    // exclude paths that contain string
-    return await paths.filter(
-        (p: any) =>
-            !p.includes(
-                'IexecPoco1DelegateKYC', // Exclude KYC contracts until removal.
-            ),
-    );
-});
 
 export default config;

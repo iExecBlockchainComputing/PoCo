@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 const deployer = require('../scripts/hardhat-truffle-utils');
@@ -16,7 +16,6 @@ var PublicResolver = artifacts.require(
 );
 // Core
 var RLC = artifacts.require('rlc-faucet-contract/RLC');
-var ERLCTokenSwap = artifacts.require('@iexec/erlc/ERLCTokenSwap');
 var ERC1538Proxy = artifacts.require('@iexec/solidity/ERC1538Proxy');
 var IexecInterfaceNative = artifacts.require('IexecInterfaceNative');
 var IexecInterfaceToken = artifacts.require('IexecInterfaceToken');
@@ -37,7 +36,6 @@ module.exports = async function (accounts) {
 
     /* ------------------------- Existing deployment ------------------------- */
     const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
-    deploymentOptions.v5.usekyc = !!process.env.KYC;
 
     /* ----------------------------- Deploy ENS ------------------------------ */
     if (chainid > 1000) {
@@ -150,17 +148,12 @@ module.exports = async function (accounts) {
         }
 
         const RLCInstance = deploymentOptions.asset == 'Token' && (await RLC.deployed());
-        const ERLCInstance =
-            deploymentOptions.asset == 'Token' &&
-            deploymentOptions.v5.usekyc &&
-            (await ERLCTokenSwap.deployed());
         const AppRegistryInstance = await AppRegistry.deployed();
         const DatasetRegistryInstance = await DatasetRegistry.deployed();
         const WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
 
         await registerAddress('admin', 'iexec.eth', accounts[0]);
         RLCInstance && (await registerAddress('rlc', 'iexec.eth', RLCInstance.address));
-        ERLCInstance && (await registerAddress('erlc', 'iexec.eth', ERLCInstance.address));
         IexecInterfaceInstance &&
             (await registerAddress('core', 'v5.iexec.eth', IexecInterfaceInstance.address));
         AppRegistryInstance &&

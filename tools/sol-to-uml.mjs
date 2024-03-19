@@ -23,7 +23,6 @@ await generateClassDiagramOfContracts(
 await generateClassDiagramOfContracts(
     [
         'IexecEscrowNativeDelegate',
-        'IexecEscrowTokenDelegateKYC',
         'IexecEscrowTokenDelegate',
         'IexecEscrowTokenSwapDelegate',
         'IexecEscrow',
