@@ -90,7 +90,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
     /**
      * Sponsor match orders for a requester.
      * Unlike the standard `matchOrders(..)` hook where the requester pays for
-     * the deal, this current hook makes possible to any `msg.sender` to pay for
+     * the deal, this current hook makes it possible for any `msg.sender` to pay for
      * a third party requester.
      *
      * @notice Be aware that anyone seeing a valid request order on the network
