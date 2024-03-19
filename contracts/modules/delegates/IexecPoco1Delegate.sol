@@ -76,14 +76,14 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) public override returns (bytes32) {
-        bytes32 dealId = _matchOrders(
-            _apporder,
-            _datasetorder,
-            _workerpoolorder,
-            _requestorder,
-            _requestorder.requester
-        );
-        return dealId;
+        return
+            _matchOrders(
+                _apporder,
+                _datasetorder,
+                _workerpoolorder,
+                _requestorder,
+                _requestorder.requester
+            );
     }
 
     /**
