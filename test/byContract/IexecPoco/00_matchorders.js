@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 // Config
@@ -257,6 +257,7 @@ contract('Poco', async (accounts) => {
         assert.equal(Number(deal.botSize), 1);
         assert.equal(Number(deal.workerStake), 8); // 8 = floor(25*.3)
         assert.equal(Number(deal.schedulerRewardRatio), 5);
+        assert.equal(deal.sponsor, user.address);
     });
 
     it('[Match - app-workerpool-user]', async () => {

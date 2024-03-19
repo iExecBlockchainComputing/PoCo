@@ -61,13 +61,84 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
     /***************************************************************************
      *                           ODB order matching                            *
      ***************************************************************************/
-    // should be external
+    // TODO: should be external
+    /**
+     * Match orders. The requester gets debited.
+     *
+     * @param _apporder The app order.
+     * @param _datasetorder The dataset order.
+     * @param _workerpoolorder The workerpool order.
+     * @param _requestorder The requester order.
+     */
     function matchOrders(
         IexecLibOrders_v5.AppOrder calldata _apporder,
         IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) public override returns (bytes32) {
+        return
+            _matchOrders(
+                _apporder,
+                _datasetorder,
+                _workerpoolorder,
+                _requestorder,
+                _requestorder.requester
+            );
+    }
+
+    /**
+     * Sponsor match orders for a requester.
+     * Unlike the standard `matchOrders(..)` hook where the requester pays for
+     * the deal, this current hook makes it possible for any `msg.sender` to pay for
+     * a third party requester.
+     *
+     * @notice Be aware that anyone seeing a valid request order on the network
+     * (via an off-chain public marketplace, via a `sponsorMatchOrders(..)`
+     * pending transaction in the mempool or by any other means) might decide
+     * to call the standard `matchOrders(..)` hook which will result in the
+     * requester being debited instead. Therefore, such a front run would result
+     * in a loss of some of the requester funds deposited in the iExec account
+     * (a loss value equivalent to the price of the deal).
+     *
+     * @param _apporder The app order.
+     * @param _datasetorder The dataset order.
+     * @param _workerpoolorder The workerpool order.
+     * @param _requestorder The requester order.
+     */
+    function sponsorMatchOrders(
+        IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
+        IexecLibOrders_v5.RequestOrder calldata _requestorder
+    ) external override returns (bytes32) {
+        address sponsor = msg.sender;
+        bytes32 dealId = _matchOrders(
+            _apporder,
+            _datasetorder,
+            _workerpoolorder,
+            _requestorder,
+            sponsor
+        );
+        emit DealSponsored(dealId, sponsor);
+        return dealId;
+    }
+
+    /**
+     * Match orders and specify a sponsor in charge of paying for the deal.
+     *
+     * @param _apporder The app order.
+     * @param _datasetorder The dataset order.
+     * @param _workerpoolorder The workerpool order.
+     * @param _requestorder The requester order.
+     * @param _sponsor The sponsor in charge of paying the deal.
+     */
+    function _matchOrders(
+        IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
+        IexecLibOrders_v5.RequestOrder calldata _requestorder,
+        address _sponsor
+    ) private returns (bytes32) {
         /**
          * Check orders compatibility
          */
@@ -263,6 +334,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
             100;
         deal.schedulerRewardRatio = IWorkerpool(_workerpoolorder.workerpool)
             .m_schedulerRewardRatioPolicy();
+        deal.sponsor = _sponsor;
 
         /**
          * Update consumed
@@ -277,10 +349,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
         /**
          * Lock
          */
-        lock(
-            deal.requester,
-            (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume
-        );
+        lock(_sponsor, (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume);
         lock(
             deal.workerpool.owner,
             ((deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
@@ -305,5 +374,4 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
 
         return dealid;
     }
-
 }
