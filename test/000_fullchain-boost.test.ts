@@ -701,9 +701,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
  * @returns deployed address
  */
 async function getContractAddress(contractName: string): Promise<string> {
-    return await (
-        await hre.artifacts.require(contractName).deployed()
-    ).address;
+    return (await deployments.get(contractName)).address;
 }
 
 /**

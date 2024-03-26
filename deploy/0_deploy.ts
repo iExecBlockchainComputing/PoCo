@@ -1,35 +1,56 @@
 // SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { ContractFactory } from 'ethers';
 import fs from 'fs';
-import hre from 'hardhat';
+import hre, { deployments, ethers } from 'hardhat';
 import path from 'path';
-import initial_migration from '../migrations/1_initial_migration';
-import deploy_token from '../migrations/3_deploy_token';
-import deploy_core from '../migrations/4_deploy_core';
-import deploy_ens from '../migrations/5_deploy_ens';
-import functions from '../migrations/999_functions';
 import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
 import {
-    ENSRegistry,
-    ERC1538Proxy,
+    AppRegistry__factory,
+    DatasetRegistry__factory,
+    ENSIntegrationDelegate__factory,
+    ERC1538Proxy__factory,
     ERC1538Query,
+    ERC1538QueryDelegate__factory,
     ERC1538Query__factory,
     ERC1538Update,
+    ERC1538UpdateDelegate__factory,
     ERC1538Update__factory,
-    IexecLibOrders_v5,
+    GenericFactory,
+    GenericFactory__factory,
+    IexecAccessorsABILegacyDelegate__factory,
+    IexecAccessorsDelegate__factory,
+    IexecAccessors__factory,
+    IexecCategoryManagerDelegate__factory,
+    IexecCategoryManager__factory,
+    IexecERC20Delegate__factory,
+    IexecEscrowNativeDelegate__factory,
+    IexecEscrowTokenDelegate__factory,
+    IexecLibOrders_v5__factory,
+    IexecMaintenanceDelegate__factory,
+    IexecMaintenanceExtraDelegate__factory,
+    IexecOrderManagementDelegate__factory,
+    IexecPoco1Delegate__factory,
+    IexecPoco2Delegate__factory,
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate__factory,
-    PublicResolver,
+    IexecRelayDelegate__factory,
+    RLC__factory,
+    WorkerpoolRegistry__factory,
 } from '../typechain';
-const erc1538Proxy: ERC1538Proxy = hre.artifacts.require('@iexec/solidity/ERC1538Proxy');
-const IexecLibOrders: IexecLibOrders_v5 = hre.artifacts.require('IexecLibOrders_v5');
-const ensRegistry: ENSRegistry = hre.artifacts.require(
-    '@ensdomains/ens-contracts/contracts/registry/ENSRegistry',
-);
-const ensPublicResolver: PublicResolver = hre.artifacts.require(
-    '@ensdomains/ens-contracts/contracts/registry/PublicResolver',
-);
+import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
+interface Category {
+    name: string;
+    description: string;
+    workClockTimeRef: number;
+}
+const { EthersDeployer: Deployer, FACTORY } = require('../utils/FactoryDeployer');
+const CONFIG = require('../config/config.json');
+let genericFactoryInstance: GenericFactory;
+let salt: string;
+// TODO: Deploy & setup ENS without hardhat-truffle
+
 /**
  * @dev Deploying contracts with `npx hardhat deploy` task brought by
  * `hardhat-deploy` plugin.
@@ -41,65 +62,72 @@ const ensPublicResolver: PublicResolver = hre.artifacts.require(
  * features available in it.
  */
 module.exports = async function () {
-    console.log('Deploying PoCo Nominal..');
-    const accounts = await hre.web3.eth.getAccounts();
-    await initial_migration();
-    await deploy_token(accounts);
-    await deploy_core(accounts);
-    await deploy_ens(accounts);
-    // Retrieve proxy address from previous truffle-fixture deployment
-    const { address: erc1538ProxyAddress } = await erc1538Proxy.deployed();
-    if (!erc1538ProxyAddress) {
-        console.error('Failed to retrieve deployed address of ERC1538Proxy');
-        process.exitCode = 1;
-    }
-    console.log(`ERC1538Proxy found: ${erc1538ProxyAddress}`);
-    // Save addresses of deployed PoCo Nominal contracts for later use
-    saveDeployedAddress('ERC1538Proxy', erc1538ProxyAddress);
-
-    // Save addresses of deployed ENS contracts for later use
-    const { address: ensRegistryAddress } = await ensRegistry.deployed();
-    saveDeployedAddress('ENSRegistry', ensRegistryAddress);
-    const { address: ensPublicResolverAddress } = await ensPublicResolver.deployed();
-    saveDeployedAddress('ENSPublicResolver', ensPublicResolverAddress);
-
-    console.log('Deploying PoCo Boost..');
+    console.log('Deploying PoCo..');
+    // Deploy GenericFactory (if not already done)
+    const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
-    const iexecPocoBoostDeployment = await hre.deployments.deploy('IexecPocoBoostDelegate', {
-        libraries: {
-            IexecLibOrders_v5: (await IexecLibOrders.deployed()).address,
-        },
-        from: owner.address,
-        log: true,
-    });
-    console.log(`IexecPocoBoostDelegate deployed: ${iexecPocoBoostDeployment.address}`);
-    const IexecPocoBoostAccessorsDeployment = await hre.deployments.deploy(
-        'IexecPocoBoostAccessorsDelegate',
-        {
-            from: owner.address,
-            log: true,
-        },
+    const factoryDeployer = new Deployer(owner);
+    await factoryDeployer.ready();
+    genericFactoryInstance = GenericFactory__factory.connect(FACTORY.address, owner);
+    // Deploy RLC
+    const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
+    salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
+    const isTokenMode = deploymentOptions.asset == 'Token';
+    const rlcInstanceAddress = isTokenMode
+        ? await new RLC__factory()
+              .connect(owner)
+              .deploy()
+              .then((contract) => {
+                  contract.deployed();
+                  return contract.address;
+              })
+        : ethers.constants.AddressZero;
+    console.log(rlcInstanceAddress);
+    // Deploy ERC1538 proxy contracts
+    const erc1538UpdateAddress = await deploy(new ERC1538UpdateDelegate__factory());
+    const transferOwnershipCall = await Ownable__factory.connect(erc1538UpdateAddress, owner)
+        .populateTransaction.transferOwnership(owner.address)
+        .then((tx) => tx.data)
+        .catch(() => {
+            throw new Error('Failed to prepare transferOwnership data');
+        });
+    const erc1538ProxyAddress = await deploy(
+        new ERC1538Proxy__factory(),
+        [erc1538UpdateAddress],
+        transferOwnershipCall,
     );
-    console.log(
-        `IexecPocoBoostAccessorsDelegate deployed: ${IexecPocoBoostAccessorsDeployment.address}`,
-    );
-
-    // Show proxy functions
-    await functions(accounts);
-
+    // Save addresses of deployed PoCo contracts for later use
+    saveDeployedAddress('ERC1538Proxy', erc1538ProxyAddress);
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${erc1538.address}`);
-    // Link Boost methods to ERC1538Proxy
-    await linkContractToProxy(
-        erc1538,
-        iexecPocoBoostDeployment.address,
-        IexecPocoBoostDelegate__factory,
-    );
-    await linkContractToProxy(
-        erc1538,
-        IexecPocoBoostAccessorsDeployment.address,
-        IexecPocoBoostAccessorsDelegate__factory,
-    );
+    // Deploy library & modules
+    const iexecLibOrdersAddress = await deploy(new IexecLibOrders_v5__factory());
+    const iexecLibOrders = {
+        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
+    };
+    const modules = [
+        new ERC1538QueryDelegate__factory(),
+        new IexecAccessorsDelegate__factory(),
+        new IexecAccessorsABILegacyDelegate__factory(),
+        new IexecCategoryManagerDelegate__factory(),
+        new IexecERC20Delegate__factory(),
+        isTokenMode
+            ? new IexecEscrowTokenDelegate__factory()
+            : new IexecEscrowNativeDelegate__factory(),
+        new IexecMaintenanceDelegate__factory(iexecLibOrders),
+        new IexecOrderManagementDelegate__factory(iexecLibOrders),
+        new IexecPoco1Delegate__factory(iexecLibOrders),
+        new IexecPoco2Delegate__factory(),
+        new IexecRelayDelegate__factory(),
+        new ENSIntegrationDelegate__factory(),
+        new IexecMaintenanceExtraDelegate__factory(),
+        new IexecPocoBoostDelegate__factory(iexecLibOrders),
+        new IexecPocoBoostAccessorsDelegate__factory(),
+    ];
+    for (const module of modules) {
+        const address = await deploy(module);
+        await linkContractToProxy(erc1538, address, module);
+    }
     // Verify linking on ERC1538Proxy
     const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(
         erc1538ProxyAddress,
@@ -107,15 +135,97 @@ module.exports = async function () {
     );
     const functionCount = await erc1538QueryInstance.totalFunctions();
     console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
-    await Promise.all(
-        [...Array(functionCount.toNumber()).keys()].map(async (i) => {
-            const [method, _, contract] = await erc1538QueryInstance.functionByIndex(i);
-            if (contract == iexecPocoBoostDeployment.address) {
-                console.log(`[${i}] ${contract} (IexecPocoBoostDelegate) ${method}`);
-            }
-        }),
+    for (let i = 0; i < functionCount.toNumber(); i++) {
+        const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
+        console.log(`[${i}] ${contract} ${method}`);
+    }
+    const appRegistryAddress = await deploy(new AppRegistry__factory(), [], transferOwnershipCall);
+    const datasetRegistryAddress = await deploy(
+        new DatasetRegistry__factory(),
+        [],
+        transferOwnershipCall,
     );
+    const workerpoolRegistryAddress = await deploy(
+        new WorkerpoolRegistry__factory(),
+        [],
+        transferOwnershipCall,
+    );
+    // Set main configuration
+    const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
+    const iexecInitialized =
+        (await iexecAccessorsInstance.eip712domain_separator()) != ethers.constants.HashZero;
+    if (!iexecInitialized) {
+        await IexecMaintenanceDelegate__factory.connect(erc1538ProxyAddress, owner)
+            .configure(
+                rlcInstanceAddress,
+                'Staked RLC',
+                'SRLC',
+                9, // TODO: generic ?
+                appRegistryAddress,
+                datasetRegistryAddress,
+                workerpoolRegistryAddress,
+                ethers.constants.AddressZero,
+            )
+            .then((tx) => tx.wait());
+    }
+    // Set categories
+    const catCountBefore = await iexecAccessorsInstance.countCategory();
+    const categories = CONFIG.categories as Category[];
+    for (let i = catCountBefore.toNumber(); i < categories.length; i++) {
+        const category = categories[i];
+        await IexecCategoryManager__factory.connect(erc1538ProxyAddress, owner).createCategory(
+            category.name,
+            JSON.stringify(category.description),
+            category.workClockTimeRef,
+        );
+    }
+    const catCountAfter = await iexecAccessorsInstance.countCategory();
+    console.log(`countCategory is now: ${catCountAfter}`);
+    for (let i = 0; i < catCountAfter.toNumber(); i++) {
+        console.log(`Category ${i}: ${await iexecAccessorsInstance.viewCategory(i)}`);
+    }
 };
+
+/**
+ * Extract base contract name from contract factory name.
+ * Inputting `MyBoxContract__factory` returns `MyBoxContract`.
+ */
+function getBaseNameFromContractFactory(contractFactory: any) {
+    const name = contractFactory.constructor.name;
+    return name.replace('__factory', '');
+}
+
+/**
+ * Deploy through a GenericFactory a contract [and optionally trigger call]
+ */
+async function deploy(contractFactory: ContractFactory, constructorArgs?: any[], call?: string) {
+    let bytecode = constructorArgs
+        ? contractFactory.getDeployTransaction(...constructorArgs).data
+        : contractFactory.getDeployTransaction().data;
+    if (!bytecode) {
+        throw new Error('Failed to prepare bytecode');
+    }
+    let contractAddress = call
+        ? await genericFactoryInstance.predictAddressWithCall(bytecode, salt, call)
+        : await genericFactoryInstance.predictAddress(bytecode, salt);
+    const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
+    if (!previouslyDeployed) {
+        call
+            ? await genericFactoryInstance
+                  .createContractAndCall(bytecode, salt, call)
+                  .then((tx) => tx.wait())
+            : await genericFactoryInstance.createContract(bytecode, salt).then((tx) => tx.wait());
+    }
+    const contractName = getBaseNameFromContractFactory(contractFactory);
+    console.log(
+        `${contractName}: ${contractAddress} ${previouslyDeployed ? ' (previously deployed)' : ''}`,
+    );
+    await deployments.save(contractName, {
+        abi: [],
+        address: contractAddress,
+    });
+    return contractAddress;
+}
 
 /**
  * Link a contract to an ERC1538 proxy.
@@ -128,11 +238,18 @@ async function linkContractToProxy(
     contractAddress: string,
     contractFactory: any,
 ) {
-    await proxy.updateContract(
-        contractAddress,
-        getFunctionSignatures(contractFactory.abi),
-        'Linking ' + contractFactory.name,
-    );
+    const contractName = getBaseNameFromContractFactory(contractFactory);
+    await proxy
+        .updateContract(
+            contractAddress,
+            // TODO: Use contractFactory.interface.functions when moving to ethers@v6
+            // https://github.com/ethers-io/ethers.js/issues/1069
+            getFunctionSignatures(contractFactory.constructor.abi),
+            'Linking ' + contractName,
+        )
+        .catch(() => {
+            throw new Error(`Failed to link ${contractName}`);
+        });
 }
 
 // TODO [optional]: Use hardhat-deploy to save addresses automatically

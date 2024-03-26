@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 const { ethers } = require('ethers');
@@ -141,4 +141,4 @@ class TruffleDeployer extends EthersDeployer {
     }
 }
 
-module.exports = { EthersDeployer, TruffleDeployer };
+module.exports = { EthersDeployer, TruffleDeployer, FACTORY };
