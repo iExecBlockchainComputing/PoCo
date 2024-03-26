@@ -73,19 +73,24 @@ module.exports = async function () {
     const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
     salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
     const isTokenMode = deploymentOptions.asset == 'Token';
-    const rlcInstanceAddress = isTokenMode
-        ? await new RLC__factory()
-              .connect(owner)
-              .deploy()
-              .then((contract) => {
-                  contract.deployed();
-                  return contract.address;
-              })
-        : ethers.constants.AddressZero;
-    console.log(rlcInstanceAddress);
+    let rlcInstanceAddress = isTokenMode
+        ? deploymentOptions.token // token
+            ? deploymentOptions.token
+            : await new RLC__factory()
+                  .connect(owner)
+                  .deploy()
+                  .then((contract) => {
+                      contract.deployed();
+                      return contract.address;
+                  })
+        : ethers.constants.AddressZero; // native
+    console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
     const erc1538UpdateAddress = await deploy(new ERC1538UpdateDelegate__factory());
-    const transferOwnershipCall = await Ownable__factory.connect(erc1538UpdateAddress, owner)
+    const transferOwnershipCall = await Ownable__factory.connect(
+        ethers.constants.AddressZero, // any is fine
+        owner, // any is fine
+    )
         .populateTransaction.transferOwnership(owner.address)
         .then((tx) => tx.data)
         .catch(() => {
