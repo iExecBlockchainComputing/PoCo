@@ -178,7 +178,7 @@ module.exports = async function () {
         );
     }
     const catCountAfter = await iexecAccessorsInstance.countCategory();
-    console.log(`countCategory is now: ${catCountAfter}`);
+    console.log(`countCategory is now: ${catCountAfter} (was ${catCountBefore})`);
     for (let i = 0; i < catCountAfter.toNumber(); i++) {
         console.log(`Category ${i}: ${await iexecAccessorsInstance.viewCategory(i)}`);
     }
