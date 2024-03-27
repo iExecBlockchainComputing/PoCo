@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ContractFactory } from 'ethers';
 import fs from 'fs';
 import hre, { deployments, ethers } from 'hardhat';
@@ -74,15 +75,7 @@ module.exports = async function () {
     salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
     const isTokenMode = deploymentOptions.asset == 'Token';
     let rlcInstanceAddress = isTokenMode
-        ? deploymentOptions.token // token
-            ? deploymentOptions.token
-            : await new RLC__factory()
-                  .connect(owner)
-                  .deploy()
-                  .then((contract) => {
-                      contract.deployed();
-                      return contract.address;
-                  })
+        ? await getOrDeployRlc(deploymentOptions.token, owner) // token
         : ethers.constants.AddressZero; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
@@ -190,6 +183,18 @@ module.exports = async function () {
         console.log(`Category ${i}: ${await iexecAccessorsInstance.viewCategory(i)}`);
     }
 };
+
+async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
+    return token // token
+        ? token
+        : await new RLC__factory()
+              .connect(owner)
+              .deploy()
+              .then((contract) => {
+                  contract.deployed();
+                  return contract.address;
+              });
+}
 
 /**
  * Extract base contract name from contract factory name.
