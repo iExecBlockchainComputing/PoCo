@@ -79,7 +79,7 @@ module.exports = async function () {
         : ethers.constants.AddressZero; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
-    const erc1538UpdateAddress = await deploy(new ERC1538UpdateDelegate__factory());
+    const erc1538UpdateAddress = await deployWithFactory(new ERC1538UpdateDelegate__factory());
     const transferOwnershipCall = await Ownable__factory.connect(
         ethers.constants.AddressZero, // any is fine
         owner, // any is fine
@@ -89,7 +89,7 @@ module.exports = async function () {
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const erc1538ProxyAddress = await deploy(
+    const erc1538ProxyAddress = await deployWithFactory(
         new ERC1538Proxy__factory(),
         [erc1538UpdateAddress],
         transferOwnershipCall,
@@ -99,7 +99,7 @@ module.exports = async function () {
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${erc1538.address}`);
     // Deploy library & modules
-    const iexecLibOrdersAddress = await deploy(new IexecLibOrders_v5__factory());
+    const iexecLibOrdersAddress = await deployWithFactory(new IexecLibOrders_v5__factory());
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
@@ -123,7 +123,7 @@ module.exports = async function () {
         new IexecPocoBoostAccessorsDelegate__factory(),
     ];
     for (const module of modules) {
-        const address = await deploy(module);
+        const address = await deployWithFactory(module);
         await linkContractToProxy(erc1538, address, module);
     }
     // Verify linking on ERC1538Proxy
@@ -137,13 +137,17 @@ module.exports = async function () {
         const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
         console.log(`[${i}] ${contract} ${method}`);
     }
-    const appRegistryAddress = await deploy(new AppRegistry__factory(), [], transferOwnershipCall);
-    const datasetRegistryAddress = await deploy(
+    const appRegistryAddress = await deployWithFactory(
+        new AppRegistry__factory(),
+        [],
+        transferOwnershipCall,
+    );
+    const datasetRegistryAddress = await deployWithFactory(
         new DatasetRegistry__factory(),
         [],
         transferOwnershipCall,
     );
-    const workerpoolRegistryAddress = await deploy(
+    const workerpoolRegistryAddress = await deployWithFactory(
         new WorkerpoolRegistry__factory(),
         [],
         transferOwnershipCall,
@@ -208,7 +212,11 @@ function getBaseNameFromContractFactory(contractFactory: any) {
 /**
  * Deploy through a GenericFactory a contract [and optionally trigger call]
  */
-async function deploy(contractFactory: ContractFactory, constructorArgs?: any[], call?: string) {
+async function deployWithFactory(
+    contractFactory: ContractFactory,
+    constructorArgs?: any[],
+    call?: string,
+) {
     let bytecode = contractFactory.getDeployTransaction(...(constructorArgs ?? [])).data;
     if (!bytecode) {
         throw new Error('Failed to prepare bytecode');
@@ -229,7 +237,7 @@ async function deploy(contractFactory: ContractFactory, constructorArgs?: any[],
         `${contractName}: ${contractAddress} ${previouslyDeployed ? ' (previously deployed)' : ''}`,
     );
     await deployments.save(contractName, {
-        abi: [],
+        abi: (contractFactory as any).constructor.abi,
         address: contractAddress,
     });
     return contractAddress;
