@@ -209,9 +209,7 @@ function getBaseNameFromContractFactory(contractFactory: any) {
  * Deploy through a GenericFactory a contract [and optionally trigger call]
  */
 async function deploy(contractFactory: ContractFactory, constructorArgs?: any[], call?: string) {
-    let bytecode = constructorArgs
-        ? contractFactory.getDeployTransaction(...constructorArgs).data
-        : contractFactory.getDeployTransaction().data;
+    let bytecode = contractFactory.getDeployTransaction(...(constructorArgs ?? [])).data;
     if (!bytecode) {
         throw new Error('Failed to prepare bytecode');
     }
