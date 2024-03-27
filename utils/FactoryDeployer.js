@@ -141,4 +141,4 @@ class TruffleDeployer extends EthersDeployer {
     }
 }
 
-module.exports = { EthersDeployer, TruffleDeployer, FACTORY };
+module.exports = { EthersDeployer, TruffleDeployer, factoryAddress: FACTORY.address };

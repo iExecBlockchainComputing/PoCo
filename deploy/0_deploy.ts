@@ -46,7 +46,7 @@ interface Category {
     description: string;
     workClockTimeRef: number;
 }
-const { EthersDeployer: Deployer, FACTORY } = require('../utils/FactoryDeployer');
+const { EthersDeployer: Deployer, factoryAddress } = require('../utils/FactoryDeployer');
 const CONFIG = require('../config/config.json');
 let genericFactoryInstance: GenericFactory;
 let salt: string;
@@ -69,7 +69,7 @@ module.exports = async function () {
     const [owner] = await hre.ethers.getSigners();
     const factoryDeployer = new Deployer(owner);
     await factoryDeployer.ready();
-    genericFactoryInstance = GenericFactory__factory.connect(FACTORY.address, owner);
+    genericFactoryInstance = GenericFactory__factory.connect(factoryAddress, owner);
     // Deploy RLC
     const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
     salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
