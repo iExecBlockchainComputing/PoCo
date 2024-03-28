@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { ContractFactory } from 'ethers';
 import fs from 'fs';
-import hre, { deployments, ethers } from 'hardhat';
+import hre, { ethers } from 'hardhat';
 import path from 'path';
 import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
 import {
@@ -18,8 +17,6 @@ import {
     ERC1538Update,
     ERC1538UpdateDelegate__factory,
     ERC1538Update__factory,
-    GenericFactory,
-    GenericFactory__factory,
     IexecAccessorsABILegacyDelegate__factory,
     IexecAccessorsDelegate__factory,
     IexecAccessors__factory,
@@ -41,15 +38,14 @@ import {
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
+import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
+import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 interface Category {
     name: string;
     description: string;
     workClockTimeRef: number;
 }
-const { EthersDeployer: Deployer, factoryAddress } = require('../utils/FactoryDeployer');
 const CONFIG = require('../config/config.json');
-let genericFactoryInstance: GenericFactory;
-let salt: string;
 // TODO: Deploy & setup ENS without hardhat-truffle
 
 /**
@@ -64,22 +60,21 @@ let salt: string;
  */
 module.exports = async function () {
     console.log('Deploying PoCo..');
-    // Deploy GenericFactory (if not already done)
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
-    const factoryDeployer = new Deployer(owner);
-    await factoryDeployer.ready();
-    genericFactoryInstance = GenericFactory__factory.connect(factoryAddress, owner);
-    // Deploy RLC
     const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
-    salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
+    const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
+    const factoryDeployer = new FactoryDeployerHelper(owner, salt);
+    // Deploy RLC
     const isTokenMode = deploymentOptions.asset == 'Token';
     let rlcInstanceAddress = isTokenMode
         ? await getOrDeployRlc(deploymentOptions.token, owner) // token
         : ethers.constants.AddressZero; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
-    const erc1538UpdateAddress = await deployWithFactory(new ERC1538UpdateDelegate__factory());
+    const erc1538UpdateAddress = await factoryDeployer.deployWithFactory(
+        new ERC1538UpdateDelegate__factory(),
+    );
     const transferOwnershipCall = await Ownable__factory.connect(
         ethers.constants.AddressZero, // any is fine
         owner, // any is fine
@@ -89,7 +84,7 @@ module.exports = async function () {
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const erc1538ProxyAddress = await deployWithFactory(
+    const erc1538ProxyAddress = await factoryDeployer.deployWithFactory(
         new ERC1538Proxy__factory(),
         [erc1538UpdateAddress],
         transferOwnershipCall,
@@ -99,7 +94,9 @@ module.exports = async function () {
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${erc1538.address}`);
     // Deploy library & modules
-    const iexecLibOrdersAddress = await deployWithFactory(new IexecLibOrders_v5__factory());
+    const iexecLibOrdersAddress = await factoryDeployer.deployWithFactory(
+        new IexecLibOrders_v5__factory(),
+    );
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
@@ -123,7 +120,7 @@ module.exports = async function () {
         new IexecPocoBoostAccessorsDelegate__factory(),
     ];
     for (const module of modules) {
-        const address = await deployWithFactory(module);
+        const address = await factoryDeployer.deployWithFactory(module);
         await linkContractToProxy(erc1538, address, module);
     }
     // Verify linking on ERC1538Proxy
@@ -137,17 +134,17 @@ module.exports = async function () {
         const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
         console.log(`[${i}] ${contract} ${method}`);
     }
-    const appRegistryAddress = await deployWithFactory(
+    const appRegistryAddress = await factoryDeployer.deployWithFactory(
         new AppRegistry__factory(),
         [],
         transferOwnershipCall,
     );
-    const datasetRegistryAddress = await deployWithFactory(
+    const datasetRegistryAddress = await factoryDeployer.deployWithFactory(
         new DatasetRegistry__factory(),
         [],
         transferOwnershipCall,
     );
-    const workerpoolRegistryAddress = await deployWithFactory(
+    const workerpoolRegistryAddress = await factoryDeployer.deployWithFactory(
         new WorkerpoolRegistry__factory(),
         [],
         transferOwnershipCall,
@@ -198,49 +195,6 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
                   contract.deployed();
                   return contract.address;
               });
-}
-
-/**
- * Extract base contract name from contract factory name.
- * Inputting `MyBoxContract__factory` returns `MyBoxContract`.
- */
-function getBaseNameFromContractFactory(contractFactory: any) {
-    const name = contractFactory.constructor.name;
-    return name.replace('__factory', '');
-}
-
-/**
- * Deploy through a GenericFactory a contract [and optionally trigger call]
- */
-async function deployWithFactory(
-    contractFactory: ContractFactory,
-    constructorArgs?: any[],
-    call?: string,
-) {
-    let bytecode = contractFactory.getDeployTransaction(...(constructorArgs ?? [])).data;
-    if (!bytecode) {
-        throw new Error('Failed to prepare bytecode');
-    }
-    let contractAddress = call
-        ? await genericFactoryInstance.predictAddressWithCall(bytecode, salt, call)
-        : await genericFactoryInstance.predictAddress(bytecode, salt);
-    const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
-    if (!previouslyDeployed) {
-        call
-            ? await genericFactoryInstance
-                  .createContractAndCall(bytecode, salt, call)
-                  .then((tx) => tx.wait())
-            : await genericFactoryInstance.createContract(bytecode, salt).then((tx) => tx.wait());
-    }
-    const contractName = getBaseNameFromContractFactory(contractFactory);
-    console.log(
-        `${contractName}: ${contractAddress} ${previouslyDeployed ? ' (previously deployed)' : ''}`,
-    );
-    await deployments.save(contractName, {
-        abi: (contractFactory as any).constructor.abi,
-        address: contractAddress,
-    });
-    return contractAddress;
 }
 
 /**
