@@ -32,18 +32,15 @@ export class FactoryDeployerHelper {
         if (!bytecode) {
             throw new Error('Failed to prepare bytecode');
         }
-        let contractAddress = call
-            ? await this.genericFactory.predictAddressWithCall(bytecode, this.salt, call)
-            : await this.genericFactory.predictAddress(bytecode, this.salt);
+        let contractAddress = await (call
+            ? this.genericFactory.predictAddressWithCall(bytecode, this.salt, call)
+            : this.genericFactory.predictAddress(bytecode, this.salt));
         const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
         if (!previouslyDeployed) {
-            call
-                ? await this.genericFactory
-                      .createContractAndCall(bytecode, this.salt, call)
-                      .then((tx) => tx.wait())
-                : await this.genericFactory
-                      .createContract(bytecode, this.salt)
-                      .then((tx) => tx.wait());
+            await (call
+                ? this.genericFactory.createContractAndCall(bytecode, this.salt, call)
+                : this.genericFactory.createContract(bytecode, this.salt)
+            ).then((tx) => tx.wait());
         }
         const contractName = getBaseNameFromContractFactory(contractFactory);
         console.log(
