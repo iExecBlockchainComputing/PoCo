@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Add the ability to deploy without truffle fixture. (#58)
 - Sponsor match orders. (#57)
 - Upgrade Poco1 to solidity `^0.8.0` (#55):
     - Migrate to `openzeppelin@v5`
