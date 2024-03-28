@@ -10,12 +10,12 @@ const { EthersDeployer: Deployer, factoryAddress } = require('../utils/FactoryDe
 
 export class FactoryDeployerHelper {
     salt: string;
-    genericFactoryDeployer: any;
+    init: any;
     genericFactory: GenericFactory;
 
     constructor(owner: SignerWithAddress, salt: string) {
         this.salt = salt;
-        this.genericFactoryDeployer = new Deployer(owner);
+        this.init = new Deployer(owner);
         this.genericFactory = GenericFactory__factory.connect(factoryAddress, owner);
     }
 
@@ -27,7 +27,7 @@ export class FactoryDeployerHelper {
         constructorArgs?: any[],
         call?: string,
     ) {
-        await this.genericFactoryDeployer.ready(); // Deploy GenericFactory if not already done
+        await this.init.ready(); // Deploy GenericFactory if not already done
         let bytecode = contractFactory.getDeployTransaction(...(constructorArgs ?? [])).data;
         if (!bytecode) {
             throw new Error('Failed to prepare bytecode');
