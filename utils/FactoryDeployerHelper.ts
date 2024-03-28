@@ -52,6 +52,7 @@ export class FactoryDeployerHelper {
             }`,
         );
         await deployments.save(contractName, {
+            // abi field is not used but is a required arg. Empty abi would be fine
             abi: (contractFactory as any).constructor.abi,
             address: contractAddress,
         });
