@@ -20,7 +20,7 @@ export class FactoryDeployerHelper {
     }
 
     /**
-     * Deploy through a GenericFactory a contract [and optionally trigger call]
+     * Deploy a contract through GenericFactory [and optionally trigger a call]
      */
     async deployWithFactory(
         contractFactory: ContractFactory,
