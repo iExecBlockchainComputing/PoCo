@@ -8,6 +8,54 @@ import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
 import { hashOrder } from './createOrders';
 
+export interface IexecAccounts {
+    iexecAdmin: SignerWithAddress;
+    requester: SignerWithAddress;
+    sponsor: SignerWithAddress;
+    beneficiary: SignerWithAddress;
+    appProvider: SignerWithAddress;
+    datasetProvider: SignerWithAddress;
+    scheduler: SignerWithAddress;
+    worker: SignerWithAddress;
+    worker1: SignerWithAddress;
+    worker2: SignerWithAddress;
+    enclave: SignerWithAddress;
+    sms: SignerWithAddress;
+    anyone: SignerWithAddress;
+}
+
+export async function getIexecAccounts(): Promise<IexecAccounts> {
+    const [
+        iexecAdmin,
+        requester,
+        sponsor,
+        beneficiary,
+        appProvider,
+        datasetProvider,
+        scheduler,
+        worker1,
+        worker2,
+        enclave,
+        sms,
+        anyone,
+    ] = await ethers.getSigners();
+    return {
+        iexecAdmin,
+        requester,
+        sponsor,
+        beneficiary,
+        appProvider,
+        datasetProvider,
+        scheduler,
+        worker: worker1,
+        worker1,
+        worker2,
+        enclave,
+        sms,
+        anyone,
+    };
+}
+
 export function getDealId(
     domain: TypedDataDomain,
     requestOrder: IexecLibOrders_v5.RequestOrderStruct,
