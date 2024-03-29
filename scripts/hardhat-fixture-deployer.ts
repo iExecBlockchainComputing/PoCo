@@ -1,0 +1,18 @@
+// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+const { resetNetworkToInitialState } = require('./common-test-snapshot');
+const deploy = require('../deploy/0_deploy');
+
+// Anonymous functions cannot be used as fixtures, hence we need to wrap body
+// in a method which will be called by `loadFixture`.
+async function resetNetworkAndDeployAllContracts() {
+    await resetNetworkToInitialState();
+    await deploy();
+}
+
+export const loadHardhatFixtureDeployment = async () => {
+    console.log('Running hardhat-fixture');
+    await loadFixture(resetNetworkAndDeployAllContracts);
+};

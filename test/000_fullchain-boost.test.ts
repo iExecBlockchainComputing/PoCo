@@ -9,6 +9,7 @@ import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
 import hre, { deployments, ethers } from 'hardhat';
 import config from '../config/config.json';
+import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
 import {
     AppRegistry,
     AppRegistry__factory,
@@ -110,6 +111,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
+        await loadHardhatFixtureDeployment();
         let signers = await hre.ethers.getSigners();
         owner = signers[0];
         requester = signers[1];
@@ -127,7 +129,6 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             workerpoolOwner: scheduler,
             requester: requester,
         };
-        await deployments.fixture();
         proxyAddress = await getContractAddress('ERC1538Proxy');
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);

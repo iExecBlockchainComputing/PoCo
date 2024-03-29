@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Deploy contracts in tests explicitly with hardhat or truffle fixture. (#59)
 - Add the ability to deploy without truffle fixture. (#58)
 - Sponsor match orders. (#57)
 - Upgrade Poco1 to solidity `^0.8.0` (#55):
