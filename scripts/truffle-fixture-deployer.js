@@ -9,9 +9,9 @@ const deploy_core = require('../migrations/4_deploy_core.js');
 const deploy_ens = require('../migrations/5_deploy_ens.js');
 const functions = require('../migrations/999_functions.js');
 
-async function deployAllContracts() {
-    console.log('Migrating contracts..');
+async function resetNetworkAndDeployAllContracts() {
     await resetNetworkToInitialState();
+    console.log('Migrating contracts..');
     await initial_migration();
     const accounts = await web3.eth.getAccounts();
     await deploy_token(accounts);
@@ -22,5 +22,5 @@ async function deployAllContracts() {
 
 module.exports = async () => {
     console.log('Running truffle-fixture');
-    await loadFixture(deployAllContracts);
+    await loadFixture(resetNetworkAndDeployAllContracts);
 };

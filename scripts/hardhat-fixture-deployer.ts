@@ -7,12 +7,12 @@ const deploy = require('../deploy/0_deploy');
 
 // Anonymous functions cannot be used as fixtures, hence we need to wrap body
 // in a method which will be called by `loadFixture`.
-async function deployAllContracts() {
+async function resetNetworkAndDeployAllContracts() {
     await resetNetworkToInitialState();
     await deploy();
 }
 
 export const loadHardhatFixtureDeployment = async () => {
     console.log('Running hardhat-fixture');
-    await loadFixture(deployAllContracts);
+    await loadFixture(resetNetworkAndDeployAllContracts);
 };
