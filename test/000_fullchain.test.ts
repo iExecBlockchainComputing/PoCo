@@ -9,7 +9,6 @@ import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deploye
 import { IexecAccessors, IexecAccessors__factory } from '../typechain';
 import { IexecPoco1 } from '../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol';
 import { IexecPoco1__factory } from '../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
-import { IexecWrapper } from '../utils/IexecWrapper';
 import {
     Orders,
     OrdersActors,
@@ -20,6 +19,7 @@ import {
     signOrders,
 } from '../utils/createOrders';
 import { getDealId, getIexecAccounts } from '../utils/poco-tools';
+import { IexecWrapper } from './utils/IexecWrapper';
 
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;

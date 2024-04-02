@@ -4,7 +4,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, ContractReceipt } from 'ethers';
 import { ethers } from 'hardhat';
-import config from '../config/config.json';
+import config from '../../config/config.json';
 import {
     AppRegistry,
     AppRegistry__factory,
@@ -16,9 +16,9 @@ import {
     RLC__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
-} from '../typechain';
-import { IexecAccounts } from './poco-tools';
-import { extractEventsFromReceipt } from './tools';
+} from '../../typechain';
+import { IexecAccounts } from '../../utils/poco-tools';
+import { extractEventsFromReceipt } from '../../utils/tools';
 const DEPLOYMENT_CONFIG = config.chains.default;
 
 export class IexecWrapper {
