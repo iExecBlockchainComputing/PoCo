@@ -2,6 +2,9 @@ on:
   push:
     branches:
       - feature/*
+      - develop
+      - release/*
+      - v5
 
 jobs:
   coverage:
