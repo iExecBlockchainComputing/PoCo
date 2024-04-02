@@ -17,8 +17,8 @@ import {
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
 } from '../typechain';
-import { IexecAccounts } from '../utils/poco-tools';
-import { extractEventsFromReceipt } from '../utils/tools';
+import { IexecAccounts } from './poco-tools';
+import { extractEventsFromReceipt } from './tools';
 const DEPLOYMENT_CONFIG = config.chains.default;
 
 export class IexecWrapper {
