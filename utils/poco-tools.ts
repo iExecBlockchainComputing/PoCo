@@ -25,35 +25,23 @@ export interface IexecAccounts {
 }
 
 export async function getIexecAccounts(): Promise<IexecAccounts> {
-    const [
-        iexecAdmin,
-        requester,
-        sponsor,
-        beneficiary,
-        appProvider,
-        datasetProvider,
-        scheduler,
-        worker1,
-        worker2,
-        enclave,
-        sms,
-        anyone,
-    ] = await ethers.getSigners();
+    const signers = await ethers.getSigners();
     return {
-        iexecAdmin,
-        requester,
-        sponsor,
-        beneficiary,
-        appProvider,
-        datasetProvider,
-        scheduler,
-        worker: worker1,
-        worker1,
-        worker2,
-        enclave,
-        sms,
-        anyone,
+        iexecAdmin: signers[0],
+        requester: signers[1],
+        sponsor: signers[2],
+        beneficiary: signers[3],
+        appProvider: signers[4],
+        datasetProvider: signers[5],
+        scheduler: signers[6],
+        worker: signers[7], // same as worker1
+        worker1: signers[7],
+        worker2: signers[8],
+        enclave: signers[9],
+        sms: signers[10],
+        anyone: signers[11],
     };
+
 }
 
 export function getDealId(
