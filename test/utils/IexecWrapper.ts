@@ -52,7 +52,6 @@ export class IexecWrapper {
                     ).token(),
                     this.accounts.iexecAdmin,
                 );
-                // Token
                 // Transfer RLC from owner to recipient
                 await rlc.transfer(account.address, value);
                 // Deposit
