@@ -47,31 +47,6 @@ const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 
-// TODO: Remove
-/**
- * Extract address of a newly created entry in a registry contract
- * from the tx receipt.
- * @param receipt contract receipt
- * @param registryInstanceAddress address of the registry contract
- * @returns address of the entry in checksum format.
- */
-/*
-async function extractRegistryEntryAddress(
-    receipt: ContractReceipt,
-    registryInstanceAddress: string,
-): Promise<string> {
-    const events = extractEventsFromReceipt(receipt, registryInstanceAddress, 'Transfer');
-    if (events && events[0].args) {
-        const lowercaseAddress = ethers.utils.hexZeroPad(
-            BigNumber.from(events[0].args['tokenId']).toHexString(),
-            20,
-        );
-        return ethers.utils.getAddress(lowercaseAddress);
-    }
-    return '';
-}
-*/
-
 describe('IexecPocoBoostDelegate (IT)', function () {
     let domain: TypedDataDomain;
     let proxyAddress: string;
@@ -607,79 +582,10 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         });
     });
 
-    // TODO: Remove
-    /**
-     * Deposit value in iExec account.
-     * @param value The value to deposit.
-     * @param account Deposit value for an account.
-     */
-    /*
-    async function depositInIexecAccount(account: SignerWithAddress, value: number) {
-        if (rlcInstance) {
-            // Token
-            // Transfer RLC from owner to recipient
-            await rlcInstance.transfer(account.address, value);
-            // Deposit
-            await rlcInstance
-                .connect(account)
-                .approveAndCall(iexecPocoBoostInstance.address, value, '0x');
-        } else {
-            // Native
-            await IexecInterfaceNative__factory.connect(proxyAddress, account)
-                .deposit({
-                    value: (value * 10 ** 9).toString(),
-                })
-                .then((tx) => tx.wait());
-        }
-    }
-    */
-
     async function viewDealBoost(dealId: string) {
         return await IexecPocoBoostAccessorsDelegate__factory.connect(
             iexecPocoBoostInstance.address,
             anyone,
         ).viewDealBoost(dealId);
     }
-
-    // TODO: Remove
-    /*
-    async function setTeeBroker(brokerAddress: string) {
-        await IexecMaintenanceDelegate__factory.connect(proxyAddress, owner)
-            .setTeeBroker(brokerAddress)
-            .then((tx) => tx.wait());
-    }
-    */
 });
-
-// TODO: Remove
-/**
- * Get address of contract deployed with hardhat-truffle.
- * @param contractName contract to retrieve
- * @returns deployed address
- */
-/*
-async function getContractAddress(contractName: string): Promise<string> {
-    return (await deployments.get(contractName)).address;
-}
-*/
-
-/**
- * Compute the amount of RLCs to be staked by the scheduler
- * for a deal. We first compute the percentage by task
- * (See contracts/Store.sol#WORKERPOOL_STAKE_RATIO), then
- * compute the total amount according to the volume.
- * @param iexecInstance where to fetch ratio value
- * @param workerpoolPrice
- * @param volume number of tasks of a deal
- * @returns total amount to stake by the scheduler
- */
-/*
-async function computeSchedulerDealStake(
-    iexecInstance: IexecAccessors,
-    workerpoolPrice: number,
-    volume: number,
-): Promise<number> {
-    const stakeRatio = (await iexecInstance.workerpool_stake_ratio()).toNumber();
-    return ((workerpoolPrice * stakeRatio) / 100) * volume;
-}
-*/
