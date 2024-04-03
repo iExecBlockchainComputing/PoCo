@@ -4,7 +4,7 @@
 - Upload coverage reports to Codecov. (#61)
 - Deploy contracts in tests explicitly with hardhat or truffle fixture. (#59)
 - Add the ability to deploy without truffle fixture. (#58)
-- Sponsor match orders. (#57)
+- Sponsor match orders. (#57, #60)
 - Upgrade Poco1 to solidity `^0.8.0` (#55):
     - Migrate to `openzeppelin@v5`
     - Migrate to `SignatureVerifier.v8`

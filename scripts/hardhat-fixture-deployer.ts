@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { deployments } from 'hardhat';
 const { resetNetworkToInitialState } = require('./common-test-snapshot');
 const deploy = require('../deploy/0_deploy');
 
@@ -12,7 +13,11 @@ async function resetNetworkAndDeployAllContracts() {
     await deploy();
 }
 
+/**
+ * @returns proxy address.
+ */
 export const loadHardhatFixtureDeployment = async () => {
     console.log('Running hardhat-fixture');
     await loadFixture(resetNetworkAndDeployAllContracts);
+    return (await deployments.get('ERC1538Proxy')).address;
 };
