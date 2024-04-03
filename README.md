@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/github/iExecBlockchainComputing/PoCo/graph/badge.svg)](https://codecov.io/github/iExecBlockchainComputing/PoCo)
+
 # Introduction
 
 This repository contains the smart contract implementation of iExec's PoCo protocol.
