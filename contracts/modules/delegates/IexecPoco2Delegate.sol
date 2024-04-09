@@ -25,7 +25,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         IexecLibCore_v5.Deal storage deal = m_deals[_dealid];
 
         uint256 requesterstake = deal.app.price + deal.dataset.price + deal.workerpool.price;
-        uint256 poolstake = deal.workerpool.price.percentage(WORKERPOOL_STAKE_RATIO);
+        uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
         // seize requester funds
         seize(deal.requester, requesterstake, _taskid);
@@ -45,7 +45,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         uint256 kitty = m_frozens[KITTY_ADDRESS];
         if (kitty > 0) {
             // Get a fraction of the kitty where KITTY_MIN <= fraction <= kitty
-            kitty = kitty.percentage(KITTY_RATIO).max(KITTY_MIN).min(kitty);
+            kitty = Math.min(Math.max((kitty * KITTY_RATIO) / 100, KITTY_MIN), kitty);
             seize(KITTY_ADDRESS, kitty, _taskid);
             reward(deal.workerpool.owner, kitty, _taskid);
         }
@@ -55,7 +55,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         IexecLibCore_v5.Deal memory deal = m_deals[_dealid];
 
         uint256 requesterstake = deal.app.price + deal.dataset.price + deal.workerpool.price;
-        uint256 poolstake = deal.workerpool.price.percentage(WORKERPOOL_STAKE_RATIO);
+        uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
         unlock(deal.requester, requesterstake);
         seize(deal.workerpool.owner, poolstake, _taskid);
@@ -420,7 +420,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         }
 
         // compute how much is going to the workers
-        uint256 workersReward = totalReward.percentage(100 - deal.schedulerRewardRatio);
+        uint256 workersReward = (totalReward * (100 - deal.schedulerRewardRatio)) / 100;
 
         for (uint256 i = 0; i < task.contributors.length; ++i) {
             address worker = task.contributors[i];
@@ -481,7 +481,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         IexecLibCore_v5.Deal memory deal = m_deals[task.dealid];
 
         // simple reward, no score consideration
-        uint256 workerReward = deal.workerpool.price.percentage(100 - deal.schedulerRewardRatio);
+        uint256 workerReward = (deal.workerpool.price * (100 - deal.schedulerRewardRatio)) / 100;
         uint256 schedulerReward = deal.workerpool.price - workerReward;
         // Reward for contribution.
         reward(_msgSender(), workerReward, _taskid);
