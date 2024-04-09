@@ -4,11 +4,6 @@
 pragma solidity ^0.8.0;
 
 interface IexecPoco2 {
-    event Reward(address owner, uint256 amount, bytes32 ref);
-    event Seize(address owner, uint256 amount, bytes32 ref);
-    event Lock(address owner, uint256 amount);
-    event Unlock(address owner, uint256 amount);
-
     event AccurateContribution(address indexed worker, bytes32 indexed taskId);
     event FaultyContribution(address indexed worker, bytes32 indexed taskId);
 
