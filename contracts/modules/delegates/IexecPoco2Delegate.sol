@@ -113,13 +113,11 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
         require(
-            _checkSignature(
+            _verifySignature(
                 (_enclaveChallenge != address(0) && m_teebroker != address(0))
                     ? m_teebroker
                     : deal.workerpool.owner,
-                _toEthSignedMessage(
-                    keccak256(abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge))
-                ),
+                _toEthSignedMessageHash(abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge)),
                 _authorizationSign
             )
         );
@@ -127,9 +125,9 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         // Check enclave signature
         require(
             _enclaveChallenge == address(0) ||
-                _checkSignature(
+                _verifySignature(
                     _enclaveChallenge,
-                    _toEthSignedMessage(keccak256(abi.encodePacked(_resultHash, _resultSeal))),
+                    _toEthSignedMessageHash(abi.encodePacked(_resultHash, _resultSeal)),
                     _enclaveSign
                 )
         );
@@ -200,13 +198,11 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
         require(
-            _checkSignature(
+            _verifySignature(
                 (_enclaveChallenge != address(0) && m_teebroker != address(0))
                     ? m_teebroker
                     : deal.workerpool.owner,
-                _toEthSignedMessage(
-                    keccak256(abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge))
-                ),
+                _toEthSignedMessageHash(abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge)),
                 _authorizationSign
             )
         );
@@ -214,9 +210,9 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         // Check enclave signature
         require(
             _enclaveChallenge == address(0) ||
-                _checkSignature(
+                _verifySignature(
                     _enclaveChallenge,
-                    _toEthSignedMessage(keccak256(abi.encodePacked(resultHash, resultSeal))),
+                    _toEthSignedMessageHash(abi.encodePacked(resultHash, resultSeal)),
                     _enclaveSign
                 )
         );

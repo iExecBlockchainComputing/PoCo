@@ -23,7 +23,13 @@ contract SignatureVerifier is DelegateBase {
         return MessageHashUtils.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
     }
 
-    // TODO: Add `_verifySignatureOfEthSignedMessage` here
+    /**
+     * Hash message and create its ETH signed message hash.
+     * @param message to be hashed
+     */
+    function _toEthSignedMessageHash(bytes memory message) internal pure returns (bytes32) {
+        return MessageHashUtils.toEthSignedMessageHash(keccak256(message));
+    }
 
     /**
      * @notice Verify that a message is signed by an EOA or an ERC1271 smart contract.
