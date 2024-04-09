@@ -13,6 +13,11 @@ import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureVerifier {
+    modifier onlyScheduler(bytes32 _taskId) {
+        require(_msgSender() == m_deals[m_tasks[_taskId].dealid].workerpool.owner);
+        _;
+    }
+
     /***************************************************************************
      *                    Escrow overhead for contribution                     *
      ***************************************************************************/
