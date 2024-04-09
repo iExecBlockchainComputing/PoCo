@@ -141,7 +141,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         contribution.enclaveChallenge = _enclaveChallenge;
         task.contributors.push(_msgSender());
 
-        lockContribution(task.dealid, _msgSender());
+        // Lock contribution.
+        lock(_msgSender(), deal.workerStake);
 
         emit TaskContribute(_taskid, _msgSender(), _resultHash);
 
@@ -347,7 +348,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         failedWork(task.dealid, _taskid);
         for (uint256 i = 0; i < task.contributors.length; ++i) {
             address worker = task.contributors[i];
-            unlockContribution(task.dealid, worker);
+            // Unlock contribution
+            unlock(worker, m_deals[task.dealid].workerStake);
         }
 
         emit TaskClaimed(_taskid);
@@ -431,8 +433,10 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
                 );
                 totalReward = totalReward - workerReward;
 
-                unlockContribution(task.dealid, worker);
-                rewardForContribution(worker, workerReward, _taskid);
+                // Unlock contribution
+                unlock(worker, deal.workerStake);
+                // Reward for contribution
+                reward(worker, workerReward, _taskid);
 
                 // Only reward if replication happened
                 if (task.contributors.length > 1) {
@@ -448,7 +452,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             // WorkStatusEnum.POCO_REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
             else {
                 // No Reward
-                seizeContribution(task.dealid, worker, _taskid);
+                // Seize contribution
+                seize(worker, deal.workerStake, _taskid);
 
                 // Always punish bad contributors
                 {
@@ -464,7 +469,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             }
         }
         // totalReward now contains the scheduler share
-        rewardForScheduling(task.dealid, totalReward, _taskid);
+        // Reward for scheduling.
+        reward(deal.workerpool.owner, totalReward, _taskid);
     }
 
     /*
@@ -477,8 +483,10 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         // simple reward, no score consideration
         uint256 workerReward = deal.workerpool.price.percentage(100 - deal.schedulerRewardRatio);
         uint256 schedulerReward = deal.workerpool.price - workerReward;
-        rewardForContribution(_msgSender(), workerReward, _taskid);
-        rewardForScheduling(task.dealid, schedulerReward, _taskid);
+        // Reward for contribution.
+        reward(_msgSender(), workerReward, _taskid);
+        // Reward for scheduling.
+        reward(deal.workerpool.owner, schedulerReward, _taskid);
     }
 
     /**
