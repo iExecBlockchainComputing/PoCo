@@ -97,8 +97,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         bytes32 _resultHash,
         bytes32 _resultSeal,
         address _enclaveChallenge,
-        bytes memory _enclaveSign,
-        bytes memory _authorizationSign
+        bytes calldata _enclaveSign,
+        bytes calldata _authorizationSign
     ) public override {
         IexecLibCore_v5.Task storage task = m_tasks[_taskid];
         IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
@@ -172,11 +172,11 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
     function contributeAndFinalize(
         bytes32 _taskid,
         bytes32 _resultDigest,
-        bytes memory _results,
-        bytes memory _resultsCallback, // Expansion - result separation
+        bytes calldata _results,
+        bytes calldata _resultsCallback, // Expansion - result separation
         address _enclaveChallenge,
-        bytes memory _enclaveSign,
-        bytes memory _authorizationSign
+        bytes calldata _enclaveSign,
+        bytes calldata _authorizationSign
     ) public override {
         IexecLibCore_v5.Task storage task = m_tasks[_taskid];
         IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
