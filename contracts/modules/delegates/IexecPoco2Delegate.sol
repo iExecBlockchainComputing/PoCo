@@ -427,7 +427,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][worker];
 
             if (contribution.status == IexecLibCore_v5.ContributionStatusEnum.PROVED) {
-                uint256 workerReward = workersReward.mulByFraction(
+                uint256 workerReward = Math.mulDiv(
+                    workersReward,
                     contribution.weight,
                     totalLogWeight
                 );
@@ -463,7 +464,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
                      *                       see documentation!                        *
                      *******************************************************************/
                     // k = 3
-                    m_workerScores[worker] = m_workerScores[worker].mulByFraction(2, 3);
+                    m_workerScores[worker] = Math.mulDiv(m_workerScores[worker], 2, 3);
                     emit FaultyContribution(worker, _taskid);
                 }
             }
