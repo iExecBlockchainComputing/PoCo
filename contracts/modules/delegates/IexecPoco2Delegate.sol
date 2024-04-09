@@ -3,13 +3,16 @@
 
 pragma solidity ^0.8.0;
 
-import "@iexec/solidity/contracts/ERC1154/IERC1154.sol";
-import "./IexecERC20Core.sol";
-import "./SignatureVerifier.sol";
-import "../DelegateBase.sol";
-import "../interfaces/IexecPoco2.sol";
+import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
+import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
+import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
+import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
+import {DelegateBase} from "../DelegateBase.v8.sol";
+import {IexecPoco2} from "../interfaces/IexecPoco2.v8.sol";
+import {IexecEscrow} from "./IexecEscrow.v8.sol";
+import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
-contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecERC20Core, SignatureVerifier {
+contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureVerifier {
     /***************************************************************************
      *                    Escrow overhead for contribution                     *
      ***************************************************************************/
