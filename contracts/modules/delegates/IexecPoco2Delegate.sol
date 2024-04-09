@@ -105,7 +105,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         IexecLibCore_v5.Deal memory deal = m_deals[task.dealid];
 
         require(task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE);
-        require(task.contributionDeadline > now);
+        require(task.contributionDeadline > block.timestamp);
         require(contribution.status == IexecLibCore_v5.ContributionStatusEnum.UNSET);
 
         // need enclave challenge if tag is set
@@ -183,7 +183,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         IexecLibCore_v5.Deal memory deal = m_deals[task.dealid];
 
         require(task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE);
-        require(task.contributionDeadline > now);
+        require(task.contributionDeadline > block.timestamp);
         require(task.contributors.length == 0);
         require(deal.trust == 1); // TODO / FUTURE FEATURE: consider sender's score ?
 
@@ -228,7 +228,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
 
         task.status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
         task.consensusValue = contribution.resultHash;
-        task.revealDeadline = now + task.timeref * REVEAL_DEADLINE_RATIO;
+        task.revealDeadline = block.timestamp + task.timeref * REVEAL_DEADLINE_RATIO;
         task.revealCounter = 1;
         task.winnerCounter = 1;
         task.resultDigest = _resultDigest;
@@ -251,7 +251,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         IexecLibCore_v5.Task storage task = m_tasks[_taskid];
         IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
         require(task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
-        require(task.revealDeadline > now);
+        require(task.revealDeadline > block.timestamp);
         require(contribution.status == IexecLibCore_v5.ContributionStatusEnum.CONTRIBUTED);
         require(contribution.resultHash == task.consensusValue);
         require(contribution.resultHash == keccak256(abi.encodePacked(_taskid, _resultDigest)));
@@ -270,8 +270,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
     function reopen(bytes32 _taskid) external override onlyScheduler(_taskid) {
         IexecLibCore_v5.Task storage task = m_tasks[_taskid];
         require(task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
-        require(task.finalDeadline > now);
-        require(task.revealDeadline <= now && task.revealCounter == 0);
+        require(task.finalDeadline > block.timestamp);
+        require(task.revealDeadline <= block.timestamp && task.revealCounter == 0);
 
         for (uint256 i = 0; i < task.contributors.length; ++i) {
             address worker = task.contributors[i];
@@ -303,10 +303,10 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         IexecLibCore_v5.Deal memory deal = m_deals[task.dealid];
 
         require(task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
-        require(task.finalDeadline > now);
+        require(task.finalDeadline > block.timestamp);
         require(
             task.revealCounter == task.winnerCounter ||
-                (task.revealCounter > 0 && task.revealDeadline <= now)
+                (task.revealCounter > 0 && task.revealDeadline <= block.timestamp)
         );
 
         require(
@@ -338,7 +338,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE ||
                 task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING
         );
-        require(task.finalDeadline <= now);
+        require(task.finalDeadline <= block.timestamp);
 
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
 
@@ -388,7 +388,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             // _msgSender() is a contributor: no need to check
             task.status = IexecLibCore_v5.TaskStatusEnum.REVEALING;
             task.consensusValue = _consensus;
-            task.revealDeadline = now + task.timeref * REVEAL_DEADLINE_RATIO;
+            task.revealDeadline = block.timestamp + task.timeref * REVEAL_DEADLINE_RATIO;
             task.revealCounter = 0;
             task.winnerCounter = winnerCounter;
 
