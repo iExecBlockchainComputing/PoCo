@@ -19,7 +19,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
     function successWork(bytes32 _dealid, bytes32 _taskid) internal {
         IexecLibCore_v5.Deal storage deal = m_deals[_dealid];
 
-        uint256 requesterstake = deal.app.price.add(deal.dataset.price).add(deal.workerpool.price);
+        uint256 requesterstake = deal.app.price + deal.dataset.price + deal.workerpool.price;
         uint256 poolstake = deal.workerpool.price.percentage(WORKERPOOL_STAKE_RATIO);
 
         // seize requester funds
@@ -49,7 +49,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
     function failedWork(bytes32 _dealid, bytes32 _taskid) internal {
         IexecLibCore_v5.Deal memory deal = m_deals[_dealid];
 
-        uint256 requesterstake = deal.app.price.add(deal.dataset.price).add(deal.workerpool.price);
+        uint256 requesterstake = deal.app.price + deal.dataset.price + deal.workerpool.price;
         uint256 poolstake = deal.workerpool.price.percentage(WORKERPOOL_STAKE_RATIO);
 
         unlock(deal.requester, requesterstake);
@@ -65,7 +65,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         IexecLibCore_v5.Deal memory deal = m_deals[_dealid];
 
         require(idx >= deal.botFirst);
-        require(idx < deal.botFirst.add(deal.botSize));
+        require(idx < deal.botFirst + deal.botSize);
 
         bytes32 taskid = keccak256(abi.encodePacked(_dealid, idx));
         IexecLibCore_v5.Task storage task = m_tasks[taskid];
@@ -75,10 +75,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         task.dealid = _dealid;
         task.idx = idx;
         task.timeref = m_categories[deal.category].workClockTimeRef;
-        task.contributionDeadline = task.timeref.mul(CONTRIBUTION_DEADLINE_RATIO).add(
-            deal.startTime
-        );
-        task.finalDeadline = task.timeref.mul(FINAL_DEADLINE_RATIO).add(deal.startTime);
+        task.contributionDeadline = deal.startTime + task.timeref * CONTRIBUTION_DEADLINE_RATIO;
+        task.finalDeadline = deal.startTime + task.timeref * FINAL_DEADLINE_RATIO;
 
         // setup denominator
         m_consensus[taskid].total = 1;
@@ -152,13 +150,13 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         // k = 3
         IexecLibCore_v5.Consensus storage consensus = m_consensus[_taskid];
 
-        uint256 weight = m_workerScores[_msgSender()].div(3).max(3).sub(1);
+        uint256 weight = Math.max(m_workerScores[_msgSender()] / 3, 3) - 1;
         uint256 group = consensus.group[_resultHash];
-        uint256 delta = group.max(1).mul(weight).sub(group);
+        uint256 delta = Math.max(group, 1) * weight - group;
 
         contribution.weight = weight.log();
-        consensus.group[_resultHash] = consensus.group[_resultHash].add(delta);
-        consensus.total = consensus.total.add(delta);
+        consensus.group[_resultHash] = consensus.group[_resultHash] + delta;
+        consensus.total = consensus.total + delta;
 
         // Check consensus
         checkConsensus(_taskid, _resultHash);
@@ -224,7 +222,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
 
         task.status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
         task.consensusValue = contribution.resultHash;
-        task.revealDeadline = task.timeref.mul(REVEAL_DEADLINE_RATIO).add(now);
+        task.revealDeadline = now + task.timeref * REVEAL_DEADLINE_RATIO;
         task.revealCounter = 1;
         task.winnerCounter = 1;
         task.resultDigest = _resultDigest;
@@ -257,7 +255,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         );
 
         contribution.status = IexecLibCore_v5.ContributionStatusEnum.PROVED;
-        task.revealCounter = task.revealCounter.add(1);
+        task.revealCounter = task.revealCounter + 1;
         task.resultDigest = _resultDigest;
 
         emit TaskReveal(_taskid, _msgSender(), _resultDigest);
@@ -279,7 +277,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         }
 
         IexecLibCore_v5.Consensus storage consensus = m_consensus[_taskid];
-        consensus.total = consensus.total.sub(consensus.group[task.consensusValue]);
+        consensus.total = consensus.total - consensus.group[task.consensusValue];
         consensus.group[task.consensusValue] = 0;
 
         task.status = IexecLibCore_v5.TaskStatusEnum.ACTIVE;
@@ -367,7 +365,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
          *                          see documentation:                           *
          *          ./ audit/docs/iExec_PoCo_and_trustmanagement_v1.pdf          *
          *************************************************************************/
-        if (consensus.group[_consensus].mul(trust) > consensus.total.mul(trust.sub(1))) {
+        if (consensus.group[_consensus] * trust > consensus.total * (trust - 1)) {
             // Preliminary checks done in "contribute()"
             uint256 winnerCounter = 0;
             for (uint256 i = 0; i < task.contributors.length; ++i) {
@@ -377,13 +375,13 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
                     m_contributions[_taskid][w].status ==
                     IexecLibCore_v5.ContributionStatusEnum.CONTRIBUTED // REJECTED contribution must not be count
                 ) {
-                    winnerCounter = winnerCounter.add(1);
+                    winnerCounter = winnerCounter + 1;
                 }
             }
             // _msgSender() is a contributor: no need to check
             task.status = IexecLibCore_v5.TaskStatusEnum.REVEALING;
             task.consensusValue = _consensus;
-            task.revealDeadline = task.timeref.mul(REVEAL_DEADLINE_RATIO).add(now);
+            task.revealDeadline = now + task.timeref * REVEAL_DEADLINE_RATIO;
             task.revealCounter = 0;
             task.winnerCounter = winnerCounter;
 
@@ -406,16 +404,16 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][worker];
 
             if (contribution.status == IexecLibCore_v5.ContributionStatusEnum.PROVED) {
-                totalLogWeight = totalLogWeight.add(contribution.weight);
+                totalLogWeight = totalLogWeight + contribution.weight;
             }
             // ContributionStatusEnum.REJECT or ContributionStatusEnum.CONTRIBUTED (not revealed)
             else {
-                totalReward = totalReward.add(deal.workerStake);
+                totalReward = totalReward + deal.workerStake;
             }
         }
 
         // compute how much is going to the workers
-        uint256 workersReward = totalReward.percentage(uint256(100).sub(deal.schedulerRewardRatio));
+        uint256 workersReward = totalReward.percentage(100 - deal.schedulerRewardRatio);
 
         for (uint256 i = 0; i < task.contributors.length; ++i) {
             address worker = task.contributors[i];
@@ -426,7 +424,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
                     contribution.weight,
                     totalLogWeight
                 );
-                totalReward = totalReward.sub(workerReward);
+                totalReward = totalReward - workerReward;
 
                 unlockContribution(task.dealid, worker);
                 rewardForContribution(worker, workerReward, _taskid);
@@ -438,7 +436,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
                      *                                                                 *
                      *                       see documentation!                        *
                      *******************************************************************/
-                    m_workerScores[worker] = m_workerScores[worker].add(1);
+                    m_workerScores[worker] = m_workerScores[worker] + 1;
                     emit AccurateContribution(worker, _taskid);
                 }
             }
@@ -472,10 +470,8 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         IexecLibCore_v5.Deal memory deal = m_deals[task.dealid];
 
         // simple reward, no score consideration
-        uint256 workerReward = deal.workerpool.price.percentage(
-            uint256(100).sub(deal.schedulerRewardRatio)
-        );
-        uint256 schedulerReward = deal.workerpool.price.sub(workerReward);
+        uint256 workerReward = deal.workerpool.price.percentage(100 - deal.schedulerRewardRatio);
+        uint256 schedulerReward = deal.workerpool.price - workerReward;
         rewardForContribution(_msgSender(), workerReward, _taskid);
         rewardForScheduling(task.dealid, schedulerReward, _taskid);
     }
