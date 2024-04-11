@@ -4,20 +4,27 @@
 pragma solidity ^0.8.0;
 
 interface IexecPoco2 {
-    event AccurateContribution(address indexed worker, bytes32 indexed taskId);
-    event FaultyContribution(address indexed worker, bytes32 indexed taskId);
-
     event TaskInitialize(bytes32 indexed taskId, address indexed workerpool);
     event TaskContribute(bytes32 indexed taskId, address indexed worker, bytes32 hash);
     event TaskConsensus(bytes32 indexed taskId, bytes32 consensus);
     event TaskReveal(bytes32 indexed taskId, address indexed worker, bytes32 digest);
+    event AccurateContribution(address indexed worker, bytes32 indexed taskId);
+    event FaultyContribution(address indexed worker, bytes32 indexed taskId);
+    event TaskReopen(bytes32 indexed taskId);
     event TaskFinalize(bytes32 indexed taskId, bytes results);
     event TaskClaimed(bytes32 indexed taskId);
-    event TaskReopen(bytes32 indexed taskId);
 
     function initialize(bytes32 dealId, uint256 index) external returns (bytes32);
 
-    function claim(bytes32 taskId) external;
+    function initializeArray(
+        bytes32[] calldata dealIds,
+        uint256[] calldata indexes
+    ) external returns (bool);
+
+    function initializeAndClaimArray(
+        bytes32[] calldata dealIds,
+        uint256[] calldata indexes
+    ) external returns (bool);
 
     function contribute(
         bytes32 taskId,
@@ -48,15 +55,7 @@ interface IexecPoco2 {
         bytes calldata resultsCallback
     ) external;
 
-    function initializeArray(
-        bytes32[] calldata dealIds,
-        uint256[] calldata indexes
-    ) external returns (bool);
+    function claim(bytes32 taskId) external;
 
     function claimArray(bytes32[] calldata taskIds) external returns (bool);
-
-    function initializeAndClaimArray(
-        bytes32[] calldata dealIds,
-        uint256[] calldata indexes
-    ) external returns (bool);
 }
