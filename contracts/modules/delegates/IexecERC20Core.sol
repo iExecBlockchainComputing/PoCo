@@ -48,34 +48,4 @@ contract IexecERC20Core is DelegateBase {
         m_allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
-
-    /***************************************************************************
-     *                        Escrow methods: internal                         *
-     ***************************************************************************/
-    event Reward(address owner, uint256 amount, bytes32 ref);
-    event Seize(address owner, uint256 amount, bytes32 ref);
-    event Lock(address owner, uint256 amount);
-    event Unlock(address owner, uint256 amount);
-
-    function reward(address user, uint256 amount, bytes32 ref) internal {
-        _transferUnchecked(address(this), user, amount); // prevent locking task
-        emit Reward(user, amount, ref);
-    }
-
-    function seize(address user, uint256 amount, bytes32 ref) internal {
-        m_frozens[user] = m_frozens[user].sub(amount);
-        emit Seize(user, amount, ref);
-    }
-
-    function lock(address user, uint256 amount) internal {
-        _transferUnchecked(user, address(this), amount);
-        m_frozens[user] = m_frozens[user].add(amount);
-        emit Lock(user, amount);
-    }
-
-    function unlock(address user, uint256 amount) internal {
-        _transferUnchecked(address(this), user, amount); // prevent locking task
-        m_frozens[user] = m_frozens[user].sub(amount);
-        emit Unlock(user, amount);
-    }
 }
