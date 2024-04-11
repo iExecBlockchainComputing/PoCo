@@ -24,18 +24,18 @@ interface IexecPoco2 {
         bytes32 resultHash,
         bytes32 resultSeal,
         address enclaveChallenge,
-        bytes memory enclaveSign,
-        bytes memory authorizationSign
+        bytes calldata enclaveSign,
+        bytes calldata authorizationSign
     ) external;
 
     function contributeAndFinalize(
         bytes32 taskId,
         bytes32 resultDigest,
-        bytes memory results,
-        bytes memory resultsCallback, // Expansion - result separation
+        bytes calldata results,
+        bytes calldata resultsCallback, // Expansion - result separation
         address enclaveChallenge,
-        bytes memory enclaveSign,
-        bytes memory authorizationSign
+        bytes calldata enclaveSign,
+        bytes calldata authorizationSign
     ) external;
 
     function reveal(bytes32 taskId, bytes32 resultDigest) external;
