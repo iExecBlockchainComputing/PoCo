@@ -57,29 +57,25 @@ contract IexecERC20Core is DelegateBase {
     event Lock(address owner, uint256 amount);
     event Unlock(address owner, uint256 amount);
 
-    function reward(address user, uint256 amount, bytes32 ref /* returns (bool) */) internal {
+    function reward(address user, uint256 amount, bytes32 ref) internal {
         _transferUnchecked(address(this), user, amount); // prevent locking task
         emit Reward(user, amount, ref);
-        /* return true; */
     }
 
-    function seize(address user, uint256 amount, bytes32 ref /* returns (bool) */) internal {
+    function seize(address user, uint256 amount, bytes32 ref) internal {
         m_frozens[user] = m_frozens[user].sub(amount);
         emit Seize(user, amount, ref);
-        /* return true; */
     }
 
-    function lock(address user, uint256 amount /* returns (bool) */) internal {
+    function lock(address user, uint256 amount) internal {
         _transferUnchecked(user, address(this), amount);
         m_frozens[user] = m_frozens[user].add(amount);
         emit Lock(user, amount);
-        /* return true; */
     }
 
-    function unlock(address user, uint256 amount /* returns (bool) */) internal {
+    function unlock(address user, uint256 amount) internal {
         _transferUnchecked(address(this), user, amount); // prevent locking task
         m_frozens[user] = m_frozens[user].sub(amount);
         emit Unlock(user, amount);
-        /* return true; */
     }
 }
