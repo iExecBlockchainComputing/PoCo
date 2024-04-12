@@ -24,11 +24,22 @@ contract SignatureVerifier is DelegateBase {
     }
 
     /**
-     * Hash message and create its ETH signed message hash.
-     * @param message to be hashed
+     * @notice Verify that an Ethereum Signed Message is signed by a particular account.
+     * @param account The expected signer account.
+     * @param message The original message that was signed.
+     * @param signature The signature to be verified.
      */
-    function _toEthSignedMessageHash(bytes memory message) internal pure returns (bytes32) {
-        return MessageHashUtils.toEthSignedMessageHash(keccak256(message));
+    function _verifySignatureOfEthSignedMessage(
+        address account,
+        bytes memory message,
+        bytes calldata signature
+    ) internal view returns (bool) {
+        return
+            _verifySignature(
+                account,
+                MessageHashUtils.toEthSignedMessageHash(keccak256(message)),
+                signature
+            );
     }
 
     /**

@@ -113,11 +113,11 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
         require(
-            _verifySignature(
+            _verifySignatureOfEthSignedMessage(
                 (_enclaveChallenge != address(0) && m_teebroker != address(0))
                     ? m_teebroker
                     : deal.workerpool.owner,
-                _toEthSignedMessageHash(abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge)),
+                abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge),
                 _authorizationSign
             )
         );
@@ -125,9 +125,9 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         // Check enclave signature
         require(
             _enclaveChallenge == address(0) ||
-                _verifySignature(
+                _verifySignatureOfEthSignedMessage(
                     _enclaveChallenge,
-                    _toEthSignedMessageHash(abi.encodePacked(_resultHash, _resultSeal)),
+                    abi.encodePacked(_resultHash, _resultSeal),
                     _enclaveSign
                 )
         );
@@ -198,11 +198,11 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
         require(
-            _verifySignature(
+            _verifySignatureOfEthSignedMessage(
                 (_enclaveChallenge != address(0) && m_teebroker != address(0))
                     ? m_teebroker
                     : deal.workerpool.owner,
-                _toEthSignedMessageHash(abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge)),
+                abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge),
                 _authorizationSign
             )
         );
@@ -210,9 +210,9 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         // Check enclave signature
         require(
             _enclaveChallenge == address(0) ||
-                _verifySignature(
+                _verifySignatureOfEthSignedMessage(
                     _enclaveChallenge,
-                    _toEthSignedMessageHash(abi.encodePacked(resultHash, resultSeal)),
+                    abi.encodePacked(resultHash, resultSeal),
                     _enclaveSign
                 )
         );
