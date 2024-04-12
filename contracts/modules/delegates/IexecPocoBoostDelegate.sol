@@ -430,20 +430,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
     }
 
     /**
-     * @notice Verify that an Ethereum Signed Message is signed by a particular account.
-     * @param account The expected signer account.
-     * @param message The original message that was signed.
-     * @param signature The signature to be verified.
-     */
-    function _verifySignatureOfEthSignedMessage(
-        address account,
-        bytes memory message,
-        bytes calldata signature
-    ) private pure returns (bool) {
-        return keccak256(message).toEthSignedMessageHash().recover(signature) == account;
-    }
-
-    /**
      * @notice Check if a task exists and is unset. Such task status is equivalent to
      * the "initialized" task status in Classic Poco workflow.
      * In order for the task to exist, its index should be:
