@@ -63,9 +63,9 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
      * a third party requester.
      *
      * @notice Be aware that anyone seeing a valid request order on the network
-     * (via an off-chain public marketplace, via a `sponsorMatchOrders(..)`
+     * (via an off-chain public marketplace, via a `sponsorMatchOrdersBoost(..)`
      * pending transaction in the mempool or by any other means) might decide
-     * to call the standard `matchOrders(..)` hook which will result in the
+     * to call the standard `matchOrdersBoost(..)` hook which will result in the
      * requester being debited instead. Therefore, such a front run would result
      * in a loss of some of the requester funds deposited in the iExec account
      * (a loss value equivalent to the price of the deal).
