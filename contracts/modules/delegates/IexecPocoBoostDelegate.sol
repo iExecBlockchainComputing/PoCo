@@ -33,18 +33,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
     /**
-     * @notice This boost match orders is only compatible with trust <= 1.
+     * @notice This boost match orders is only compatible with trust <= 1. The requester gets debited.
      * @param appOrder The order signed by the application developer.
      * @param datasetOrder The order signed by the dataset provider.
      * @param workerpoolOrder The order signed by the workerpool manager.
      * @param requestOrder The order signed by the requester.
      * @return The ID of the deal.
-     * @dev Considering min·max·avg gas values, preferred option for deal storage
-     *  is b.:
-     *   - a. Use memory struct and write new struct to storage once
-     *   - b. Use memory struct and write to storage field per field
-     *   - c. Write/read everything to/on storage
-     *   - d. Write/read everything to/on memory struct and asign memory to storage
      */
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,
@@ -52,6 +46,76 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external returns (bytes32) {
+        return
+            _matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+                requestOrder.requester
+            );
+    }
+
+    /**
+     * Sponsor match orders boost for a requester.
+     * Unlike the standard `matchOrdersBoost(..)` hook where the requester pays for
+     * the deal, this current hook makes it possible for any `msg.sender` to pay for
+     * a third party requester.
+     *
+     * @notice Be aware that anyone seeing a valid request order on the network
+     * (via an off-chain public marketplace, via a `sponsorMatchOrders(..)`
+     * pending transaction in the mempool or by any other means) might decide
+     * to call the standard `matchOrders(..)` hook which will result in the
+     * requester being debited instead. Therefore, such a front run would result
+     * in a loss of some of the requester funds deposited in the iExec account
+     * (a loss value equivalent to the price of the deal).
+     *
+     * @param appOrder The app order.
+     * @param datasetOrder The dataset order.
+     * @param workerpoolOrder The workerpool order.
+     * @param requestOrder The requester order.
+     */
+
+    function sponsorMatchOrdersBoost(
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder
+    ) external returns (bytes32) {
+        address sponsor = msg.sender;
+        bytes32 dealId = _matchOrdersBoost(
+            appOrder,
+            datasetOrder,
+            workerpoolOrder,
+            requestOrder,
+            sponsor
+        );
+        emit DealSponsoredBoost(dealId, sponsor);
+        return dealId;
+    }
+
+    /**
+     * Match orders boost and specify a sponsor in charge of paying for the deal.
+     *
+     * @param appOrder The app order.
+     * @param datasetOrder The dataset order.
+     * @param workerpoolOrder The workerpool order.
+     * @param requestOrder The requester order.
+     * @param sponsor The sponsor in charge of paying the deal.
+     * @dev Considering min·max·avg gas values, preferred option for deal storage
+     *  is b.:
+     *   - a. Use memory struct and write new struct to storage once
+     *   - b. Use memory struct and write to storage field per field
+     *   - c. Write/read everything to/on storage
+     *   - d. Write/read everything to/on memory struct and asign memory to storage
+     */
+    function _matchOrdersBoost(
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder,
+        address sponsor
+    ) private returns (bytes32) {
         // Check orders compatibility
 
         // Ensure the trust level is within the acceptable range.
@@ -241,6 +305,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
             // Update consumed (dataset)
             m_consumed[datasetOrderTypedDataHash] += volume;
         }
+        deal.sponsor = sponsor;
         /**
          * Update consumed.
          * @dev Update all consumed after external call on workerpool contract
@@ -249,8 +314,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
         m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // @dev cheaper than `+= volume` here
         m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
-        // Lock deal price from requester balance.
-        lock(requester, (appPrice + datasetPrice + workerpoolPrice) * volume);
+        // Lock deal price from sponsor balance.
+        lock(sponsor, (appPrice + datasetPrice + workerpoolPrice) * volume);
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
