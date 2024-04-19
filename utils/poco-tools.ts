@@ -8,6 +8,14 @@ import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
 import { hashOrder } from './createOrders';
 
+export enum TaskStatusEnum {
+    UNSET,
+    ACTIVE,
+    REVEALING,
+    COMPLETED,
+    FAILED,
+}
+
 export interface IexecAccounts {
     iexecAdmin: SignerWithAddress;
     requester: SignerWithAddress;
@@ -41,7 +49,6 @@ export async function getIexecAccounts(): Promise<IexecAccounts> {
         sms: signers[10],
         anyone: signers[11],
     };
-
 }
 
 export function getDealId(
@@ -116,6 +123,19 @@ export function buildResultCallbackAndDigestForIntegerOracle(
     );
     const callbackResultDigest = ethers.utils.keccak256(resultsCallback);
     return { resultsCallback, callbackResultDigest };
+}
+
+export function buildResultHashAndResultSeal(
+    taskId: string,
+    resultDigest: string,
+    worker: SignerWithAddress,
+) {
+    const resultHash = ethers.utils.solidityKeccak256(['bytes32', 'bytes'], [taskId, resultDigest]);
+    const resultSeal = ethers.utils.solidityKeccak256(
+        ['address', 'bytes32', 'bytes'],
+        [worker.address, taskId, resultDigest],
+    );
+    return { resultHash, resultSeal };
 }
 
 export async function buildAndSignEnclaveMessage(
