@@ -29,6 +29,7 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import constants from './../../../utils/constants';
 
 const categoryTime = 300;
+const maxDealDuration = 10 * categoryTime;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
@@ -114,7 +115,8 @@ contract('Poco', async () => {
             volume: expectedVolume,
             trust: 4, // Consensus is reachable with 2 fresh workers
         });
-        const { dealId, taskId, taskIndex, dealPrice, startTime } = await matchOrders(orders);
+        const { dealId, taskId, taskIndex, dealPrice, startTime } =
+            await signAndMatchOrders(orders);
         const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
             workerpoolPrice,
             expectedVolume,
@@ -168,7 +170,7 @@ contract('Poco', async () => {
         expect(await iexecPoco.balanceOf(kittyAddress)).to.be.equal(0);
         expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(0);
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.REVEALING);
-        await time.setNextBlockTimestamp(startTime + 10 * categoryTime);
+        await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
         const claimReceipt = await iexecPoco
             .connect(anyone)
@@ -181,10 +183,12 @@ contract('Poco', async () => {
             .withArgs(requester.address, taskPrice)
             .to.emit(iexecPoco, 'Seize')
             .withArgs(scheduler.address, schedulerTaskStake, taskId)
+            .to.emit(iexecPoco, 'Transfer')
+            .withArgs(iexecPoco.address, kittyAddress, schedulerTaskStake)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(kittyAddress, schedulerTaskStake, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, kittyAddress, schedulerTaskStake)
+            .withArgs(kittyAddress, iexecPoco.address, schedulerTaskStake)
             .to.emit(iexecPoco, 'Lock')
             .withArgs(kittyAddress, schedulerTaskStake);
         for (const worker of workers) {
@@ -229,13 +233,13 @@ contract('Poco', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { dealId, taskId, taskIndex, startTime } = await matchOrders(orders);
+        const { dealId, taskId, taskIndex, startTime } = await signAndMatchOrders(orders);
         await iexecPoco
             .connect(scheduler)
             .initialize(dealId, taskIndex)
             .then((tx) => tx.wait());
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.ACTIVE);
-        await time.setNextBlockTimestamp(startTime + 10 * categoryTime);
+        await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
         await expect(iexecPoco.connect(anyone).claim(taskId)).to.emit(iexecPoco, 'TaskClaimed');
     });
@@ -246,7 +250,7 @@ contract('Poco', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { taskId } = await matchOrders(orders);
+        const { taskId } = await signAndMatchOrders(orders);
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.UNSET);
 
         await expect(iexecPoco.connect(anyone).claim(taskId)).to.be.reverted;
@@ -259,7 +263,7 @@ contract('Poco', async () => {
             prices: ordersPrices,
             trust: 0,
         });
-        const { dealId, taskId, taskIndex } = await matchOrders(orders);
+        const { dealId, taskId, taskIndex } = await signAndMatchOrders(orders);
         await iexecPoco
             .connect(scheduler)
             .initialize(dealId, taskIndex)
@@ -297,7 +301,7 @@ contract('Poco', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { taskId } = await matchOrders(orders);
+        const { taskId } = await signAndMatchOrders(orders);
         // No time traveling after deadline
 
         await expect(iexecPoco.connect(anyone).claim(taskId)).to.be.reverted;
@@ -307,7 +311,7 @@ contract('Poco', async () => {
      * @notice Before properly matching orders, this method takes care of
      * signing orders and depositing required stakes.
      */
-    async function matchOrders(orders: IexecOrders) {
+    async function signAndMatchOrders(orders: IexecOrders) {
         const domain = {
             name: 'iExecODB',
             version: '5.0.0',
