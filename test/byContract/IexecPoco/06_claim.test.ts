@@ -3,7 +3,7 @@
 
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import hre, { contract, ethers, expect } from 'hardhat';
+import hre, { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { IexecPoco1__factory } from '../../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
@@ -37,7 +37,7 @@ const workerpoolPrice = 1_000_000_000;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
 const enclaveAddress = ethers.constants.AddressZero;
 
-contract('Poco', async () => {
+describe('Poco', async () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
     let iexecWrapper: IexecWrapper;
