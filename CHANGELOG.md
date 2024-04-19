@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-- Migrate `claim` tests to hardhat. (#65)
+- Migrate `claim` tests to hardhat. (#65, #66)
 - Upgrade Poco2 to solidity v0.8 . (#63)
 - Use common helpers in Poco Boost integration tests. (#62)
 - Upload coverage reports to Codecov. (#61)
