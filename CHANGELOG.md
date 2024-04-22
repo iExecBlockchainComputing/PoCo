@@ -14,6 +14,7 @@
     - Migrate to `SignatureVerifier.v8`
 - Change MNEMONIC var name for production & clean Hardhat file. (#53)
 - Format files & update copyright notices:
+    - TimeLockController contract (#71)
     - Registries & others (#70)
     - Module delegates (#69)
     - Solidity interfaces (#68)
