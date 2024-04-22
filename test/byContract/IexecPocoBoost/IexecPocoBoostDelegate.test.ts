@@ -521,16 +521,10 @@ describe('IexecPocoBoostDelegate', function () {
             await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
             const deal = await viewDealBoost(dealId);
             // Check addresses.
-            expect(deal.requester).to.be.equal(requestOrder.requester, 'Requester mismatch');
-            expect(deal.appOwner).to.be.equal(appProvider.address, 'App owner mismatch');
-            expect(deal.datasetOwner).to.be.equal(
-                datasetProvider.address,
-                'Dataset owner mismatch',
-            );
-            expect(deal.workerpoolOwner).to.be.equal(
-                scheduler.address,
-                'Workerpool owner mismatch',
-            );
+            expect(deal.requester).to.be.equal(requestOrder.requester);
+            expect(deal.appOwner).to.be.equal(appProvider.address);
+            expect(deal.datasetOwner).to.be.equal(datasetProvider.address);
+            expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
             expect(deal.workerReward).to.be.equal(
                 (workerpoolPrice * // reward depends on
                     (100 - schedulerRewardRatio)) / // worker ratio
@@ -542,22 +536,16 @@ describe('IexecPocoBoostDelegate', function () {
                         60, // requested category time reference
             );
             expect(deal.callback)
-                .to.be.equal(requestOrder.callback, 'Callback mismatch')
+                .to.be.equal(requestOrder.callback)
                 .to.not.be.equal(constants.NULL.ADDRESS);
             // Check prices.
-            expect(deal.workerpoolPrice).to.be.equal(
-                workerpoolOrder.workerpoolprice,
-                'Workerpool price mismatch',
-            );
-            expect(deal.appPrice).to.be.equal(appOrder.appprice, 'App price mismatch');
-            expect(deal.datasetPrice).to.be.equal(
-                datasetOrder.datasetprice,
-                'Dataset price mismatch',
-            );
+            expect(deal.workerpoolPrice).to.be.equal(workerpoolOrder.workerpoolprice);
+            expect(deal.appPrice).to.be.equal(appOrder.appprice);
+            expect(deal.datasetPrice).to.be.equal(datasetOrder.datasetprice);
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
             expect(deal.shortTag).to.be.equal('0x000001');
-            expect(deal.sponsor).to.be.equal(sponsor.address, 'Sponsor mismatch');
+            expect(deal.sponsor).to.be.equal(sponsor.address);
 
             // Check balances.
             await expectBalance(
