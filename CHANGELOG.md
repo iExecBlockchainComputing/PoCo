@@ -2,6 +2,8 @@
 
 ## vNEXT
 - Sponsor match orders boost. (#67)
+- Migrate `claim` tests to hardhat. (#65, #66)
+- Upgrade Poco2 to solidity v0.8 . (#63)
 - Use common helpers in Poco Boost integration tests. (#62)
 - Upload coverage reports to Codecov. (#61)
 - Deploy contracts in tests explicitly with hardhat or truffle fixture. (#59)
@@ -10,9 +12,11 @@
 - Upgrade Poco1 to solidity `^0.8.0` (#55):
     - Migrate to `openzeppelin@v5`
     - Migrate to `SignatureVerifier.v8`
-- Format PoCo2 solidity files & update copyright notices. (#54)
 - Change MNEMONIC var name for production & clean Hardhat file. (#53)
-- Update headers & reformat Poco1 contracts. (#52)
+- Format files & update copyright notices:
+    - DelegateBase, IexecERC20Core (#64)
+    - PoCo2 contracts (#54)
+    - PoCo1 contracts (#52)
 - Remove enterprise mode. (#51, #56)
 
 ## v5.5.0 - PoCo Boost

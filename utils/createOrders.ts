@@ -35,6 +35,7 @@ export interface MatchOrdersArgs {
     prices?: OrdersPrices;
     volume?: number;
     callback?: string;
+    trust?: number;
 }
 
 export interface OrdersActors {
@@ -170,6 +171,11 @@ export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
     // Set callback
     if (matchOrdersArgs.callback) {
         requestOrder.callback = matchOrdersArgs.callback;
+    }
+    // Set trust
+    if (matchOrdersArgs.trust) {
+        requestOrder.trust = matchOrdersArgs.trust;
+        workerpoolOrder.trust = matchOrdersArgs.trust;
     }
     return {
         orders: {
