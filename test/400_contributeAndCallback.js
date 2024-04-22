@@ -574,7 +574,7 @@ contract('Fullchain', async (accounts) => {
                     authorization.taskid, // task      (authorization)
                     result.digest, // digest    (result)
                     web3.utils.utf8ToHex('aResult'), // data      (result)
-                    '0x', // data      (callback)
+                    web3.utils.utf8ToHex('iExec the wanderer'), // data      (callback)
                     authorization.enclave, // address   (enclave)
                     result.sign, // signature (enclave)
                     authorization.sign, // signature (authorization)
@@ -624,7 +624,7 @@ contract('Fullchain', async (accounts) => {
                 [worker.agent.address],
             );
             assert.equal(task.results, web3.utils.utf8ToHex('aResult'));
-            assert.equal(task.resultsCallback, '0x');
+            assert.equal(task.resultsCallback, web3.utils.utf8ToHex('iExec the wanderer'));
         });
 
         it('balances', async () => {
