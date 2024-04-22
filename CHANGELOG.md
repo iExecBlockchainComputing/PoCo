@@ -14,6 +14,7 @@
     - Migrate to `SignatureVerifier.v8`
 - Change MNEMONIC var name for production & clean Hardhat file. (#53)
 - Format files & update copyright notices:
+    - Module delegates (#69)
     - Solidity interfaces (#68)
     - DelegateBase, IexecERC20Core (#64)
     - PoCo2 contracts (#54)
