@@ -431,13 +431,13 @@ describe('IexecPocoBoostDelegate', function () {
                 [BALANCES]: {
                     [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
                     [requester.address]: initialRequesterBalance,
-                    [scheduler.address]: initialSchedulerBalance + schedulerStake,
                     [sponsor.address]: initialSponsorBalance + dealPrice,
+                    [scheduler.address]: initialSchedulerBalance + schedulerStake,
                 },
                 [FROZENS]: {
                     [requester.address]: initialRequesterFrozen,
-                    [scheduler.address]: initialSchedulerFrozen,
                     [sponsor.address]: initialSponsorFrozen,
+                    [scheduler.address]: initialSchedulerFrozen,
                 },
             });
             await expectBalance(
@@ -445,6 +445,8 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance.address,
                 initialIexecPocoBalance,
             );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             await expectBalance(
                 iexecPocoBoostInstance,
                 sponsor.address,
@@ -457,8 +459,6 @@ describe('IexecPocoBoostDelegate', function () {
                 initialSchedulerBalance + schedulerStake,
             );
             await expectFrozen(iexecPocoBoostInstance, scheduler.address, initialSchedulerFrozen);
-            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
-            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const appOrderHash = hashOrder(domain, appOrder);
@@ -565,6 +565,8 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance.address,
                 initialIexecPocoBalance + dealPrice + schedulerStake,
             );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
             await expectBalance(iexecPocoBoostInstance, sponsor.address, initialSponsorBalance);
             await expectFrozen(
                 iexecPocoBoostInstance,
@@ -577,8 +579,6 @@ describe('IexecPocoBoostDelegate', function () {
                 scheduler.address,
                 initialSchedulerFrozen + schedulerStake,
             );
-            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
-            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
         });
 
         it('Should match orders with trust equals 1', async function () {
