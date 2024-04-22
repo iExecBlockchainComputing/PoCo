@@ -5,9 +5,9 @@ pragma solidity ^0.6.0;
 
 import "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol";
 import "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Create2.sol";
+import "@openzeppelin/contracts-v3/access/Ownable.sol";
+import "@openzeppelin/contracts-v3/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts-v3/utils/Create2.sol";
 import "./IRegistry.sol";
 
 abstract contract Registry is IRegistry, ERC721, ENSReverseRegistration, Ownable {

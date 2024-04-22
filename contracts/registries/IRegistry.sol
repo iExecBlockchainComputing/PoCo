@@ -3,7 +3,7 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol";
+import "@openzeppelin/contracts-v3/token/ERC721/IERC721Enumerable.sol";
 
 interface IRegistry is IERC721Enumerable {
     function isRegistered(address _entry) external view returns (bool);

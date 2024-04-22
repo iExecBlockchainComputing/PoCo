@@ -3,7 +3,7 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-v3/access/Ownable.sol";
 
 contract Migrations is Ownable {
     uint256 public lastCompletedMigration;
