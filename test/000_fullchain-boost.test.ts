@@ -304,6 +304,8 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
             await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
             expect(await iexecInstance.balanceOf(sponsor.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.frozenOf(sponsor.address)).to.be.equal(0);
@@ -371,6 +373,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
             expect(deal.workerpoolPrice).to.be.equal(workerpoolPrice);
             expect(deal.requester).to.be.equal(requester.address);
+            expect(deal.sponsor).to.be.equal(sponsor.address);
             const schedulerRewardRatio = (
                 await WorkerpoolInterface__factory.connect(
                     workerpoolAddress,
@@ -388,10 +391,10 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
                 dealPrice + schedulerStake,
             );
-            expect(await iexecInstance.balanceOf(sponsor.address)).to.be.equal(0);
-            expect(await iexecInstance.frozenOf(sponsor.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(sponsor.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(sponsor.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
         });
