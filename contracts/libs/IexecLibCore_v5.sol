@@ -87,7 +87,7 @@ library IexecLibCore_v5 {
         uint16 botSize; // Max: 65535
         bytes3 shortTag; // Max: 0b111111111111111111111111 (0xFFFFFF)
         // Offset 5
-        address sponsor;
+        address sponsor; // will be removed with upgrade of claim and push result
     }
     /**
      * Tasks
