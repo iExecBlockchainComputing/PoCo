@@ -74,6 +74,8 @@ interface IexecPocoBoost {
      */
     event TaskClaimed(bytes32 indexed taskid);
 
+    event DealSponsoredBoost(bytes32 dealId, address sponsor);
+
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,

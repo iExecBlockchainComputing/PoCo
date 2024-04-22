@@ -59,6 +59,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     let [
         owner,
         requester,
+        sponsor,
         beneficiary,
         appProvider,
         datasetProvider,
@@ -113,6 +114,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         ({
             iexecAdmin: owner,
             requester,
+            sponsor,
             beneficiary,
             appProvider,
             datasetProvider,
@@ -286,6 +288,115 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                     hashOrder(domain, requestOrder),
                     volume,
                 );
+        });
+
+        it('Should sponsor match orders (TEE)', async function () {
+            const callbackAddress = ethers.Wallet.createRandom().address;
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                beneficiary: beneficiary.address,
+                tag: teeDealTag,
+                prices: ordersPrices,
+                callback: callbackAddress,
+            });
+            const dealPrice =
+                (appPrice + datasetPrice + workerpoolPrice) * // task price
+                1; // volume
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
+            expect(await iexecInstance.balanceOf(sponsor.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.frozenOf(sponsor.address)).to.be.equal(0);
+            // Deposit RLC in the scheduler's account.
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const startTime = await setNextBlockTimestamp();
+            const matchOrdersArgs = [
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ] as Orders;
+
+            expect(
+                await iexecPocoBoostInstance
+                    .connect(sponsor)
+                    .callStatic.sponsorMatchOrdersBoost(...matchOrdersArgs),
+            ).to.equal(dealId);
+            await expect(
+                iexecPocoBoostInstance.connect(sponsor).sponsorMatchOrdersBoost(...matchOrdersArgs),
+            )
+                .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+                .withArgs(
+                    workerpoolAddress,
+                    dealId,
+                    appAddress,
+                    datasetAddress,
+                    requestOrder.category,
+                    teeDealTag,
+                    requestOrder.params,
+                    beneficiary.address,
+                )
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    hashOrder(domain, appOrder),
+                    hashOrder(domain, datasetOrder),
+                    hashOrder(domain, workerpoolOrder),
+                    hashOrder(domain, requestOrder),
+                    volume,
+                )
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(sponsor.address, iexecPocoBoostInstance.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(sponsor.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(scheduler.address, iexecPocoBoostInstance.address, schedulerStake)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(scheduler.address, schedulerStake)
+                .to.emit(iexecPocoBoostInstance, 'DealSponsoredBoost')
+                .withArgs(dealId, sponsor.address);
+            const deal = await viewDealBoost(dealId);
+            expect(deal.appOwner).to.be.equal(appProvider.address);
+            expect(deal.appPrice).to.be.equal(appPrice);
+            expect(deal.datasetOwner).to.be.equal(datasetProvider.address);
+            expect(deal.datasetPrice).to.be.equal(datasetPrice);
+            expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
+            expect(deal.workerpoolPrice).to.be.equal(workerpoolPrice);
+            expect(deal.requester).to.be.equal(requester.address);
+            expect(deal.sponsor).to.be.equal(sponsor.address);
+            const schedulerRewardRatio = (
+                await WorkerpoolInterface__factory.connect(
+                    workerpoolAddress,
+                    anyone,
+                ).m_schedulerRewardRatioPolicy()
+            ).toNumber();
+            expect(deal.workerReward)
+                .to.be.equal((workerpoolPrice * (100 - schedulerRewardRatio)) / 100)
+                .to.be.greaterThan(0);
+            expect(deal.deadline).to.be.equal(startTime + 7 * 300); // Category 0
+            expect(deal.botFirst).to.be.equal(0);
+            expect(deal.botSize).to.be.equal(1);
+            expect(deal.shortTag).to.be.equal('0x000001');
+            expect(deal.callback).to.be.equal(callbackAddress);
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
+                dealPrice + schedulerStake,
+            );
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(sponsor.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(sponsor.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
         });
     });
 
