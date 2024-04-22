@@ -33,7 +33,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
     /**
-     * @notice This boost match orders is only compatible with trust <= 1. The requester gets debited.
+     * @notice This boost match orders is only compatible with trust <= 1.
+     * The requester gets debited.
      * @param appOrder The order signed by the application developer.
      * @param datasetOrder The order signed by the dataset provider.
      * @param workerpoolOrder The order signed by the workerpool manager.
