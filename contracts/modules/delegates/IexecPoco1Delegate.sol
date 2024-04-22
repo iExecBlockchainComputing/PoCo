@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
-import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
+import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";

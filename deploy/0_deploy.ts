@@ -37,7 +37,7 @@ import {
     RLC__factory,
     WorkerpoolRegistry__factory,
 } from '../typechain';
-import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
+import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts-v3/access';
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 interface Category {

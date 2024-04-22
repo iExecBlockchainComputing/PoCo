@@ -3,8 +3,8 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts-v3/access/AccessControl.sol";
+import "@openzeppelin/contracts-v3/math/SafeMath.sol";
 
 /**
  * @dev Contract module which acts as a timelocked controller. When set as the
