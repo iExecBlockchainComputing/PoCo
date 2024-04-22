@@ -1679,6 +1679,39 @@ describe('IexecPocoBoostDelegate', function () {
                 ),
             ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
+        it('Should fail when sponsor has insufficient balance', async () => {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                prices: ordersPrices,
+            });
+            const matchOrdersArgs = [
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ] as Orders;
+
+            const initialSponsorBalance = 2;
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [sponsor.address]: initialSponsorBalance, // Way less than dealPrice.
+                },
+            });
+            expect(
+                await iexecPocoBoostInstance.getVariable(BALANCES, [sponsor.address]),
+            ).to.be.lessThan(dealPrice);
+
+            await signOrders(domain, orders, ordersActors);
+            await expect(
+                iexecPocoBoostInstance.connect(sponsor).sponsorMatchOrdersBoost(...matchOrdersArgs),
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+        });
     });
 
     describe('Push Result Boost', function () {
