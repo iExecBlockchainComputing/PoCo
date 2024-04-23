@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+// TODO: Remove this file when `initializeAndArray` tests are migrated
+
 const loadTruffleFixtureDeployment = require('../../../scripts/truffle-fixture-deployer');
 // Config
 var DEPLOYMENT = require('../../../config/config.json').chains.default;
