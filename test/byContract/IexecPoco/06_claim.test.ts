@@ -126,10 +126,7 @@ describe('Poco', async () => {
         );
         const schedulerTaskStake = schedulerDealStake / expectedVolume;
         const kittyAddress = await iexecPoco.kitty_address();
-        await iexecPoco
-            .connect(scheduler)
-            .initialize(dealId, taskIndex)
-            .then((tx) => tx.wait());
+        await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
             .then((deal) => deal.workerStake.toNumber());
@@ -235,10 +232,7 @@ describe('Poco', async () => {
             prices: ordersPrices,
         });
         const { dealId, taskId, taskIndex, startTime } = await signAndMatchOrders(orders);
-        await iexecPoco
-            .connect(scheduler)
-            .initialize(dealId, taskIndex)
-            .then((tx) => tx.wait());
+        await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.ACTIVE);
         await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
@@ -265,10 +259,7 @@ describe('Poco', async () => {
             trust: 0,
         });
         const { dealId, taskId, taskIndex } = await signAndMatchOrders(orders);
-        await iexecPoco
-            .connect(scheduler)
-            .initialize(dealId, taskIndex)
-            .then((tx) => tx.wait());
+        await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
             worker1.address,
             taskId,
@@ -321,10 +312,7 @@ describe('Poco', async () => {
             const taskIds = [];
             for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
                 taskIds.push(getTaskId(dealId, taskIndex));
-                await iexecPoco
-                    .connect(scheduler)
-                    .initialize(dealId, taskIndex)
-                    .then((tx) => tx.wait());
+                await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
             }
             await time.setNextBlockTimestamp(startTime + maxDealDuration);
             // Mine empty block so timestamp is accurate when static call is made
@@ -352,10 +340,7 @@ describe('Poco', async () => {
             const taskId1 = getTaskId(dealId, taskIndex1);
             const taskId2 = getTaskId(dealId, taskIndex2);
             // Initialize only 1 task.
-            await iexecPoco
-                .connect(scheduler)
-                .initialize(dealId, taskIndex1)
-                .then((tx) => tx.wait());
+            await iexecPocoAsAnyone.initialize(dealId, taskIndex1).then((tx) => tx.wait());
             await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
             // Check first task is claimable and second task is not claimable
