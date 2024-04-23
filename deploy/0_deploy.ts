@@ -4,6 +4,8 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import fs from 'fs';
 import hre, { ethers } from 'hardhat';
+import { DeployFunction } from 'hardhat-deploy/dist/types';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import path from 'path';
 import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
 import {
@@ -58,7 +60,15 @@ const CONFIG = require('../config/config.json');
  * The`hardhat-deploy` plugin is currently being under used compared to all
  * features available in it.
  */
-module.exports = async function () {
+const main: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+    // const {deployments} = hre;
+    // const {deploy} = deployments;
+    await deployAll();
+};
+export default main;
+
+// TODO use explicit signer for all transactions.
+export async function deployAll(): Promise<string> {
     console.log('Deploying PoCo..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
@@ -183,7 +193,8 @@ module.exports = async function () {
     for (let i = 0; i < catCountAfter.toNumber(); i++) {
         console.log(`Category ${i}: ${await iexecAccessorsInstance.viewCategory(i)}`);
     }
-};
+    return erc1538ProxyAddress;
+}
 
 async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
     return token // token

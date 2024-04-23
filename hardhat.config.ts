@@ -169,6 +169,7 @@ const config: HardhatUserConfig = {
             },
         ],
     },
+    // TODO use default folder.
     typechain: {
         outDir: 'typechain',
     },
