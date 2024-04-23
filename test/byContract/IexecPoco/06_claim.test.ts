@@ -391,10 +391,10 @@ describe('Poco', async () => {
                 for (const taskIndex of taskIndexes) {
                     const taskId = getTaskId(dealId, taskIndex);
                     await expect(initializeAndClaimArrayTx)
-                        .to.emit(iexecPoco, 'TaskClaimed')
-                        .withArgs(taskId)
                         .to.emit(iexecPoco, 'TaskInitialize')
-                        .withArgs(taskId, orders.workerpool.workerpool);
+                        .withArgs(taskId, orders.workerpool.workerpool)
+                        .to.emit(iexecPoco, 'TaskClaimed')
+                        .withArgs(taskId);
                 }
             });
 
@@ -409,8 +409,6 @@ describe('Poco', async () => {
                 const { dealId, startTime } = await signAndMatchOrders(orders);
                 const taskIndex1 = 0;
                 const taskIndex2 = 1;
-                const taskId1 = getTaskId(dealId, taskIndex1);
-                const taskId2 = getTaskId(dealId, taskIndex2);
                 await iexecPoco // Make first task already initialized
                     .connect(scheduler)
                     .initialize(dealId, taskIndex1)
@@ -419,7 +417,10 @@ describe('Poco', async () => {
 
                 // Will fail since first task is already initialized
                 await expect(
-                    iexecPoco.initializeAndClaimArray([dealId, dealId], [taskId1, taskId2]),
+                    iexecPoco.initializeAndClaimArray(
+                        [dealId, dealId],
+                        [getTaskId(dealId, taskIndex1), getTaskId(dealId, taskIndex2)],
+                    ),
                 ).to.be.reverted;
             });
         });
