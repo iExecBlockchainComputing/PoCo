@@ -3,7 +3,7 @@
 
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { expect } from 'hardhat';
+import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import {
@@ -185,7 +185,12 @@ describe('Poco', async () => {
             }
         });
 
-        it('Should not initialize array', async function () {
+        it('Should not initialize array if incompatible length of inputs', async function () {
+            const dealId = ethers.utils.hashMessage('dealId');
+            await expect(iexecPoco.initializeArray([dealId, dealId], [0])).to.be.reverted;
+        });
+
+        it('Should not initialize array if one specific fails', async function () {
             const volume = 2;
             const { orders } = buildOrders({
                 assets: ordersAssets,

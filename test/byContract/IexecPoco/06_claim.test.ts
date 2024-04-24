@@ -277,7 +277,8 @@ describe('Poco', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { taskId } = await iexecWrapper.signAndMatchOrders(orders);
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+        await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         // No time traveling after deadline
 
         await expect(iexecPocoAsAnyone.claim(taskId)).to.be.reverted;
@@ -367,7 +368,13 @@ describe('Poco', async () => {
                 }
             });
 
-            it('Should not initialize and claim array', async function () {
+            it('Should not initialize and claim array if incompatible length of inputs', async function () {
+                const dealId = ethers.utils.hashMessage('dealId');
+                await expect(iexecPoco.initializeAndClaimArray([dealId, dealId], [0])).to.be
+                    .reverted;
+            });
+
+            it('Should not initialize and claim array if one specific fails', async function () {
                 const volume = 2;
                 const { orders } = buildOrders({
                     assets: ordersAssets,
