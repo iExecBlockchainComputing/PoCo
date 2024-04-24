@@ -26,9 +26,7 @@ describe('Poco', async () => {
     let iexecPoco: IexecInterfaceNative;
     let iexecPocoAsAnyone: IexecInterfaceNative;
     let iexecWrapper: IexecWrapper;
-    let appAddress = '';
-    let workerpoolAddress = '';
-    let datasetAddress = '';
+    let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [iexecAdmin, requester, anyone]: SignerWithAddress[] = [];
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
