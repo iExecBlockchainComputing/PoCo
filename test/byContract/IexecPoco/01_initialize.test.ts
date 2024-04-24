@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
@@ -166,10 +166,9 @@ describe('Poco', async () => {
                 prices: ordersPrices,
                 volume,
             });
-            const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId } = await iexecWrapper.signAndMatchOrders(orders);
             const dealIds = [dealId, dealId, dealId];
             const taskIndexes = [0, 1, 2];
-            await time.setNextBlockTimestamp(startTime + maxDealDuration);
             for (const taskIndex of taskIndexes) {
                 const taskId = getTaskId(dealId, taskIndex);
                 expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
@@ -203,13 +202,12 @@ describe('Poco', async () => {
                 prices: ordersPrices,
                 volume,
             });
-            const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId } = await iexecWrapper.signAndMatchOrders(orders);
             const taskIndex0 = 0;
             const taskIndex1 = 1;
             await iexecPocoAsAnyone // Make first task already initialized
                 .initialize(dealId, taskIndex0)
                 .then((tx) => tx.wait());
-            await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
             // Will fail since first task is already initialized
             await expect(
