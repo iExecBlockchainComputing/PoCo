@@ -2,7 +2,9 @@
 
 ## vNEXT
 - Sponsor match orders boost. (#67)
-- Migrate `claim` tests to hardhat. (#65, #66, #72)
+- Migrate to hardhat tests related to:
+    - `initialize` (#74)
+    - `claim` (#65, #66, #72)
 - Upgrade Poco2 to solidity v0.8 . (#63)
 - Use common helpers in Poco Boost integration tests. (#62)
 - Upload coverage reports to Codecov. (#61)

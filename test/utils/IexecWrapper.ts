@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, ContractReceipt } from 'ethers';
-import { ethers } from 'hardhat';
+import hre, { ethers } from 'hardhat';
 import config from '../../config/config.json';
 import {
     AppRegistry,
@@ -17,7 +17,9 @@ import {
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
 } from '../../typechain';
-import { IexecAccounts } from '../../utils/poco-tools';
+import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
+import { IexecOrders, hashOrder, signOrders } from '../../utils/createOrders';
+import { IexecAccounts, getDealId, getTaskId, setNextBlockTimestamp } from '../../utils/poco-tools';
 import { extractEventsFromReceipt } from '../../utils/tools';
 const DEPLOYMENT_CONFIG = config.chains.default;
 
@@ -85,6 +87,53 @@ export class IexecWrapper {
         await IexecMaintenanceDelegate__factory.connect(this.proxyAddress, this.accounts.iexecAdmin)
             .setTeeBroker(brokerAddress)
             .then((tx) => tx.wait());
+    }
+
+    /**
+     * @notice Before properly matching orders, this method takes care of
+     * signing orders and depositing required stakes.
+     */
+    async signAndMatchOrders(orders: IexecOrders) {
+        const domain = {
+            name: 'iExecODB',
+            version: '5.0.0',
+            chainId: hre.network.config.chainId,
+            verifyingContract: this.proxyAddress,
+        };
+        await signOrders(domain, orders, {
+            appOwner: this.accounts.appProvider,
+            datasetOwner: this.accounts.datasetProvider,
+            workerpoolOwner: this.accounts.scheduler,
+            requester: this.accounts.requester,
+        });
+        const appOrder = orders.app;
+        const datasetOrder = orders.dataset;
+        const workerpoolOrder = orders.workerpool;
+        const requestOrder = orders.requester;
+        const taskIndex = (
+            await IexecAccessors__factory.connect(
+                this.proxyAddress,
+                this.accounts.anyone,
+            ).viewConsumed(hashOrder(domain, requestOrder))
+        ).toNumber();
+        const dealId = getDealId(domain, requestOrder, taskIndex);
+        const taskId = getTaskId(dealId, taskIndex);
+        const volume = Number(requestOrder.volume);
+        const taskPrice =
+            Number(appOrder.appprice) +
+            Number(datasetOrder.datasetprice) +
+            Number(workerpoolOrder.workerpoolprice);
+        const dealPrice = taskPrice * volume;
+        const dealPayer = this.accounts.requester;
+        await this.depositInIexecAccount(dealPayer, dealPrice);
+        await this.computeSchedulerDealStake(Number(workerpoolOrder.workerpoolprice), volume).then(
+            (stake) => this.depositInIexecAccount(this.accounts.scheduler, stake),
+        );
+        const startTime = await setNextBlockTimestamp();
+        await IexecPoco1__factory.connect(this.proxyAddress, dealPayer)
+            .matchOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+            .then((tx) => tx.wait());
+        return { dealId, taskId, taskIndex, dealPrice, startTime };
     }
 
     async createAssets() {

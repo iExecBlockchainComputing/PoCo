@@ -12,6 +12,8 @@ import {IexecPoco2} from "../interfaces/IexecPoco2.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
+// TODO: Revert with custom errors
+
 contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureVerifier {
     modifier onlyScheduler(bytes32 _taskId) {
         require(_msgSender() == m_deals[m_tasks[_taskId].dealid].workerpool.owner);

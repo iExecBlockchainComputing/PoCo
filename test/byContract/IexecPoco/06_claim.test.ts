@@ -3,27 +3,17 @@
 
 import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import hre, { ethers, expect } from 'hardhat';
+import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
-import { IexecPoco1__factory } from '../../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
-import {
-    IexecOrders,
-    OrdersActors,
-    OrdersAssets,
-    OrdersPrices,
-    buildOrders,
-    signOrders,
-} from '../../../utils/createOrders';
+import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     TaskStatusEnum,
     buildAndSignContributionAuthorizationMessage,
     buildResultHashAndResultSeal,
     buildUtf8ResultAndDigest,
-    getDealId,
     getIexecAccounts,
     getTaskId,
-    setNextBlockTimestamp,
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import constants from './../../../utils/constants';
@@ -42,9 +32,7 @@ describe('Poco', async () => {
     let iexecPoco: IexecInterfaceNative;
     let iexecPocoAsAnyone: IexecInterfaceNative;
     let iexecWrapper: IexecWrapper;
-    let appAddress = '';
-    let workerpoolAddress = '';
-    let datasetAddress = '';
+    let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
         iexecAdmin,
         requester,
@@ -56,7 +44,6 @@ describe('Poco', async () => {
         worker2,
         anyone,
     ]: SignerWithAddress[] = [];
-    let ordersActors: OrdersActors;
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
 
@@ -85,12 +72,6 @@ describe('Poco', async () => {
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
         iexecPocoAsAnyone = iexecPoco.connect(anyone);
-        ordersActors = {
-            appOwner: appProvider,
-            datasetOwner: datasetProvider,
-            workerpoolOwner: scheduler,
-            requester: requester,
-        };
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -119,7 +100,7 @@ describe('Poco', async () => {
             trust: 4, // Consensus is reachable with 2 fresh workers
         });
         const { dealId, taskId, taskIndex, dealPrice, startTime } =
-            await signAndMatchOrders(orders);
+            await iexecWrapper.signAndMatchOrders(orders);
         const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
             workerpoolPrice,
             expectedVolume,
@@ -222,7 +203,7 @@ describe('Poco', async () => {
             schedulerTaskStake * claimedTasks,
         );
         // And should not claim twice
-        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.reverted;
+        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
     it('Should claim active task after deadline', async function () {
@@ -231,7 +212,8 @@ describe('Poco', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { dealId, taskId, taskIndex, startTime } = await signAndMatchOrders(orders);
+        const { dealId, taskId, taskIndex, startTime } =
+            await iexecWrapper.signAndMatchOrders(orders);
         await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.ACTIVE);
         await time.setNextBlockTimestamp(startTime + maxDealDuration);
@@ -245,10 +227,10 @@ describe('Poco', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { taskId } = await signAndMatchOrders(orders);
+        const { taskId } = await iexecWrapper.signAndMatchOrders(orders);
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.UNSET);
 
-        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.reverted;
+        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
     it('Should not claim completed task', async function () {
@@ -258,7 +240,7 @@ describe('Poco', async () => {
             prices: ordersPrices,
             trust: 0,
         });
-        const { dealId, taskId, taskIndex } = await signAndMatchOrders(orders);
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
         await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
             worker1.address,
@@ -284,7 +266,7 @@ describe('Poco', async () => {
             .then((tx) => tx.wait());
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
 
-        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.reverted;
+        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
     it('Should not claim before deadline', async function () {
@@ -293,10 +275,11 @@ describe('Poco', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { taskId } = await signAndMatchOrders(orders);
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+        await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         // No time traveling after deadline
 
-        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.reverted;
+        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
     describe('Claim array', function () {
@@ -308,7 +291,7 @@ describe('Poco', async () => {
                 prices: ordersPrices,
                 volume,
             });
-            const { dealId, startTime } = await signAndMatchOrders(orders);
+            const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
             const taskIds = [];
             for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
                 taskIds.push(getTaskId(dealId, taskIndex));
@@ -334,7 +317,7 @@ describe('Poco', async () => {
                 prices: ordersPrices,
                 volume,
             });
-            const { dealId, startTime } = await signAndMatchOrders(orders);
+            const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
             const taskIndex1 = 0;
             const taskIndex2 = 1;
             const taskId1 = getTaskId(dealId, taskIndex1);
@@ -344,10 +327,10 @@ describe('Poco', async () => {
             await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
             // Check first task is claimable and second task is not claimable
-            await expect(iexecPoco.estimateGas.claim(taskId1)).to.not.be.reverted;
-            await expect(iexecPoco.estimateGas.claim(taskId2)).to.be.reverted;
+            await expect(iexecPoco.estimateGas.claim(taskId1)).to.not.be.revertedWithoutReason();
+            await expect(iexecPoco.estimateGas.claim(taskId2)).to.be.revertedWithoutReason();
             // Claim array will fail
-            await expect(iexecPoco.claimArray([taskId1, taskId2])).to.be.reverted;
+            await expect(iexecPoco.claimArray([taskId1, taskId2])).to.be.revertedWithoutReason();
         });
 
         describe('Initialize and claim array', function () {
@@ -359,7 +342,7 @@ describe('Poco', async () => {
                     prices: ordersPrices,
                     volume,
                 });
-                const { dealId, startTime } = await signAndMatchOrders(orders);
+                const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
                 const dealIds = [dealId, dealId, dealId];
                 const taskIndexes = [0, 1, 2];
                 await time.setNextBlockTimestamp(startTime + maxDealDuration).then(() => mine());
@@ -383,7 +366,14 @@ describe('Poco', async () => {
                 }
             });
 
-            it('Should not initialize and claim array', async function () {
+            it('Should not initialize and claim array if incompatible length of inputs', async function () {
+                const dealId = ethers.utils.hashMessage('dealId');
+                await expect(
+                    iexecPoco.initializeAndClaimArray([dealId, dealId], [0]),
+                ).to.be.revertedWithoutReason();
+            });
+
+            it('Should not initialize and claim array if one specific fails', async function () {
                 const volume = 2;
                 const { orders } = buildOrders({
                     assets: ordersAssets,
@@ -391,51 +381,20 @@ describe('Poco', async () => {
                     prices: ordersPrices,
                     volume,
                 });
-                const { dealId, startTime } = await signAndMatchOrders(orders);
-                const taskIndex1 = 0;
-                const taskIndex2 = 1;
-                const task1 = getTaskId(dealId, taskIndex1);
-                const task2 = getTaskId(dealId, taskIndex2);
+                const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
+                const taskIndex0 = 0;
+                const taskIndex1 = 1;
                 await iexecPoco // Make first task already initialized
                     .connect(scheduler)
-                    .initialize(dealId, taskIndex1)
+                    .initialize(dealId, taskIndex0)
                     .then((tx) => tx.wait());
                 await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
                 // Will fail since first task is already initialized
-                await expect(iexecPoco.initializeAndClaimArray([dealId, dealId], [task1, task2])).to
-                    .be.reverted;
+                await expect(
+                    iexecPoco.initializeAndClaimArray([dealId, dealId], [taskIndex0, taskIndex1]),
+                ).to.be.revertedWithoutReason();
             });
         });
     });
-
-    /**
-     * @notice Before properly matching orders, this method takes care of
-     * signing orders and depositing required stakes.
-     */
-    async function signAndMatchOrders(orders: IexecOrders) {
-        const domain = {
-            name: 'iExecODB',
-            version: '5.0.0',
-            chainId: hre.network.config.chainId,
-            verifyingContract: proxyAddress,
-        };
-        await signOrders(domain, orders, ordersActors);
-        const requestOrder = orders.requester;
-        const taskIndex = 0;
-        const dealId = getDealId(domain, requestOrder, taskIndex);
-        const taskId = getTaskId(dealId, taskIndex);
-        const volume = Number(requestOrder.volume);
-        const dealPrice = taskPrice * volume;
-        const dealPayer = requester;
-        await iexecWrapper.depositInIexecAccount(dealPayer, dealPrice);
-        await iexecWrapper
-            .computeSchedulerDealStake(workerpoolPrice, volume)
-            .then((stake) => iexecWrapper.depositInIexecAccount(scheduler, stake));
-        const startTime = await setNextBlockTimestamp();
-        await IexecPoco1__factory.connect(proxyAddress, dealPayer)
-            .matchOrders(orders.app, orders.dataset, orders.workerpool, requestOrder)
-            .then((tx) => tx.wait());
-        return { dealId, taskId, taskIndex, dealPrice, startTime };
-    }
 });
