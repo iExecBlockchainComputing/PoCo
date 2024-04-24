@@ -203,7 +203,7 @@ describe('Poco', async () => {
             schedulerTaskStake * claimedTasks,
         );
         // And should not claim twice
-        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.reverted;
+        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
     it('Should claim active task after deadline', async function () {
@@ -230,7 +230,7 @@ describe('Poco', async () => {
         const { taskId } = await iexecWrapper.signAndMatchOrders(orders);
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.UNSET);
 
-        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.reverted;
+        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
     it('Should not claim completed task', async function () {
@@ -266,7 +266,7 @@ describe('Poco', async () => {
             .then((tx) => tx.wait());
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
 
-        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.reverted;
+        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
     it('Should not claim before deadline', async function () {
@@ -279,7 +279,7 @@ describe('Poco', async () => {
         await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         // No time traveling after deadline
 
-        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.reverted;
+        await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
     describe('Claim array', function () {
@@ -327,10 +327,10 @@ describe('Poco', async () => {
             await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
             // Check first task is claimable and second task is not claimable
-            await expect(iexecPoco.estimateGas.claim(taskId1)).to.not.be.reverted;
-            await expect(iexecPoco.estimateGas.claim(taskId2)).to.be.reverted;
+            await expect(iexecPoco.estimateGas.claim(taskId1)).to.not.be.revertedWithoutReason();
+            await expect(iexecPoco.estimateGas.claim(taskId2)).to.be.revertedWithoutReason();
             // Claim array will fail
-            await expect(iexecPoco.claimArray([taskId1, taskId2])).to.be.reverted;
+            await expect(iexecPoco.claimArray([taskId1, taskId2])).to.be.revertedWithoutReason();
         });
 
         describe('Initialize and claim array', function () {
@@ -368,8 +368,9 @@ describe('Poco', async () => {
 
             it('Should not initialize and claim array if incompatible length of inputs', async function () {
                 const dealId = ethers.utils.hashMessage('dealId');
-                await expect(iexecPoco.initializeAndClaimArray([dealId, dealId], [0])).to.be
-                    .reverted;
+                await expect(
+                    iexecPoco.initializeAndClaimArray([dealId, dealId], [0]),
+                ).to.be.revertedWithoutReason();
             });
 
             it('Should not initialize and claim array if one specific fails', async function () {
@@ -392,7 +393,7 @@ describe('Poco', async () => {
                 // Will fail since first task is already initialized
                 await expect(
                     iexecPoco.initializeAndClaimArray([dealId, dealId], [taskIndex0, taskIndex1]),
-                ).to.be.reverted;
+                ).to.be.revertedWithoutReason();
             });
         });
     });

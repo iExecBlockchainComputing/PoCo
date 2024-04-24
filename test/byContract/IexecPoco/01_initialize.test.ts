@@ -67,6 +67,7 @@ describe('Poco', async () => {
             });
             const { dealId, taskId, taskIndex, startTime } =
                 await iexecWrapper.signAndMatchOrders(orders);
+            expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
 
             expect(await iexecPocoAsAnyone.callStatic.initialize(dealId, taskIndex)).to.equal(
                 taskId,
@@ -122,7 +123,7 @@ describe('Poco', async () => {
             expect((await iexecPoco.viewDeal(dealId1)).botFirst).equal(1);
 
             // Will fail since passed taskIndex is below deal1.botFirst
-            await expect(iexecPocoAsAnyone.initialize(dealId1, 0)).to.be.reverted;
+            await expect(iexecPocoAsAnyone.initialize(dealId1, 0)).to.be.revertedWithoutReason();
         });
 
         it('Should not initialize since index is too high', async function () {
@@ -137,7 +138,7 @@ describe('Poco', async () => {
             expect(deal.botSize).equal(1);
 
             // Will fail since passed taskIndex is above offset + bot size
-            await expect(iexecPocoAsAnyone.initialize(dealId, 1)).to.be.reverted;
+            await expect(iexecPocoAsAnyone.initialize(dealId, 1)).to.be.revertedWithoutReason();
         });
 
         it('Should not initialize twice', async function () {
@@ -150,7 +151,9 @@ describe('Poco', async () => {
             await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
             expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
 
-            await expect(iexecPocoAsAnyone.initialize(dealId, taskIndex)).to.be.reverted;
+            await expect(
+                iexecPocoAsAnyone.initialize(dealId, taskIndex),
+            ).to.be.revertedWithoutReason();
         });
     });
 
@@ -167,25 +170,29 @@ describe('Poco', async () => {
             const dealIds = [dealId, dealId, dealId];
             const taskIndexes = [0, 1, 2];
             await time.setNextBlockTimestamp(startTime + maxDealDuration);
+            for (const taskIndex of taskIndexes) {
+                const taskId = getTaskId(dealId, taskIndex);
+                expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
+            }
 
             expect(await iexecPocoAsAnyone.callStatic.initializeArray(dealIds, taskIndexes)).to.be
                 .true;
-            const initializeArrayTx = await iexecPocoAsAnyone.initializeAndClaimArray(
-                dealIds,
-                taskIndexes,
-            );
+            const initializeArrayTx = await iexecPocoAsAnyone.initializeArray(dealIds, taskIndexes);
             await initializeArrayTx.wait();
             for (const taskIndex of taskIndexes) {
                 const taskId = getTaskId(dealId, taskIndex);
                 await expect(initializeArrayTx)
                     .to.emit(iexecPoco, 'TaskInitialize')
                     .withArgs(taskId, orders.workerpool.workerpool);
+                expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
             }
         });
 
         it('Should not initialize array if incompatible length of inputs', async function () {
             const dealId = ethers.utils.hashMessage('dealId');
-            await expect(iexecPoco.initializeArray([dealId, dealId], [0])).to.be.reverted;
+            await expect(
+                iexecPoco.initializeArray([dealId, dealId], [0]),
+            ).to.be.revertedWithoutReason();
         });
 
         it('Should not initialize array if one specific fails', async function () {
@@ -205,8 +212,9 @@ describe('Poco', async () => {
             await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
             // Will fail since first task is already initialized
-            await expect(iexecPoco.initializeArray([dealId, dealId], [taskIndex0, taskIndex1])).to
-                .be.reverted;
+            await expect(
+                iexecPoco.initializeArray([dealId, dealId], [taskIndex0, taskIndex1]),
+            ).to.be.revertedWithoutReason();
         });
     });
 });
