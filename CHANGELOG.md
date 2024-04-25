@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-- Sponsor match orders boost. (#67)
+- Sponsor match orders boost. (#67, #78)
 - Migrate to hardhat tests related to:
     - `initialize` (#74, #75)
     - `claim` (#65, #66, #72, #76)
