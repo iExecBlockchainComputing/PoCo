@@ -87,7 +87,7 @@ describe('Poco', async () => {
     // TODO: Wrap tests inside `describe('Claim ' [...]`
     /**
      * Generic claim test (longest code path) where it should claim a revealing
-     * task after deadline.
+     * task after deadline. The task comes from a deal payed by a sponsor.
      */
     it('Should claim', async function () {
         const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
@@ -100,7 +100,7 @@ describe('Poco', async () => {
             trust: 4, // Consensus is reachable with 2 fresh workers
         });
         const { dealId, taskId, taskIndex, dealPrice, startTime } =
-            await iexecWrapper.signAndMatchOrders(orders);
+            await iexecWrapper.signAndSponsorMatchOrders(orders);
         const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
             workerpoolPrice,
             expectedVolume,
@@ -141,7 +141,9 @@ describe('Poco', async () => {
             dealPrice + schedulerDealStake + workerTaskStake * workers.length,
         );
         expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
-        expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(dealPrice);
+        expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
+        expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
+        expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(dealPrice);
         expect(await iexecPoco.balanceOf(scheduler.address)).to.be.equal(0);
         expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
         for (const worker of workers) {
@@ -157,9 +159,9 @@ describe('Poco', async () => {
         await claimTx.wait();
         await expect(claimTx)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, requester.address, taskPrice)
+            .withArgs(iexecPoco.address, sponsor.address, taskPrice)
             .to.emit(iexecPoco, 'Unlock')
-            .withArgs(requester.address, taskPrice)
+            .withArgs(sponsor.address, taskPrice)
             .to.emit(iexecPoco, 'Seize')
             .withArgs(scheduler.address, schedulerTaskStake, taskId)
             .to.emit(iexecPoco, 'Transfer')
@@ -182,12 +184,14 @@ describe('Poco', async () => {
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.FAILED);
         const remainingTasksToClaim = expectedVolume - claimedTasks;
         expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
-            taskPrice * remainingTasksToClaim + // requester has 2nd & 3rd task locked
+            taskPrice * remainingTasksToClaim + // sponsor has 2nd & 3rd task locked
                 schedulerDealStake, // kitty value since 1st task seized
         );
         // 2nd & 3rd tasks can still be claimed.
-        expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(taskPrice * claimedTasks);
-        expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(
+        expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
+        expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
+        expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(taskPrice * claimedTasks);
+        expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(
             taskPrice * remainingTasksToClaim,
         );
         expect(await iexecPoco.balanceOf(scheduler.address)).to.be.equal(0);
@@ -204,6 +208,33 @@ describe('Poco', async () => {
         );
         // And should not claim twice
         await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
+    });
+
+    it('Should claim task from deal payed by requester', async function () {
+        const { orders } = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+        });
+        const { dealId, taskId, taskIndex, dealPrice, startTime } =
+            await iexecWrapper.signAndMatchOrders(orders);
+        await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
+        expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(dealPrice);
+        expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
+        expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(0);
+        await time.setNextBlockTimestamp(startTime + maxDealDuration);
+
+        await expect(iexecPocoAsAnyone.claim(taskId))
+            .to.emit(iexecPoco, 'Transfer')
+            .withArgs(iexecPoco.address, requester.address, taskPrice)
+            .to.emit(iexecPoco, 'Unlock')
+            .withArgs(requester.address, taskPrice)
+            .to.emit(iexecPoco, 'TaskClaimed');
+        expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(dealPrice);
+        expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
+        expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
+        expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(0);
     });
 
     it('Should claim active task after deadline', async function () {

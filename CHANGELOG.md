@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Refund sponsor on `claim`. (#77)
 - Sponsor match orders boost. (#67)
 - Migrate to hardhat tests related to:
     - `initialize` (#74, #75)
