@@ -210,7 +210,7 @@ describe('Poco', async () => {
         await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
-    it('Should claim task of deal payed by sponsor', async function () {
+    it('Should claim task of deal payed by requester', async function () {
         const { orders } = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
