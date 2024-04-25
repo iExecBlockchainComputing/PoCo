@@ -56,10 +56,10 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
     function failedWork(bytes32 _dealid, bytes32 _taskid) internal {
         IexecLibCore_v5.Deal memory deal = m_deals[_dealid];
 
-        uint256 dealPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
+        uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
         uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
-        unlock(deal.sponsor, dealPrice); // Refund the payer of the deal
+        unlock(deal.sponsor, taskPrice); // Refund the payer of the task
         seize(deal.workerpool.owner, poolstake, _taskid);
         reward(KITTY_ADDRESS, poolstake, _taskid); // → Kitty / Burn
         lock(KITTY_ADDRESS, poolstake); // → Kitty / Burn
