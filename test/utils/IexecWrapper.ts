@@ -18,7 +18,7 @@ import {
     WorkerpoolRegistry__factory,
 } from '../../typechain';
 import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
-import { IexecOrders, hashOrder, signOrders } from '../../utils/createOrders';
+import { IexecOrders, Orders, hashOrder, signOrders } from '../../utils/createOrders';
 import { IexecAccounts, getDealId, getTaskId, setNextBlockTimestamp } from '../../utils/poco-tools';
 import { extractEventsFromReceipt } from '../../utils/tools';
 const DEPLOYMENT_CONFIG = config.chains.default;
@@ -89,11 +89,21 @@ export class IexecWrapper {
             .then((tx) => tx.wait());
     }
 
+    async signAndSponsorMatchOrders(orders: IexecOrders) {
+        return this._signAndMatchOrders(orders, true);
+    }
+
+    async signAndMatchOrders(orders: IexecOrders) {
+        return this._signAndMatchOrders(orders, false);
+    }
+
     /**
      * @notice Before properly matching orders, this method takes care of
      * signing orders and depositing required stakes.
+     * A sponsor will be in charge of paying for the deal if `withSponsor` is enabled.
+     * Otherwise the requester will be in charge of paying for the deal.
      */
-    async signAndMatchOrders(orders: IexecOrders) {
+    private async _signAndMatchOrders(orders: IexecOrders, withSponsor: boolean) {
         const domain = {
             name: 'iExecODB',
             version: '5.0.0',
@@ -124,15 +134,18 @@ export class IexecWrapper {
             Number(datasetOrder.datasetprice) +
             Number(workerpoolOrder.workerpoolprice);
         const dealPrice = taskPrice * volume;
-        const dealPayer = this.accounts.requester;
+        const dealPayer = withSponsor ? this.accounts.sponsor : this.accounts.requester;
         await this.depositInIexecAccount(dealPayer, dealPrice);
         await this.computeSchedulerDealStake(Number(workerpoolOrder.workerpoolprice), volume).then(
             (stake) => this.depositInIexecAccount(this.accounts.scheduler, stake),
         );
         const startTime = await setNextBlockTimestamp();
-        await IexecPoco1__factory.connect(this.proxyAddress, dealPayer)
-            .matchOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder)
-            .then((tx) => tx.wait());
+        const iexecPocoAsDealPayer = IexecPoco1__factory.connect(this.proxyAddress, dealPayer);
+        const matchOrdersArgs = [appOrder, datasetOrder, workerpoolOrder, requestOrder] as Orders;
+        await (withSponsor
+            ? iexecPocoAsDealPayer.sponsorMatchOrders(...matchOrdersArgs)
+            : iexecPocoAsDealPayer.matchOrders(...matchOrdersArgs)
+        ).then((tx) => tx.wait());
         return { dealId, taskId, taskIndex, dealPrice, startTime };
     }
 
