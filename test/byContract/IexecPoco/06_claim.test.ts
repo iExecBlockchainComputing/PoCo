@@ -89,7 +89,7 @@ describe('Poco', async () => {
      * Generic claim test (longest code path) where it should claim a revealing
      * task after deadline. The task comes from a deal payed by a sponsor.
      */
-    it('Should claim of deal payed by sponsor', async function () {
+    it('Should claim task of deal payed by sponsor', async function () {
         const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
         const claimedTasks = 1;
         const { orders } = buildOrders({
