@@ -3,6 +3,8 @@
 ## vNEXT
 - Refund sponsor on `claim`. (#77)
 - Sponsor match orders boost. (#67, #78)
+- Start migration to hardhat tests:
+    - `finalize` (#79)
 - Migrate to hardhat tests related to:
     - `initialize` (#74, #75)
     - `claim` (#65, #66, #72, #76)
@@ -11,7 +13,7 @@
 - Upload coverage reports to Codecov. (#61)
 - Deploy contracts in tests explicitly with hardhat or truffle fixture. (#59)
 - Add the ability to deploy without truffle fixture. (#58)
-- Sponsor match orders. (#57, #60)
+- Sponsor match orders. (#57, #60, #79)
 - Upgrade Poco1 to solidity `^0.8.0` (#55):
     - Migrate to `openzeppelin@v5`
     - Migrate to `SignatureVerifier.v8`
