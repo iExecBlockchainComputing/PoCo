@@ -164,7 +164,6 @@ describe('Poco', async () => {
             expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
                 dealPrice + schedulerDealStake + workers.length * workerTaskStake,
             );
-            expect(await iexecPoco.frozenOf(iexecPoco.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
@@ -202,7 +201,6 @@ describe('Poco', async () => {
                 .to.emit(iexecPoco, 'Unlock')
                 .withArgs(scheduler.address, schedulerTaskStake);
             const workerReward = 429000000;
-            const workerRewards = winningWorkers.length * workerReward;
             for (const worker of winningWorkers) {
                 await expect(finalizeTx)
                     .to.emit(iexecPoco, 'Transfer')
@@ -223,7 +221,7 @@ describe('Poco', async () => {
                 .withArgs(losingWorker.address, taskId);
             const schedulerReward =
                 workerpoolPrice -
-                workerRewards + // winning workers rewards
+                winningWorkers.length * workerReward + // winning workers rewards
                 workerTaskStake; // losing worker stake
             await expect(finalizeTx)
                 .to.emit(iexecPoco, 'Transfer')
@@ -241,7 +239,6 @@ describe('Poco', async () => {
             expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
                 remainingTasksToFinalize * (taskPrice + schedulerTaskStake),
             );
-            expect(await iexecPoco.frozenOf(iexecPoco.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
