@@ -160,6 +160,10 @@ describe('Poco', async () => {
                     .reveal(taskId, callbackResultDigest)
                     .then((tx) => tx.wait());
             }
+            expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
+                dealPrice + schedulerDealStake + workers.length * workerTaskStake,
+            );
+            expect(await iexecPoco.frozenOf(iexecPoco.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
@@ -173,10 +177,6 @@ describe('Poco', async () => {
                 expect(await iexecPoco.frozenOf(worker.address)).to.be.equal(workerTaskStake);
                 expect(await iexecPoco.viewScore(worker.address)).to.be.equal(0);
             }
-            expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
-                dealPrice + schedulerDealStake + workers.length * workerTaskStake,
-            );
-            expect(await iexecPoco.frozenOf(iexecPoco.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(kittyAddress)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(0);
             expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.REVEALING);
@@ -237,6 +237,10 @@ describe('Poco', async () => {
             expect(task.status).equal(TaskStatusEnum.COMPLETED);
             expect(task.results).equal(hexResults);
             expect(task.resultsCallback).equal(resultsCallback);
+            expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
+                remainingTasksToFinalize * (taskPrice + schedulerTaskStake),
+            );
+            expect(await iexecPoco.frozenOf(iexecPoco.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
@@ -263,10 +267,6 @@ describe('Poco', async () => {
             expect(await iexecPoco.frozenOf(losingWorker.address)).to.be.equal(0);
             // TODO: Add score history to losing worker to test score punishing
             expect(await iexecPoco.viewScore(losingWorker.address)).to.be.equal(0);
-            expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
-                remainingTasksToFinalize * (taskPrice + schedulerTaskStake),
-            );
-            expect(await iexecPoco.frozenOf(iexecPoco.address)).to.be.equal(0);
             // TODO: Update test with non-empty kitty
             expect(await iexecPoco.balanceOf(kittyAddress)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(0);
