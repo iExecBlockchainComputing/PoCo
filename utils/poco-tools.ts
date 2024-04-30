@@ -27,6 +27,8 @@ export interface IexecAccounts {
     worker: SignerWithAddress;
     worker1: SignerWithAddress;
     worker2: SignerWithAddress;
+    worker3: SignerWithAddress;
+    worker4: SignerWithAddress;
     enclave: SignerWithAddress;
     sms: SignerWithAddress;
     anyone: SignerWithAddress;
@@ -45,9 +47,11 @@ export async function getIexecAccounts(): Promise<IexecAccounts> {
         worker: signers[7], // same as worker1
         worker1: signers[7],
         worker2: signers[8],
-        enclave: signers[9],
-        sms: signers[10],
-        anyone: signers[11],
+        worker3: signers[9],
+        worker4: signers[10],
+        enclave: signers[11],
+        sms: signers[12],
+        anyone: signers[13],
     };
 }
 

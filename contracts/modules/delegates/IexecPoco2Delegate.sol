@@ -26,11 +26,11 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
     function successWork(bytes32 _dealid, bytes32 _taskid) internal {
         IexecLibCore_v5.Deal storage deal = m_deals[_dealid];
 
-        uint256 requesterstake = deal.app.price + deal.dataset.price + deal.workerpool.price;
+        uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
         uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
-        // seize requester funds
-        seize(deal.requester, requesterstake, _taskid);
+        // Seize the payer of the task
+        seize(deal.sponsor, taskPrice, _taskid);
         // dapp reward
         if (deal.app.price > 0) {
             reward(deal.app.owner, deal.app.price, _taskid);
