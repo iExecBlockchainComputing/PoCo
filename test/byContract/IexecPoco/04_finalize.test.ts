@@ -29,7 +29,8 @@ const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
-const enclaveAddress = ethers.constants.AddressZero;
+const emptyEnclaveAddress = ethers.constants.AddressZero;
+const emptyEnclaveSignature = '0x';
 
 describe('Poco', async () => {
     let proxyAddress: string;
@@ -138,7 +139,7 @@ describe('Poco', async () => {
                 const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                     worker.wallet.address,
                     taskId,
-                    enclaveAddress,
+                    emptyEnclaveAddress,
                     scheduler,
                 );
                 await iexecWrapper.depositInIexecAccount(worker.wallet, workerTaskStake);
@@ -148,8 +149,8 @@ describe('Poco', async () => {
                         taskId,
                         resultHash,
                         resultSeal,
-                        enclaveAddress,
-                        '0x',
+                        emptyEnclaveAddress,
+                        emptyEnclaveSignature,
                         schedulerSignature,
                     )
                     .then((tx) => tx.wait());
@@ -292,7 +293,7 @@ describe('Poco', async () => {
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker1.address,
                 taskId,
-                enclaveAddress,
+                emptyEnclaveAddress,
                 scheduler,
             );
             await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
@@ -302,8 +303,8 @@ describe('Poco', async () => {
                     taskId,
                     resultHash,
                     resultSeal,
-                    enclaveAddress,
-                    '0x',
+                    emptyEnclaveAddress,
+                    emptyEnclaveSignature,
                     schedulerSignature,
                 )
                 .then((tx) => tx.wait());
