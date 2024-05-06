@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-- Refund sponsor on `claimBoost`. (#)
+- Refund sponsor on `claimBoost`. (#80)
 - Seize sponsor on success task. (#79)
 - Refund sponsor on `claim`. (#77)
 - Sponsor match orders boost. (#67, #78)
