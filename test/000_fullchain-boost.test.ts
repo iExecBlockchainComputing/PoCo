@@ -734,7 +734,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(0);
             await time.setNextBlockTimestamp(startTime + 7 * 300);
 
-            await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
+            await expect(iexecPocoBoostInstance.connect(sponsor).claimBoost(dealId, taskIndex))
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(iexecPocoBoostInstance.address, sponsor.address, taskPrice)
                 .to.emit(iexecPocoBoostInstance, 'Unlock')
