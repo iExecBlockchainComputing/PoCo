@@ -483,8 +483,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
         // Calculate workerpool price and task stake.
         uint96 workerPoolPrice = deal.workerpoolPrice;
         uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
-        // Refund the requester by unlocking the locked funds.
-        unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
+        // Refund the payer of the task by unlocking the locked funds.
+        unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
