@@ -691,6 +691,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 schedulerTaskStake * claimedTasks,
             );
         });
+
         it('Should claim when match orders is sponsored (TEE)', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const claimedTasks = 1;
