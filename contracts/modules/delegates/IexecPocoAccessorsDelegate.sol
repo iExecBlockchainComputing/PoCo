@@ -5,12 +5,12 @@ pragma solidity ^0.8.0;
 
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
-import {IexecPocoBoostAccessors} from "../interfaces/IexecPocoAccessors.sol";
+import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 
 /**
  * @title Getters contract for PoCo module.
  */
-contract IexecPocoAccessorsDelegate is IexecPocoBoostAccessors, DelegateBase {
+contract IexecPocoAccessorsDelegate is IexecPocoAccessors, DelegateBase {
     /**
      * Get a deal created by PoCo module.
      * @param id The ID of the deal.

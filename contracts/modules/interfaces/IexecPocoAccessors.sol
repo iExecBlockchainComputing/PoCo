@@ -5,6 +5,6 @@ pragma solidity ^0.8.0;
 
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 
-interface IexecPocoBoostAccessors {
+interface IexecPocoAccessors {
     function viewDeal(bytes32 id) external view returns (IexecLibCore_v5.Deal memory);
 }
