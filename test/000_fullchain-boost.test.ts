@@ -611,7 +611,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     });
 
     describe('Claim', function () {
-        it('Should claim (TEE)', async function () {
+        it('Should refund requester on claim of non sponsored deal (TEE)', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const claimedTasks = 1;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
@@ -692,7 +692,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             );
         });
 
-        it('Should claim when match orders is sponsored (TEE)', async function () {
+        it('Should refund sponsor on claim of a sponsored deal (TEE)', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const claimedTasks = 1;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
