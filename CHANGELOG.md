@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Update Poco accessor functions. (#82)
 - Refund sponsor on `claimBoost`. (#80)
 - Seize sponsor on success task. (#79)
 - Refund sponsor on `claim`. (#77)
