@@ -18,12 +18,4 @@ contract IexecPocoAccessorsDelegate is IexecPocoBoostAccessors, DelegateBase {
     function viewDeal(bytes32 id) external view returns (IexecLibCore_v5.Deal memory deal) {
         return m_deals[id];
     }
-
-    function viewConsumed(bytes32 _id) external view returns (uint256 consumed) {
-        return m_consumed[_id];
-    }
-
-    function eip712domain_separator() external view returns (bytes32) {
-        return EIP712DOMAIN_SEPARATOR;
-    }
 }
