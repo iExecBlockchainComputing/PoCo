@@ -13,7 +13,7 @@ import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
-import {IexecMathDelegate} from "./IexecMath.sol";
+import {IexecOrderManagementDelegate} from "./IexecOrderManagementDelegate.sol";
 
 struct Matching {
     bytes32 apporderHash;
@@ -31,7 +31,7 @@ contract IexecPoco1Delegate is
     DelegateBase,
     IexecEscrow,
     SignatureVerifier,
-    IexecMathDelegate
+    IexecOrderManagementDelegate
 {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;

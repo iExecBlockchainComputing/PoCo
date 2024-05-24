@@ -17,7 +17,7 @@ import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
-import {IexecMathDelegate} from "./IexecMath.sol";
+import {IexecOrderManagementDelegate} from "./IexecOrderManagementDelegate.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
@@ -28,7 +28,7 @@ contract IexecPocoBoostDelegate is
     DelegateBase,
     IexecEscrow,
     SignatureVerifier,
-    IexecMathDelegate
+    IexecOrderManagementDelegate
 {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
