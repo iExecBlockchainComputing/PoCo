@@ -4,11 +4,13 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
+import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 import "./SignatureVerifier.sol";
 import "../DelegateBase.sol";
 import "../interfaces/IexecOrderManagement.sol";
 
 contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, SignatureVerifier {
+    using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
@@ -125,5 +127,49 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
             m_consumed[requestorderHash] = _requestorderoperation.order.volume;
             emit ClosedRequestOrder(requestorderHash);
         }
+    }
+
+    function computeDealVolume(
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder
+    ) external view override returns (uint256 volume) {
+        bytes32 requestOrderTypedDataHash = _toTypedDataHash(requestOrder.hash());
+        bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
+        bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(workerpoolOrder.hash());
+        bytes32 datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
+
+        return
+            _computeVolume(
+                appOrder.volume,
+                appOrderTypedDataHash,
+                datasetOrder.dataset != address(0),
+                datasetOrder.volume,
+                datasetOrderTypedDataHash,
+                workerpoolOrder.volume,
+                workerpoolOrderTypedDataHash,
+                requestOrder.volume,
+                requestOrderTypedDataHash
+            );
+    }
+
+    function _computeVolume(
+        uint256 apporderVolume,
+        bytes32 appOrderTypedDataHash,
+        bool hasDataset,
+        uint256 datasetorderVolume,
+        bytes32 datasetOrderTypedDataHash,
+        uint256 workerpoolorderVolume,
+        bytes32 workerpoolOrderTypedDataHash,
+        uint256 requestorderVolume,
+        bytes32 requestOrderTypedDataHash
+    ) internal view returns (uint256 volume) {
+        volume = apporderVolume - m_consumed[appOrderTypedDataHash];
+        volume = hasDataset
+            ? volume.min(datasetorderVolume - m_consumed[datasetOrderTypedDataHash])
+            : volume;
+        volume = volume.min(workerpoolorderVolume - m_consumed[workerpoolOrderTypedDataHash]);
+        volume = volume.min(requestorderVolume - m_consumed[requestOrderTypedDataHash]);
     }
 }
