@@ -8,8 +8,8 @@ import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-d
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
-    IexecPocoAccessors,
-    IexecPocoAccessors__factory,
+    IexecPocoAccessorsDelegate,
+    IexecPocoAccessorsDelegate__factory,
 } from '../../../typechain';
 import {
     OrdersAssets,
@@ -33,7 +33,7 @@ describe('Poco', async () => {
     // This is used to resolve coverage issue of IexecPocoAccessorsDelegate.sol.
     // Function "viewTask()" which is used in the voucher would not be covered otherwise.
     // TODO use IexecInterfaceNative when fully updated.
-    let iexecPocoAccessors: IexecPocoAccessors;
+    let iexecPocoAccessors: IexecPocoAccessorsDelegate;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [iexecAdmin, requester, anyone]: SignerWithAddress[] = [];
@@ -54,7 +54,7 @@ describe('Poco', async () => {
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
-        iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, anyone);
+        iexecPocoAccessors = IexecPocoAccessorsDelegate__factory.connect(proxyAddress, anyone);
         iexecPocoAsAnyone = iexecPoco.connect(anyone);
         ordersAssets = {
             app: appAddress,
