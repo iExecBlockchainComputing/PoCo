@@ -38,11 +38,4 @@ interface IexecOrderManagement {
     function manageWorkerpoolOrder(IexecLibOrders_v5.WorkerpoolOrderOperation calldata) external;
 
     function manageRequestOrder(IexecLibOrders_v5.RequestOrderOperation calldata) external;
-
-    function computeVolume(
-        IexecLibOrders_v5.AppOrder calldata appOrder,
-        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
-        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
-        IexecLibOrders_v5.RequestOrder calldata requestOrder
-    ) external view returns (uint256 volume);
 }
