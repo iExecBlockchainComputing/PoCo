@@ -25,6 +25,7 @@
     - DelegateBase, IexecERC20Core (#64)
     - PoCo2 contracts (#54)
     - PoCo1 contracts (#52)
+    - Order Management contract (#83)
 - Remove enterprise mode. (#51, #56)
 
 ## v5.5.0 - PoCo Boost
