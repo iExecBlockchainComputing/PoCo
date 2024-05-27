@@ -5,12 +5,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
-import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
-    IexecPocoAccessorsDelegate,
-    IexecPocoAccessorsDelegate__factory,
-} from '../../../typechain';
+import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import {
     OrdersAssets,
     OrdersPrices,
@@ -30,10 +25,6 @@ describe('Poco', async () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
     let iexecPocoAsAnyone: IexecInterfaceNative;
-    // This is used to resolve coverage issue of IexecPocoAccessorsDelegate.sol.
-    // Function "viewTask()" which is used in the voucher would not be covered otherwise.
-    // TODO use IexecInterfaceNative when fully updated.
-    let iexecPocoAccessors: IexecPocoAccessorsDelegate;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [iexecAdmin, requester, anyone]: SignerWithAddress[] = [];
@@ -54,7 +45,6 @@ describe('Poco', async () => {
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
-        iexecPocoAccessors = IexecPocoAccessorsDelegate__factory.connect(proxyAddress, anyone);
         iexecPocoAsAnyone = iexecPoco.connect(anyone);
         ordersAssets = {
             app: appAddress,
@@ -77,7 +67,7 @@ describe('Poco', async () => {
             });
             const { dealId, taskId, taskIndex, startTime } =
                 await iexecWrapper.signAndMatchOrders(orders);
-            expect((await iexecPocoAccessors.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
+            expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
 
             expect(await iexecPocoAsAnyone.callStatic.initialize(dealId, taskIndex)).to.equal(
                 taskId,
@@ -87,7 +77,7 @@ describe('Poco', async () => {
             await expect(initialize)
                 .to.emit(iexecPoco, 'TaskInitialize')
                 .withArgs(taskId, orders.workerpool.workerpool);
-            const task = await iexecPocoAccessors.viewTask(taskId);
+            const task = await iexecPoco.viewTask(taskId);
             expect(task.status).equal(TaskStatusEnum.ACTIVE);
             expect(task.dealid).equal(dealId);
             expect(task.idx).equal(taskIndex);
@@ -159,7 +149,7 @@ describe('Poco', async () => {
             });
             const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
             await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
-            expect((await iexecPocoAccessors.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
+            expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
 
             await expect(
                 iexecPocoAsAnyone.initialize(dealId, taskIndex),
@@ -181,9 +171,7 @@ describe('Poco', async () => {
             const taskIndexes = [0, 1, 2];
             for (const taskIndex of taskIndexes) {
                 const taskId = getTaskId(dealId, taskIndex);
-                expect((await iexecPocoAccessors.viewTask(taskId)).status).equal(
-                    TaskStatusEnum.UNSET,
-                );
+                expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
             }
 
             expect(await iexecPocoAsAnyone.callStatic.initializeArray(dealIds, taskIndexes)).to.be
@@ -195,9 +183,7 @@ describe('Poco', async () => {
                 await expect(initializeArrayTx)
                     .to.emit(iexecPoco, 'TaskInitialize')
                     .withArgs(taskId, orders.workerpool.workerpool);
-                expect((await iexecPocoAccessors.viewTask(taskId)).status).equal(
-                    TaskStatusEnum.ACTIVE,
-                );
+                expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
             }
         });
 
