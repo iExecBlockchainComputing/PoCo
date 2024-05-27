@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-- Expose `toTypedDataHash` to public, create a common function `computeVolume` (#82)
+- Create `_computeVolume` and expose `ComputeDealVolume` functions (#82)
 - Upgrade Order Management to solidity `^0.8.0`. (#84)
 - Refund sponsor on `claimBoost`. (#80)
 - Seize sponsor on success task. (#79)
