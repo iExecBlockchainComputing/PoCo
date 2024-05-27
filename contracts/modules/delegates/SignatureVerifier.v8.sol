@@ -19,14 +19,6 @@ contract SignatureVerifier is DelegateBase {
      * Hash a Typed Data using the configured domain.
      * @param structHash The original structure hash.
      */
-    function toTypedDataHash(bytes32 structHash) external view returns (bytes32) {
-        return _toTypedDataHash(structHash);
-    }
-
-    /**
-     * Hash a Typed Data using the configured domain.
-     * @param structHash The original structure hash.
-     */
     function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
         return MessageHashUtils.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
     }
