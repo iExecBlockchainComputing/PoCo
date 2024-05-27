@@ -418,6 +418,7 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOrder.volume = 4;
             requestOrder.volume = 5;
             const expectedVolume = 2;
+
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * expectedVolume;
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
@@ -482,6 +483,9 @@ describe('IexecPocoBoostDelegate', function () {
                     .connect(sponsor)
                     .callStatic.sponsorMatchOrdersBoost(...matchOrdersArgs),
             ).to.equal(dealId);
+            expect(
+                await iexecPocoBoostInstance.callStatic.computeDealVolume(...matchOrdersArgs),
+            ).to.equal(expectedVolume);
             await expect(
                 iexecPocoBoostInstance.connect(sponsor).sponsorMatchOrdersBoost(...matchOrdersArgs),
             )
