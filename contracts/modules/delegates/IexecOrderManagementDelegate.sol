@@ -128,22 +128,17 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external view override returns (uint256 volume) {
-        bytes32 requestOrderTypedDataHash = _toTypedDataHash(requestOrder.hash());
-        bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
-        bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(workerpoolOrder.hash());
-        bytes32 datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
-
         return
             _computeVolume(
                 appOrder.volume,
-                appOrderTypedDataHash,
+                _toTypedDataHash(appOrder.hash()),
                 datasetOrder.dataset != address(0),
                 datasetOrder.volume,
-                datasetOrderTypedDataHash,
+                _toTypedDataHash(datasetOrder.hash()),
                 workerpoolOrder.volume,
-                workerpoolOrderTypedDataHash,
+                _toTypedDataHash(workerpoolOrder.hash()),
                 requestOrder.volume,
-                requestOrderTypedDataHash
+                _toTypedDataHash(requestOrder.hash())
             );
     }
 
