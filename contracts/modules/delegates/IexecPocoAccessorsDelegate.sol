@@ -23,7 +23,5 @@ contract IexecPocoAccessorsDelegate is IexecPocoAccessors, DelegateBase {
      * Get task created in Classic mode.
      * @param id id of the task
      */
-    function viewTask(bytes32 id) external view returns (IexecLibCore_v5.Task memory) {
-        return m_tasks[id];
-    }
+    function viewTask(bytes32 id) external view returns (IexecLibCore_v5.Task memory) {}
 }
