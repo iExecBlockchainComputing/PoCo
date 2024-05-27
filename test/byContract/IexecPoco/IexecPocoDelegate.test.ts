@@ -236,6 +236,16 @@ describe('IexecPocoDelegate', function () {
             // Verify stored deal
             expect((await viewDeal(dealId)).sponsor).to.equal(sponsor.address);
         });
+
+        it('Should get empty task', async function () {
+            // Covers `viewTask` in tests.
+            // Fixes Codecov issue with IexecPocoAccessorsDelegate.
+            const task = await IexecPocoAccessorsDelegate__factory.connect(
+                iexecPocoInstance.address,
+                anyone,
+            ).viewTask(ethers.utils.randomBytes(32));
+            expect(task.dealid).to.equal(ethers.constants.HashZero);
+        });
     });
 
     /**
