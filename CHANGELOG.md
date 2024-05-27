@@ -2,6 +2,7 @@
 
 ## vNEXT
 - Expose `toTypedDataHash` to public, create a common function `computeVolume` (#82)
+- Upgrade Order Management to solidity `^0.8.0`. (#84)
 - Refund sponsor on `claimBoost`. (#80)
 - Seize sponsor on success task. (#79)
 - Refund sponsor on `claim`. (#77)
@@ -25,6 +26,7 @@
     - DelegateBase, IexecERC20Core (#64)
     - PoCo2 contracts (#54)
     - PoCo1 contracts (#52)
+    - Order Management contract (#83)
 - Remove enterprise mode. (#51, #56)
 
 ## v5.5.0 - PoCo Boost
