@@ -3,9 +3,10 @@
 
 pragma solidity ^0.8.0;
 
-import {DelegateBase} from "../DelegateBase.v8.sol";
-import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
+
+import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
+import {DelegateBase} from "../DelegateBase.v8.sol";
 
 contract IexecPocoCommonDelegate is DelegateBase {
     using Math for uint256;
