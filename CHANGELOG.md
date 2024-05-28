@@ -2,6 +2,7 @@
 
 ## vNEXT
 - Upgrade Order Management to solidity `^0.8.0`. (#84)
+- Resolve naming conflict in accessors. (#81)
 - Refund sponsor on `claimBoost`. (#80)
 - Seize sponsor on success task. (#79)
 - Refund sponsor on `claim`. (#77)
