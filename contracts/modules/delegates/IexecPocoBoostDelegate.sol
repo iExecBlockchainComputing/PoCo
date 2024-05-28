@@ -16,7 +16,7 @@ import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
-import {IexecOrderManagementDelegate} from "./IexecOrderManagementDelegate.sol";
+import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 /**
@@ -28,7 +28,7 @@ contract IexecPocoBoostDelegate is
     DelegateBase,
     IexecEscrow,
     SignatureVerifier,
-    IexecOrderManagementDelegate
+    IexecPocoCommonDelegate
 {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
@@ -269,7 +269,7 @@ contract IexecPocoBoostDelegate is
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 volume = _computeVolume(
+        uint256 volume = _computeDealVolume(
             appOrder.volume,
             appOrderTypedDataHash,
             hasDataset,

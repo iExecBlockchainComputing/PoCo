@@ -12,7 +12,7 @@ import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
-import {IexecOrderManagementDelegate} from "./IexecOrderManagementDelegate.sol";
+import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 struct Matching {
@@ -31,7 +31,7 @@ contract IexecPoco1Delegate is
     DelegateBase,
     IexecEscrow,
     SignatureVerifier,
-    IexecOrderManagementDelegate
+    IexecPocoCommonDelegate
 {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
@@ -296,7 +296,7 @@ contract IexecPoco1Delegate is
         /**
          * Check availability
          */
-        uint256 volume = _computeVolume(
+        uint256 volume = _computeDealVolume(
             _apporder.volume,
             ids.apporderHash,
             ids.hasDataset,

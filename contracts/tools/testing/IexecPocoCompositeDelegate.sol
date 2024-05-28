@@ -9,6 +9,6 @@ import {IexecPoco1Delegate} from "../../modules/delegates/IexecPoco1Delegate.sol
 /**
  * @notice This contract is dedicated to unit testing.
  */
-contract IexecPocoCompositeDelegate is IexecPocoAccessorsDelegate, IexecPoco1Delegate {
+contract IexecPocoCompositeDelegate is IexecPoco1Delegate, IexecPocoAccessorsDelegate {
 
 }
