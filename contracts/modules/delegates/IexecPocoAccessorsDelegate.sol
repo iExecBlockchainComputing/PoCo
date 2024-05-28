@@ -3,12 +3,12 @@
 
 pragma solidity ^0.8.0;
 
+import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
-import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
-import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
+import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 /**
  * @title Getters contract for PoCo module.
