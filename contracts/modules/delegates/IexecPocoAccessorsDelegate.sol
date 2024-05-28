@@ -41,7 +41,7 @@ contract IexecPocoAccessorsDelegate is
     }
 
     /**
-     * @notice Computes the predicted deal volume based on the provided orders.
+     * @notice Computes the volume of the "not yet created" deal based on the provided orders.
      * This function should only be used if the deal is not yet created.
      * For existing deals, use the deal accessors instead.
      *
