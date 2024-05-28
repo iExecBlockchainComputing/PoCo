@@ -122,6 +122,17 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
         }
     }
 
+    /**
+     * @notice Computes the predicted deal volume based on the provided orders.
+     * This function should only be used if the deal is not yet created.
+     * For existing deals, use the deal accessors instead.
+     *
+     * @param appOrder The application order.
+     * @param datasetOrder The dataset order.
+     * @param workerpoolOrder The workerpool order.
+     * @param requestOrder The request order.
+     * @return The computed deal volume.
+     */
     function computeDealVolume(
         IexecLibOrders_v5.AppOrder calldata appOrder,
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
@@ -142,6 +153,22 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
             );
     }
 
+    /**
+     * @notice Internal function to compute the deal volume considering the minimum
+     * remaining volume across all provided orders. This ensures that the deal volume
+     * does not exceed the available volume of any individual order.
+     *
+     * @param appOrderVolume The volume of the app order.
+     * @param appOrderTypedDataHash The typed data hash of the app order.
+     * @param hasDataset Indicates if there is a dataset order.
+     * @param datasetOrderVolume The volume of the dataset order.
+     * @param datasetOrderTypedDataHash The typed data hash of the dataset order.
+     * @param workerpoolOrderVolume The volume of the workerpool order.
+     * @param workerpoolOrderTypedDataHash The typed data hash of the workerpool order.
+     * @param requestOrderVolume The volume of the request order.
+     * @param requestOrderTypedDataHash The typed data hash of the request order.
+     * @return The minimum volume available across all orders.
+     */
     function _computeVolume(
         uint256 appOrderVolume,
         bytes32 appOrderTypedDataHash,
