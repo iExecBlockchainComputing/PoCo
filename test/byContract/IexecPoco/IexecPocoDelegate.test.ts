@@ -237,14 +237,66 @@ describe('IexecPocoDelegate', function () {
             expect((await viewDeal(dealId)).sponsor).to.equal(sponsor.address);
         });
 
-        it('Should get empty task', async function () {
-            // Covers `viewTask` in tests.
-            // Fixes Codecov issue with IexecPocoAccessorsDelegate.
+        it('Should get task', async function () {
+            const randomBytes = ethers.utils.randomBytes;
+            const hexlify = ethers.utils.hexlify;
+
+            const taskId = hexlify(randomBytes(32));
+            const dealId = hexlify(randomBytes(32));
+            const index = 3;
+            const timeref = 250;
+            const contributionDeadline = Date.now() + 1;
+            const revealDeadline = Date.now() + 2;
+            const finalDeadline = Date.now() + 3;
+            const consensusValue = hexlify(randomBytes(32));
+            const revealCounter = 2;
+            const winnerCounter = 2;
+            const contributor = ethers.Wallet.createRandom().address;
+            const resultDigest = hexlify(randomBytes(32));
+            const results = hexlify(randomBytes(9));
+            const resultsTimestamp = Date.now() + 4;
+            const resultsCallback = hexlify(randomBytes(9));
+
+            await iexecPocoInstance.setVariables({
+                m_tasks: {
+                    [taskId]: {
+                        // status => Enum causes a smock error.
+                        dealid: dealId,
+                        idx: index,
+                        timeref: timeref,
+                        contributionDeadline: contributionDeadline,
+                        revealDeadline: revealDeadline,
+                        finalDeadline: finalDeadline,
+                        consensusValue: consensusValue,
+                        revealCounter: revealCounter,
+                        winnerCounter: winnerCounter,
+                        contributors: [contributor],
+                        resultDigest: resultDigest,
+                        results: results,
+                        resultsTimestamp: resultsTimestamp,
+                        resultsCallback: resultsCallback,
+                    },
+                },
+            });
             const task = await IexecPocoAccessorsDelegate__factory.connect(
                 iexecPocoInstance.address,
                 anyone,
-            ).viewTask(ethers.utils.randomBytes(32));
-            expect(task.dealid).to.equal(ethers.constants.HashZero);
+            ).viewTask(taskId);
+
+            expect(task.dealid).to.equal(dealId);
+            expect(task.idx).to.equal(index);
+            expect(task.timeref).to.equal(timeref);
+            expect(task.contributionDeadline).to.equal(contributionDeadline);
+            expect(task.revealDeadline).to.equal(revealDeadline);
+            expect(task.finalDeadline).to.equal(finalDeadline);
+            expect(task.consensusValue).to.equal(consensusValue);
+            expect(task.revealCounter).to.equal(revealCounter);
+            expect(task.winnerCounter).to.equal(winnerCounter);
+            expect(task.contributors[0]).to.equal(contributor);
+            expect(task.resultDigest).to.equal(resultDigest);
+            expect(task.results).to.equal(results);
+            expect(task.resultsTimestamp).to.equal(resultsTimestamp);
+            expect(task.resultsCallback).to.equal(resultsCallback);
         });
     });
 
