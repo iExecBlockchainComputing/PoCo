@@ -127,7 +127,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
-    ) external view override returns (uint256 volume) {
+    ) external view override returns (uint256) {
         return
             _computeVolume(
                 appOrder.volume,
@@ -152,12 +152,19 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
         bytes32 workerpoolOrderTypedDataHash,
         uint256 requestOrderVolume,
         bytes32 requestOrderTypedDataHash
-    ) internal view returns (uint256 volume) {
-        volume = appOrderVolume - m_consumed[appOrderTypedDataHash];
-        volume = hasDataset
-            ? volume.min(datasetOrderVolume - m_consumed[datasetOrderTypedDataHash])
-            : volume;
-        volume = volume.min(workerpoolOrderVolume - m_consumed[workerpoolOrderTypedDataHash]);
-        volume = volume.min(requestOrderVolume - m_consumed[requestOrderTypedDataHash]);
+    ) internal view returns (uint256) {
+        return
+            Math.min(
+                Math.min(
+                    Math.min(
+                        appOrderVolume - m_consumed[appOrderTypedDataHash],
+                        hasDataset
+                            ? datasetOrderVolume - m_consumed[datasetOrderTypedDataHash]
+                            : type(uint256).max
+                    ),
+                    workerpoolOrderVolume - m_consumed[workerpoolOrderTypedDataHash]
+                ),
+                requestOrderVolume - m_consumed[requestOrderTypedDataHash]
+            );
     }
 }
