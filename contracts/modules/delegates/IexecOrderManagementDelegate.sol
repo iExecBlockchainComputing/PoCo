@@ -4,14 +4,12 @@
 pragma solidity ^0.8.0;
 
 import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
-import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecOrderManagement} from "../interfaces/IexecOrderManagement.v8.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 
 contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, SignatureVerifier {
-    using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
