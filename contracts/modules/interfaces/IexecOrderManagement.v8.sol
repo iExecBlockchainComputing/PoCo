@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../../libs/IexecLibOrders_v5.sol";
+import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 
 interface IexecOrderManagement {
     event SignedAppOrder(bytes32 appHash);
@@ -22,11 +22,4 @@ interface IexecOrderManagement {
     function manageWorkerpoolOrder(IexecLibOrders_v5.WorkerpoolOrderOperation calldata) external;
 
     function manageRequestOrder(IexecLibOrders_v5.RequestOrderOperation calldata) external;
-
-    function computeDealVolume(
-        IexecLibOrders_v5.AppOrder calldata appOrder,
-        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
-        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
-        IexecLibOrders_v5.RequestOrder calldata requestOrder
-    ) external view returns (uint256 volume);
 }
