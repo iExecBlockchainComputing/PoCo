@@ -43,17 +43,13 @@ contract IexecPocoCommonDelegate is DelegateBase {
         bytes32 requestOrderTypedDataHash
     ) internal view returns (uint256) {
         return
-            Math.min(
-                Math.min(
-                    Math.min(
-                        appOrderVolume - m_consumed[appOrderTypedDataHash],
-                        hasDataset
-                            ? datasetOrderVolume - m_consumed[datasetOrderTypedDataHash]
-                            : type(uint256).max
-                    ),
-                    workerpoolOrderVolume - m_consumed[workerpoolOrderTypedDataHash]
-                ),
-                requestOrderVolume - m_consumed[requestOrderTypedDataHash]
-            );
+            (appOrderVolume - m_consumed[appOrderTypedDataHash])
+                .min(
+                    hasDataset
+                        ? datasetOrderVolume - m_consumed[datasetOrderTypedDataHash]
+                        : type(uint256).max
+                )
+                .min(workerpoolOrderVolume - m_consumed[workerpoolOrderTypedDataHash])
+                .min(requestOrderVolume - m_consumed[requestOrderTypedDataHash]);
     }
 }
