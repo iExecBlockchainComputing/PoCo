@@ -418,7 +418,6 @@ describe('IexecPocoBoostDelegate', function () {
             workerpoolOrder.volume = 4;
             requestOrder.volume = 5;
             const expectedVolume = 2;
-
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * expectedVolume;
             const initialIexecPocoBalance = 1;
             const initialRequesterBalance = 2;
