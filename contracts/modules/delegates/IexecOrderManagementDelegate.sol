@@ -143,21 +143,21 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
     }
 
     function _computeVolume(
-        uint256 apporderVolume,
+        uint256 appOrderVolume,
         bytes32 appOrderTypedDataHash,
         bool hasDataset,
-        uint256 datasetorderVolume,
+        uint256 datasetOrderVolume,
         bytes32 datasetOrderTypedDataHash,
-        uint256 workerpoolorderVolume,
+        uint256 workerpoolOrderVolume,
         bytes32 workerpoolOrderTypedDataHash,
-        uint256 requestorderVolume,
+        uint256 requestOrderVolume,
         bytes32 requestOrderTypedDataHash
     ) internal view returns (uint256 volume) {
-        volume = apporderVolume - m_consumed[appOrderTypedDataHash];
+        volume = appOrderVolume - m_consumed[appOrderTypedDataHash];
         volume = hasDataset
-            ? volume.min(datasetorderVolume - m_consumed[datasetOrderTypedDataHash])
+            ? volume.min(datasetOrderVolume - m_consumed[datasetOrderTypedDataHash])
             : volume;
-        volume = volume.min(workerpoolorderVolume - m_consumed[workerpoolOrderTypedDataHash]);
-        volume = volume.min(requestorderVolume - m_consumed[requestOrderTypedDataHash]);
+        volume = volume.min(workerpoolOrderVolume - m_consumed[workerpoolOrderTypedDataHash]);
+        volume = volume.min(requestOrderVolume - m_consumed[requestOrderTypedDataHash]);
     }
 }
