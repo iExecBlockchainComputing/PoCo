@@ -482,9 +482,6 @@ describe('IexecPocoBoostDelegate', function () {
                     .connect(sponsor)
                     .callStatic.sponsorMatchOrdersBoost(...matchOrdersArgs),
             ).to.equal(dealId);
-            expect(
-                await iexecPocoBoostInstance.callStatic.computeDealVolume(...matchOrdersArgs),
-            ).to.equal(expectedVolume);
             await expect(
                 iexecPocoBoostInstance.connect(sponsor).sponsorMatchOrdersBoost(...matchOrdersArgs),
             )

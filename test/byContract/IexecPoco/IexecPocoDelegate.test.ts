@@ -197,6 +197,9 @@ describe('IexecPocoDelegate', function () {
                     .connect(sponsor)
                     .callStatic.sponsorMatchOrders(...matchOrdersArgs),
             ).to.equal(dealId);
+            expect(
+                await iexecPocoInstance.callStatic.computeDealVolume(...matchOrdersArgs),
+            ).to.equal(expectedVolume);
             // Send tx
             await expect(iexecPocoInstance.connect(sponsor).sponsorMatchOrders(...matchOrdersArgs))
                 .to.emit(iexecPocoInstance, 'OrdersMatched')
