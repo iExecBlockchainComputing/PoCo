@@ -31,6 +31,7 @@ import {
     IexecOrderManagementDelegate__factory,
     IexecPoco1Delegate__factory,
     IexecPoco2Delegate__factory,
+    IexecPocoAccessorsDelegate__factory,
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate__factory,
     IexecRelayDelegate__factory,
@@ -116,6 +117,7 @@ module.exports = async function () {
         new IexecRelayDelegate__factory(),
         new ENSIntegrationDelegate__factory(),
         new IexecMaintenanceExtraDelegate__factory(),
+        new IexecPocoAccessorsDelegate__factory(iexecLibOrders),
         new IexecPocoBoostDelegate__factory(iexecLibOrders),
         new IexecPocoBoostAccessorsDelegate__factory(),
     ];
