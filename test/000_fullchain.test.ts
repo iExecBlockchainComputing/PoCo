@@ -6,7 +6,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { TypedDataDomain } from 'ethers';
 import hre, { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
-import { IexecAccessors, IexecAccessors__factory } from '../typechain';
+import { IexecAccessors, IexecAccessors__factory, IexecPocoAccessors__factory } from '../typechain';
 import { IexecPoco1 } from '../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol';
 import { IexecPoco1__factory } from '../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
 import {
@@ -139,6 +139,11 @@ describe('IexecPocoDelegate', function () {
                 workerpoolOrder,
                 requestOrder,
             ] as Orders;
+            expect(
+                await IexecPocoAccessors__factory.connect(proxyAddress, anyone).computeDealVolume(
+                    ...matchOrdersArgs,
+                ),
+            ).to.equal(volume);
 
             expect(
                 await iexecPoco.connect(sponsor).callStatic.sponsorMatchOrders(...matchOrdersArgs),

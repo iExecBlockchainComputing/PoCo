@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Deploy IexecPocoAccessorsDelegate module. (#85)
 - Create `_computeDealVolume` and expose `ComputeDealVolume` functions (#82)
 - Upgrade Order Management to solidity `^0.8.0`. (#84)
 - Resolve naming conflict in accessors. (#81)
