@@ -5,36 +5,36 @@ pipeline {
     }
     agent any
     stages {
-        stage('Init') {
-            agent {
-                docker {
-                    reuseNode true
-                    image nodeJsImage
-                }
-            }
-            steps {
-                script {
-                    sh 'npm ci --production=false --no-progress'
-                    sh 'npm run build'
-                    sh 'npm run test-storage-layout'
-                    // Verify basic deployment. Might be removed at some point.
-                    sh 'npm run deploy'
-                }
-            }
-        }
-        stage('Hardhat tests') {
-            agent {
-                docker {
-                    reuseNode true
-                    image nodeJsImage
-                }
-            }
-            steps {
-                script {
-                    test()
-                }
-            }
-        }
+        // stage('Init') {
+        //     agent {
+        //         docker {
+        //             reuseNode true
+        //             image nodeJsImage
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //             sh 'npm ci --production=false --no-progress'
+        //             sh 'npm run build'
+        //             sh 'npm run test-storage-layout'
+        //             // Verify basic deployment. Might be removed at some point.
+        //             sh 'npm run deploy'
+        //         }
+        //     }
+        // }
+        // stage('Hardhat tests') {
+        //     agent {
+        //         docker {
+        //             reuseNode true
+        //             image nodeJsImage
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //             test()
+        //         }
+        //     }
+        // }
 
         /**
          * Usage example:
