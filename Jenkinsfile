@@ -5,45 +5,43 @@ pipeline {
     }
     agent any
     stages {
-        // stage('Init') {
-        //     agent {
-        //         docker {
-        //             reuseNode true
-        //             image nodeJsImage
-        //         }
-        //     }
-        //     steps {
-        //         script {
-        //             sh 'npm ci --production=false --no-progress'
-        //             sh 'npm run build'
-        //             sh 'npm run test-storage-layout'
-        //             // Verify basic deployment. Might be removed at some point.
-        //             sh 'npm run deploy'
-        //         }
-        //     }
-        // }
-        // stage('Hardhat tests') {
-        //     agent {
-        //         docker {
-        //             reuseNode true
-        //             image nodeJsImage
-        //         }
-        //     }
-        //     steps {
-        //         script {
-        //             test()
-        //         }
-        //     }
-        // }
-
-
+        stage('Init') {
+            agent {
+                docker {
+                    reuseNode true
+                    image nodeJsImage
+                }
+            }
+            steps {
+                script {
+                    sh 'npm ci --production=false --no-progress'
+                    sh 'npm run build'
+                    sh 'npm run test-storage-layout'
+                    // Verify basic deployment. Might be removed at some point.
+                    sh 'npm run deploy'
+                }
+            }
+        }
+        stage('Hardhat tests') {
+            agent {
+                docker {
+                    reuseNode true
+                    image nodeJsImage
+                }
+            }
+            steps {
+                script {
+                    test()
+                }
+            }
+        }
         /**
-            * Usage example:
-            * docker run --rm --entrypoint /bin/bash -v $(pwd):/share \
-            *  -e SOLC='<solc-version>' trailofbits/eth-security-toolbox -c \
-            *  'cd /share && solc-select install $SOLC && \
-            *  slither --solc-solcs-select $SOLC <contract-path>'
-            */
+        * Usage example:
+        * docker run --rm --entrypoint /bin/bash -v $(pwd):/share \
+        *  -e SOLC='<solc-version>' trailofbits/eth-security-toolbox -c \
+        *  'cd /share && solc-select install $SOLC && \
+        *  slither --solc-solcs-select $SOLC <contract-path>'
+        */
         stage('Slither') {
             agent {
                 docker {
