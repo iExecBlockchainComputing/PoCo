@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Create slither smart contract entry point and run slither analyse on new contracts. (#87)
 - Deploy IexecPocoAccessorsDelegate module. (#85)
 - Create `_computeDealVolume` and expose `ComputeDealVolume` functions (#82)
 - Upgrade Order Management to solidity `^0.8.0`. (#84)
