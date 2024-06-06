@@ -59,7 +59,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'solc-select install $SOLC && slither --solc-solcs-select $SOLC contracts/'
+                        sh 'solc-select install $SOLC && slither --solc-solcs-select $SOLC .'
                     } catch (err) {
                         sh "echo ${STAGE_NAME} stage is unstable"
                     }
