@@ -1,6 +1,6 @@
 {
     "solc_remaps": "@=node_modules/@",
-    "filter_paths": "^(node_modules|?!contracts/modules/(DelegateBase\\.v8\\.sol|delegates/(IexecEscrow\\.v8\\.sol|IexecPoco1Delegate\\.sol|IexecPoco2Delegate\\.sol|IexecPocoAccessorsDelegate\\.sol))).*$",
+    "filter_paths": "(contracts/|node_modules/)",
     "solc_args": "--optimize --via-ir",
     "_comments": [
         "For some reasons `compile_force_framework: hardhat` is not working.",
