@@ -35,13 +35,14 @@ pipeline {
                 }
             }
         }
+
         /**
-        * Usage example:
-        * docker run --rm --entrypoint /bin/bash -v $(pwd):/share \
-        *  -e SOLC='<solc-version>' trailofbits/eth-security-toolbox -c \
-        *  'cd /share && solc-select install $SOLC && \
-        *  slither --solc-solcs-select $SOLC <contract-path>'
-        */
+         * Usage example:
+         * docker run --rm --entrypoint /bin/bash -v $(pwd):/share \
+         *  -e SOLC='<solc-version>' trailofbits/eth-security-toolbox -c \
+         *  'cd /share && solc-select install $SOLC && \
+         *  slither --solc-solcs-select $SOLC <contract-path>'
+         */
         stage('Slither') {
             agent {
                 docker {
