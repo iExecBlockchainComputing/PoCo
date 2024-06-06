@@ -3,9 +3,9 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecPocoAccessorsDelegate} from "../../modules/delegates/IexecPocoAccessorsDelegate.sol";
-import {IexecPoco1Delegate} from "../../modules/delegates/IexecPoco1Delegate.sol";
-import {IexecPoco2Delegate} from "../../modules/delegates/IexecPoco2Delegate.sol";
+import {IexecPocoAccessorsDelegate} from "../../../modules/delegates/IexecPocoAccessorsDelegate.sol";
+import {IexecPoco1Delegate} from "../../../modules/delegates/IexecPoco1Delegate.sol";
+import {IexecPoco2Delegate} from "../../../modules/delegates/IexecPoco2Delegate.sol";
 
 /**
  * @notice This contract is dedicated to slither testing.
