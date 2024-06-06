@@ -16,13 +16,20 @@ import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
+import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
  * @notice Works for deals with requested trust = 0.
  */
-contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, SignatureVerifier {
+contract IexecPocoBoostDelegate is
+    IexecPocoBoost,
+    DelegateBase,
+    IexecEscrow,
+    SignatureVerifier,
+    IexecPocoCommonDelegate
+{
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
     using Math for uint256;
@@ -262,12 +269,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 volume = appOrder.volume - appOrderConsumed;
-        volume = volume.min(workerpoolOrder.volume - workerpoolOrderConsumed);
-        volume = volume.min(requestOrder.volume - requestOrderConsumed);
-        if (hasDataset) {
-            volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
-        }
+        uint256 volume = _computeDealVolume(
+            appOrder.volume,
+            appOrderTypedDataHash,
+            hasDataset,
+            datasetOrder.volume,
+            datasetOrderTypedDataHash,
+            workerpoolOrder.volume,
+            workerpoolOrderTypedDataHash,
+            requestOrder.volume,
+            requestOrderTypedDataHash
+        );
         require(volume > 0, "PocoBoost: One or more orders consumed");
         // Store deal (all). Write all parts of the same storage slot together
         // for gas optimization purposes.

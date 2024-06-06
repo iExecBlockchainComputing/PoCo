@@ -1,6 +1,10 @@
 # Changelog
 
 ## vNEXT
+- Deploy IexecPocoAccessorsDelegate module. (#85)
+- Create `_computeDealVolume` and expose `ComputeDealVolume` functions (#82)
+- Upgrade Order Management to solidity `^0.8.0`. (#84)
+- Resolve naming conflict in accessors. (#81)
 - Refund sponsor on `claimBoost`. (#80)
 - Seize sponsor on success task. (#79)
 - Refund sponsor on `claim`. (#77)
@@ -24,6 +28,7 @@
     - DelegateBase, IexecERC20Core (#64)
     - PoCo2 contracts (#54)
     - PoCo1 contracts (#52)
+    - Order Management contract (#83)
 - Remove enterprise mode. (#51, #56)
 
 ## v5.5.0 - PoCo Boost
