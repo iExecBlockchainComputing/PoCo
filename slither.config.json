@@ -1,6 +1,6 @@
 {
     "solc_remaps": "@=node_modules/@",
-    "filter_paths": "(contracts/modules/interfaces/|contracts/libs/|contracts/external/|contracts/registries/)",
+    "filter_paths": "(node_modules/|contracts/modules/interfaces/|contracts/libs/|contracts/external/|contracts/registries/)",
     "solc_args": "--optimize --via-ir",
     "_comments": [
         "For some reasons `compile_force_framework: hardhat` is not working.",
