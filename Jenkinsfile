@@ -60,7 +60,7 @@ pipeline {
         steps {
             script {
                 try {
-                    sh 'solc-select install $SOLC && slither --solc-solcs-select $SOLC contracts/modules/delegates/IexecPocoBoostDelegate.sol'
+                    sh 'solc-select install $SOLC && slither --solc-solcs-select $SOLC contracts/tools/testing/Sliter.sol'
                 } catch (err) {
                     sh "echo ${STAGE_NAME} stage is unstable"
                 }
