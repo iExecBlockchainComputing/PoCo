@@ -7,6 +7,6 @@ import {IexecPocoBoostAccessorsDelegate} from "../../../modules/delegates/IexecP
 import {IexecPocoBoostDelegate} from "../../../modules/delegates/IexecPocoBoostDelegate.sol";
 
 /**
- * @notice This contract is dedicated to slither testing.
+ * @notice This contract is dedicated to slither analysis.
  */
-contract AnalyseSlitherBoost is IexecPocoBoostDelegate, IexecPocoBoostAccessorsDelegate {}
+contract SlitherBoost is IexecPocoBoostDelegate, IexecPocoBoostAccessorsDelegate {}

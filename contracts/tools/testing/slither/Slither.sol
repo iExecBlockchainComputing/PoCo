@@ -8,6 +8,6 @@ import {IexecPoco1Delegate} from "../../../modules/delegates/IexecPoco1Delegate.
 import {IexecPoco2Delegate} from "../../../modules/delegates/IexecPoco2Delegate.sol";
 
 /**
- * @notice This contract is dedicated to slither testing.
+ * @notice This contract is dedicated to slither analysis.
  */
-contract AnalyseSlither is IexecPocoAccessorsDelegate, IexecPoco1Delegate, IexecPoco2Delegate {}
+contract Slither is IexecPocoAccessorsDelegate, IexecPoco1Delegate, IexecPoco2Delegate {}
