@@ -88,7 +88,7 @@ abstract contract Store is ERC1538Store {
     uint256 internal constant FINAL_DEADLINE_RATIO = 10;
     uint256 internal constant WORKERPOOL_STAKE_RATIO = 30;
     uint256 internal constant KITTY_RATIO = 10;
-    uint256 internal constant KITTY_MIN = 1000000000; // ADJUSTEMENT VARIABLE
+    uint256 internal constant KITTY_MIN = 1e9; // ADJUSTEMENT VARIABLE
 
     /**
      * @dev Seized funds of workerpools that do not honor their deals are sent
