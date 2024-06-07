@@ -14,6 +14,4 @@ contract IexecPocoBoostCompositeDelegate is
     IexecPocoAccessorsDelegate,
     IexecPocoBoostAccessorsDelegate,
     IexecPocoBoostDelegate
-{
-
-}
+{}
