@@ -2,6 +2,7 @@
 
 ## vNEXT
 - Create slither smart contract entry point and run slither analysis on new contracts. (#87)
+- Upgrade to `@openzeppelin/contracts@5.0.2` and upgrade other dependencies. (#86)
 - Deploy IexecPocoAccessorsDelegate module. (#85)
 - Create `_computeDealVolume` and expose `ComputeDealVolume` functions (#82)
 - Upgrade Order Management to solidity `^0.8.0`. (#84)
