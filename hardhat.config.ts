@@ -61,7 +61,7 @@ const bellecourNetworkConfig = {
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: '0.8.21', settings: v8Settings }, // PoCo Boost (and ENS contracts >=0.8.4)
+            { version: '0.8.23', settings: v8Settings }, // PoCo Boost (and ENS contracts >=0.8.4)
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],
