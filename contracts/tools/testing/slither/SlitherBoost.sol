@@ -8,5 +8,8 @@ import {IexecPocoBoostDelegate} from "../../../modules/delegates/IexecPocoBoostD
 
 /**
  * @notice This contract is dedicated to slither analysis.
+ *
+ * @dev This contract aggregates multiple delegate contracts into a single entry point
+ *      to facilitate static analysis using Slither.
  */
 contract SlitherBoost is IexecPocoBoostDelegate, IexecPocoBoostAccessorsDelegate {}
