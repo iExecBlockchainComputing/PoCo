@@ -1,6 +1,7 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+const loadTruffleFixtureDeployment = require('../../../scripts/truffle-fixture-deployer');
 // Config
 var DEPLOYMENT = require('../../../config/config.json').chains.default;
 // Artefacts
@@ -49,6 +50,7 @@ contract('Poco', async (accounts) => {
      *                        Environment configuration                        *
      ***************************************************************************/
     before('configure', async () => {
+        await loadTruffleFixtureDeployment();
         console.log('# web3 version:', web3.version);
 
         /**
@@ -257,6 +259,7 @@ contract('Poco', async (accounts) => {
         assert.equal(Number(deal.botSize), 1);
         assert.equal(Number(deal.workerStake), 8); // 8 = floor(25*.3)
         assert.equal(Number(deal.schedulerRewardRatio), 5);
+        assert.equal(deal.sponsor, user.address);
     });
 
     it('[Match - app-workerpool-user]', async () => {

@@ -1,5 +1,6 @@
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
-
+// TODO: Remove header bellow
 /******************************************************************************
  * Copyright 2020 IEXEC BLOCKCHAIN TECH                                       *
  *                                                                            *
@@ -60,6 +61,7 @@ library IexecLibCore_v5 {
         // consistency
         uint256 workerStake;
         uint256 schedulerRewardRatio;
+        address sponsor;
     }
 
     /**
@@ -84,6 +86,8 @@ library IexecLibCore_v5 {
         uint16 botFirst; // Max: 65535
         uint16 botSize; // Max: 65535
         bytes3 shortTag; // Max: 0b111111111111111111111111 (0xFFFFFF)
+        // Offset 5
+        address sponsor;
     }
     /**
      * Tasks

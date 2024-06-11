@@ -1,6 +1,8 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+//require("../000_fullchain-boost.test")
+const loadTruffleFixtureDeployment = require('../../scripts/truffle-fixture-deployer');
 // Config
 var DEPLOYMENT = require('../../config/config.json').chains.default;
 // Artefacts
@@ -57,6 +59,7 @@ contract('ERC1154: resultFor', async (accounts) => {
      *                        Environment configuration                        *
      ***************************************************************************/
     before('configure', async () => {
+        await loadTruffleFixtureDeployment();
         console.log('# web3 version:', web3.version);
 
         /**

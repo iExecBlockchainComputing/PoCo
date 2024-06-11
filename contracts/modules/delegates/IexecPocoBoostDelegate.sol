@@ -1,16 +1,14 @@
-// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
 
-import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
 import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
 import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
 import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 import {SafeCast} from "@openzeppelin/contracts-v5/utils/math/SafeCast.sol";
 
-import {IERC734} from "../../external/interfaces/IERC734.sol";
 import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
@@ -18,12 +16,20 @@ import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
+import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
+import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
  * @notice Works for deals with requested trust = 0.
  */
-contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
+contract IexecPocoBoostDelegate is
+    IexecPocoBoost,
+    DelegateBase,
+    IexecEscrow,
+    SignatureVerifier,
+    IexecPocoCommonDelegate
+{
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
     using Math for uint256;
@@ -35,17 +41,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
 
     /**
      * @notice This boost match orders is only compatible with trust <= 1.
+     * The requester gets debited.
      * @param appOrder The order signed by the application developer.
      * @param datasetOrder The order signed by the dataset provider.
      * @param workerpoolOrder The order signed by the workerpool manager.
      * @param requestOrder The order signed by the requester.
      * @return The ID of the deal.
-     * @dev Considering min·max·avg gas values, preferred option for deal storage
-     *  is b.:
-     *   - a. Use memory struct and write new struct to storage once
-     *   - b. Use memory struct and write to storage field per field
-     *   - c. Write/read everything to/on storage
-     *   - d. Write/read everything to/on memory struct and asign memory to storage
      */
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,
@@ -53,6 +54,76 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external returns (bytes32) {
+        return
+            _matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+                requestOrder.requester
+            );
+    }
+
+    /**
+     * Sponsor match orders boost for a requester.
+     * Unlike the standard `matchOrdersBoost(..)` hook where the requester pays for
+     * the deal, this current hook makes it possible for any `msg.sender` to pay for
+     * a third party requester.
+     *
+     * @notice Be aware that anyone seeing a valid request order on the network
+     * (via an off-chain public marketplace, via a `sponsorMatchOrdersBoost(..)`
+     * pending transaction in the mempool or by any other means) might decide
+     * to call the standard `matchOrdersBoost(..)` hook which will result in the
+     * requester being debited instead. Therefore, such a front run would result
+     * in a loss of some of the requester funds deposited in the iExec account
+     * (a loss value equivalent to the price of the deal).
+     *
+     * @param appOrder The app order.
+     * @param datasetOrder The dataset order.
+     * @param workerpoolOrder The workerpool order.
+     * @param requestOrder The requester order.
+     */
+
+    function sponsorMatchOrdersBoost(
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder
+    ) external returns (bytes32) {
+        address sponsor = msg.sender;
+        bytes32 dealId = _matchOrdersBoost(
+            appOrder,
+            datasetOrder,
+            workerpoolOrder,
+            requestOrder,
+            sponsor
+        );
+        emit DealSponsoredBoost(dealId, sponsor);
+        return dealId;
+    }
+
+    /**
+     * Match orders boost and specify a sponsor in charge of paying for the deal.
+     *
+     * @param appOrder The app order.
+     * @param datasetOrder The dataset order.
+     * @param workerpoolOrder The workerpool order.
+     * @param requestOrder The requester order.
+     * @param sponsor The sponsor in charge of paying the deal.
+     * @dev Considering min·max·avg gas values, preferred option for deal storage
+     *  is b.:
+     *   - a. Use memory struct and write new struct to storage once
+     *   - b. Use memory struct and write to storage field per field
+     *   - c. Write/read everything to/on storage
+     *   - d. Write/read everything to/on memory struct and asign memory to storage
+     */
+    function _matchOrdersBoost(
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder,
+        address sponsor
+    ) private returns (bytes32) {
         // Check orders compatibility
 
         // Ensure the trust level is within the acceptable range.
@@ -198,12 +269,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 volume = appOrder.volume - appOrderConsumed;
-        volume = volume.min(workerpoolOrder.volume - workerpoolOrderConsumed);
-        volume = volume.min(requestOrder.volume - requestOrderConsumed);
-        if (hasDataset) {
-            volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
-        }
+        uint256 volume = _computeDealVolume(
+            appOrder.volume,
+            appOrderTypedDataHash,
+            hasDataset,
+            datasetOrder.volume,
+            datasetOrderTypedDataHash,
+            workerpoolOrder.volume,
+            workerpoolOrderTypedDataHash,
+            requestOrder.volume,
+            requestOrderTypedDataHash
+        );
         require(volume > 0, "PocoBoost: One or more orders consumed");
         // Store deal (all). Write all parts of the same storage slot together
         // for gas optimization purposes.
@@ -242,6 +318,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
             // Update consumed (dataset)
             m_consumed[datasetOrderTypedDataHash] += volume;
         }
+        deal.sponsor = sponsor;
         /**
          * Update consumed.
          * @dev Update all consumed after external call on workerpool contract
@@ -250,8 +327,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // @dev cheaper than `+= volume` here
         m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
-        // Lock deal price from requester balance.
-        lock(requester, (appPrice + datasetPrice + workerpoolPrice) * volume);
+        // Lock deal price from sponsor balance.
+        lock(sponsor, (appPrice + datasetPrice + workerpoolPrice) * volume);
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
@@ -418,8 +495,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         // Calculate workerpool price and task stake.
         uint96 workerPoolPrice = deal.workerpoolPrice;
         uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
-        // Refund the requester by unlocking the locked funds.
-        unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
+        // Refund the payer of the task by unlocking the locked funds.
+        unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
@@ -428,115 +505,6 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow {
         emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
         emit TaskClaimed(taskId);
-    }
-
-    /**
-     * Hash a Typed Data using the configured domain.
-     * @param structHash The original structure hash.
-     */
-    function _toTypedDataHash(bytes32 structHash) private view returns (bytes32) {
-        return MessageHashUtils.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
-    }
-
-    /**
-     * @notice Verify that an Ethereum Signed Message is signed by a particular account.
-     * @param account The expected signer account.
-     * @param message The original message that was signed.
-     * @param signature The signature to be verified.
-     */
-    function _verifySignatureOfEthSignedMessage(
-        address account,
-        bytes memory message,
-        bytes calldata signature
-    ) private pure returns (bool) {
-        return keccak256(message).toEthSignedMessageHash().recover(signature) == account;
-    }
-
-    /**
-     * @notice Verify that a message is signed by an EOA or an ERC1271 smart contract.
-     * @param account The expected signer account.
-     * @param messageHash The message hash that was signed.
-     * @param signature The signature to be verified.
-     */
-    function _verifySignature(
-        address account,
-        bytes32 messageHash,
-        bytes calldata signature
-    ) private view returns (bool) {
-        if (messageHash.recover(signature) == account) {
-            return true;
-        }
-        if (account.code.length > 0) {
-            try IERC1271(account).isValidSignature(messageHash, signature) returns (bytes4 result) {
-                return result == IERC1271.isValidSignature.selector;
-            } catch {}
-        }
-        return false;
-    }
-
-    /**
-     * @notice Verify that a message hash is presigned by a particular account.
-     * @param account The expected presigner account.
-     * @param messageHash The message hash that was presigned.
-     */
-    function _verifyPresignature(address account, bytes32 messageHash) private view returns (bool) {
-        return account != address(0) && account == m_presigned[messageHash];
-    }
-
-    /**
-     * @notice Verify that a message hash is signed or presigned by a particular account.
-     * @param account The expected signer or presigner account.
-     * @param messageHash The message hash that was signed or presigned.
-     * @param signature The signature to be verified. Not required for a presignature.
-     */
-    function _verifySignatureOrPresignature(
-        address account,
-        bytes32 messageHash,
-        bytes calldata signature
-    ) private view returns (bool) {
-        return
-            (signature.length != 0 && _verifySignature(account, messageHash, signature)) ||
-            _verifyPresignature(account, messageHash);
-    }
-
-    /**
-     * @notice
-     * This function makes an external call to an untrusted contract. It has to
-     * be carefully called to avoid creating re-entrancy vulnerabilities. Calls to this function
-     * has to be done before updating state variables.
-     *
-     * @notice Verify that an account is authorized based on a given restriction.
-     * The given restriction can be:
-     * (1) `0x`: No restriction, accept any address;
-     * (2) `0x<same-address-than-restriction>`: Only accept the exact same address;
-     * (3) `0x<ERC734-contract-address>`: Accept any address in a group (having
-     * the given `GROUPMEMBER` purpose) inside an ERC734 Key Manager identity
-     * contract.
-     * @param restriction A simple address or an ERC734 identity contract
-     * that might whitelist a given address in a group.
-     * @param account An address to be checked.
-     */
-    function _isAccountAuthorizedByRestriction(
-        address restriction,
-        address account
-    ) private view returns (bool) {
-        if (
-            restriction == address(0) || // No restriction
-            restriction == account // Simple address restriction
-        ) {
-            return true;
-        }
-        if (restriction.code.length > 0) {
-            try
-                IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
-                        bytes32(uint256(uint160(account))),
-                        GROUPMEMBER_PURPOSE
-                    )
-            returns (bool success) {
-                return success;
-            } catch {}
-        }
-        return false;
     }
 
     /**

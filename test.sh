@@ -1,10 +1,6 @@
 #!/bin/bash
 
-if [ -z "$KYC" ]; then
-    sub_dir=""
-else
-    sub_dir="kyc/"
-fi
+sub_dir=""
 
 logs_dir="logs/$sub_dir"
 mkdir -p $logs_dir

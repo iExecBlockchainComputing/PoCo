@@ -8,6 +8,53 @@ import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
 import { hashOrder } from './createOrders';
 
+export enum TaskStatusEnum {
+    UNSET,
+    ACTIVE,
+    REVEALING,
+    COMPLETED,
+    FAILED,
+}
+
+export interface IexecAccounts {
+    iexecAdmin: SignerWithAddress;
+    requester: SignerWithAddress;
+    sponsor: SignerWithAddress;
+    beneficiary: SignerWithAddress;
+    appProvider: SignerWithAddress;
+    datasetProvider: SignerWithAddress;
+    scheduler: SignerWithAddress;
+    worker: SignerWithAddress;
+    worker1: SignerWithAddress;
+    worker2: SignerWithAddress;
+    worker3: SignerWithAddress;
+    worker4: SignerWithAddress;
+    enclave: SignerWithAddress;
+    sms: SignerWithAddress;
+    anyone: SignerWithAddress;
+}
+
+export async function getIexecAccounts(): Promise<IexecAccounts> {
+    const signers = await ethers.getSigners();
+    return {
+        iexecAdmin: signers[0],
+        requester: signers[1],
+        sponsor: signers[2],
+        beneficiary: signers[3],
+        appProvider: signers[4],
+        datasetProvider: signers[5],
+        scheduler: signers[6],
+        worker: signers[7], // same as worker1
+        worker1: signers[7],
+        worker2: signers[8],
+        worker3: signers[9],
+        worker4: signers[10],
+        enclave: signers[11],
+        sms: signers[12],
+        anyone: signers[13],
+    };
+}
+
 export function getDealId(
     domain: TypedDataDomain,
     requestOrder: IexecLibOrders_v5.RequestOrderStruct,
@@ -80,6 +127,19 @@ export function buildResultCallbackAndDigestForIntegerOracle(
     );
     const callbackResultDigest = ethers.utils.keccak256(resultsCallback);
     return { resultsCallback, callbackResultDigest };
+}
+
+export function buildResultHashAndResultSeal(
+    taskId: string,
+    resultDigest: string,
+    worker: SignerWithAddress,
+) {
+    const resultHash = ethers.utils.solidityKeccak256(['bytes32', 'bytes'], [taskId, resultDigest]);
+    const resultSeal = ethers.utils.solidityKeccak256(
+        ['address', 'bytes32', 'bytes'],
+        [worker.address, taskId, resultDigest],
+    );
+    return { resultHash, resultSeal };
 }
 
 export async function buildAndSignEnclaveMessage(

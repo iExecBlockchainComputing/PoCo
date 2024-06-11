@@ -1,32 +1,21 @@
-// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { ContractReceipt } from '@ethersproject/contracts';
-import { time } from '@nomicfoundation/hardhat-network-helpers';
+import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
-import hre, { deployments, ethers } from 'hardhat';
-import config from '../config/config.json';
+import hre, { ethers } from 'hardhat';
+import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
 import {
-    AppRegistry,
-    AppRegistry__factory,
-    DatasetRegistry,
-    DatasetRegistry__factory,
     IexecAccessors,
     IexecAccessors__factory,
-    IexecInterfaceNative__factory,
-    IexecMaintenanceDelegate__factory,
     IexecOrderManagement__factory,
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate,
     IexecPocoBoostDelegate__factory,
-    RLC,
-    RLC__factory,
     TestClient__factory,
     WorkerpoolInterface__factory,
-    WorkerpoolRegistry,
-    WorkerpoolRegistry__factory,
 } from '../typechain';
 import constants from '../utils/constants';
 import {
@@ -44,12 +33,12 @@ import {
     buildResultCallbackAndDigest,
     buildUtf8ResultAndDigest,
     getDealId,
+    getIexecAccounts,
     getTaskId,
     setNextBlockTimestamp,
 } from '../utils/poco-tools';
-import { extractEventsFromReceipt } from '../utils/tools';
+import { IexecWrapper } from './utils/IexecWrapper';
 
-const DEPLOYMENT = config.chains.default;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
 const volume = taskIndex + 1;
@@ -58,37 +47,19 @@ const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 
-/**
- * Extract address of a newly created entry in a registry contract
- * from the tx receipt.
- * @param receipt contract receipt
- * @param registryInstanceAddress address of the registry contract
- * @returns address of the entry in checksum format.
- */
-async function extractRegistryEntryAddress(
-    receipt: ContractReceipt,
-    registryInstanceAddress: string,
-): Promise<string> {
-    const events = extractEventsFromReceipt(receipt, registryInstanceAddress, 'Transfer');
-    if (events && events[0].args) {
-        const lowercaseAddress = events[0].args['tokenId'].toHexString();
-        return ethers.utils.getAddress(lowercaseAddress);
-    }
-    return '';
-}
-
 describe('IexecPocoBoostDelegate (IT)', function () {
     let domain: TypedDataDomain;
     let proxyAddress: string;
     let iexecInstance: IexecAccessors;
     let iexecPocoBoostInstance: IexecPocoBoostDelegate;
-    let rlcInstance: RLC;
+    let iexecWrapper: IexecWrapper;
     let appAddress = '';
     let workerpoolAddress = '';
     let datasetAddress = '';
     let [
         owner,
         requester,
+        sponsor,
         beneficiary,
         appProvider,
         datasetProvider,
@@ -106,80 +77,24 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
-        let signers = await hre.ethers.getSigners();
-        owner = signers[0];
-        requester = signers[1];
-        beneficiary = signers[2];
-        appProvider = signers[3];
-        datasetProvider = signers[4];
-        scheduler = signers[5];
-        worker = signers[6];
-        enclave = signers[7];
-        anyone = signers[8];
-        teeBroker = signers[9];
+        // Deploy all contracts
+        proxyAddress = await loadHardhatFixtureDeployment();
+        // Initialize test environment
+        await loadFixture(initFixture);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
             workerpoolOwner: scheduler,
             requester: requester,
         };
-        await deployments.fixture();
-        proxyAddress = await getContractAddress('ERC1538Proxy');
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
-        if (DEPLOYMENT.asset != 'Native') {
-            rlcInstance = RLC__factory.connect(await iexecInstance.token(), owner);
-        }
         domain = {
             name: 'iExecODB',
             version: '5.0.0',
             chainId: hre.network.config.chainId,
             verifyingContract: proxyAddress,
         };
-        const appRegistryInstance: AppRegistry = AppRegistry__factory.connect(
-            await getContractAddress('AppRegistry'),
-            appProvider,
-        );
-        const appReceipt = await appRegistryInstance
-            .createApp(
-                appProvider.address,
-                'my-app',
-                'APP_TYPE_0',
-                constants.NULL.BYTES32,
-                constants.NULL.BYTES32,
-                constants.NULL.BYTES32,
-            )
-            .then((tx) => tx.wait());
-        appAddress = await extractRegistryEntryAddress(appReceipt, appRegistryInstance.address);
-
-        const workerpoolRegistryInstance: WorkerpoolRegistry = WorkerpoolRegistry__factory.connect(
-            await getContractAddress('WorkerpoolRegistry'),
-            anyone,
-        );
-        const workerpoolReceipt = await workerpoolRegistryInstance
-            .createWorkerpool(scheduler.address, 'my-workerpool')
-            .then((tx) => tx.wait());
-        workerpoolAddress = await extractRegistryEntryAddress(
-            workerpoolReceipt,
-            workerpoolRegistryInstance.address,
-        );
-
-        const datasetRegistryInstance: DatasetRegistry = DatasetRegistry__factory.connect(
-            await getContractAddress('DatasetRegistry'),
-            anyone,
-        );
-        const datasetReceipt = await datasetRegistryInstance
-            .createDataset(
-                datasetProvider.address,
-                'my-dataset',
-                constants.NULL.BYTES32,
-                constants.NULL.BYTES32,
-            )
-            .then((tx) => tx.wait());
-        datasetAddress = await extractRegistryEntryAddress(
-            datasetReceipt,
-            datasetRegistryInstance.address,
-        );
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -191,8 +106,27 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             workerpool: workerpoolPrice,
         };
         // initialize tee broker to address(0)
-        await setTeeBroker('0x0000000000000000000000000000000000000000');
+        await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
     });
+
+    async function initFixture() {
+        const accounts = await getIexecAccounts();
+        ({
+            iexecAdmin: owner,
+            requester,
+            sponsor,
+            beneficiary,
+            appProvider,
+            datasetProvider,
+            scheduler,
+            worker,
+            enclave,
+            anyone,
+            sms: teeBroker,
+        } = accounts);
+        iexecWrapper = new IexecWrapper(proxyAddress, accounts);
+        ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
+    }
 
     describe('MatchOrders', function () {
         it('Should match orders (TEE)', async function () {
@@ -209,16 +143,15 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
             expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
-            await depositInIexecAccount(requester, dealPrice);
+            await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
             // Deposit RLC in the scheduler's account.
-            const schedulerStake = await computeSchedulerDealStake(
-                iexecInstance,
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
                 workerpoolPrice,
                 volume,
             );
-            await depositInIexecAccount(scheduler, schedulerStake);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
             await signOrders(domain, orders, ordersActors);
@@ -356,6 +289,115 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                     volume,
                 );
         });
+
+        it('Should sponsor match orders (TEE)', async function () {
+            const callbackAddress = ethers.Wallet.createRandom().address;
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                beneficiary: beneficiary.address,
+                tag: teeDealTag,
+                prices: ordersPrices,
+                callback: callbackAddress,
+            });
+            const dealPrice =
+                (appPrice + datasetPrice + workerpoolPrice) * // task price
+                1; // volume
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
+            expect(await iexecInstance.balanceOf(sponsor.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.frozenOf(sponsor.address)).to.be.equal(0);
+            // Deposit RLC in the scheduler's account.
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(0);
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const startTime = await setNextBlockTimestamp();
+            const matchOrdersArgs = [
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ] as Orders;
+
+            expect(
+                await iexecPocoBoostInstance
+                    .connect(sponsor)
+                    .callStatic.sponsorMatchOrdersBoost(...matchOrdersArgs),
+            ).to.equal(dealId);
+            await expect(
+                iexecPocoBoostInstance.connect(sponsor).sponsorMatchOrdersBoost(...matchOrdersArgs),
+            )
+                .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+                .withArgs(
+                    workerpoolAddress,
+                    dealId,
+                    appAddress,
+                    datasetAddress,
+                    requestOrder.category,
+                    teeDealTag,
+                    requestOrder.params,
+                    beneficiary.address,
+                )
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    hashOrder(domain, appOrder),
+                    hashOrder(domain, datasetOrder),
+                    hashOrder(domain, workerpoolOrder),
+                    hashOrder(domain, requestOrder),
+                    volume,
+                )
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(sponsor.address, iexecPocoBoostInstance.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(sponsor.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(scheduler.address, iexecPocoBoostInstance.address, schedulerStake)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(scheduler.address, schedulerStake)
+                .to.emit(iexecPocoBoostInstance, 'DealSponsoredBoost')
+                .withArgs(dealId, sponsor.address);
+            const deal = await viewDealBoost(dealId);
+            expect(deal.appOwner).to.be.equal(appProvider.address);
+            expect(deal.appPrice).to.be.equal(appPrice);
+            expect(deal.datasetOwner).to.be.equal(datasetProvider.address);
+            expect(deal.datasetPrice).to.be.equal(datasetPrice);
+            expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
+            expect(deal.workerpoolPrice).to.be.equal(workerpoolPrice);
+            expect(deal.requester).to.be.equal(requester.address);
+            expect(deal.sponsor).to.be.equal(sponsor.address);
+            const schedulerRewardRatio = (
+                await WorkerpoolInterface__factory.connect(
+                    workerpoolAddress,
+                    anyone,
+                ).m_schedulerRewardRatioPolicy()
+            ).toNumber();
+            expect(deal.workerReward)
+                .to.be.equal((workerpoolPrice * (100 - schedulerRewardRatio)) / 100)
+                .to.be.greaterThan(0);
+            expect(deal.deadline).to.be.equal(startTime + 7 * 300); // Category 0
+            expect(deal.botFirst).to.be.equal(0);
+            expect(deal.botSize).to.be.equal(1);
+            expect(deal.shortTag).to.be.equal('0x000001');
+            expect(deal.callback).to.be.equal(callbackAddress);
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
+                dealPrice + schedulerStake,
+            );
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(sponsor.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(sponsor.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
+        });
     });
 
     describe('PushResult', function () {
@@ -425,14 +467,13 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             });
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * volume;
-            await depositInIexecAccount(requester, dealPrice);
-            const schedulerDealStake = await computeSchedulerDealStake(
-                iexecInstance,
+            await iexecWrapper.depositInIexecAccount(requester, dealPrice);
+            const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
                 workerpoolPrice,
                 volume,
             );
             const schedulerTaskStake = schedulerDealStake / volume;
-            await depositInIexecAccount(scheduler, schedulerDealStake);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerDealStake);
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -527,7 +568,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         });
 
         it('Should push result (TEE with contribution authorization signed by broker)', async function () {
-            await setTeeBroker(teeBroker.address);
+            await iexecWrapper.setTeeBroker(teeBroker.address);
             const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -570,7 +611,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     });
 
     describe('Claim', function () {
-        it('Should claim (TEE)', async function () {
+        it('Should refund requester on claim of non sponsored deal (TEE)', async function () {
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
             const claimedTasks = 1;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
@@ -585,10 +626,9 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
-            await depositInIexecAccount(requester, dealPrice);
+            await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             // Deposit RLC in the scheduler's account.
-            const schedulerDealStake = await computeSchedulerDealStake(
-                iexecInstance,
+            const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
                 workerpoolPrice,
                 expectedVolume,
             );
@@ -596,7 +636,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
 
             const kittyAddress = await iexecInstance.kitty_address();
 
-            await depositInIexecAccount(scheduler, schedulerDealStake);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerDealStake);
             const startTime = await setNextBlockTimestamp();
             await iexecPocoBoostInstance.matchOrdersBoost(
                 appOrder,
@@ -651,31 +691,89 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 schedulerTaskStake * claimedTasks,
             );
         });
-    });
 
-    /**
-     * Deposit value in iExec account.
-     * @param value The value to deposit.
-     * @param account Deposit value for an account.
-     */
-    async function depositInIexecAccount(account: SignerWithAddress, value: number) {
-        if (rlcInstance) {
-            // Token
-            // Transfer RLC from owner to recipient
-            await rlcInstance.transfer(account.address, value);
-            // Deposit
-            await rlcInstance
-                .connect(account)
-                .approveAndCall(iexecPocoBoostInstance.address, value, '0x');
-        } else {
-            // Native
-            await IexecInterfaceNative__factory.connect(proxyAddress, account)
-                .deposit({
-                    value: (value * 10 ** 9).toString(),
-                })
-                .then((tx) => tx.wait());
-        }
-    }
+        it('Should refund sponsor on claim of a sponsored deal (TEE)', async function () {
+            const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
+            const claimedTasks = 1;
+            const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+            const dealPrice = taskPrice * expectedVolume;
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                tag: teeDealTag,
+                prices: ordersPrices,
+                volume: expectedVolume,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
+            // Deposit RLC in the scheduler's account.
+            const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                expectedVolume,
+            );
+            const schedulerTaskStake = schedulerDealStake / expectedVolume;
+
+            const kittyAddress = await iexecInstance.kitty_address();
+
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerDealStake);
+            const startTime = await setNextBlockTimestamp();
+            await iexecPocoBoostInstance
+                .connect(sponsor)
+                .sponsorMatchOrdersBoost(appOrder, datasetOrder, workerpoolOrder, requestOrder);
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
+                dealPrice + schedulerDealStake,
+            );
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.balanceOf(sponsor.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(sponsor.address)).to.be.equal(dealPrice);
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
+            expect(await iexecInstance.balanceOf(kittyAddress)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(0);
+            await time.setNextBlockTimestamp(startTime + 7 * 300);
+
+            await expect(iexecPocoBoostInstance.connect(anyone).claimBoost(dealId, taskIndex))
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, sponsor.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Unlock')
+                .withArgs(sponsor.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(scheduler.address, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(kittyAddress, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(kittyAddress, schedulerTaskStake)
+                .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
+                .withArgs(taskId);
+
+            expect((await iexecInstance.viewTask(taskId)).status).to.equal(4); // FAILED
+            const remainingTasksToClaim = expectedVolume - claimedTasks;
+            expect(await iexecInstance.balanceOf(iexecInstance.address)).to.be.equal(
+                taskPrice * remainingTasksToClaim + // sponsor has 2nd & 3rd task locked
+                    schedulerDealStake, // kitty value since 1st task seized
+            );
+            expect(await iexecInstance.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(requester.address)).to.be.equal(0);
+            // 2nd & 3rd tasks can still be claimed.
+            expect(await iexecInstance.balanceOf(sponsor.address)).to.be.equal(
+                taskPrice * claimedTasks,
+            );
+            expect(await iexecInstance.frozenOf(sponsor.address)).to.be.equal(
+                taskPrice * remainingTasksToClaim,
+            );
+            expect(await iexecInstance.balanceOf(scheduler.address)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(
+                schedulerTaskStake * remainingTasksToClaim,
+            );
+            expect(await iexecInstance.balanceOf(kittyAddress)).to.be.equal(0);
+            expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(
+                schedulerTaskStake * claimedTasks,
+            );
+        });
+    });
 
     async function viewDealBoost(dealId: string) {
         return await IexecPocoBoostAccessorsDelegate__factory.connect(
@@ -683,40 +781,4 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             anyone,
         ).viewDealBoost(dealId);
     }
-
-    async function setTeeBroker(brokerAddress: string) {
-        await IexecMaintenanceDelegate__factory.connect(proxyAddress, owner)
-            .setTeeBroker(brokerAddress)
-            .then((tx) => tx.wait());
-    }
 });
-
-/**
- * Get address of contract deployed with hardhat-truffle.
- * @param contractName contract to retrieve
- * @returns deployed address
- */
-async function getContractAddress(contractName: string): Promise<string> {
-    return await (
-        await hre.artifacts.require(contractName).deployed()
-    ).address;
-}
-
-/**
- * Compute the amount of RLCs to be staked by the scheduler
- * for a deal. We first compute the percentage by task
- * (See contracts/Store.sol#WORKERPOOL_STAKE_RATIO), then
- * compute the total amount according to the volume.
- * @param iexecInstance where to fetch ratio value
- * @param workerpoolPrice
- * @param volume number of tasks of a deal
- * @returns total amount to stake by the scheduler
- */
-async function computeSchedulerDealStake(
-    iexecInstance: IexecAccessors,
-    workerpoolPrice: number,
-    volume: number,
-): Promise<number> {
-    const stakeRatio = (await iexecInstance.workerpool_stake_ratio()).toNumber();
-    return ((workerpoolPrice * stakeRatio) / 100) * volume;
-}

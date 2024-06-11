@@ -1,6 +1,7 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+const loadTruffleFixtureDeployment = require('../../../scripts/truffle-fixture-deployer');
 // Config
 var DEPLOYMENT = require('../../../config/config.json').chains.default;
 // Artefacts
@@ -50,6 +51,7 @@ if (DEPLOYMENT.asset == 'Native')
          *                        Environment configuration                        *
          ***************************************************************************/
         before('configure', async () => {
+            await loadTruffleFixtureDeployment();
             console.log('# web3 version:', web3.version);
 
             /**
