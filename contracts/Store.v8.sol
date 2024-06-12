@@ -54,6 +54,7 @@ interface IRegistry is IERC721Enumerable {
  */
 abstract contract Store is ERC1538Store {
     // Registries
+    //slither-disable-start constable-states
     IRegistry internal m_appregistry;
     IRegistry internal m_datasetregistry;
     IRegistry internal m_workerpoolregistry;
@@ -64,6 +65,7 @@ abstract contract Store is ERC1538Store {
     string internal m_symbol;
     uint8 internal m_decimals;
     uint256 internal m_totalSupply;
+    //slither-disable-end constable-states
 
     /**
      * @dev In order to use the protocol, users have to deposit RLC
@@ -105,6 +107,8 @@ abstract contract Store is ERC1538Store {
     /**
      * @dev EIP-712 domain hash.
      */
+    // Modified in IexecMaintenanceDelegate.updateDomainSeparator
+    //slither-disable-next-line constable-states
     bytes32 internal EIP712DOMAIN_SEPARATOR;
 
     // Poco - Storage
@@ -136,11 +140,15 @@ abstract contract Store is ERC1538Store {
     /**
      * @dev Address of a trusted TEE authority that manages enclave challenges.
      */
+    // Modified in IexecMaintenanceDelegate.setTeeBroker
+    //slither-disable-next-line constable-states
     address internal m_teebroker;
 
     /**
      * @dev Max amount of gas to be used with callbacks.
      */
+    // Modified in IexecMaintenanceDelegate.setCallbackGas
+    //slither-disable-next-line constable-states
     uint256 internal m_callbackgas;
 
     /**
@@ -149,6 +157,8 @@ abstract contract Store is ERC1538Store {
     IexecLibCore_v5.Category[] internal m_categories;
 
     // Backward compatibility
+    // Modified in IexecMaintenanceDelegate.configure
+    //slither-disable-next-line constable-states
     address internal m_v3_iexecHub; // IexecHubInterface
     mapping(address => bool) internal m_v3_scoreImported;
 
