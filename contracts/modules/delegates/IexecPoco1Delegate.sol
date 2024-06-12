@@ -232,6 +232,7 @@ contract IexecPoco1Delegate is
         /**
          * Check orders authenticity
          */
+        //slither-disable-next-line uninitialized-local
         Matching memory ids;
         ids.hasDataset = _datasetorder.dataset != address(0);
 
