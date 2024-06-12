@@ -1,7 +1,7 @@
 {
     "solc_remaps": "@=node_modules/@",
     "filter_paths": "(node_modules/|contracts/modules/interfaces/|contracts/libs/|contracts/external/|contracts/registries/)",
-    "detectors_to_exclude": "pragma",
+    "detectors_to_exclude": "pragma,solc-version,naming-convention,timestamp",
     "solc_args": "--optimize --via-ir",
     "_comments": [
         "For some reasons `compile_force_framework: hardhat` is not working.",
