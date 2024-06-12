@@ -13,4 +13,6 @@ import {IexecPoco2Delegate} from "../../../modules/delegates/IexecPoco2Delegate.
  * @dev This contract aggregates multiple delegate contracts into a single entry point
  *      to facilitate static analysis using Slither.
  */
+//slither-disable-start unused-state
 contract Slither is IexecPocoAccessorsDelegate, IexecPoco1Delegate, IexecPoco2Delegate {}
+//slither-disable-start unused-state

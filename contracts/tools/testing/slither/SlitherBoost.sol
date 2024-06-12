@@ -12,4 +12,6 @@ import {IexecPocoBoostDelegate} from "../../../modules/delegates/IexecPocoBoostD
  * @dev This contract aggregates multiple delegate contracts into a single entry point
  *      to facilitate static analysis using Slither.
  */
+//slither-disable-start unused-state
 contract SlitherBoost is IexecPocoBoostDelegate, IexecPocoBoostAccessorsDelegate {}
+//slither-disable-start unused-state

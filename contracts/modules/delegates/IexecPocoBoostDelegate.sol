@@ -305,6 +305,7 @@ contract IexecPocoBoostDelegate is
          * https://github.com/ethereum/solidity/blob/v0.8.19/docs/types/value-types.rst?plain=1#L222
          */
         bytes3 shortTag;
+        //slither-disable-next-line assembly
         assembly {
             shortTag := shl(232, tag) // 24 = 256 - 232
         }
