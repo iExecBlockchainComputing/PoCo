@@ -518,10 +518,10 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             //slither-disable-end low-level-calls
             assert(gasleft() > m_callbackgas / 63);
             // silent unused variable warning
-            //slither-disable-start unused-state
+            //slither-disable-start redundant-statements
             success;
             returndata;
-            //slither-disable-end unused-state
+            //slither-disable-end redundant-statements
         }
     }
 
