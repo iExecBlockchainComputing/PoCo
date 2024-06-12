@@ -26,6 +26,7 @@ jobs:
         id: slither
         with:
           target: "contracts/tools/testing/slither/"
+          solc-version: '0.8.21'
           slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
           node-version: "20"
           fail-on: none # TODO set this to high or other
