@@ -333,6 +333,7 @@ contract IexecPocoBoostDelegate is
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
+        //slither-disable-next-line divide-before-multiply
         lock(workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
         // Notify workerpool.
         emit SchedulerNoticeBoost(
