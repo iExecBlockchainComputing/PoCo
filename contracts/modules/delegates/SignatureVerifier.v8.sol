@@ -61,12 +61,15 @@ contract SignatureVerifier is DelegateBase {
     ) internal view returns (bool) {
         address recoveredAddress;
         if (signature.length == 65) {
+            //slither-disable-start unused-return
+            // Ignoring r and s as they are not needed
             (recoveredAddress, , ) = messageHash.tryRecover(signature);
         } else if (signature.length == 64) {
             (recoveredAddress, , ) = messageHash.tryRecover( // short signature
                     bytes32(signature[:32]),
                     bytes32(signature[32:])
                 );
+            //slither-disable-end unused-return
         } else {
             revert("invalid-signature-format");
         }
