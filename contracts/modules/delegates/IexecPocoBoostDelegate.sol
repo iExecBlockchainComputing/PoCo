@@ -472,6 +472,7 @@ contract IexecPocoBoostDelegate is
             (bool success, ) = target.call{gas: m_callbackgas}(
                 abi.encodeCall(IOracleConsumer.receiveResult, (taskId, resultsCallback))
             );
+            //slither-disable-next-line redundant-statements
             success; // silent unused variable warning
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }

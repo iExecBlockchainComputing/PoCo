@@ -515,8 +515,10 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             );
             assert(gasleft() > m_callbackgas / 63);
             // silent unused variable warning
+            //slither-disable-start unused-state
             success;
             returndata;
+            //slither-disable-end unused-state
         }
     }
 
