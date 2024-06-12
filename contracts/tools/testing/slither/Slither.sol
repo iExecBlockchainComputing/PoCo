@@ -15,4 +15,4 @@ import {IexecPoco2Delegate} from "../../../modules/delegates/IexecPoco2Delegate.
  */
 //slither-disable-start unused-state
 contract Slither is IexecPocoAccessorsDelegate, IexecPoco1Delegate, IexecPoco2Delegate {}
-//slither-disable-start unused-state
+//slither-disable-end unused-state

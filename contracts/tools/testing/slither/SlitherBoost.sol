@@ -14,4 +14,4 @@ import {IexecPocoBoostDelegate} from "../../../modules/delegates/IexecPocoBoostD
  */
 //slither-disable-start unused-state
 contract SlitherBoost is IexecPocoBoostDelegate, IexecPocoBoostAccessorsDelegate {}
-//slither-disable-start unused-state
+//slither-disable-end unused-state
