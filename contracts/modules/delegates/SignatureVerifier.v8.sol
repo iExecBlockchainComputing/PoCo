@@ -59,7 +59,7 @@ contract SignatureVerifier is DelegateBase {
         bytes32 messageHash,
         bytes calldata signature
     ) internal view returns (bool) {
-        address recoveredAddress;
+        address recoveredAddress = address(0); // Initialize local variable
         if (signature.length == 65) {
             //slither-disable-start unused-return
             // Ignoring r and s as they are not needed
