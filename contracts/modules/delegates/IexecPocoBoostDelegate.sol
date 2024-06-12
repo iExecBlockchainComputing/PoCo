@@ -469,9 +469,12 @@ contract IexecPocoBoostDelegate is
              * The caller must be able to complete the task even if the external
              * call reverts.
              */
+            //slither-disable-start low-level-calls
+            // See Halborn audit report for details
             (bool success, ) = target.call{gas: m_callbackgas}(
                 abi.encodeCall(IOracleConsumer.receiveResult, (taskId, resultsCallback))
             );
+            //slither-disable-end low-level-calls
             //slither-disable-next-line redundant-statements
             success; // silent unused variable warning
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
