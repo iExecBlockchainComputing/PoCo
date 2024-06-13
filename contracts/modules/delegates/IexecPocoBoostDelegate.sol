@@ -471,7 +471,7 @@ contract IexecPocoBoostDelegate is
              * call reverts.
              */
             // See Halborn audit report for details
-            //slither-disable-next-line redundant-statements
+            //slither-disable-next-line low-level-calls
             (bool success, ) = target.call{gas: m_callbackgas}(
                 abi.encodeCall(IOracleConsumer.receiveResult, (taskId, resultsCallback))
             );
