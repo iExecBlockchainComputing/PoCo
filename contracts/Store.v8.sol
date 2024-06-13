@@ -54,18 +54,24 @@ interface IRegistry is IERC721Enumerable {
  */
 abstract contract Store is ERC1538Store {
     // Registries
-    //slither-disable-start constable-states
+    //slither-disable-next-line constable-states
     IRegistry internal m_appregistry;
+    //slither-disable-next-line constable-states
     IRegistry internal m_datasetregistry;
+    //slither-disable-next-line constable-states
     IRegistry internal m_workerpoolregistry;
 
     // Escrow
+    //slither-disable-next-line constable-states
     IERC20 internal m_baseToken;
+    //slither-disable-next-line constable-states
     string internal m_name;
+    //slither-disable-next-line constable-states
     string internal m_symbol;
+    //slither-disable-next-line constable-states
     uint8 internal m_decimals;
+    //slither-disable-next-line constable-states
     uint256 internal m_totalSupply;
-    //slither-disable-end constable-states
 
     /**
      * @dev In order to use the protocol, users have to deposit RLC
