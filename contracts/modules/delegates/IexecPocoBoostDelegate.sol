@@ -305,6 +305,7 @@ contract IexecPocoBoostDelegate is
          * https://github.com/ethereum/solidity/blob/v0.8.19/docs/types/value-types.rst?plain=1#L222
          */
         bytes3 shortTag;
+        //slither-disable-next-line assembly
         assembly {
             shortTag := shl(232, tag) // 24 = 256 - 232
         }
@@ -332,6 +333,7 @@ contract IexecPocoBoostDelegate is
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
+        //slither-disable-next-line divide-before-multiply
         lock(workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
         // Notify workerpool.
         emit SchedulerNoticeBoost(
@@ -468,9 +470,12 @@ contract IexecPocoBoostDelegate is
              * The caller must be able to complete the task even if the external
              * call reverts.
              */
+            // See Halborn audit report for details
+            //slither-disable-next-line low-level-calls
             (bool success, ) = target.call{gas: m_callbackgas}(
                 abi.encodeCall(IOracleConsumer.receiveResult, (taskId, resultsCallback))
             );
+            //slither-disable-next-line redundant-statements
             success; // silent unused variable warning
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }

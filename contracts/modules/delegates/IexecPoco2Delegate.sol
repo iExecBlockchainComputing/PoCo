@@ -510,12 +510,16 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             // }
 
             // Pre solidity 0.6.0 version
+            // See Halborn audit report for details
+            //slither-disable-next-line low-level-calls
             (bool success, bytes memory returndata) = target.call{gas: m_callbackgas}(
                 abi.encodeWithSignature("receiveResult(bytes32,bytes)", _taskid, _resultsCallback)
             );
             assert(gasleft() > m_callbackgas / 63);
             // silent unused variable warning
+            //slither-disable-next-line redundant-statements
             success;
+            //slither-disable-next-line redundant-statements
             returndata;
         }
     }

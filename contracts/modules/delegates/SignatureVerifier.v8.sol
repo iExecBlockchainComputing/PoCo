@@ -6,10 +6,7 @@ pragma solidity ^0.8.0;
 import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
 import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
-
 import {IERC734} from "../../external/interfaces/IERC734.sol";
-import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
-import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 
 contract SignatureVerifier is DelegateBase {
@@ -59,10 +56,12 @@ contract SignatureVerifier is DelegateBase {
         bytes32 messageHash,
         bytes calldata signature
     ) internal view returns (bool) {
-        address recoveredAddress;
+        address recoveredAddress = address(0); // Initialize local variable
         if (signature.length == 65) {
+            //slither-disable-next-line unused-return
             (recoveredAddress, , ) = messageHash.tryRecover(signature);
         } else if (signature.length == 64) {
+            //slither-disable-next-line unused-return
             (recoveredAddress, , ) = messageHash.tryRecover( // short signature
                     bytes32(signature[:32]),
                     bytes32(signature[32:])

@@ -232,6 +232,7 @@ contract IexecPoco1Delegate is
         /**
          * Check orders authenticity
          */
+        //slither-disable-next-line uninitialized-local
         Matching memory ids;
         ids.hasDataset = _datasetorder.dataset != address(0);
 
@@ -361,6 +362,7 @@ contract IexecPoco1Delegate is
          * Lock
          */
         lock(_sponsor, (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume);
+        //slither-disable-next-line divide-before-multiply
         lock(
             deal.workerpool.owner,
             ((deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!

@@ -21,4 +21,17 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: iExecBlockchainComputing/PoCo
-          
+      - name: Run static analysis with slither
+        uses: crytic/slither-action@v0.4.0
+        id: slither
+        with:
+          target: "contracts/tools/testing/slither/"
+          solc-version: '0.8.21'
+          slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
+          node-version: "20"
+          fail-on: none # TODO set this to high or other
+          sarif: results.sarif
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.slither.outputs.sarif }}

@@ -6,9 +6,7 @@ pragma solidity ^0.8.0;
 import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
 import {IERC721Enumerable} from "@openzeppelin/contracts-v5/interfaces/IERC721Enumerable.sol";
 import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
-
 import {IexecLibCore_v5} from "./libs/IexecLibCore_v5.sol";
-import {IexecLibOrders_v5} from "./libs/IexecLibOrders_v5.sol";
 
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
@@ -54,15 +52,23 @@ interface IRegistry is IERC721Enumerable {
  */
 abstract contract Store is ERC1538Store {
     // Registries
+    //slither-disable-next-line constable-states
     IRegistry internal m_appregistry;
+    //slither-disable-next-line constable-states
     IRegistry internal m_datasetregistry;
+    //slither-disable-next-line constable-states
     IRegistry internal m_workerpoolregistry;
 
     // Escrow
+    //slither-disable-next-line constable-states
     IERC20 internal m_baseToken;
+    //slither-disable-next-line constable-states
     string internal m_name;
+    //slither-disable-next-line constable-states
     string internal m_symbol;
+    //slither-disable-next-line constable-states
     uint8 internal m_decimals;
+    //slither-disable-next-line constable-states
     uint256 internal m_totalSupply;
 
     /**
@@ -88,7 +94,7 @@ abstract contract Store is ERC1538Store {
     uint256 internal constant FINAL_DEADLINE_RATIO = 10;
     uint256 internal constant WORKERPOOL_STAKE_RATIO = 30;
     uint256 internal constant KITTY_RATIO = 10;
-    uint256 internal constant KITTY_MIN = 1000000000; // ADJUSTEMENT VARIABLE
+    uint256 internal constant KITTY_MIN = 1e9; // ADJUSTEMENT VARIABLE
 
     /**
      * @dev Seized funds of workerpools that do not honor their deals are sent
@@ -105,6 +111,8 @@ abstract contract Store is ERC1538Store {
     /**
      * @dev EIP-712 domain hash.
      */
+    // Modified in IexecMaintenanceDelegate.updateDomainSeparator
+    //slither-disable-next-line constable-states
     bytes32 internal EIP712DOMAIN_SEPARATOR;
 
     // Poco - Storage
@@ -136,11 +144,15 @@ abstract contract Store is ERC1538Store {
     /**
      * @dev Address of a trusted TEE authority that manages enclave challenges.
      */
+    // Modified in IexecMaintenanceDelegate.setTeeBroker
+    //slither-disable-next-line constable-states
     address internal m_teebroker;
 
     /**
      * @dev Max amount of gas to be used with callbacks.
      */
+    // Modified in IexecMaintenanceDelegate.setCallbackGas
+    //slither-disable-next-line constable-states
     uint256 internal m_callbackgas;
 
     /**
@@ -149,6 +161,8 @@ abstract contract Store is ERC1538Store {
     IexecLibCore_v5.Category[] internal m_categories;
 
     // Backward compatibility
+    // Modified in IexecMaintenanceDelegate.configure
+    //slither-disable-next-line constable-states
     address internal m_v3_iexecHub; // IexecHubInterface
     mapping(address => bool) internal m_v3_scoreImported;
 
