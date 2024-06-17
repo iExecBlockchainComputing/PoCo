@@ -37,5 +37,4 @@ function logTxData(x: ContractTransaction) {
     console.log(`{ data: '${x.data}' }`);
 }
 
-// TODO: Move these in common tools
 export { encodeModuleProxyUpdate, printBlockTime, printFunctions, logTxData };

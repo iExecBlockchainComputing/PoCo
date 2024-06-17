@@ -30,6 +30,7 @@ import {
     const [account] = await hre.ethers.getSigners();
     await printFunctions(erc1538ProxyAddress, account);
 
+    console.log('Functions about to be added to proxy:');
     const timelockAddress = await Ownable__factory.connect(erc1538ProxyAddress, account).owner();
     const iexecPoco1ProxyUpdate = encodeModuleProxyUpdate(
         IexecPoco1Delegate__factory.createInterface(),
