@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-- Deploy Poco sponsoring on local fork of Bellecour. (#91)
+- [Deploy Poco sponsoring on local fork of Bellecour](./scripts/sponsoring/README.md). (#91)
 - Create slither smart contract entry point and run slither analysis on new contracts. (#87)
 - Upgrade to `@openzeppelin/contracts@5.0.2` and upgrade other dependencies. (#86)
 - Deploy IexecPocoAccessorsDelegate module. (#85)
