@@ -1,6 +1,5 @@
 import { Interface } from '@ethersproject/abi';
 import { ContractTransaction } from '@ethersproject/contracts';
-import { Signer } from 'ethers';
 import { ethers } from 'hardhat';
 import { ERC1538Query, ERC1538Query__factory, ERC1538Update__factory } from '../../typechain';
 
@@ -24,13 +23,17 @@ async function printBlockTime() {
     console.log(`Block#${blockNumber}: ${blockDate} (timestamp:${blockTimestamp})`);
 }
 
-async function printFunctions(erc1538ProxyAddress: string, owner: Signer) {
+async function printFunctions(erc1538ProxyAddress: string) {
     const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(
         erc1538ProxyAddress,
-        owner,
+        ethers.provider,
     );
     const functionCount = await erc1538QueryInstance.totalFunctions();
-    console.log(`ERC1538Proxy supports ${functionCount} functions`);
+    console.log(`ERC1538Proxy supports ${functionCount} functions:`);
+    for (let i = 0; i < functionCount.toNumber(); i++) {
+        const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
+        console.log(`[${i}] ${contract} ${method}`);
+    }
 }
 
 function logTxData(x: ContractTransaction) {
