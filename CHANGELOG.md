@@ -2,7 +2,22 @@
 
 ## vNEXT
 - Fix contribute & finalize with callbacks. (#)
-- Migrate `claim` tests to hardhat. (#65, #66)
+- [Deploy Poco sponsoring on local fork of Bellecour](./scripts/sponsoring/README.md). (#91)
+- Create slither smart contract entry point and run slither analysis on new contracts. (#87)
+- Upgrade to `@openzeppelin/contracts@5.0.2` and upgrade other dependencies. (#86)
+- Deploy IexecPocoAccessorsDelegate module. (#85)
+- Create `_computeDealVolume` and expose `ComputeDealVolume` functions (#82)
+- Upgrade Order Management to solidity `^0.8.0`. (#84)
+- Resolve naming conflict in accessors. (#81)
+- Refund sponsor on `claimBoost`. (#80)
+- Seize sponsor on success task. (#79)
+- Refund sponsor on `claim`. (#77)
+- Sponsor match orders boost. (#67, #78)
+- Start migration to hardhat tests:
+    - `finalize` (#79)
+- Migrate to hardhat tests related to:
+    - `initialize` (#74, #75)
+    - `claim` (#65, #66, #72, #76)
 - Upgrade Poco2 to solidity v0.8 . (#63)
 - Use common helpers in Poco Boost integration tests. (#62)
 - Upload coverage reports to Codecov. (#61)
