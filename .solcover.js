@@ -19,6 +19,7 @@ module.exports = {
         'tools/Migrations.sol',
         'tools/testing/TestClient.sol',
         'tools/testing/TestReceiver.sol',
+        'modules/delegates/SignatureVerifier.sol',
     ],
     istanbulFolder: BASE_FOLDER,
 };

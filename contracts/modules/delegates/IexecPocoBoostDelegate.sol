@@ -16,13 +16,20 @@ import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
+import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
  * @notice Works for deals with requested trust = 0.
  */
-contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, SignatureVerifier {
+contract IexecPocoBoostDelegate is
+    IexecPocoBoost,
+    DelegateBase,
+    IexecEscrow,
+    SignatureVerifier,
+    IexecPocoCommonDelegate
+{
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
     using Math for uint256;
@@ -34,17 +41,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
 
     /**
      * @notice This boost match orders is only compatible with trust <= 1.
+     * The requester gets debited.
      * @param appOrder The order signed by the application developer.
      * @param datasetOrder The order signed by the dataset provider.
      * @param workerpoolOrder The order signed by the workerpool manager.
      * @param requestOrder The order signed by the requester.
      * @return The ID of the deal.
-     * @dev Considering min·max·avg gas values, preferred option for deal storage
-     *  is b.:
-     *   - a. Use memory struct and write new struct to storage once
-     *   - b. Use memory struct and write to storage field per field
-     *   - c. Write/read everything to/on storage
-     *   - d. Write/read everything to/on memory struct and asign memory to storage
      */
     function matchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,
@@ -52,6 +54,76 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external returns (bytes32) {
+        return
+            _matchOrdersBoost(
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+                requestOrder.requester
+            );
+    }
+
+    /**
+     * Sponsor match orders boost for a requester.
+     * Unlike the standard `matchOrdersBoost(..)` hook where the requester pays for
+     * the deal, this current hook makes it possible for any `msg.sender` to pay for
+     * a third party requester.
+     *
+     * @notice Be aware that anyone seeing a valid request order on the network
+     * (via an off-chain public marketplace, via a `sponsorMatchOrdersBoost(..)`
+     * pending transaction in the mempool or by any other means) might decide
+     * to call the standard `matchOrdersBoost(..)` hook which will result in the
+     * requester being debited instead. Therefore, such a front run would result
+     * in a loss of some of the requester funds deposited in the iExec account
+     * (a loss value equivalent to the price of the deal).
+     *
+     * @param appOrder The app order.
+     * @param datasetOrder The dataset order.
+     * @param workerpoolOrder The workerpool order.
+     * @param requestOrder The requester order.
+     */
+
+    function sponsorMatchOrdersBoost(
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder
+    ) external returns (bytes32) {
+        address sponsor = msg.sender;
+        bytes32 dealId = _matchOrdersBoost(
+            appOrder,
+            datasetOrder,
+            workerpoolOrder,
+            requestOrder,
+            sponsor
+        );
+        emit DealSponsoredBoost(dealId, sponsor);
+        return dealId;
+    }
+
+    /**
+     * Match orders boost and specify a sponsor in charge of paying for the deal.
+     *
+     * @param appOrder The app order.
+     * @param datasetOrder The dataset order.
+     * @param workerpoolOrder The workerpool order.
+     * @param requestOrder The requester order.
+     * @param sponsor The sponsor in charge of paying the deal.
+     * @dev Considering min·max·avg gas values, preferred option for deal storage
+     *  is b.:
+     *   - a. Use memory struct and write new struct to storage once
+     *   - b. Use memory struct and write to storage field per field
+     *   - c. Write/read everything to/on storage
+     *   - d. Write/read everything to/on memory struct and asign memory to storage
+     */
+    function _matchOrdersBoost(
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder,
+        address sponsor
+    ) private returns (bytes32) {
         // Check orders compatibility
 
         // Ensure the trust level is within the acceptable range.
@@ -197,12 +269,17 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 volume = appOrder.volume - appOrderConsumed;
-        volume = volume.min(workerpoolOrder.volume - workerpoolOrderConsumed);
-        volume = volume.min(requestOrder.volume - requestOrderConsumed);
-        if (hasDataset) {
-            volume = volume.min(datasetOrder.volume - m_consumed[datasetOrderTypedDataHash]);
-        }
+        uint256 volume = _computeDealVolume(
+            appOrder.volume,
+            appOrderTypedDataHash,
+            hasDataset,
+            datasetOrder.volume,
+            datasetOrderTypedDataHash,
+            workerpoolOrder.volume,
+            workerpoolOrderTypedDataHash,
+            requestOrder.volume,
+            requestOrderTypedDataHash
+        );
         require(volume > 0, "PocoBoost: One or more orders consumed");
         // Store deal (all). Write all parts of the same storage slot together
         // for gas optimization purposes.
@@ -228,6 +305,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
          * https://github.com/ethereum/solidity/blob/v0.8.19/docs/types/value-types.rst?plain=1#L222
          */
         bytes3 shortTag;
+        //slither-disable-next-line assembly
         assembly {
             shortTag := shl(232, tag) // 24 = 256 - 232
         }
@@ -241,6 +319,7 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
             // Update consumed (dataset)
             m_consumed[datasetOrderTypedDataHash] += volume;
         }
+        deal.sponsor = sponsor;
         /**
          * Update consumed.
          * @dev Update all consumed after external call on workerpool contract
@@ -249,11 +328,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
         m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // @dev cheaper than `+= volume` here
         m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
-        // Lock deal price from requester balance.
-        lock(requester, (appPrice + datasetPrice + workerpoolPrice) * volume);
+        // Lock deal price from sponsor balance.
+        lock(sponsor, (appPrice + datasetPrice + workerpoolPrice) * volume);
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
+        //slither-disable-next-line divide-before-multiply
         lock(workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
         // Notify workerpool.
         emit SchedulerNoticeBoost(
@@ -390,9 +470,12 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
              * The caller must be able to complete the task even if the external
              * call reverts.
              */
+            // See Halborn audit report for details
+            //slither-disable-next-line low-level-calls
             (bool success, ) = target.call{gas: m_callbackgas}(
                 abi.encodeCall(IOracleConsumer.receiveResult, (taskId, resultsCallback))
             );
+            //slither-disable-next-line redundant-statements
             success; // silent unused variable warning
             require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }
@@ -417,8 +500,8 @@ contract IexecPocoBoostDelegate is IexecPocoBoost, DelegateBase, IexecEscrow, Si
         // Calculate workerpool price and task stake.
         uint96 workerPoolPrice = deal.workerpoolPrice;
         uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
-        // Refund the requester by unlocking the locked funds.
-        unlock(deal.requester, deal.appPrice + deal.datasetPrice + workerPoolPrice);
+        // Refund the payer of the task by unlocking the locked funds.
+        unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.

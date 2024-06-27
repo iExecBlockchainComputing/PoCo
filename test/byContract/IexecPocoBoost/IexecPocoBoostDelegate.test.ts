@@ -90,6 +90,7 @@ async function deployBoostFixture() {
     const [
         admin,
         requester,
+        sponsor,
         beneficiary,
         appProvider,
         datasetProvider,
@@ -132,6 +133,7 @@ async function deployBoostFixture() {
         iexecPocoBoostInstance,
         admin,
         requester,
+        sponsor,
         beneficiary,
         appProvider,
         datasetProvider,
@@ -163,6 +165,7 @@ describe('IexecPocoBoostDelegate', function () {
         worker,
         enclave,
         requester,
+        sponsor,
         beneficiary,
         anyone,
         teeBroker,
@@ -180,6 +183,7 @@ describe('IexecPocoBoostDelegate', function () {
         worker = fixtures.worker;
         enclave = fixtures.enclave;
         requester = fixtures.requester;
+        sponsor = fixtures.sponsor;
         beneficiary = fixtures.beneficiary;
         anyone = fixtures.anyone;
         teeBroker = fixtures.teeBroker;
@@ -371,6 +375,8 @@ describe('IexecPocoBoostDelegate', function () {
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(expectedVolume);
             expect(deal.shortTag).to.be.equal('0x000001');
+            expect(deal.sponsor).to.be.equal(requestOrder.requester, 'Sponsor mismatch');
+
             // Check balances.
             await expectBalance(
                 iexecPocoBoostInstance,
@@ -382,6 +388,181 @@ describe('IexecPocoBoostDelegate', function () {
                 iexecPocoBoostInstance,
                 requester.address,
                 initialRequesterFrozen + dealPrice,
+            );
+            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                initialSchedulerFrozen + schedulerStake,
+            );
+        });
+
+        it('Should sponsor match orders (TEE)', async function () {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+            workerpoolInstance.m_schedulerRewardRatioPolicy.returns(schedulerRewardRatio);
+
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                beneficiary: beneficiary.address,
+                tag: teeDealTag,
+                prices: ordersPrices,
+                callback: ethers.Wallet.createRandom().address,
+            });
+            // Should match orders with low app order volume
+            // Set volumes
+            appOrder.volume = 2; // smallest unconsumed volume among all orders
+            datasetOrder.volume = 3;
+            workerpoolOrder.volume = 4;
+            requestOrder.volume = 5;
+            const expectedVolume = 2;
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * expectedVolume;
+            const initialIexecPocoBalance = 1;
+            const initialRequesterBalance = 2;
+            const initialRequesterFrozen = 3;
+            const initialSchedulerBalance = 4;
+            const initialSchedulerFrozen = 5;
+            const initialSponsorBalance = 6;
+            const initialSponsorFrozen = 7;
+            const schedulerStake = computeSchedulerDealStake(workerpoolPrice, expectedVolume);
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
+                    [requester.address]: initialRequesterBalance,
+                    [sponsor.address]: initialSponsorBalance + dealPrice,
+                    [scheduler.address]: initialSchedulerBalance + schedulerStake,
+                },
+                [FROZENS]: {
+                    [requester.address]: initialRequesterFrozen,
+                    [sponsor.address]: initialSponsorFrozen,
+                    [scheduler.address]: initialSchedulerFrozen,
+                },
+            });
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance,
+            );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+            await expectBalance(
+                iexecPocoBoostInstance,
+                sponsor.address,
+                initialSponsorBalance + dealPrice,
+            );
+            await expectFrozen(iexecPocoBoostInstance, sponsor.address, initialSponsorFrozen);
+            await expectBalance(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                initialSchedulerBalance + schedulerStake,
+            );
+            await expectFrozen(iexecPocoBoostInstance, scheduler.address, initialSchedulerFrozen);
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const appOrderHash = hashOrder(domain, appOrder);
+            const datasetOrderHash = hashOrder(domain, datasetOrder);
+            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
+            const requestOrderHash = hashOrder(domain, requestOrder);
+            await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, undefined);
+            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, undefined);
+            await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, undefined);
+            await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, undefined);
+            const startTime = await setNextBlockTimestamp();
+            const matchOrdersArgs = [
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ] as Orders;
+
+            expect(
+                await iexecPocoBoostInstance
+                    .connect(sponsor)
+                    .callStatic.sponsorMatchOrdersBoost(...matchOrdersArgs),
+            ).to.equal(dealId);
+            expect(
+                await iexecPocoBoostInstance.callStatic.computeDealVolume(...matchOrdersArgs),
+            ).to.equal(expectedVolume);
+            await expect(
+                iexecPocoBoostInstance.connect(sponsor).sponsorMatchOrdersBoost(...matchOrdersArgs),
+            )
+                .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
+                .withArgs(
+                    workerpoolInstance.address,
+                    dealId,
+                    appInstance.address,
+                    datasetInstance.address,
+                    requestOrder.category,
+                    teeDealTag,
+                    requestOrder.params,
+                    beneficiary.address,
+                )
+                .to.emit(iexecPocoBoostInstance, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    appOrderHash,
+                    datasetOrderHash,
+                    workerpoolOrderHash,
+                    requestOrderHash,
+                    expectedVolume,
+                )
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(sponsor.address, iexecPocoBoostInstance.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(sponsor.address, dealPrice)
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(scheduler.address, iexecPocoBoostInstance.address, schedulerStake)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(scheduler.address, schedulerStake)
+                .to.emit(iexecPocoBoostInstance, 'DealSponsoredBoost')
+                .withArgs(dealId, sponsor.address);
+            await expectOrderConsumed(iexecPocoBoostInstance, appOrderHash, expectedVolume);
+            await expectOrderConsumed(iexecPocoBoostInstance, datasetOrderHash, expectedVolume);
+            await expectOrderConsumed(iexecPocoBoostInstance, workerpoolOrderHash, expectedVolume);
+            await expectOrderConsumed(iexecPocoBoostInstance, requestOrderHash, expectedVolume);
+            const deal = await viewDealBoost(dealId);
+            // Check addresses.
+            expect(deal.requester).to.be.equal(requestOrder.requester);
+            expect(deal.appOwner).to.be.equal(appProvider.address);
+            expect(deal.datasetOwner).to.be.equal(datasetProvider.address);
+            expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
+            expect(deal.workerReward).to.be.equal(
+                (workerpoolPrice * // reward depends on
+                    (100 - schedulerRewardRatio)) / // worker ratio
+                    100,
+            );
+            expect(deal.deadline).to.be.equal(
+                startTime + // match order block timestamp
+                    7 * // contribution deadline ratio
+                        60, // requested category time reference
+            );
+            expect(deal.callback)
+                .to.be.equal(requestOrder.callback)
+                .to.not.be.equal(constants.NULL.ADDRESS);
+            // Check prices.
+            expect(deal.workerpoolPrice).to.be.equal(workerpoolOrder.workerpoolprice);
+            expect(deal.appPrice).to.be.equal(appOrder.appprice);
+            expect(deal.datasetPrice).to.be.equal(datasetOrder.datasetprice);
+            expect(deal.botFirst).to.be.equal(0);
+            expect(deal.botSize).to.be.equal(expectedVolume);
+            expect(deal.shortTag).to.be.equal('0x000001');
+            expect(deal.sponsor).to.be.equal(sponsor.address);
+
+            // Check balances.
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance + dealPrice + schedulerStake,
+            );
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+            await expectBalance(iexecPocoBoostInstance, sponsor.address, initialSponsorBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                sponsor.address,
+                initialSponsorFrozen + dealPrice,
             );
             await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
             await expectFrozen(
@@ -1489,6 +1670,39 @@ describe('IexecPocoBoostDelegate', function () {
                 ),
             ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
+        it('Should fail when sponsor has insufficient balance', async () => {
+            appInstance.owner.returns(appProvider.address);
+            workerpoolInstance.owner.returns(scheduler.address);
+            datasetInstance.owner.returns(datasetProvider.address);
+
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                prices: ordersPrices,
+            });
+            const matchOrdersArgs = [
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requestOrder,
+            ] as Orders;
+
+            const initialSponsorBalance = 2;
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [sponsor.address]: initialSponsorBalance, // Way less than dealPrice.
+                },
+            });
+            expect(
+                await iexecPocoBoostInstance.getVariable(BALANCES, [sponsor.address]),
+            ).to.be.lessThan(dealPrice);
+
+            await signOrders(domain, orders, ordersActors);
+            await expect(
+                iexecPocoBoostInstance.connect(sponsor).sponsorMatchOrdersBoost(...matchOrdersArgs),
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+        });
     });
 
     describe('Push Result Boost', function () {
@@ -2577,6 +2791,133 @@ describe('IexecPocoBoostDelegate', function () {
                     initialFrozenKitty + schedulerTaskStake * claimedTasks,
                 );
             }
+        });
+
+        it('Should claim by anyone when match orders is sponsored', async function () {
+            const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
+            const claimedTasks = 1;
+            const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+            const dealPrice = taskPrice * expectedVolume;
+            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                prices: ordersPrices,
+                volume: expectedVolume,
+            });
+            await signOrders(domain, orders, ordersActors);
+            const initialIexecPocoBalance = 1;
+            const initialRequesterBalance = 2;
+            const initialRequesterFrozen = 3;
+            const initialSchedulerBalance = 4;
+            const initialSchedulerFrozen = 5;
+            const initialKitty = 6;
+            const initialFrozenKitty = 6;
+            const initialSponsorBalance = 7;
+            const initialSponsorFrozen = 8;
+            const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, expectedVolume);
+            const schedulerTaskStake = schedulerDealStake / expectedVolume;
+            await iexecPocoBoostInstance.setVariables({
+                [BALANCES]: {
+                    [iexecPocoBoostInstance.address]: initialIexecPocoBalance,
+                    [requester.address]: initialRequesterBalance,
+                    [sponsor.address]: initialSponsorBalance + dealPrice,
+                    [scheduler.address]: initialSchedulerBalance + schedulerDealStake,
+                    [kittyAddress]: initialKitty,
+                },
+                [FROZENS]: {
+                    [requester.address]: initialRequesterFrozen,
+                    [sponsor.address]: initialSponsorFrozen,
+                    [scheduler.address]: initialSchedulerFrozen,
+                    [kittyAddress]: initialFrozenKitty,
+                },
+            });
+            const dealId = getDealId(domain, requestOrder, taskIndex);
+            const taskId = getTaskId(dealId, taskIndex);
+            const startTime = await setNextBlockTimestamp();
+            await iexecPocoBoostInstance
+                .connect(sponsor)
+                .sponsorMatchOrdersBoost(appOrder, datasetOrder, workerpoolOrder, requestOrder);
+            // Check poco boost balance
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance + dealPrice + schedulerDealStake,
+            );
+            // Check requester balance and frozen
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+            // Check sponsor balance and frozen
+            await expectBalance(iexecPocoBoostInstance, sponsor.address, initialSponsorBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                sponsor.address,
+                initialSponsorFrozen + dealPrice,
+            );
+            // Check scheduler balance and frozen
+            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                initialSchedulerFrozen + schedulerDealStake,
+            );
+
+            // Check kitty balance and frozen
+            await expectBalance(iexecPocoBoostInstance, kittyAddress, initialKitty);
+            await expectFrozen(iexecPocoBoostInstance, kittyAddress, initialFrozenKitty);
+            await time.setNextBlockTimestamp(startTime + 7 * 60); // claim on deadline
+
+            await expect(iexecPocoBoostInstance.connect(anyone).claimBoost(dealId, taskIndex))
+                .to.emit(iexecPocoBoostInstance, 'Transfer')
+                .withArgs(iexecPocoBoostInstance.address, sponsor.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Unlock')
+                .withArgs(sponsor.address, taskPrice)
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(scheduler.address, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Reward')
+                .withArgs(kittyAddress, schedulerTaskStake, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Lock')
+                .withArgs(kittyAddress, schedulerTaskStake)
+                .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
+                .withArgs(taskId);
+
+            const remainingTasksToClaim = expectedVolume - claimedTasks;
+            // Task status verification is delegated to related integration test.
+            // Check poco boost balance
+            await expectBalance(
+                iexecPocoBoostInstance,
+                iexecPocoBoostInstance.address,
+                initialIexecPocoBalance +
+                    taskPrice * remainingTasksToClaim + // requester has 2nd & 3rd task locked
+                    schedulerDealStake, // kitty value since 1st task seized
+            );
+            // Check requester balance and frozen
+            await expectBalance(iexecPocoBoostInstance, requester.address, initialRequesterBalance);
+            await expectFrozen(iexecPocoBoostInstance, requester.address, initialRequesterFrozen);
+            // Check sponsor balance and frozen
+            await expectBalance(
+                iexecPocoBoostInstance,
+                sponsor.address,
+                initialSponsorBalance + taskPrice * claimedTasks,
+            );
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                sponsor.address,
+                initialSponsorFrozen + taskPrice * remainingTasksToClaim, // 2nd & 3rd tasks can still be claimed
+            );
+            // Check scheduler balance and frozen
+            await expectBalance(iexecPocoBoostInstance, scheduler.address, initialSchedulerBalance);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                scheduler.address,
+                initialSchedulerFrozen + schedulerTaskStake * remainingTasksToClaim,
+            );
+            // Check kitty reward balance and frozen
+            await expectBalance(iexecPocoBoostInstance, kittyAddress, initialKitty);
+            await expectFrozen(
+                iexecPocoBoostInstance,
+                kittyAddress,
+                initialFrozenKitty + schedulerTaskStake * claimedTasks,
+            );
         });
 
         it('Should not claim if wrong deal ID', async function () {

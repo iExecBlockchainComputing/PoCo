@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -74,7 +74,16 @@ interface IexecPocoBoost {
      */
     event TaskClaimed(bytes32 indexed taskid);
 
+    event DealSponsoredBoost(bytes32 dealId, address sponsor);
+
     function matchOrdersBoost(
+        IexecLibOrders_v5.AppOrder calldata appOrder,
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,
+        IexecLibOrders_v5.RequestOrder calldata requestOrder
+    ) external returns (bytes32);
+
+    function sponsorMatchOrdersBoost(
         IexecLibOrders_v5.AppOrder calldata appOrder,
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
         IexecLibOrders_v5.WorkerpoolOrder calldata workerpoolOrder,

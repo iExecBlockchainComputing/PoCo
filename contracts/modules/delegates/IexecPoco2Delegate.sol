@@ -12,6 +12,8 @@ import {IexecPoco2} from "../interfaces/IexecPoco2.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
+// TODO: Revert with custom errors
+
 contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureVerifier {
     modifier onlyScheduler(bytes32 _taskId) {
         require(_msgSender() == m_deals[m_tasks[_taskId].dealid].workerpool.owner);
@@ -24,11 +26,11 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
     function successWork(bytes32 _dealid, bytes32 _taskid) internal {
         IexecLibCore_v5.Deal storage deal = m_deals[_dealid];
 
-        uint256 requesterstake = deal.app.price + deal.dataset.price + deal.workerpool.price;
+        uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
         uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
-        // seize requester funds
-        seize(deal.requester, requesterstake, _taskid);
+        // Seize the payer of the task
+        seize(deal.sponsor, taskPrice, _taskid);
         // dapp reward
         if (deal.app.price > 0) {
             reward(deal.app.owner, deal.app.price, _taskid);
@@ -54,10 +56,10 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
     function failedWork(bytes32 _dealid, bytes32 _taskid) internal {
         IexecLibCore_v5.Deal memory deal = m_deals[_dealid];
 
-        uint256 requesterstake = deal.app.price + deal.dataset.price + deal.workerpool.price;
+        uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
         uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
-        unlock(deal.requester, requesterstake);
+        unlock(deal.sponsor, taskPrice); // Refund the payer of the task
         seize(deal.workerpool.owner, poolstake, _taskid);
         reward(KITTY_ADDRESS, poolstake, _taskid); // → Kitty / Burn
         lock(KITTY_ADDRESS, poolstake); // → Kitty / Burn
@@ -508,12 +510,16 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
             // }
 
             // Pre solidity 0.6.0 version
+            // See Halborn audit report for details
+            //slither-disable-next-line low-level-calls
             (bool success, bytes memory returndata) = target.call{gas: m_callbackgas}(
                 abi.encodeWithSignature("receiveResult(bytes32,bytes)", _taskid, _resultsCallback)
             );
             assert(gasleft() > m_callbackgas / 63);
             // silent unused variable warning
+            //slither-disable-next-line redundant-statements
             success;
+            //slither-disable-next-line redundant-statements
             returndata;
         }
     }

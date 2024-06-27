@@ -12,6 +12,7 @@ import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
 import {DelegateBase} from "../DelegateBase.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
+import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 struct Matching {
@@ -25,7 +26,13 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureVerifier {
+contract IexecPoco1Delegate is
+    IexecPoco1,
+    DelegateBase,
+    IexecEscrow,
+    SignatureVerifier,
+    IexecPocoCommonDelegate
+{
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
@@ -225,6 +232,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
         /**
          * Check orders authenticity
          */
+        //slither-disable-next-line uninitialized-local
         Matching memory ids;
         ids.hasDataset = _datasetorder.dataset != address(0);
 
@@ -289,13 +297,17 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
         /**
          * Check availability
          */
-        uint256 volume;
-        volume = _apporder.volume - m_consumed[ids.apporderHash];
-        volume = ids.hasDataset
-            ? volume.min(_datasetorder.volume - m_consumed[ids.datasetorderHash])
-            : volume;
-        volume = volume.min(_workerpoolorder.volume - m_consumed[ids.workerpoolorderHash]);
-        volume = volume.min(_requestorder.volume - m_consumed[ids.requestorderHash]);
+        uint256 volume = _computeDealVolume(
+            _apporder.volume,
+            ids.apporderHash,
+            ids.hasDataset,
+            _datasetorder.volume,
+            ids.datasetorderHash,
+            _workerpoolorder.volume,
+            ids.workerpoolorderHash,
+            _requestorder.volume,
+            ids.requestorderHash
+        );
         require(volume > 0, "iExecV5-matchOrders-0x60");
 
         /**
@@ -350,6 +362,7 @@ contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecEscrow, SignatureV
          * Lock
          */
         lock(_sponsor, (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume);
+        //slither-disable-next-line divide-before-multiply
         lock(
             deal.workerpool.owner,
             ((deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
