@@ -58,6 +58,7 @@ contract('Fullchain', async (accounts) => {
     var result = {};
     var consensus = null;
     var worker = [];
+    var resultsCallback = null;
 
     var gasReceipt = [];
 
@@ -97,6 +98,7 @@ contract('Fullchain', async (accounts) => {
         trusttarget = 0;
         worker = { agent: worker1, useenclave: true, result: 'iExec the wanderer' };
         consensus = 'iExec the wanderer';
+        resultsCallback = web3.utils.utf8ToHex('iExec the wanderer');
     });
 
     describe('→ setup', async () => {
@@ -574,7 +576,7 @@ contract('Fullchain', async (accounts) => {
                     authorization.taskid, // task      (authorization)
                     result.digest, // digest    (result)
                     web3.utils.utf8ToHex('aResult'), // data      (result)
-                    web3.utils.utf8ToHex('iExec the wanderer'), // data      (callback)
+                    resultsCallback, // data      (resultsCallback)
                     authorization.enclave, // address   (enclave)
                     result.sign, // signature (enclave)
                     authorization.sign, // signature (authorization)
@@ -624,7 +626,7 @@ contract('Fullchain', async (accounts) => {
                 [worker.agent.address],
             );
             assert.equal(task.results, web3.utils.utf8ToHex('aResult'));
-            assert.equal(task.resultsCallback, web3.utils.utf8ToHex('iExec the wanderer'));
+            assert.equal(task.resultsCallback, resultsCallback);
         });
 
         it('balances', async () => {
