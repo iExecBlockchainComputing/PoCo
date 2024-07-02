@@ -58,6 +58,7 @@ contract('Fullchain', async (accounts) => {
     var result = {};
     var consensus = null;
     var worker = [];
+    var resultsCallback = null;
 
     var gasReceipt = [];
 
@@ -97,6 +98,7 @@ contract('Fullchain', async (accounts) => {
         trusttarget = 0;
         worker = { agent: worker1, useenclave: true, result: 'iExec the wanderer' };
         consensus = 'iExec the wanderer';
+        resultsCallback = web3.utils.utf8ToHex('iExec the wanderer');
     });
 
     describe('→ setup', async () => {
@@ -476,7 +478,7 @@ contract('Fullchain', async (accounts) => {
                         tag: '0x0000000000000000000000000000000000000000000000000000000000000000',
                         requester: user.address,
                         beneficiary: user.address,
-                        callback: constants.NULL.ADDRESS,
+                        callback: ethers.Wallet.createRandom().address,
                         params: '<parameters>',
                         salt: web3.utils.randomHex(32),
                         sign: constants.NULL.SIGNATURE,
@@ -574,7 +576,7 @@ contract('Fullchain', async (accounts) => {
                     authorization.taskid, // task      (authorization)
                     result.digest, // digest    (result)
                     web3.utils.utf8ToHex('aResult'), // data      (result)
-                    '0x', // data      (callback)
+                    resultsCallback, // data      (resultsCallback)
                     authorization.enclave, // address   (enclave)
                     result.sign, // signature (enclave)
                     authorization.sign, // signature (authorization)
@@ -600,6 +602,7 @@ contract('Fullchain', async (accounts) => {
                 assert.equal(events[0].args.taskid, taskid);
                 assert.equal(events[0].args.results, web3.utils.utf8ToHex('aResult'));
             });
+            //[TODO] contributeAndFinalize without callback
         });
     });
 
@@ -624,7 +627,7 @@ contract('Fullchain', async (accounts) => {
                 [worker.agent.address],
             );
             assert.equal(task.results, web3.utils.utf8ToHex('aResult'));
-            assert.equal(task.resultsCallback, '0x');
+            assert.equal(task.resultsCallback, resultsCallback);
         });
 
         it('balances', async () => {

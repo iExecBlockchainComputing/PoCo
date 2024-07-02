@@ -192,7 +192,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
 
         require(
             (deal.callback == address(0) && _resultsCallback.length == 0) ||
-                keccak256(_resultsCallback) == task.resultDigest
+                keccak256(_resultsCallback) == _resultDigest
         );
 
         // need enclave challenge if tag is set

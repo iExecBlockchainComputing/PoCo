@@ -142,9 +142,10 @@ export class IexecWrapper {
         const startTime = await setNextBlockTimestamp();
         const iexecPocoAsDealPayer = IexecPoco1__factory.connect(this.proxyAddress, dealPayer);
         const matchOrdersArgs = [appOrder, datasetOrder, workerpoolOrder, requestOrder] as Orders;
-        await (withSponsor
-            ? iexecPocoAsDealPayer.sponsorMatchOrders(...matchOrdersArgs)
-            : iexecPocoAsDealPayer.matchOrders(...matchOrdersArgs)
+        await (
+            withSponsor
+                ? iexecPocoAsDealPayer.sponsorMatchOrders(...matchOrdersArgs)
+                : iexecPocoAsDealPayer.matchOrders(...matchOrdersArgs)
         ).then((tx) => tx.wait());
         return { dealId, taskId, taskIndex, dealPrice, startTime };
     }
