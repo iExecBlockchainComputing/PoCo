@@ -3,6 +3,22 @@ import { ContractTransaction } from '@ethersproject/contracts';
 import { ethers } from 'hardhat';
 import { ERC1538Query, ERC1538Query__factory, ERC1538Update__factory } from '../../typechain';
 
+export type TimelockOperation = [
+    targets: string,
+    values: number,
+    datas: string,
+    predecessor: string,
+    salt: string,
+];
+
+export type TimelockOperations = [
+    targets: string[],
+    values: number[],
+    datas: string[],
+    predecessor: string,
+    salt: string,
+];
+
 function encodeModuleProxyUpdate(ModuleInterface: Interface, moduleAddress: string) {
     const moduleFunctions = Object.keys(ModuleInterface.functions).map((tx) => tx + ';');
     moduleFunctions.forEach((func) => {
