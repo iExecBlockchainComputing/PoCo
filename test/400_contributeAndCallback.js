@@ -478,7 +478,7 @@ contract('Fullchain', async (accounts) => {
                         tag: '0x0000000000000000000000000000000000000000000000000000000000000000',
                         requester: user.address,
                         beneficiary: user.address,
-                        callback: constants.NULL.ADDRESS,
+                        callback: ethers.Wallet.createRandom().address,
                         params: '<parameters>',
                         salt: web3.utils.randomHex(32),
                         sign: constants.NULL.SIGNATURE,
@@ -602,6 +602,7 @@ contract('Fullchain', async (accounts) => {
                 assert.equal(events[0].args.taskid, taskid);
                 assert.equal(events[0].args.results, web3.utils.utf8ToHex('aResult'));
             });
+            //[TODO] contributeAndFinalize without callback
         });
     });
 
