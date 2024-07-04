@@ -143,12 +143,23 @@ const config: HardhatUserConfig = {
             gasPrice: 0,
             gas: 6700000,
         },
+        'scroll-sepolia': {
+            // 0x7d9620DC3515fD51b6b1326a175808EA6CD9310D RLC
+            chainId: 534351,
+            url: 'https://sepolia-rpc.scroll.io',
+            accounts: [],
+            gas: 'auto',
+            gasPrice: 'auto',
+            // gasMultiplier: 1.2,  // Use a multiplier to ensure higher gas price
+            // timeout: 2000000,    // Increase timeout if needed
+        },
     },
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
+            'scroll-sepolia': 'nothing',
         },
         customChains: [
             {
@@ -165,6 +176,14 @@ const config: HardhatUserConfig = {
                 urls: {
                     apiURL: 'https://blockscout.bellecour.iex.ec/api',
                     browserURL: 'https://blockscout.bellecour.iex.ec/',
+                },
+            },
+            {
+                network: 'scroll-sepolia',
+                chainId: 534351,
+                urls: {
+                    apiURL: 'https://api-sepolia.scrollscan.com/api',
+                    browserURL: 'https://sepolia.scrollscan.com',
                 },
             },
         ],
