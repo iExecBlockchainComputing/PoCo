@@ -21,6 +21,7 @@ module.exports = async function () {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     if (chainId < 1000) {
         // skip ENS setup for mainnet and testnet
+        console.log('Skipping ENS for public networks');
         return;
     }
     const [owner] = await hre.ethers.getSigners();
@@ -72,7 +73,7 @@ module.exports = async function () {
      */
     async function registerDomain(label: string, domain: string = '') {
         const name = domain ? `${label}.${domain}` : `${label}`;
-        const labelHash = label ? labelhash(label) : '0x0';
+        const labelHash = label ? labelhash(label) : ethers.constants.HashZero;
         const nameHash = name ? ethers.utils.namehash(name) : ethers.constants.HashZero;
         const existingRegistrarAddress = await ens.owner(nameHash);
         let registrar;
