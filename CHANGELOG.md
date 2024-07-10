@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Deploy and configure ENS with hardhat. (#93)
 - Fix contribute & finalize with callbacks. (#92)
 - [Deploy Poco sponsoring on local fork of Bellecour](./scripts/sponsoring/README.md). (#91)
 - Create slither smart contract entry point and run slither analysis on new contracts. (#87)

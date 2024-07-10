@@ -47,7 +47,6 @@ interface Category {
     workClockTimeRef: number;
 }
 const CONFIG = require('../config/config.json');
-// TODO: Deploy & setup ENS without hardhat-truffle
 
 /**
  * @dev Deploying contracts with `npx hardhat deploy` task brought by
