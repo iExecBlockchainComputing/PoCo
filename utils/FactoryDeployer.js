@@ -24,9 +24,9 @@ class EthersDeployer {
             } else {
                 try {
                     console.debug(`→ Factory is not yet deployed on this network`);
-                    await waitTx(
-                        wallet.sendTransaction({ to: FACTORY.deployer, value: FACTORY.cost }),
-                    );
+                    // await waitTx(
+                    //     wallet.sendTransaction({ to: FACTORY.deployer, value: FACTORY.cost }),
+                    // );
                     await waitTx(wallet.provider.sendTransaction(FACTORY.tx));
                     console.debug(`→ Factory successfully deployed`);
                 } catch (e) {
