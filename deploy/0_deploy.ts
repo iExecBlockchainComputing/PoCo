@@ -204,6 +204,19 @@ async function deployAndCall(
     call?: string,
 ) {
     const [signer] = await ethers.getSigners();
+    // Get address if contract already deployed.
+    const contractName = getBaseNameFromContractFactory(contractFactory);
+    let existingAddress;
+    try {
+        existingAddress = (await hre.deployments.get(contractName))?.address;
+    } catch (error) {
+        // Do nothing
+    }
+    if (existingAddress) {
+        console.log(`[Old] ${contractName}: ${existingAddress}`);
+        return existingAddress;
+    }
+    // Deploy if not already deployed.
     const contract = await deploy(contractFactory, signer, constructorArgs);
     if (call) {
         console.log('Calling contract:', contract.address);
