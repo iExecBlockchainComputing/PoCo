@@ -144,12 +144,12 @@ const config: HardhatUserConfig = {
             gas: 6700000,
         },
         'scroll-sepolia': {
-            // 0x7d9620DC3515fD51b6b1326a175808EA6CD9310D RLC
             chainId: 534351,
             url: 'https://sepolia-rpc.scroll.io',
-            accounts: [],
+            accounts: [process.env.DEV_PRIVATE_KEY || ''],
             gas: 'auto',
             gasPrice: 'auto',
+            hardfork: 'Shanghai',
             // gasMultiplier: 1.2,  // Use a multiplier to ensure higher gas price
             // timeout: 2000000,    // Increase timeout if needed
         },
@@ -159,7 +159,7 @@ const config: HardhatUserConfig = {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
-            'scroll-sepolia': 'nothing',
+            'scroll-sepolia': process.env.SCROLL_ETHERSCAN_API || '',
         },
         customChains: [
             {
