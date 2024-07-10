@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { ContractFactory } from '@ethersproject/contracts';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import fs from 'fs';
 import hre, { ethers } from 'hardhat';
@@ -39,8 +40,8 @@ import {
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
-import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
-import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
+// import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
+import { deploy, getBaseNameFromContractFactory } from '../utils/deploy-tools';
 interface Category {
     name: string;
     description: string;
@@ -62,9 +63,12 @@ module.exports = async function () {
     console.log('Deploying PoCo..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
+    console.log('Deployer:', owner.address);
+    const balance = ethers.utils.formatEther(await owner.getBalance());
+    console.log('Balance:', balance);
     const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
     const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
-    const factoryDeployer = new FactoryDeployerHelper(owner, salt);
+    // const factoryDeployer = new FactoryDeployerHelper(owner, salt);
     // Deploy RLC
     const isTokenMode = deploymentOptions.asset == 'Token';
     let rlcInstanceAddress = isTokenMode
@@ -72,9 +76,7 @@ module.exports = async function () {
         : ethers.constants.AddressZero; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
-    const erc1538UpdateAddress = await factoryDeployer.deployWithFactory(
-        new ERC1538UpdateDelegate__factory(),
-    );
+    const erc1538UpdateAddress = await deployAndCall(new ERC1538UpdateDelegate__factory());
     const transferOwnershipCall = await Ownable__factory.connect(
         ethers.constants.AddressZero, // any is fine
         owner, // any is fine
@@ -84,7 +86,7 @@ module.exports = async function () {
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const erc1538ProxyAddress = await factoryDeployer.deployWithFactory(
+    const erc1538ProxyAddress = await deployAndCall(
         new ERC1538Proxy__factory(),
         [erc1538UpdateAddress],
         transferOwnershipCall,
@@ -94,9 +96,7 @@ module.exports = async function () {
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${erc1538.address}`);
     // Deploy library & modules
-    const iexecLibOrdersAddress = await factoryDeployer.deployWithFactory(
-        new IexecLibOrders_v5__factory(),
-    );
+    const iexecLibOrdersAddress = await deployAndCall(new IexecLibOrders_v5__factory());
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
@@ -121,7 +121,7 @@ module.exports = async function () {
         new IexecPocoBoostAccessorsDelegate__factory(),
     ];
     for (const module of modules) {
-        const address = await factoryDeployer.deployWithFactory(module);
+        const address = await deployAndCall(module);
         await linkContractToProxy(erc1538, address, module);
     }
     // Verify linking on ERC1538Proxy
@@ -135,17 +135,17 @@ module.exports = async function () {
         const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
         console.log(`[${i}] ${contract} ${method}`);
     }
-    const appRegistryAddress = await factoryDeployer.deployWithFactory(
+    const appRegistryAddress = await deployAndCall(
         new AppRegistry__factory(),
         [],
         transferOwnershipCall,
     );
-    const datasetRegistryAddress = await factoryDeployer.deployWithFactory(
+    const datasetRegistryAddress = await deployAndCall(
         new DatasetRegistry__factory(),
         [],
         transferOwnershipCall,
     );
-    const workerpoolRegistryAddress = await factoryDeployer.deployWithFactory(
+    const workerpoolRegistryAddress = await deployAndCall(
         new WorkerpoolRegistry__factory(),
         [],
         transferOwnershipCall,
@@ -196,6 +196,21 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
                   contract.deployed();
                   return contract.address;
               });
+}
+
+async function deployAndCall(
+    contractFactory: ContractFactory,
+    constructorArgs?: any[],
+    call?: string,
+) {
+    const [signer] = await ethers.getSigners();
+    const contract = await deploy(contractFactory, signer, constructorArgs);
+    if (call) {
+        console.log('Calling contract:', contract.address);
+        const tx = await signer.sendTransaction({ to: contract.address, data: call });
+        await tx.wait();
+    }
+    return contract.address;
 }
 
 /**
