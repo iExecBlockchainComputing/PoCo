@@ -1,5 +1,6 @@
 import '@nomicfoundation/hardhat-toolbox';
 import '@nomiclabs/hardhat-truffle5';
+import { configDotenv } from 'dotenv';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
 import { HardhatUserConfig } from 'hardhat/config';
@@ -9,6 +10,8 @@ import {
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
 import chainConfig from './config/config.json';
+
+configDotenv();
 
 const isNativeChainType = chainConfig.chains.default.asset == 'Native';
 const isLocalFork = process.env.LOCAL_FORK == 'true';
