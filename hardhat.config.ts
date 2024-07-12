@@ -143,12 +143,28 @@ const config: HardhatUserConfig = {
             gasPrice: 0,
             gas: 6700000,
         },
+        sepolia: {
+            url: 'https://rpc2.sepolia.org',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || '',
+            },
+        },
+        polygonZkEvmTestnet: {
+            //  Cardona
+            chainId: 2442,
+            url: 'https://rpc.cardona.zkevm-rpc.com',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || '',
+            },
+        },
     },
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
+            sepolia: process.env.ETHERSCAN_API_KEY || '',
+            polygonZkEvmTestnet: process.env.ETHERSCAN_API_KEY || '',
         },
         customChains: [
             {
@@ -165,6 +181,14 @@ const config: HardhatUserConfig = {
                 urls: {
                     apiURL: 'https://blockscout.bellecour.iex.ec/api',
                     browserURL: 'https://blockscout.bellecour.iex.ec/',
+                },
+            },
+            {
+                network: 'polygonZkEvmTestnet',
+                chainId: 2442,
+                urls: {
+                    apiURL: 'https://api-cardona-zkevm.polygonscan.com/api',
+                    browserURL: 'https://cardona-zkevm.polygonscan.com/',
                 },
             },
         ],

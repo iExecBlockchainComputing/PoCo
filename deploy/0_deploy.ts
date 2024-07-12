@@ -39,8 +39,7 @@ import {
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
-import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
-import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
+import { deploy, getBaseNameFromContractFactory } from '../utils/deploy-tools';
 interface Category {
     name: string;
     description: string;
@@ -64,7 +63,7 @@ module.exports = async function () {
     const [owner] = await hre.ethers.getSigners();
     const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
     const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
-    const factoryDeployer = new FactoryDeployerHelper(owner, salt);
+    //const factoryDeployer = new FactoryDeployerHelper(owner, salt);
     // Deploy RLC
     const isTokenMode = deploymentOptions.asset == 'Token';
     let rlcInstanceAddress = isTokenMode
@@ -72,9 +71,7 @@ module.exports = async function () {
         : ethers.constants.AddressZero; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
-    const erc1538UpdateAddress = await factoryDeployer.deployWithFactory(
-        new ERC1538UpdateDelegate__factory(),
-    );
+    const erc1538UpdateAddress = await deploy(new ERC1538UpdateDelegate__factory(), owner);
     const transferOwnershipCall = await Ownable__factory.connect(
         ethers.constants.AddressZero, // any is fine
         owner, // any is fine
@@ -84,19 +81,18 @@ module.exports = async function () {
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const erc1538ProxyAddress = await factoryDeployer.deployWithFactory(
+    const erc1538ProxyAddress = await deploy(
         new ERC1538Proxy__factory(),
+        owner,
         [erc1538UpdateAddress],
-        transferOwnershipCall,
+        //transferOwnershipCall,
     );
     // Save addresses of deployed PoCo contracts for later use
     saveDeployedAddress('ERC1538Proxy', erc1538ProxyAddress);
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${erc1538.address}`);
     // Deploy library & modules
-    const iexecLibOrdersAddress = await factoryDeployer.deployWithFactory(
-        new IexecLibOrders_v5__factory(),
-    );
+    const iexecLibOrdersAddress = await deploy(new IexecLibOrders_v5__factory(), owner);
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
@@ -121,7 +117,7 @@ module.exports = async function () {
         new IexecPocoBoostAccessorsDelegate__factory(),
     ];
     for (const module of modules) {
-        const address = await factoryDeployer.deployWithFactory(module);
+        const address = await deploy(module, owner);
         await linkContractToProxy(erc1538, address, module);
     }
     // Verify linking on ERC1538Proxy
@@ -135,20 +131,23 @@ module.exports = async function () {
         const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
         console.log(`[${i}] ${contract} ${method}`);
     }
-    const appRegistryAddress = await factoryDeployer.deployWithFactory(
+    const appRegistryAddress = await deploy(
         new AppRegistry__factory(),
-        [],
-        transferOwnershipCall,
+        owner,
+        // [],
+        // transferOwnershipCall,
     );
-    const datasetRegistryAddress = await factoryDeployer.deployWithFactory(
+    const datasetRegistryAddress = await deploy(
         new DatasetRegistry__factory(),
-        [],
-        transferOwnershipCall,
+        owner,
+        // [],
+        // transferOwnershipCall,
     );
-    const workerpoolRegistryAddress = await factoryDeployer.deployWithFactory(
+    const workerpoolRegistryAddress = await deploy(
         new WorkerpoolRegistry__factory(),
-        [],
-        transferOwnershipCall,
+        owner,
+        // [],
+        // transferOwnershipCall,
     );
     // Set main configuration
     const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);

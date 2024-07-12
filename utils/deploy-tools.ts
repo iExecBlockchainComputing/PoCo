@@ -19,19 +19,26 @@ export async function deploy(
     constructorArgs?: any[],
     opts?: { quiet: boolean },
 ) {
-    const contractInstance = await contractFactory
-        .connect(deployer)
-        .deploy(...(constructorArgs ?? []))
-        .then((x) => x.deployed());
     const contractName = getBaseNameFromContractFactory(contractFactory);
-    await deployments.save(contractName, {
-        abi: (contractFactory as any).constructor.abi,
-        address: contractInstance.address,
-    });
-    if (!opts || (opts && !opts.quiet)) {
-        console.log(`${contractName}: ${contractInstance.address}`);
+    const existingContract = await deployments.getOrNull(contractName);
+
+    let contractAddress;
+    if (!existingContract) {
+        contractAddress = await contractFactory
+            .connect(deployer)
+            .deploy(...(constructorArgs ?? []))
+            .then((x) => x.deployed())
+            .then((x) => x.address);
+        await deployments.save(contractName, {
+            abi: (contractFactory as any).constructor.abi,
+            address: contractAddress,
+        });
+        console.log(`${contractName}: ${contractAddress}`);
+    } else {
+        contractAddress = existingContract.address;
+        console.log(`${contractName}: ${contractAddress} (already deployed)`);
     }
-    return contractInstance;
+    return contractAddress;
 }
 
 /**

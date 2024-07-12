@@ -38,20 +38,20 @@ export async function getIexecAccounts(): Promise<IexecAccounts> {
     const signers = await ethers.getSigners();
     return {
         iexecAdmin: signers[0],
-        requester: signers[1],
-        sponsor: signers[2],
-        beneficiary: signers[3],
-        appProvider: signers[4],
-        datasetProvider: signers[5],
-        scheduler: signers[6],
-        worker: signers[7], // same as worker1
-        worker1: signers[7],
-        worker2: signers[8],
-        worker3: signers[9],
-        worker4: signers[10],
-        enclave: signers[11],
-        sms: signers[12],
-        anyone: signers[13],
+        requester: signers[0],
+        sponsor: signers[0],
+        beneficiary: signers[0],
+        appProvider: signers[0],
+        datasetProvider: signers[0],
+        scheduler: signers[0],
+        worker: signers[0], // same as worker1
+        worker1: signers[0],
+        worker2: signers[0],
+        worker3: signers[0],
+        worker4: signers[0],
+        enclave: signers[0],
+        sms: signers[0],
+        anyone: signers[0],
     };
 }
 

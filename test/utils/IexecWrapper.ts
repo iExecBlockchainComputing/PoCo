@@ -12,6 +12,7 @@ import {
     DatasetRegistry__factory,
     IexecAccessors__factory,
     IexecInterfaceNative__factory,
+    IexecInterfaceToken__factory,
     IexecMaintenanceDelegate__factory,
     RLC__factory,
     WorkerpoolRegistry,
@@ -54,10 +55,23 @@ export class IexecWrapper {
                     ).token(),
                     this.accounts.iexecAdmin,
                 );
-                // Transfer RLC from owner to recipient
-                await rlc.transfer(account.address, value);
+                // // Transfer RLC from owner to recipient
+                // await rlc.transfer(account.address, value);
+                await rlc
+                    .connect(this.accounts.iexecAdmin)
+                    .approve(this.proxyAddress, value)
+                    .then((tx) => tx.wait());
                 // Deposit
-                await rlc.connect(account).approveAndCall(this.proxyAddress, value, '0x');
+                const iexec = IexecInterfaceToken__factory.connect(
+                    this.proxyAddress,
+                    this.accounts.anyone,
+                );
+                await iexec
+                    .connect(this.accounts.iexecAdmin)
+                    .deposit(value)
+                    .then((tx) => tx.wait());
+                console.log(await iexec.balanceOf(this.accounts.iexecAdmin.address));
+                // await rlc.connect(account).approveAndCall(this.proxyAddress, value, '0x');
                 break;
             default:
                 break;
@@ -80,7 +94,7 @@ export class IexecWrapper {
                 this.accounts.anyone,
             ).workerpool_stake_ratio()
         ).toNumber();
-        return ((workerpoolPrice * stakeRatio) / 100) * volume;
+        return Math.floor((workerpoolPrice * stakeRatio) / 100) * volume;
     }
 
     async setTeeBroker(brokerAddress: string) {
