@@ -66,7 +66,10 @@ const workerpoolPrice = 0;
         verifyingContract: proxyAddress,
     };
 
-    const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
+    // const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
+    const appAddress = '0xe1885c1e47A78fAE1eFf6AdDFA930428632B2CC0';
+    const datasetAddress = '0xFf408C7dce761A9BB655bc85f0754E2d132712Cb';
+    const workerpoolAddress = '0x81729A5bf62cCe755bC184f64acBFDC5d3c990C9';
 
     const ordersActors: OrdersActors = {
         appOwner: appProvider,
