@@ -1,0 +1,171 @@
+{
+  "address": "0xE5E6d1241587f8f90dD3C5b3F0D6471f7D0a899e",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewDealBoost",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "appOwner",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "appPrice",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetOwner",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "datasetPrice",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolOwner",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "workerpoolPrice",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint96",
+              "name": "workerReward",
+              "type": "uint96"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "uint40",
+              "name": "deadline",
+              "type": "uint40"
+            },
+            {
+              "internalType": "uint16",
+              "name": "botFirst",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "botSize",
+              "type": "uint16"
+            },
+            {
+              "internalType": "bytes3",
+              "name": "shortTag",
+              "type": "bytes3"
+            },
+            {
+              "internalType": "address",
+              "name": "sponsor",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IexecLibCore_v5.DealBoost",
+          "name": "deal",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "numDeployments": 1
+}

@@ -1,0 +1,959 @@
+{
+  "address": "0xc17132ec80a6533D6091203A4bBfaDBfe20a5BdB",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "bits",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "SafeCastOverflowedUintDowncast",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "dealId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "sponsor",
+          "type": "address"
+        }
+      ],
+      "name": "DealSponsoredBoost",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Lock",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "dealid",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "appHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "datasetHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "workerpoolHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "requestHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "volume",
+          "type": "uint256"
+        }
+      ],
+      "name": "OrdersMatched",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "dealId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "results",
+          "type": "bytes"
+        }
+      ],
+      "name": "ResultPushedBoost",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "ref",
+          "type": "bytes32"
+        }
+      ],
+      "name": "Reward",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "workerpool",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "dealId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "app",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "dataset",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "category",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "tag",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "params",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "beneficiary",
+          "type": "address"
+        }
+      ],
+      "name": "SchedulerNoticeBoost",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "ref",
+          "type": "bytes32"
+        }
+      ],
+      "name": "Seize",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "taskid",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Unlock",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "dealId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "claimBoost",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.AppOrder",
+          "name": "appOrder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.DatasetOrder",
+          "name": "datasetOrder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.WorkerpoolOrder",
+          "name": "workerpoolOrder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.RequestOrder",
+          "name": "requestOrder",
+          "type": "tuple"
+        }
+      ],
+      "name": "matchOrdersBoost",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "dealId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "results",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "resultsCallback",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "authorizationSign",
+          "type": "bytes"
+        },
+        {
+          "internalType": "address",
+          "name": "enclaveChallenge",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "enclaveSign",
+          "type": "bytes"
+        }
+      ],
+      "name": "pushResultBoost",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.AppOrder",
+          "name": "appOrder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.DatasetOrder",
+          "name": "datasetOrder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.WorkerpoolOrder",
+          "name": "workerpoolOrder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.RequestOrder",
+          "name": "requestOrder",
+          "type": "tuple"
+        }
+      ],
+      "name": "sponsorMatchOrdersBoost",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "numDeployments": 1
+}

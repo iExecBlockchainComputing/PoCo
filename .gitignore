@@ -17,4 +17,7 @@ artifacts
 build/*.json
 
 contracts/hardhat-dependency-compiler/
-deployments/
+deployments/*
+# Keep for now an history of contracts deployed on Polygon zkEVM testnet
+!deployments/polygonZkEvmTestnet
+
