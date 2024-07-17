@@ -153,8 +153,12 @@ const config: HardhatUserConfig = {
             //  Cardona
             chainId: 2442,
             url: 'https://rpc.cardona.zkevm-rpc.com',
+        },
+        arbitrumSepolia: {
+            chainId: 421614,
+            url: 'https://sepolia-rollup.arbitrum.io/rpc',
             accounts: {
-                mnemonic: process.env.MNEMONIC || '',
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
         },
     },
@@ -165,6 +169,7 @@ const config: HardhatUserConfig = {
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
             sepolia: process.env.ETHERSCAN_API_KEY || '',
             polygonZkEvmTestnet: process.env.ETHERSCAN_API_KEY || '',
+            arbitrumSepolia: process.env.ETHERSCAN_API_KEY || '',
         },
         customChains: [
             {
@@ -189,6 +194,14 @@ const config: HardhatUserConfig = {
                 urls: {
                     apiURL: 'https://api-cardona-zkevm.polygonscan.com/api',
                     browserURL: 'https://cardona-zkevm.polygonscan.com/',
+                },
+            },
+            {
+                network: 'arbitrumSepolia',
+                chainId: 421614,
+                urls: {
+                    apiURL: 'https://api-sepolia.arbiscan.io/api',
+                    browserURL: 'https://sepolia.arbiscan.io/',
                 },
             },
         ],

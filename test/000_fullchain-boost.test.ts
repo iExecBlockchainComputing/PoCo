@@ -127,9 +127,9 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         //({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        appAddress = '0x42E90B246263F15e98F781073abD65309165ed24';
-        datasetAddress = '0x5E7194F51F6576D9CB08047FA656DF4130C2EDD8';
-        workerpoolAddress = '0x10e0fe756a2a45C8D2B10ab5202a2D04D0056eb3';
+        appAddress = '0xD094f7CaC33e91341927d0Dc460d0718D4d9f041';
+        datasetAddress = '0x0DC2Bec1632D081FE0d12D01C040bc61C6043D43';
+        workerpoolAddress = '0x97A729c1C33AF1c84CBD9dB95ACd487eBf83aF0a';
     }
 
     describe('MatchOrders', function () {
