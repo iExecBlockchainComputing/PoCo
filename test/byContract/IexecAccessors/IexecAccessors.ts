@@ -1,123 +1,117 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-// Config
-var DEPLOYMENT = require('../../../config/config.json').chains.default;
-// Artefacts
-var RLC = artifacts.require('rlc-faucet-contract/contracts/RLC');
-var ERC1538Proxy = artifacts.require('iexec-solidity/ERC1538Proxy');
-var IexecInterface = artifacts.require(`IexecInterface${DEPLOYMENT.asset}`);
-var AppRegistry = artifacts.require('AppRegistry');
-var DatasetRegistry = artifacts.require('DatasetRegistry');
-var WorkerpoolRegistry = artifacts.require('WorkerpoolRegistry');
-var App = artifacts.require('App');
-var Dataset = artifacts.require('Dataset');
-var Workerpool = artifacts.require('Workerpool');
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { deployments, ethers, expect } from 'hardhat';
+import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
+import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import { getIexecAccounts } from '../../../utils/poco-tools';
 
-const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const tools = require('../../../utils/tools');
-const enstools = require('../../../utils/ens-tools');
-const odbtools = require('../../../utils/odb-tools');
-const constants = require('../../../utils/constants');
+describe('IexecAccessors', async () => {
+    let proxyAddress: string;
+    let iexecPoco: IexecInterfaceNative;
+    let iexecPocoAsAnyone: IexecInterfaceNative;
+    let [iexecAdmin, anyone]: SignerWithAddress[] = [];
 
-Object.extract = (obj, keys) => keys.map((key) => obj[key]);
-
-contract('Accessors', async (accounts) => {
-    assert.isAtLeast(accounts.length, 10, 'should have at least 10 accounts');
-    let iexecAdmin = null;
-    let appProvider = null;
-    let datasetProvider = null;
-    let scheduler = null;
-    let worker1 = null;
-    let worker2 = null;
-    let worker3 = null;
-    let worker4 = null;
-    let worker5 = null;
-    let user = null;
-
-    var RLCInstance = null;
-    var IexecInstance = null;
-    var AppRegistryInstance = null;
-    var DatasetRegistryInstance = null;
-    var WorkerpoolRegistryInstance = null;
-
-    var categories = [];
-
-    /***************************************************************************
-     *                        Environment configuration                        *
-     ***************************************************************************/
-    before('configure', async () => {
-        console.log('# web3 version:', web3.version);
-
-        /**
-         * Retreive deployed contracts
-         */
-        IexecInstance = await IexecInterface.at((await ERC1538Proxy.deployed()).address);
-        AppRegistryInstance = await AppRegistry.deployed();
-        DatasetRegistryInstance = await DatasetRegistry.deployed();
-        WorkerpoolRegistryInstance = await WorkerpoolRegistry.deployed();
-        ERC712_domain = await IexecInstance.domain();
-        RLCInstance =
-            DEPLOYMENT.asset == 'Native'
-                ? { address: constants.NULL.ADDRESS }
-                : await RLC.at(await IexecInstance.token());
-
-        broker = new odbtools.Broker(IexecInstance);
-        iexecAdmin = new odbtools.iExecAgent(IexecInstance, accounts[0]);
-        appProvider = new odbtools.iExecAgent(IexecInstance, accounts[1]);
-        datasetProvider = new odbtools.iExecAgent(IexecInstance, accounts[2]);
-        scheduler = new odbtools.Scheduler(IexecInstance, accounts[3]);
-        worker1 = new odbtools.Worker(IexecInstance, accounts[4]);
-        worker2 = new odbtools.Worker(IexecInstance, accounts[5]);
-        worker3 = new odbtools.Worker(IexecInstance, accounts[6]);
-        worker4 = new odbtools.Worker(IexecInstance, accounts[7]);
-        worker5 = new odbtools.Worker(IexecInstance, accounts[8]);
-        user = new odbtools.iExecAgent(IexecInstance, accounts[9]);
-        await broker.initialize();
+    beforeEach('Deploy', async () => {
+        // Deploy all contracts
+        proxyAddress = await loadHardhatFixtureDeployment();
+        // Initialize test environment
+        await loadFixture(initFixture);
     });
 
-    /***************************************************************************
-     *                                                                         *
-     ***************************************************************************/
-    describe('checking constant view methods', async () => {
-        describe('escrow', async () => {
-            it('token', async () => {
-                assert.equal(await IexecInstance.token(), RLCInstance.address);
-            });
+    async function initFixture() {
+        const accounts = await getIexecAccounts();
+        ({ anyone } = accounts);
+        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
+        iexecPocoAsAnyone = iexecPoco.connect(anyone);
+    }
+
+    /**
+     * Constant view functions.
+     */
+    describe('Config', function () {
+        it('token', async function () {
+            expect(await iexecPocoAsAnyone.token()).to.equal(
+                (await deployments.get('RLC')).address,
+            );
         });
-
-        describe('ERC20 metadata', async () => {
-            it('name', async () => {
-                assert.equal(await IexecInstance.name(), 'Staked RLC');
-            });
-
-            it('symbol', async () => {
-                assert.equal(await IexecInstance.symbol(), 'SRLC');
-            });
-
-            it('decimals', async () => {
-                assert.equal(Number(await IexecInstance.decimals()), 9);
-            });
+        it('teeBroker', async function () {
+            expect(await iexecPocoAsAnyone.teebroker()).to.equal(ethers.constants.AddressZero);
         });
+        it('callbackGas', async function () {
+            expect(await iexecPocoAsAnyone.callbackgas()).to.equal(100_000n);
+        });
+        it('contributionDeadlineRatio', async function () {
+            expect(await iexecPocoAsAnyone.contribution_deadline_ratio()).to.equal(7);
+        });
+        it('revealDeadlineRatio', async function () {
+            expect(await iexecPocoAsAnyone.reveal_deadline_ratio()).to.equal(2n);
+        });
+        it('finalDeadlineRatio', async function () {
+            expect(await iexecPocoAsAnyone.final_deadline_ratio()).to.equal(10n);
+        });
+        it('workerpoolStakeRatio', async function () {
+            expect(await iexecPocoAsAnyone.workerpool_stake_ratio()).to.equal(30n);
+        });
+        it('kittyRatio', async function () {
+            expect(await iexecPocoAsAnyone.kitty_ratio()).to.equal(10n);
+        });
+        it('kittyMin', async function () {
+            expect(await iexecPocoAsAnyone.kitty_min()).to.equal(1_000_000_000n);
+        });
+        it('kittyAddress', async function () {
+            expect(await iexecPocoAsAnyone.kitty_address()).to.equal(
+                '0x99c2268479b93fDe36232351229815DF80837e23',
+            );
+        });
+        it('groupMemberPurpose', async function () {
+            expect(await iexecPocoAsAnyone.groupmember_purpose()).to.equal(4n);
+        });
+        it('eip712domainSeparator', async function () {
+            expect(await iexecPocoAsAnyone.eip712domain_separator()).to.equal(
+                '0xa7f6cdedcb45986a7899488be2922240b87b40530107380aa44c198d3b5550c6',
+            );
+        });
+    });
 
-        describe('Registries', async () => {
-            it('AppRegistry', async () => {
-                assert.equal(await IexecInstance.appregistry(), AppRegistryInstance.address);
-            });
+    describe('ERC', function () {
+        it('name', async function () {
+            expect(await iexecPocoAsAnyone.name()).to.equal('Staked RLC');
+        });
+        it('symbol', async function () {
+            expect(await iexecPocoAsAnyone.symbol()).to.equal('SRLC');
+        });
+        it('decimals', async function () {
+            expect(await iexecPocoAsAnyone.decimals()).to.equal(9n);
+        });
+        it('totalSupply', async function () {
+            expect(await iexecPocoAsAnyone.totalSupply()).to.equal(0n);
+        });
+    });
 
-            it('DatasetRegistry', async () => {
-                assert.equal(
-                    await IexecInstance.datasetregistry(),
-                    DatasetRegistryInstance.address,
-                );
-            });
+    describe('Categories', function () {
+        it('countCategory', async function () {
+            expect(await iexecPocoAsAnyone.countCategory()).to.equal(5);
+        });
+    });
 
-            it('AppRegistry', async () => {
-                assert.equal(
-                    await IexecInstance.workerpoolregistry(),
-                    WorkerpoolRegistryInstance.address,
-                );
-            });
+    describe('registries', function () {
+        it('appRegistry', async function () {
+            expect(await iexecPocoAsAnyone.appregistry()).to.equal(
+                (await deployments.get('AppRegistry')).address,
+            );
+        });
+        it('datasetRegistry', async function () {
+            expect(await iexecPocoAsAnyone.datasetregistry()).to.equal(
+                (await deployments.get('DatasetRegistry')).address,
+            );
+        });
+        it('workerpoolRegistry', async function () {
+            expect(await iexecPocoAsAnyone.workerpoolregistry()).to.equal(
+                (await deployments.get('WorkerpoolRegistry')).address,
+            );
         });
     });
 });
