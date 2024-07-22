@@ -8,6 +8,9 @@ import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-d
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 
+/**
+ * Test constant view functions.
+ */
 describe('IexecAccessors', async () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
@@ -28,9 +31,6 @@ describe('IexecAccessors', async () => {
         iexecPocoAsAnyone = iexecPoco.connect(anyone);
     }
 
-    /**
-     * Constant view functions.
-     */
     describe('Config', function () {
         it('token', async function () {
             expect(await iexecPocoAsAnyone.token()).to.equal(
