@@ -67,9 +67,9 @@ const workerpoolPrice = 0;
     };
 
     // const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
-    const appAddress = '0xe1885c1e47A78fAE1eFf6AdDFA930428632B2CC0';
-    const datasetAddress = '0xFf408C7dce761A9BB655bc85f0754E2d132712Cb';
-    const workerpoolAddress = '0x81729A5bf62cCe755bC184f64acBFDC5d3c990C9';
+    const appAddress = '0xb868ea091cbb284dd46072e3cbdb7f2e913fb8e9';
+    const datasetAddress = '0x9c8613b81cc1a518fe3ada58d99e0b4d666c333e';
+    const workerpoolAddress = '0x69ac3dae9c935e4f95c933c3ac6b272d42d65e41';
 
     const ordersActors: OrdersActors = {
         appOwner: appProvider,
