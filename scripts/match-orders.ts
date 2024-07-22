@@ -4,8 +4,7 @@
 import { TypedDataDomain } from 'ethers';
 import { ethers } from 'hardhat';
 import { IexecWrapper } from '../test/utils/IexecWrapper';
-import { IexecPoco1 } from '../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol';
-import { IexecPoco1__factory } from '../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
+import { IexecPocoBoost, IexecPocoBoost__factory } from '../typechain';
 import {
     Orders,
     OrdersActors,
@@ -14,7 +13,14 @@ import {
     buildOrders,
     signOrders,
 } from '../utils/createOrders';
-import { IexecAccounts } from '../utils/poco-tools';
+import {
+    IexecAccounts,
+    buildAndSignContributionAuthorizationMessage,
+    buildAndSignEnclaveMessage,
+    buildUtf8ResultAndDigest,
+    getDealId,
+    getTaskId,
+} from '../utils/poco-tools';
 
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;
@@ -46,17 +52,21 @@ const workerpoolPrice = 0;
     const {
         iexecAdmin,
         requester,
-        sponsor,
         beneficiary,
         appProvider,
         datasetProvider,
         scheduler,
-        anyone,
+        worker,
+        enclave,
     } = accounts;
+
+    const balance = (await iexecAdmin.getBalance()).toBigInt();
+    console.log('Deployer address:', iexecAdmin.address);
+    console.log('Deployer balance:', ethers.utils.formatEther(balance), 'ETH');
 
     const proxyAddress = '0x44b090A1FF9779100A39a5CeFbD5659Ad98b442f';
     // const iexecAccessor: IexecAccessors = IexecAccessors__factory.connect(proxyAddress, anyone);
-    const iexecPoco: IexecPoco1 = IexecPoco1__factory.connect(proxyAddress, iexecAdmin);
+    const iexecPoco: IexecPocoBoost = IexecPocoBoost__factory.connect(proxyAddress, iexecAdmin);
     const iexecWrapper: IexecWrapper = new IexecWrapper(proxyAddress, accounts);
 
     const domain: TypedDataDomain = {
@@ -88,7 +98,7 @@ const workerpoolPrice = 0;
         workerpool: workerpoolPrice,
     };
 
-    const callbackAddress = ethers.Wallet.createRandom().address;
+    const callbackAddress = ethers.constants.AddressZero;
     const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
         assets: ordersAssets,
         requester: requester.address,
@@ -102,7 +112,39 @@ const workerpoolPrice = 0;
     const matchOrdersArgs = [appOrder, datasetOrder, workerpoolOrder, requestOrder] as Orders;
 
     console.log('Matching orders');
-    const tx = await iexecPoco.matchOrders(...matchOrdersArgs);
-    console.log('Tx id:', tx.hash);
-    await tx.wait();
+    const matchTx = await iexecPoco.matchOrdersBoost(...matchOrdersArgs);
+    console.log('MatchTx id:', matchTx.hash);
+    await matchTx.wait();
+
+    console.log('Pushing result');
+    const dealId = getDealId(domain, requestOrder, taskIndex);
+    console.log('dealId:', dealId);
+    const taskId = getTaskId(dealId, taskIndex);
+    console.log('taskId:', taskId);
+    const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+        worker.address,
+        taskId,
+        enclave.address,
+        scheduler,
+    );
+    const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+    const enclaveSignature = await buildAndSignEnclaveMessage(
+        worker.address,
+        taskId,
+        resultDigest,
+        enclave,
+    );
+    const pushResultTx = await iexecPoco
+        .connect(worker)
+        .pushResultBoost(
+            dealId,
+            taskIndex,
+            results,
+            ethers.constants.HashZero,
+            schedulerSignature,
+            enclave.address,
+            enclaveSignature,
+        );
+    console.log('pushResultTx id:', pushResultTx.hash);
+    await pushResultTx.wait();
 })();
