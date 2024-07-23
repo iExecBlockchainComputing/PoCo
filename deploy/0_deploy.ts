@@ -171,13 +171,18 @@ module.exports = async function () {
     // Set categories
     const catCountBefore = await iexecAccessorsInstance.countCategory();
     const categories = CONFIG.categories as Category[];
+    console.log(CONFIG);
+    console.log(CONFIG.categories);
+    console.log(categories.length);
     for (let i = catCountBefore.toNumber(); i < categories.length; i++) {
         const category = categories[i];
-        await IexecCategoryManager__factory.connect(erc1538ProxyAddress, owner).createCategory(
-            category.name,
-            JSON.stringify(category.description),
-            category.workClockTimeRef,
-        );
+        await IexecCategoryManager__factory.connect(erc1538ProxyAddress, owner)
+            .createCategory(
+                category.name,
+                JSON.stringify(category.description),
+                category.workClockTimeRef,
+            )
+            .then((tx) => tx.wait());
     }
     const catCountAfter = await iexecAccessorsInstance.countCategory();
     console.log(`countCategory is now: ${catCountAfter} (was ${catCountBefore})`);
