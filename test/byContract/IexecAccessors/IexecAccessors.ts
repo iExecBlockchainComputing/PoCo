@@ -34,7 +34,7 @@ describe('IexecAccessors', async () => {
     describe('Config', function () {
         it('token', async function () {
             expect(await iexecPocoAsAnyone.token()).to.equal(
-                (await deployments.get('RLC')).address,
+                '0x5FbDB2315678afecb367f032d93F642f64180aa3',
             );
         });
         it('teeBroker', async function () {
@@ -71,7 +71,7 @@ describe('IexecAccessors', async () => {
         });
         it('eip712domainSeparator', async function () {
             expect(await iexecPocoAsAnyone.eip712domain_separator()).to.equal(
-                '0xa7f6cdedcb45986a7899488be2922240b87b40530107380aa44c198d3b5550c6',
+                '0xfc2178d8b8300e657cb9f8b5a4d1957174cf1392e294f3575b82a9cea1da1c4b',
             );
         });
     });

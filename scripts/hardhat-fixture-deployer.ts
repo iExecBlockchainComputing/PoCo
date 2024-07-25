@@ -17,7 +17,7 @@ async function resetNetworkAndDeployAllContracts() {
  * @returns proxy address.
  */
 export const loadHardhatFixtureDeployment = async () => {
-    // console.log('Running hardhat-fixture');
+    console.log('Running hardhat-fixture');
     await loadFixture(resetNetworkAndDeployAllContracts);
     return (await deployments.get('ERC1538Proxy')).address;
 };
