@@ -2,8 +2,10 @@ on:
   push:
     branches:
       - feature/*
+      - bugfix/*
       - develop
       - release/*
+      - hotfix/*
       - v5
 
 jobs:

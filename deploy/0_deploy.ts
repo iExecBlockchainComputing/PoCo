@@ -172,11 +172,13 @@ module.exports = async function () {
     const categories = CONFIG.categories as Category[];
     for (let i = catCountBefore.toNumber(); i < categories.length; i++) {
         const category = categories[i];
-        await IexecCategoryManager__factory.connect(erc1538ProxyAddress, owner).createCategory(
-            category.name,
-            JSON.stringify(category.description),
-            category.workClockTimeRef,
-        );
+        await IexecCategoryManager__factory.connect(erc1538ProxyAddress, owner)
+            .createCategory(
+                category.name,
+                JSON.stringify(category.description),
+                category.workClockTimeRef,
+            )
+            .then((tx) => tx.wait());
     }
     const catCountAfter = await iexecAccessorsInstance.countCategory();
     console.log(`countCategory is now: ${catCountAfter} (was ${catCountBefore})`);
@@ -209,6 +211,7 @@ async function linkContractToProxy(
             getFunctionSignatures(contractFactory.constructor.abi),
             'Linking ' + contractName,
         )
+        .then((tx) => tx.wait())
         .catch(() => {
             throw new Error(`Failed to link ${contractName}`);
         });
