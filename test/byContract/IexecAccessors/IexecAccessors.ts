@@ -13,9 +13,8 @@ import { getIexecAccounts } from '../../../utils/poco-tools';
  */
 describe('IexecAccessors', async () => {
     let proxyAddress: string;
-    let iexecPoco: IexecInterfaceNative;
     let iexecPocoAsAnyone: IexecInterfaceNative;
-    let [iexecAdmin, anyone]: SignerWithAddress[] = [];
+    let anyone: SignerWithAddress;
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
@@ -27,8 +26,7 @@ describe('IexecAccessors', async () => {
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({ anyone } = accounts);
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
-        iexecPocoAsAnyone = iexecPoco.connect(anyone);
+        iexecPocoAsAnyone = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
     }
 
     describe('Config', function () {
