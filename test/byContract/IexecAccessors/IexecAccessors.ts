@@ -76,7 +76,7 @@ describe('IexecAccessors', async () => {
         });
     });
 
-    describe('ERC', function () {
+    describe('ERC20', function () {
         it('name', async function () {
             expect(await iexecPocoAsAnyone.name()).to.equal('Staked RLC');
         });
