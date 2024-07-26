@@ -1,7 +1,8 @@
 # Changelog
 
 ## vNEXT
-- Wait for transactions occurring during deployment. (#94)
+- Migrate IexecAccessors tests Typescript & Hardhat. (#96)
+- Wait for transactions occurring during deployment. (#95)
 - Deploy and configure ENS with hardhat. (#93)
 - Fix contribute & finalize with callbacks. (#92)
 - [Deploy Poco sponsoring on local fork of Bellecour](./scripts/sponsoring/README.md). (#91)
