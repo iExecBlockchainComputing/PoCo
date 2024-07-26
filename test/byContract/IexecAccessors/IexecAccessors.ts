@@ -41,6 +41,7 @@ describe('IexecAccessors', async () => {
     it('totalSupply', async function () {
         expect(await iexecPocoAsAnyone.totalSupply()).to.equal(0n);
     });
+    // TODO test the case where token() == 0x0 in native mode.
     it('token', async function () {
         expect(await iexecPocoAsAnyone.token()).to.equal(
             '0x5FbDB2315678afecb367f032d93F642f64180aa3',
