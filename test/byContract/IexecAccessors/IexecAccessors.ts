@@ -9,7 +9,7 @@ import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../ty
 import { getIexecAccounts } from '../../../utils/poco-tools';
 
 /**
- * Test constant view functions.
+ * Test state view functions.
  */
 describe('IexecAccessors', async () => {
     let proxyAddress: string;
