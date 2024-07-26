@@ -97,7 +97,7 @@ describe('IexecAccessors', async () => {
         });
     });
 
-    describe('registries', function () {
+    describe('Registries', function () {
         it('appRegistry', async function () {
             expect(await iexecPocoAsAnyone.appregistry()).to.equal(
                 (await deployments.get('AppRegistry')).address,
