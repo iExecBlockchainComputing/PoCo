@@ -8,6 +8,12 @@ import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
 import { hashOrder } from './createOrders';
 
+export interface Category {
+    name: string;
+    description: string;
+    workClockTimeRef: number;
+}
+
 export enum TaskStatusEnum {
     UNSET,
     ACTIVE,

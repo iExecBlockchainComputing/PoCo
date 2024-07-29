@@ -6,7 +6,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
-import { getIexecAccounts } from '../../../utils/poco-tools';
+import { Category, getIexecAccounts } from '../../../utils/poco-tools';
+const CONFIG = require('../../../config/config.json');
 
 describe('CategoryManager', async () => {
     let proxyAddress: string;
@@ -27,44 +28,41 @@ describe('CategoryManager', async () => {
         iexecPocoAsAnyone = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
     }
 
-    describe('view', async () => {
-        describe('invalid index', async () => {
-            it('reverts', async () => {
-                expect(await iexecPocoAsAnyone.countCategory()).to.equal(5);
-                await expect(iexecPocoAsAnyone.viewCategory(5)).to.be.revertedWithoutReason();
-            });
-        });
+    it('Should view categories', async () => {
+        const categories = CONFIG.categories as Category[];
+        for (let i = 0; i < categories.length; i++) {
+            const expectedCategory = categories[i];
+            const category = await iexecPocoAsAnyone.viewCategory(i);
+            expect(category.name).to.equal(expectedCategory.name);
+            expect(category.description).to.equal(JSON.stringify(expectedCategory.description));
+            expect(category.workClockTimeRef).to.equal(expectedCategory.workClockTimeRef);
+        }
     });
 
-    describe('create', async () => {
-        describe('unauthorized create', async () => {
-            it('reverts', async () => {
-                await expect(
-                    iexecPocoAsAnyone.createCategory(
-                        'fake category',
-                        'this is an attack',
-                        0xffffffffff,
-                    ),
-                ).to.be.revertedWith('Ownable: caller is not the owner');
-            });
-        });
+    it('Should not view category with bad index', async () => {
+        // Highest valid index is 4.
+        await expect(iexecPocoAsAnyone.viewCategory(5)).to.be.revertedWithoutReason();
+    });
 
-        describe('authorized', async () => {
-            it('success', async () => {
-                const name = 'Tiny';
-                const description = 'Small but impractical';
-                const timeRef = 3;
-                const newCategoryIndex = 5;
-                const txMined = await iexecPoco.createCategory(name, description, timeRef);
-                await expect(txMined)
-                    .to.emit(iexecPoco, 'CreateCategory')
-                    .withArgs(newCategoryIndex, name, description, timeRef);
-                expect(await iexecPocoAsAnyone.countCategory()).to.equal(6);
-                const category = await iexecPocoAsAnyone.viewCategory(newCategoryIndex);
-                expect(category.name).to.equal(name);
-                expect(category.description).to.equal(description);
-                expect(category.workClockTimeRef).to.equal(timeRef);
-            });
-        });
+    it('Should create category', async () => {
+        const name = 'Tiny';
+        const description = 'Small but impractical';
+        const timeRef = 3;
+        const newCategoryIndex = 5;
+        const txMined = await iexecPoco.createCategory(name, description, timeRef);
+        await expect(txMined)
+            .to.emit(iexecPoco, 'CreateCategory')
+            .withArgs(newCategoryIndex, name, description, timeRef);
+        expect(await iexecPocoAsAnyone.countCategory()).to.equal(6);
+        const category = await iexecPocoAsAnyone.viewCategory(newCategoryIndex);
+        expect(category.name).to.equal(name);
+        expect(category.description).to.equal(description);
+        expect(category.workClockTimeRef).to.equal(timeRef);
+    });
+
+    it('Should not create category when sender not authorized', async () => {
+        await expect(
+            iexecPocoAsAnyone.createCategory('fake category', 'this is an attack', 0xffffffffff),
+        ).to.be.revertedWith('Ownable: caller is not the owner');
     });
 });
