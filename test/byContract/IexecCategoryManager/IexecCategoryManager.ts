@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { loadHardhatFixtureDeployment } from "../../../scripts/hardhat-fixture-deployer";
-import { getIexecAccounts } from "../../../utils/poco-tools";
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from "../../../typechain";
-import { expect } from "hardhat";
-
+import { expect } from 'hardhat';
+import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
+import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import { getIexecAccounts } from '../../../utils/poco-tools';
 
 describe('CategoryManager', async () => {
     let proxyAddress: string;
@@ -44,8 +43,8 @@ describe('CategoryManager', async () => {
                     iexecPocoAsAnyone.createCategory(
                         'fake category',
                         'this is an attack',
-                        0xffffffffff
-                    )
+                        0xffffffffff,
+                    ),
                 ).to.be.revertedWith('Ownable: caller is not the owner');
             });
         });
@@ -53,11 +52,12 @@ describe('CategoryManager', async () => {
         describe('authorized', async () => {
             it('success', async () => {
                 const name = 'Tiny';
-                const description = 'Small but impractical'
+                const description = 'Small but impractical';
                 const timeRef = 3;
                 const newCategoryIndex = 5;
                 const txMined = await iexecPoco.createCategory(name, description, timeRef);
-                await expect(txMined).to.emit(iexecPoco, 'CreateCategory')
+                await expect(txMined)
+                    .to.emit(iexecPoco, 'CreateCategory')
                     .withArgs(newCategoryIndex, name, description, timeRef);
                 expect(await iexecPocoAsAnyone.countCategory()).to.equal(6);
                 const category = await iexecPocoAsAnyone.viewCategory(newCategoryIndex);
