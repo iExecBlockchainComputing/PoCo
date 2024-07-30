@@ -41,11 +41,7 @@ import {
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
-interface Category {
-    name: string;
-    description: string;
-    workClockTimeRef: number;
-}
+import { Category } from '../utils/poco-tools';
 const CONFIG = require('../config/config.json');
 
 /**
