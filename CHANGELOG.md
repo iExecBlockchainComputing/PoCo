@@ -2,8 +2,8 @@
 
 ## vNEXT
 - Migrate unit test files to Typescript & Hardhat:
-    - IexecAccessors (#96)
     - IexecCategoryManager (#97)
+    - IexecAccessors (#96)
 - Wait for transactions occurring during deployment. (#95)
 - Deploy and configure ENS with hardhat. (#93)
 - Fix contribute & finalize with callbacks. (#92)

@@ -9,6 +9,11 @@ import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../ty
 import { Category, getIexecAccounts } from '../../../utils/poco-tools';
 const CONFIG = require('../../../config/config.json');
 
+const name = 'name';
+const description = 'description';
+const timeRef = 100;
+const args = [name, description, timeRef] as [string, string, number];
+
 describe('CategoryManager', async () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAnyone]: IexecInterfaceNative[] = [];
@@ -25,7 +30,7 @@ describe('CategoryManager', async () => {
         const accounts = await getIexecAccounts();
         ({ iexecAdmin, anyone } = accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
-        iexecPocoAsAnyone = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPocoAsAnyone = iexecPoco.connect(anyone);
     }
 
     it('Should view categories', async () => {
@@ -40,17 +45,16 @@ describe('CategoryManager', async () => {
     });
 
     it('Should not view category with bad index', async () => {
-        // Highest valid index is 4.
-        await expect(iexecPocoAsAnyone.viewCategory(5)).to.be.revertedWithoutReason();
+        const lastCategoryIndex = (await iexecPocoAsAnyone.countCategory()).toNumber() - 1;
+        await expect(
+            iexecPocoAsAnyone.viewCategory(lastCategoryIndex + 1),
+        ).to.be.revertedWithoutReason();
     });
 
     it('Should create category', async () => {
-        const name = 'Tiny';
-        const description = 'Small but impractical';
-        const timeRef = 3;
         const newCategoryIndex = 5;
-        const txMined = await iexecPoco.createCategory(name, description, timeRef);
-        await expect(txMined)
+        expect(await iexecPoco.callStatic.createCategory(...args)).to.equal(newCategoryIndex);
+        await expect(iexecPoco.createCategory(...args))
             .to.emit(iexecPoco, 'CreateCategory')
             .withArgs(newCategoryIndex, name, description, timeRef);
         expect(await iexecPocoAsAnyone.countCategory()).to.equal(6);
@@ -61,8 +65,8 @@ describe('CategoryManager', async () => {
     });
 
     it('Should not create category when sender not authorized', async () => {
-        await expect(
-            iexecPocoAsAnyone.createCategory('fake category', 'this is an attack', 0xffffffffff),
-        ).to.be.revertedWith('Ownable: caller is not the owner');
+        await expect(iexecPocoAsAnyone.createCategory(...args)).to.be.revertedWith(
+            'Ownable: caller is not the owner',
+        );
     });
 });
