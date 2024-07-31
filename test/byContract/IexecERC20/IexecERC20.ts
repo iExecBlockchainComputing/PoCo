@@ -18,7 +18,7 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 const value = 100;
 const zeroAddress = ethers.constants.AddressZero;
 
-describe('Poco', async () => {
+describe('ERC20', async () => {
     let proxyAddress: string;
     let iexecWrapper: IexecWrapper;
     let [iexecPoco, iexecPocoAsHolder, iexecPocoAsSpender]: IexecInterfaceNative[] = [];
