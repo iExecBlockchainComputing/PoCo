@@ -12,13 +12,11 @@ import {
     TestReceiver,
     TestReceiver__factory,
 } from '../../../typechain';
-import { NULL } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 
-const emptyValue = 0;
 const value = 100;
-const zeroAddress = NULL.ADDRESS;
+const zeroAddress = ethers.constants.AddressZero;
 
 describe('Poco', async () => {
     let proxyAddress: string;
@@ -73,10 +71,10 @@ describe('Poco', async () => {
                 .withArgs(holder.address, recipient.address, value);
         });
         it('Should transfer zero tokens', async function () {
-            await expect(iexecPocoAsHolder.transfer(recipient.address, emptyValue))
-                .to.changeTokenBalances(iexecPoco, [holder, recipient], [emptyValue, emptyValue])
+            await expect(iexecPocoAsHolder.transfer(recipient.address, 0))
+                .to.changeTokenBalances(iexecPoco, [holder, recipient], [0, 0])
                 .to.emit(iexecPoco, 'Transfer')
-                .withArgs(holder.address, recipient.address, emptyValue);
+                .withArgs(holder.address, recipient.address, 0);
         });
         it('Should not transfer from the zero address', async function () {
             await expect(
@@ -146,19 +144,19 @@ describe('Poco', async () => {
             await expect(
                 iexecPoco
                     .connect(zeroAddressSigner)
-                    .approveAndCall(testReceiver.address, emptyValue, extraData),
+                    .approveAndCall(testReceiver.address, 0, extraData),
             ).to.be.revertedWith('ERC20: approve from the zero address');
         });
         it('Should not approve and call for the zero address', async function () {
             await expect(
-                iexecPocoAsHolder.approveAndCall(zeroAddress, emptyValue, extraData),
+                iexecPocoAsHolder.approveAndCall(zeroAddress, 0, extraData),
             ).to.be.revertedWith('ERC20: approve to the zero address');
         });
         it('Should not approve and call when receiver refuses approval', async function () {
             await expect(
                 iexecPocoAsHolder.approveAndCall(
                     testReceiver.address,
-                    emptyValue, // TestReceiver will revert with this value
+                    0, // TestReceiver will revert with this value
                     extraData,
                 ),
             ).to.be.revertedWith('approval-refused');
@@ -259,13 +257,13 @@ describe('Poco', async () => {
         });
         it('Should not decrease allowance from the zero address', async function () {
             await expect(
-                iexecPoco.connect(zeroAddressSigner).decreaseAllowance(spender.address, emptyValue),
+                iexecPoco.connect(zeroAddressSigner).decreaseAllowance(spender.address, 0),
             ).to.be.revertedWith('ERC20: approve from the zero address');
         });
         it('Should not decrease allowance for the zero address', async function () {
-            await expect(
-                iexecPocoAsHolder.decreaseAllowance(zeroAddress, emptyValue),
-            ).to.be.revertedWith('ERC20: approve to the zero address');
+            await expect(iexecPocoAsHolder.decreaseAllowance(zeroAddress, 0)).to.be.revertedWith(
+                'ERC20: approve to the zero address',
+            );
         });
     });
 });
