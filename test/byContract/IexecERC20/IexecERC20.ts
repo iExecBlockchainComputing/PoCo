@@ -86,7 +86,7 @@ describe('Poco', async () => {
                 'ERC20: transfer to the zero address',
             );
         });
-        it('Should not transfer when sender balance too low', async () => {
+        it('Should not transfer when sender balance is too low', async () => {
             await expect(
                 iexecPocoAsHolder.transfer(recipient.address, value + 1),
             ).to.be.revertedWithoutReason();
@@ -191,12 +191,12 @@ describe('Poco', async () => {
                 iexecPocoAsSpender.transferFrom(holder.address, zeroAddress, value),
             ).to.be.revertedWith('ERC20: transfer to the zero address');
         });
-        it('Should not transferFrom when owner balance too low', async () => {
+        it('Should not transferFrom when owner balance is too low', async () => {
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, spender.address, value + 1),
             ).to.be.revertedWithoutReason();
         });
-        it('Should not transferFrom when spender allowance too low', async () => {
+        it('Should not transferFrom when spender allowance is too low', async () => {
             await iexecPocoAsHolder.approve(spender.address, value - 1).then((tx) => tx.wait());
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, spender.address, value),
