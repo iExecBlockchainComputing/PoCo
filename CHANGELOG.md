@@ -2,6 +2,7 @@
 
 ## vNEXT
 - Migrate unit test files to Typescript & Hardhat:
+    - IexecERC20 (#98)
     - IexecCategoryManager (#97)
     - IexecAccessors (#96)
 - Wait for transactions occurring during deployment. (#95)
