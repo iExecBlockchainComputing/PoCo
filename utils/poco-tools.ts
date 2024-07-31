@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
@@ -7,6 +7,12 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
 import { hashOrder } from './createOrders';
+
+export interface Category {
+    name: string;
+    description: string;
+    workClockTimeRef: number;
+}
 
 export enum TaskStatusEnum {
     UNSET,
