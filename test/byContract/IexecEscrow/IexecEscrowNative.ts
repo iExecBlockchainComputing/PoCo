@@ -3,13 +3,14 @@
 
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { BigNumber } from 'ethers';
 import { ethers, expect } from 'hardhat';
 import CONFIG from '../../../config/config.json';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 
-const DEPOSIT_AMOUNT = 100;
+const DEPOSIT_AMOUNT = BigNumber.from(100);
 const DEPOSIT_AMOUNT_ETHER = ethers.utils.parseUnits(DEPOSIT_AMOUNT.toString(), 9);
 
 const ZERO_ADDRESS = ethers.constants.AddressZero;
@@ -33,12 +34,12 @@ if (CONFIG.chains.default.asset == 'Native')
             iexecPocoAsAnyone = iexecPoco.connect(anyone);
         }
 
-        async function checkBalances(address: string, expectedBalance: number) {
+        async function checkBalances(address: string, expectedBalance: BigNumber) {
             expect(await iexecPocoAsAnyone.balanceOf(address)).to.be.equal(expectedBalance);
         }
         describe('Receive and Fallback', () => {
             it('Should call receive successfully', async () => {
-                await checkBalances(anyone.address, 0);
+                await checkBalances(anyone.address, BigNumber.from(0));
                 const initialNativeBalance = await ethers.provider.getBalance(anyone.address);
 
                 const tx = await anyone.sendTransaction({
@@ -62,7 +63,7 @@ if (CONFIG.chains.default.asset == 'Native')
                 );
             });
             it('Should call fallback successfully', async () => {
-                await checkBalances(anyone.address, 0);
+                await checkBalances(anyone.address, BigNumber.from(0));
                 const initialNativeBalance = await ethers.provider.getBalance(anyone.address);
                 const randomData = ethers.utils.hexlify(
                     ethers.utils.toUtf8Bytes((Math.random() * 0xfffff).toString(16)),
@@ -93,13 +94,15 @@ if (CONFIG.chains.default.asset == 'Native')
 
         describe('Deposits', () => {
             it('Should deposit native tokens', async () => {
-                await checkBalances(anyone.address, 0);
+                await checkBalances(anyone.address, BigNumber.from(0));
                 const initialNativeBalance = await ethers.provider.getBalance(anyone.address);
 
-                const tx = await iexecPocoAsAnyone.deposit({
-                    value: DEPOSIT_AMOUNT_ETHER,
-                });
-                await expect(tx)
+                expect(await iexecPocoAsAnyone.callStatic.deposit()).to.be.true;
+                await expect(
+                    iexecPocoAsAnyone.deposit({
+                        value: DEPOSIT_AMOUNT_ETHER,
+                    }),
+                )
                     .to.changeEtherBalances(
                         [anyone, iexecPoco],
                         [-DEPOSIT_AMOUNT_ETHER, DEPOSIT_AMOUNT_ETHER],
@@ -116,13 +119,15 @@ if (CONFIG.chains.default.asset == 'Native')
                 );
             });
             it('Should deposit native tokens for another address', async () => {
-                await checkBalances(iexecAdmin.address, 0);
-                await checkBalances(anyone.address, 0);
+                await checkBalances(iexecAdmin.address, BigNumber.from(0));
+                await checkBalances(anyone.address, BigNumber.from(0));
 
-                const tx = await iexecPoco.depositFor(anyone.address, {
-                    value: DEPOSIT_AMOUNT_ETHER,
-                });
-                await expect(tx)
+                expect(await iexecPoco.callStatic.depositFor(anyone.address)).to.be.true;
+                await expect(
+                    await iexecPoco.depositFor(anyone.address, {
+                        value: DEPOSIT_AMOUNT_ETHER,
+                    }),
+                )
                     .to.changeEtherBalances(
                         [iexecAdmin, iexecPoco],
                         [-DEPOSIT_AMOUNT_ETHER, DEPOSIT_AMOUNT_ETHER],
@@ -130,52 +135,61 @@ if (CONFIG.chains.default.asset == 'Native')
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(ZERO_ADDRESS, anyone.address, DEPOSIT_AMOUNT);
 
-                await checkBalances(iexecAdmin.address, 0);
+                await checkBalances(iexecAdmin.address, BigNumber.from(0));
                 await checkBalances(anyone.address, DEPOSIT_AMOUNT);
                 expect(await ethers.provider.getBalance(iexecPoco.address)).to.equal(
                     DEPOSIT_AMOUNT_ETHER,
                 );
             });
             it('Should depositForArray with exact value and good arrays lengths', async () => {
-                const amounts = [200, 100];
-                const totalAmount = amounts.reduce((a, b) => a + b, 0);
+                const amountsBN = [
+                    BigNumber.from(DEPOSIT_AMOUNT.mul(2)),
+                    BigNumber.from(DEPOSIT_AMOUNT),
+                ];
+                const totalAmount = amountsBN.reduce(
+                    (a: BigNumber, b: BigNumber) => a.add(b),
+                    BigNumber.from(0),
+                );
                 const nativeAmountSent = ethers.utils.parseUnits(totalAmount.toString(), 9);
                 const targets = [iexecAdmin.address, anyone.address];
-
-                await checkBalances(iexecAdmin.address, 0);
-                await checkBalances(anyone.address, 0);
-
-                const tx = await iexecPoco.depositForArray(amounts, targets, {
-                    value: nativeAmountSent,
-                });
-                await expect(tx)
+                const depositForArrayArgs = [amountsBN, targets] as [BigNumber[], string[]];
+                await checkBalances(iexecAdmin.address, BigNumber.from(0));
+                await checkBalances(anyone.address, BigNumber.from(0));
+                // expect(await iexecPoco.callStatic.depositForArray(amountsBN,targets)).to.be.true;
+                await expect(
+                    iexecPoco.depositForArray(...depositForArrayArgs, {
+                        value: nativeAmountSent,
+                    }),
+                )
                     .to.changeEtherBalances(
                         [iexecAdmin, iexecPoco],
                         [-nativeAmountSent, nativeAmountSent],
                     )
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, iexecAdmin.address, amounts[0])
+                    .withArgs(ZERO_ADDRESS, iexecAdmin.address, amountsBN[0])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, anyone.address, amounts[1]);
-
-                await checkBalances(iexecAdmin.address, amounts[0]);
-                await checkBalances(anyone.address, amounts[1]);
+                    .withArgs(ZERO_ADDRESS, anyone.address, amountsBN[1]);
+                await checkBalances(iexecAdmin.address, amountsBN[0]);
+                await checkBalances(anyone.address, amountsBN[1]);
             });
             it('Should depositForArray with good arrays lengths and excess native value sent', async () => {
-                const amounts = [DEPOSIT_AMOUNT * 2, DEPOSIT_AMOUNT];
-                const totalAmount = amounts.reduce((a, b) => a + b, 0);
+                const amounts = [DEPOSIT_AMOUNT.mul(2), DEPOSIT_AMOUNT];
+                const totalAmount = amounts.reduce(
+                    (a: BigNumber, b: BigNumber) => a.add(b),
+                    BigNumber.from(0),
+                );
                 const excessAmount = DEPOSIT_AMOUNT;
                 const excessAmountWei = ethers.utils.parseUnits(excessAmount.toString(), 9);
                 const nativeAmountSent = ethers.utils.parseUnits(
-                    (totalAmount + excessAmount).toString(),
+                    totalAmount.add(excessAmount).toString(),
                     9,
                 );
                 const targets = [iexecAdmin.address, anyone.address];
 
-                await checkBalances(iexecAdmin.address, 0);
+                await checkBalances(iexecAdmin.address, BigNumber.from(0));
                 const initialNativeBalance = await ethers.provider.getBalance(iexecAdmin.address);
 
-                await checkBalances(anyone.address, 0);
+                await checkBalances(anyone.address, BigNumber.from(0));
                 const tx = await iexecPoco.depositForArray(amounts, targets, {
                     value: nativeAmountSent,
                 });
@@ -199,12 +213,16 @@ if (CONFIG.chains.default.asset == 'Native')
                 await checkBalances(anyone.address, amounts[1]);
             });
             it('Should not depositForArray when amounts.length != target.length', async () => {
-                const amounts = [DEPOSIT_AMOUNT * 2, DEPOSIT_AMOUNT, DEPOSIT_AMOUNT / 2];
-                const totalAmount = amounts.reduce((a, b, c) => a + b + c, 0);
+                const amounts = [DEPOSIT_AMOUNT.mul(2), DEPOSIT_AMOUNT, DEPOSIT_AMOUNT.div(2)];
+                const totalAmount = amounts.reduce(
+                    (a: BigNumber, b: BigNumber) => a.add(b),
+                    BigNumber.from(0),
+                );
+                console.log('totalAmount', totalAmount);
                 const nativeAmountSent = ethers.utils.parseUnits(totalAmount.toString(), 9);
                 const targets = [iexecAdmin.address, anyone.address];
-                await checkBalances(iexecAdmin.address, 0);
-                await checkBalances(anyone.address, 0);
+                await checkBalances(iexecAdmin.address, BigNumber.from(0));
+                await checkBalances(anyone.address, BigNumber.from(0));
 
                 await expect(
                     iexecPoco.depositForArray(amounts, targets, {
@@ -220,8 +238,8 @@ if (CONFIG.chains.default.asset == 'Native')
                     value: DEPOSIT_AMOUNT_ETHER,
                 });
 
-                const tx = await iexecPocoAsAnyone.withdraw(DEPOSIT_AMOUNT);
-                await expect(tx)
+                expect(await iexecPocoAsAnyone.callStatic.withdraw(DEPOSIT_AMOUNT)).to.be.true;
+                await expect(await iexecPocoAsAnyone.withdraw(DEPOSIT_AMOUNT))
                     .to.changeEtherBalances(
                         [anyone, iexecPoco],
                         [DEPOSIT_AMOUNT_ETHER, -DEPOSIT_AMOUNT_ETHER],
@@ -229,7 +247,7 @@ if (CONFIG.chains.default.asset == 'Native')
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(anyone.address, ZERO_ADDRESS, DEPOSIT_AMOUNT);
 
-                await checkBalances(anyone.address, 0);
+                await checkBalances(anyone.address, BigNumber.from(0));
             });
             it('Should withdraw native tokens to another address', async () => {
                 await expect(
@@ -244,8 +262,9 @@ if (CONFIG.chains.default.asset == 'Native')
                     DEPOSIT_AMOUNT,
                 );
 
-                const tx = await iexecPoco.withdrawTo(DEPOSIT_AMOUNT, anyone.address);
-                await expect(tx)
+                const withdrawToArgs = [DEPOSIT_AMOUNT, anyone.address] as [BigNumber, string];
+                expect(await iexecPoco.callStatic.withdrawTo(...withdrawToArgs)).to.be.true;
+                await expect(await iexecPoco.withdrawTo(...withdrawToArgs))
                     .to.changeEtherBalances(
                         [anyone, iexecPoco],
                         [DEPOSIT_AMOUNT_ETHER, -DEPOSIT_AMOUNT_ETHER],
@@ -266,7 +285,7 @@ if (CONFIG.chains.default.asset == 'Native')
                 });
 
                 await expect(
-                    iexecPocoAsAnyone.withdraw(DEPOSIT_AMOUNT * 2),
+                    iexecPocoAsAnyone.withdraw(DEPOSIT_AMOUNT.mul(2)),
                 ).to.be.revertedWithoutReason();
             });
         });
@@ -278,8 +297,9 @@ if (CONFIG.chains.default.asset == 'Native')
                     value: DEPOSIT_AMOUNT_ETHER,
                 });
                 const delta = 0;
-                const recoverTx = await iexecPoco.recover();
-                await expect(recoverTx)
+                expect(await iexecPoco.callStatic.recover()).to.be.equal(delta);
+
+                await expect(await iexecPoco.recover())
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(ZERO_ADDRESS, iexecAdmin.address, delta);
             });
