@@ -34,13 +34,8 @@ if (CONFIG.chains.default.asset === 'Native') {
             iexecPocoAsAnyone = iexecPoco.connect(anyone);
         }
 
-        async function checkBalances(address: string, expectedBalance: BigNumber) {
-            expect(await iexecPocoAsAnyone.balanceOf(address)).to.equal(expectedBalance);
-        }
-
         describe('Receive and Fallback', () => {
             it('Should call receive successfully', async () => {
-                await checkBalances(anyoneA.address, BigNumber.from(0));
                 await expect(
                     await anyoneA.sendTransaction({
                         to: iexecPoco.address,
@@ -51,14 +46,12 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [anyoneA, iexecPoco],
                         [-etherDepositAmount, etherDepositAmount],
                     )
+                    .to.changeTokenBalances(iexecPoco, [anyoneA], [depositAmount])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(AddressZero, anyoneA.address, depositAmount);
-
-                await checkBalances(anyoneA.address, depositAmount);
             });
 
             it('Should call fallback successfully', async () => {
-                await checkBalances(anyoneA.address, BigNumber.from(0));
                 const randomData = ethers.utils.hexlify(
                     ethers.utils.toUtf8Bytes((Math.random() * 0xfffff).toString(16)),
                 );
@@ -74,33 +67,26 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [anyoneA, iexecPoco],
                         [-etherDepositAmount, etherDepositAmount],
                     )
+                    .to.changeTokenBalances(iexecPoco, [anyoneA], [depositAmount])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(AddressZero, anyoneA.address, depositAmount);
-
-                await checkBalances(anyoneA.address, depositAmount);
             });
         });
 
         describe('Deposits', () => {
             it('Should deposit native tokens', async () => {
-                await checkBalances(anyoneA.address, BigNumber.from(0));
-
                 expect(await iexecPocoAsAnyone.callStatic.deposit(...depositArgs)).to.be.true;
                 await expect(iexecPocoAsAnyone.deposit(...depositArgs))
                     .to.changeEtherBalances(
                         [anyoneA, iexecPoco],
                         [-etherDepositAmount, etherDepositAmount],
                     )
+                    .to.changeTokenBalances(iexecPoco, [anyoneA], [depositAmount])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(AddressZero, anyoneA.address, depositAmount);
-
-                await checkBalances(anyoneA.address, depositAmount);
             });
 
             it('Should deposit native tokens for another address', async () => {
-                await checkBalances(iexecAdmin.address, BigNumber.from(0));
-                await checkBalances(anyoneA.address, BigNumber.from(0));
-
                 const depositForArgs = [anyoneA.address, { value: etherDepositAmount }] as [
                     string,
                     { value: BigNumber },
@@ -111,11 +97,9 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [iexecAdmin, iexecPoco],
                         [-etherDepositAmount, etherDepositAmount],
                     )
+                    .to.changeTokenBalances(iexecPoco, [anyoneA], [depositAmount])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(AddressZero, anyoneA.address, depositAmount);
-
-                await checkBalances(iexecAdmin.address, BigNumber.from(0));
-                await checkBalances(anyoneA.address, depositAmount);
             });
 
             it('Should depositForArray with exact value and good array lengths', async () => {
@@ -129,9 +113,6 @@ if (CONFIG.chains.default.asset === 'Native') {
                     { value: BigNumber },
                 ];
 
-                await checkBalances(anyoneA.address, BigNumber.from(0));
-                await checkBalances(anyoneB.address, BigNumber.from(0));
-
                 expect(await iexecPoco.callStatic.depositForArray(...depositForArrayArgs)).to.be
                     .true;
                 await expect(iexecPoco.depositForArray(...depositForArrayArgs))
@@ -139,13 +120,11 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [iexecAdmin, iexecPoco],
                         [-nativeAmountSent, nativeAmountSent],
                     )
+                    .to.changeTokenBalances(iexecPoco, [anyoneA, anyoneB], [...amounts])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(AddressZero, anyoneA.address, amounts[0])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(AddressZero, anyoneB.address, amounts[1]);
-
-                await checkBalances(anyoneA.address, amounts[0]);
-                await checkBalances(anyoneB.address, amounts[1]);
             });
 
             it('Should depositForArray with good array lengths and excess value sent', async () => {
@@ -163,9 +142,6 @@ if (CONFIG.chains.default.asset === 'Native') {
                     string[],
                     { value: BigNumber },
                 ];
-                await checkBalances(anyoneA.address, BigNumber.from(0));
-                await checkBalances(anyoneB.address, BigNumber.from(0));
-
                 await expect(await iexecPoco.depositForArray(...depositForArrayArgs))
                     .to.changeEtherBalances(
                         [iexecAdmin, iexecPoco],
@@ -174,12 +150,11 @@ if (CONFIG.chains.default.asset === 'Native') {
                             nativeAmountSent.sub(excessAmountWei),
                         ],
                     )
+                    .to.changeTokenBalances(iexecPoco, [anyoneA, anyoneB], [...amounts])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(AddressZero, anyoneA.address, amounts[0])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(AddressZero, anyoneB.address, amounts[1]);
-                await checkBalances(anyoneA.address, amounts[0]);
-                await checkBalances(anyoneB.address, amounts[1]);
             });
 
             it('Should not depositForArray with mismatched array lengths', async () => {
@@ -192,9 +167,6 @@ if (CONFIG.chains.default.asset === 'Native') {
                     string[],
                     { value: BigNumber },
                 ];
-
-                await checkBalances(anyoneA.address, BigNumber.from(0));
-                await checkBalances(anyoneB.address, BigNumber.from(0));
 
                 await expect(iexecPoco.depositForArray(...depositForArrayArgs)).to.be.revertedWith(
                     'invalid-array-length',
@@ -213,10 +185,9 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [anyoneA, iexecPoco],
                         [etherDepositAmount, -etherDepositAmount],
                     )
+                    .to.changeTokenBalances(iexecPoco, [anyoneA], [-depositAmount])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(anyoneA.address, AddressZero, depositAmount);
-
-                await checkBalances(anyoneA.address, BigNumber.from(0));
             });
 
             it('Should withdraw native tokens to another address', async () => {
