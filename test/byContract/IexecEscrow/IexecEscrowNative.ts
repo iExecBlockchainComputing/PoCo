@@ -15,6 +15,7 @@ const depositAmount = BigNumber.from(100);
 const etherDepositAmount = ethers.utils.parseUnits(depositAmount.toString(), 9);
 const depositArgs = [{ value: etherDepositAmount }] as [{ value: BigNumber }];
 
+// TODO: remove this when poco is also available in Native mode
 if (CONFIG.chains.default.asset === 'Native') {
     describe('EscrowNative', () => {
         let proxyAddress: string;
