@@ -191,14 +191,7 @@ if (CONFIG.chains.default.asset === 'Native') {
             });
 
             it('Should withdraw native tokens to another address', async () => {
-                await expect(iexecPoco.deposit(...depositArgs)).to.changeEtherBalances(
-                    [iexecAdmin, iexecPoco],
-                    [-etherDepositAmount, etherDepositAmount],
-                );
-                expect(await iexecPocoAsAnyone.balanceOf(iexecAdmin.address)).to.equal(
-                    depositAmount,
-                );
-
+                await iexecPoco.deposit(...depositArgs);
                 const withdrawToArgs = [depositAmount, anyoneA.address] as [BigNumber, string];
                 expect(await iexecPoco.callStatic.withdrawTo(...withdrawToArgs)).to.be.true;
                 await expect(iexecPoco.withdrawTo(...withdrawToArgs))
@@ -206,10 +199,9 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [anyoneA, iexecPoco],
                         [etherDepositAmount, -etherDepositAmount],
                     )
+                    .to.changeTokenBalances(iexecPoco, [iexecAdmin], [-depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(iexecAdmin.address, AddressZero, depositAmount);
-
-                expect(await iexecPocoAsAnyone.balanceOf(iexecAdmin.address)).to.equal(0);
             });
 
             it('Should not withdraw native tokens with empty balance', async () => {
