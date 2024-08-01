@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { AddressZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber } from 'ethers';
@@ -13,7 +14,6 @@ import { getIexecAccounts } from '../../../utils/poco-tools';
 const depositAmount = BigNumber.from(100);
 const etherDepositAmount = ethers.utils.parseUnits(depositAmount.toString(), 9);
 const depositArgs = [{ value: etherDepositAmount }] as [{ value: BigNumber }];
-const ZERO_ADDRESS = ethers.constants.AddressZero;
 
 if (CONFIG.chains.default.asset === 'Native') {
     describe('EscrowNative', () => {
@@ -53,7 +53,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [-etherDepositAmount, etherDepositAmount],
                     )
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, anyoneA.address, depositAmount);
+                    .withArgs(AddressZero, anyoneA.address, depositAmount);
 
                 await checkBalances(anyoneA.address, depositAmount);
                 expect(await ethers.provider.getBalance(anyoneA.address)).to.equal(
@@ -83,7 +83,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [-etherDepositAmount, etherDepositAmount],
                     )
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, anyoneA.address, depositAmount);
+                    .withArgs(AddressZero, anyoneA.address, depositAmount);
 
                 await checkBalances(anyoneA.address, depositAmount);
                 expect(await ethers.provider.getBalance(anyoneA.address)).to.equal(
@@ -107,7 +107,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [-etherDepositAmount, etherDepositAmount],
                     )
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, anyoneA.address, depositAmount);
+                    .withArgs(AddressZero, anyoneA.address, depositAmount);
 
                 await checkBalances(anyoneA.address, depositAmount);
                 expect(await ethers.provider.getBalance(anyoneA.address)).to.equal(
@@ -133,7 +133,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [-etherDepositAmount, etherDepositAmount],
                     )
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, anyoneA.address, depositAmount);
+                    .withArgs(AddressZero, anyoneA.address, depositAmount);
 
                 await checkBalances(iexecAdmin.address, BigNumber.from(0));
                 await checkBalances(anyoneA.address, depositAmount);
@@ -164,9 +164,9 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [-nativeAmountSent, nativeAmountSent],
                     )
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, anyoneA.address, amounts[0])
+                    .withArgs(AddressZero, anyoneA.address, amounts[0])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, anyoneB.address, amounts[1]);
+                    .withArgs(AddressZero, anyoneB.address, amounts[1]);
 
                 await checkBalances(anyoneA.address, amounts[0]);
                 await checkBalances(anyoneB.address, amounts[1]);
@@ -201,9 +201,9 @@ if (CONFIG.chains.default.asset === 'Native') {
                         ],
                     )
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, anyoneA.address, amounts[0])
+                    .withArgs(AddressZero, anyoneA.address, amounts[0])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, anyoneB.address, amounts[1]);
+                    .withArgs(AddressZero, anyoneB.address, amounts[1]);
 
                 expect(await ethers.provider.getBalance(iexecAdmin.address)).to.equal(
                     initialBalance.sub(nativeAmountSent).add(excessAmountWei),
@@ -245,7 +245,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [etherDepositAmount, -etherDepositAmount],
                     )
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
-                    .withArgs(anyoneA.address, ZERO_ADDRESS, depositAmount);
+                    .withArgs(anyoneA.address, AddressZero, depositAmount);
 
                 await checkBalances(anyoneA.address, BigNumber.from(0));
             });
@@ -267,7 +267,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                         [etherDepositAmount, -etherDepositAmount],
                     )
                     .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(iexecAdmin.address, ZERO_ADDRESS, depositAmount);
+                    .withArgs(iexecAdmin.address, AddressZero, depositAmount);
 
                 expect(await iexecPocoAsAnyone.balanceOf(iexecAdmin.address)).to.equal(0);
             });
@@ -298,7 +298,7 @@ if (CONFIG.chains.default.asset === 'Native') {
 
                 await expect(iexecPoco.recover())
                     .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(ZERO_ADDRESS, iexecAdmin.address, delta);
+                    .withArgs(AddressZero, iexecAdmin.address, delta);
             });
 
             it('Should not recover extra balance when caller is not owner', async () => {
