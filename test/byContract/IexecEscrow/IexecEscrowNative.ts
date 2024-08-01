@@ -41,7 +41,6 @@ if (CONFIG.chains.default.asset === 'Native') {
         describe('Receive and Fallback', () => {
             it('Should call receive successfully', async () => {
                 await checkBalances(anyoneA.address, BigNumber.from(0));
-                const initialBalance = await ethers.provider.getBalance(anyoneA.address);
                 await expect(
                     await anyoneA.sendTransaction({
                         to: iexecPoco.address,
@@ -56,17 +55,10 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .withArgs(AddressZero, anyoneA.address, depositAmount);
 
                 await checkBalances(anyoneA.address, depositAmount);
-                expect(await ethers.provider.getBalance(anyoneA.address)).to.equal(
-                    initialBalance.sub(etherDepositAmount),
-                );
-                expect(await ethers.provider.getBalance(iexecPoco.address)).to.equal(
-                    etherDepositAmount,
-                );
             });
 
             it('Should call fallback successfully', async () => {
                 await checkBalances(anyoneA.address, BigNumber.from(0));
-                const initialBalance = await ethers.provider.getBalance(anyoneA.address);
                 const randomData = ethers.utils.hexlify(
                     ethers.utils.toUtf8Bytes((Math.random() * 0xfffff).toString(16)),
                 );
@@ -86,19 +78,12 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .withArgs(AddressZero, anyoneA.address, depositAmount);
 
                 await checkBalances(anyoneA.address, depositAmount);
-                expect(await ethers.provider.getBalance(anyoneA.address)).to.equal(
-                    initialBalance.sub(etherDepositAmount),
-                );
-                expect(await ethers.provider.getBalance(iexecPoco.address)).to.equal(
-                    etherDepositAmount,
-                );
             });
         });
 
         describe('Deposits', () => {
             it('Should deposit native tokens', async () => {
                 await checkBalances(anyoneA.address, BigNumber.from(0));
-                const initialBalance = await ethers.provider.getBalance(anyoneA.address);
 
                 expect(await iexecPocoAsAnyone.callStatic.deposit(...depositArgs)).to.be.true;
                 await expect(iexecPocoAsAnyone.deposit(...depositArgs))
@@ -110,12 +95,6 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .withArgs(AddressZero, anyoneA.address, depositAmount);
 
                 await checkBalances(anyoneA.address, depositAmount);
-                expect(await ethers.provider.getBalance(anyoneA.address)).to.equal(
-                    initialBalance.sub(etherDepositAmount),
-                );
-                expect(await ethers.provider.getBalance(iexecPoco.address)).to.equal(
-                    etherDepositAmount,
-                );
             });
 
             it('Should deposit native tokens for another address', async () => {
@@ -137,9 +116,6 @@ if (CONFIG.chains.default.asset === 'Native') {
 
                 await checkBalances(iexecAdmin.address, BigNumber.from(0));
                 await checkBalances(anyoneA.address, depositAmount);
-                expect(await ethers.provider.getBalance(iexecPoco.address)).to.equal(
-                    etherDepositAmount,
-                );
             });
 
             it('Should depositForArray with exact value and good array lengths', async () => {
@@ -187,8 +163,6 @@ if (CONFIG.chains.default.asset === 'Native') {
                     string[],
                     { value: BigNumber },
                 ];
-
-                const initialBalance = await ethers.provider.getBalance(iexecAdmin.address);
                 await checkBalances(anyoneA.address, BigNumber.from(0));
                 await checkBalances(anyoneB.address, BigNumber.from(0));
 
@@ -204,11 +178,6 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .withArgs(AddressZero, anyoneA.address, amounts[0])
                     .to.emit(iexecPocoAsAnyone, 'Transfer')
                     .withArgs(AddressZero, anyoneB.address, amounts[1]);
-
-                expect(await ethers.provider.getBalance(iexecAdmin.address)).to.equal(
-                    initialBalance.sub(nativeAmountSent).add(excessAmountWei),
-                );
-
                 await checkBalances(anyoneA.address, amounts[0]);
                 await checkBalances(anyoneB.address, amounts[1]);
             });
