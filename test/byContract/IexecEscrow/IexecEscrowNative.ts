@@ -105,7 +105,7 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should depositForArray with exact value and good array lengths', async () => {
                 const amounts = [depositAmount.mul(2), depositAmount];
-                const totalAmount = amounts.reduce((a, b) => a.add(b), BigNumber.from(0));
+                const totalAmount = getTotalAmount(amounts);
                 const nativeAmountSent = ethers.utils.parseUnits(totalAmount.toString(), 9);
                 const targets = [accountA.address, accountB.address];
                 const depositForArrayArgs = [amounts, targets, { value: nativeAmountSent }] as [
@@ -130,7 +130,7 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should depositForArray with good array lengths and excess value sent', async () => {
                 const amounts = [depositAmount.mul(2), depositAmount];
-                const totalAmount = amounts.reduce((a, b) => a.add(b), BigNumber.from(0));
+                const totalAmount = getTotalAmount(amounts);
                 const excessAmount = depositAmount;
                 const excessAmountWei = ethers.utils.parseUnits(excessAmount.toString(), 9);
                 const nativeAmountSent = ethers.utils.parseUnits(
@@ -160,7 +160,7 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should not depositForArray with mismatched array lengths', async () => {
                 const amounts = [depositAmount.mul(2), depositAmount, depositAmount.div(2)];
-                const totalAmount = amounts.reduce((a, b) => a.add(b), BigNumber.from(0));
+                const totalAmount = getTotalAmount(amounts);
                 const nativeAmountSent = ethers.utils.parseUnits(totalAmount.toString(), 9);
                 const targets = [accountA.address, accountB.address];
                 const depositForArrayArgs = [amounts, targets, { value: nativeAmountSent }] as [
@@ -239,4 +239,8 @@ if (CONFIG.chains.default.asset === 'Native') {
             });
         });
     });
+}
+
+function getTotalAmount(amounts: BigNumber[]) {
+    return amounts.reduce((a, b) => a.add(b), BigNumber.from(0));
 }
