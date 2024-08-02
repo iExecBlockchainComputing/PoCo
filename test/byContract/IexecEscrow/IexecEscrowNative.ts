@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AddressZero } from '@ethersproject/constants';
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber } from 'ethers';
 import { ethers, expect } from 'hardhat';
@@ -232,12 +232,17 @@ if (CONFIG.chains.default.asset === 'Native') {
                     to: iexecPoco.address,
                     value: deposiNativetAmount,
                 });
-                const delta = 0;
-                expect(await iexecPocoAsAdmin.callStatic.recover()).to.equal(delta);
+                await setStorageAt(
+                    proxyAddress,
+                    '0x0c', // Slot index of `m_totalSupply` in Store
+                    depositAmount.div(2).toHexString(),
+                );
+                const expectDelta = depositAmount.div(2).toNumber();
+                expect(await iexecPocoAsAdmin.callStatic.recover()).to.equal(expectDelta);
 
                 await expect(iexecPocoAsAdmin.recover())
                     .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(AddressZero, iexecAdmin.address, delta);
+                    .withArgs(AddressZero, iexecAdmin.address, expectDelta);
             });
 
             it('Should not recover extra balance when caller is not owner', async () => {
