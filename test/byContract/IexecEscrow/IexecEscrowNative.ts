@@ -106,7 +106,7 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should depositForArray with exact value and good array lengths', async () => {
                 const depositAmounts = [depositAmount.mul(2), depositAmount];
-                const deposiNativetFullAmount = ethers.utils.parseUnits(
+                const deposiNativetTotalAmount = ethers.utils.parseUnits(
                     getTotalAmount(depositAmounts).toString(),
                     9,
                 );
@@ -114,7 +114,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 const depositForArrayArgs = [
                     depositAmounts,
                     targets,
-                    { value: deposiNativetFullAmount },
+                    { value: deposiNativetTotalAmount },
                 ] as [BigNumber[], string[], { value: BigNumber }];
 
                 expect(await iexecPoco.callStatic.depositForArray(...depositForArrayArgs)).to.be
@@ -122,7 +122,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPoco.depositForArray(...depositForArrayArgs))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-deposiNativetFullAmount, deposiNativetFullAmount],
+                        [-deposiNativetTotalAmount, deposiNativetTotalAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [iexecAdmin, accountB], [...depositAmounts])
                     .to.emit(iexecPoco, 'Transfer')
@@ -134,7 +134,7 @@ if (CONFIG.chains.default.asset === 'Native') {
             it('Should depositForArray with good array lengths and excess value sent', async () => {
                 const depositAmounts = [depositAmount.mul(2), depositAmount];
                 const excessNativeAmount = ethers.utils.parseUnits(depositAmount.toString(), 9);
-                const deposiNativetFullAmount = ethers.utils.parseUnits(
+                const deposiNativetTotalAmount = ethers.utils.parseUnits(
                     getTotalAmount(depositAmounts).add(excessNativeAmount).toString(),
                     9,
                 );
@@ -142,14 +142,14 @@ if (CONFIG.chains.default.asset === 'Native') {
                 const depositForArrayArgs = [
                     depositAmounts,
                     targets,
-                    { value: deposiNativetFullAmount },
+                    { value: deposiNativetTotalAmount },
                 ] as [BigNumber[], string[], { value: BigNumber }];
                 await expect(iexecPoco.depositForArray(...depositForArrayArgs))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
                         [
-                            -deposiNativetFullAmount.sub(excessNativeAmount),
-                            deposiNativetFullAmount.sub(excessNativeAmount),
+                            -deposiNativetTotalAmount.sub(excessNativeAmount),
+                            deposiNativetTotalAmount.sub(excessNativeAmount),
                         ],
                     )
                     .to.changeTokenBalances(iexecPoco, [iexecAdmin, accountB], [...depositAmounts])
@@ -161,7 +161,7 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should not depositForArray with mismatched array lengths', async () => {
                 const depositAmounts = [depositAmount.mul(2), depositAmount, depositAmount.div(2)];
-                const deposiNativetFullAmount = ethers.utils.parseUnits(
+                const deposiNativetTotalAmount = ethers.utils.parseUnits(
                     getTotalAmount(depositAmounts).toString(),
                     9,
                 );
@@ -169,7 +169,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 const depositForArrayArgs = [
                     depositAmounts,
                     targets,
-                    { value: deposiNativetFullAmount },
+                    { value: deposiNativetTotalAmount },
                 ] as [BigNumber[], string[], { value: BigNumber }];
 
                 await expect(iexecPoco.depositForArray(...depositForArrayArgs)).to.be.revertedWith(
