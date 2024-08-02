@@ -64,13 +64,13 @@ describe('Maintenance', async () => {
             expect(await iexecPoco.eip712domain_separator()).equal(
                 await hashDomain(await iexecPoco.domain()),
             );
-            expect(await iexecPoco.token()).equal(configureArgs[0]);
-            expect(await iexecPoco.name()).equal(configureArgs[1]);
-            expect(await iexecPoco.symbol()).equal(configureArgs[2]);
-            expect(await iexecPoco.decimals()).equal(configureArgs[3]);
-            expect(await iexecPoco.appregistry()).equal(configureArgs[4]);
-            expect(await iexecPoco.datasetregistry()).equal(configureArgs[5]);
-            expect(await iexecPoco.workerpoolregistry()).equal(configureArgs[6]);
+            expect(await iexecPoco.token()).equal(configureParams.token);
+            expect(await iexecPoco.name()).equal(configureParams.name);
+            expect(await iexecPoco.symbol()).equal(configureParams.symbol);
+            expect(await iexecPoco.decimals()).equal(configureParams.decimals);
+            expect(await iexecPoco.appregistry()).equal(configureParams.appregistry);
+            expect(await iexecPoco.datasetregistry()).equal(configureParams.datasetregistry);
+            expect(await iexecPoco.workerpoolregistry()).equal(configureParams.workerpoolregistry);
             // no getter for m_v3_iexecHub
             expect(await iexecPoco.callbackgas()).equal(100000);
         });
