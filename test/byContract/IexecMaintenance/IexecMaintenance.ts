@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { HashZero as hashZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
@@ -15,22 +16,32 @@ import {
 import { getIexecAccounts } from '../../../utils/poco-tools';
 
 const randomAddress = () => ethers.Wallet.createRandom().address;
-const configureArgs = [
-    randomAddress(),
-    'some name',
-    'some symbol',
-    100,
-    randomAddress(),
-    randomAddress(),
-    randomAddress(),
-    randomAddress(),
-] as [string, string, string, number, string, string, string, string];
-const hashZero = ethers.constants.HashZero;
+const configureParams = {
+    token: randomAddress(),
+    name: 'some name',
+    symbol: 'some symbol',
+    decimals: 100,
+    appregistry: randomAddress(),
+    datasetregistry: randomAddress(),
+    workerpoolregistry: randomAddress(),
+    m_v3_iexecHub: randomAddress(),
+};
+const configureArgs = Object.values(configureParams) as [
+    string,
+    string,
+    string,
+    number,
+    string,
+    string,
+    string,
+    string,
+];
 const someDomainSeparator = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
 describe('Maintenance', async () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
+    let iexecMaintenanceExtra: IexecMaintenanceExtra;
     let [iexecAdmin, anyone]: SignerWithAddress[] = [];
 
     beforeEach('Deploy', async () => {
@@ -43,11 +54,12 @@ describe('Maintenance', async () => {
         ({ iexecAdmin, anyone } = accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
+        iexecMaintenanceExtra = IexecMaintenanceExtra__factory.connect(proxyAddress, anyone);
     }
 
     describe('Configure', () => {
         it('Should configure', async () => {
-            await setDomainSeparator(hashZero);
+            await clearDomainSeparator();
             await iexecPocoAsAdmin.configure(...configureArgs).then((tx) => tx.wait());
             expect(await iexecPoco.eip712domain_separator()).equal(
                 await hashDomain(await iexecPoco.domain()),
@@ -86,7 +98,7 @@ describe('Maintenance', async () => {
 
     describe('Update domain separator', () => {
         it('Should update domain separator', async () => {
-            await setDomainSeparator(someDomainSeparator);
+            await setDomainSeparatorInStorage(someDomainSeparator);
             expect(await iexecPoco.eip712domain_separator()).equal(someDomainSeparator);
             await iexecPocoAsAdmin.updateDomainSeparator().then((tx) => tx.wait());
             expect(await iexecPoco.eip712domain_separator()).equal(
@@ -94,10 +106,8 @@ describe('Maintenance', async () => {
             );
         });
         it('Should not update domain separator when not configured', async () => {
-            await setDomainSeparator(hashZero);
-            await expect(iexecPocoAsAdmin.updateDomainSeparator()).to.be.revertedWith(
-                'not-configured',
-            );
+            await clearDomainSeparator();
+            await expect(iexecPoco.updateDomainSeparator()).to.be.revertedWith('not-configured');
         });
     });
 
@@ -135,12 +145,6 @@ describe('Maintenance', async () => {
     });
 
     describe('Change registries', () => {
-        let iexecMaintenanceExtra: IexecMaintenanceExtra;
-
-        beforeEach('Deploy', async () => {
-            iexecMaintenanceExtra = IexecMaintenanceExtra__factory.connect(proxyAddress, anyone);
-        });
-
         it('Should change registries', async () => {
             const appRegistry = randomAddress();
             const datasetRegistry = randomAddress();
@@ -165,7 +169,11 @@ describe('Maintenance', async () => {
         });
     });
 
-    async function setDomainSeparator(domainSeparator: string) {
+    async function clearDomainSeparator() {
+        await setDomainSeparatorInStorage(hashZero);
+    }
+
+    async function setDomainSeparatorInStorage(domainSeparator: string) {
         await ethers.provider.send('hardhat_setStorageAt', [
             proxyAddress,
             '0x10', // Slot index of EIP712DOMAIN_SEPARATOR in Store
