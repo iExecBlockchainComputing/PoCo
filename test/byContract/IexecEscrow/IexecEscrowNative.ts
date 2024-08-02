@@ -38,7 +38,7 @@ if (CONFIG.chains.default.asset === 'Native') {
         describe('Receive and Fallback', () => {
             it('Should call receive successfully', async () => {
                 await expect(
-                    await accountA.sendTransaction({
+                    accountA.sendTransaction({
                         to: iexecPoco.address,
                         value: etherDepositAmount,
                     }),
@@ -58,7 +58,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 );
 
                 await expect(
-                    await accountA.sendTransaction({
+                    accountA.sendTransaction({
                         to: iexecPoco.address,
                         value: etherDepositAmount,
                         data: randomData,
@@ -143,7 +143,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                     string[],
                     { value: BigNumber },
                 ];
-                await expect(await iexecPocoAsAdmin.depositForArray(...depositForArrayArgs))
+                await expect(iexecPocoAsAdmin.depositForArray(...depositForArrayArgs))
                     .to.changeEtherBalances(
                         [iexecAdmin, iexecPoco],
                         [
