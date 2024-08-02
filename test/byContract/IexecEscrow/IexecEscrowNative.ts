@@ -15,6 +15,7 @@ const depositAmount = BigNumber.from(100);
 const withdrawAmount = BigNumber.from(100);
 const deposiNativetAmount = ethers.utils.parseUnits(depositAmount.toString(), 9);
 const depositArgs = [{ value: deposiNativetAmount }] as [{ value: BigNumber }];
+const withdrawArg = [withdrawAmount] as [BigNumber];
 
 // TODO: remove this when poco is also available in Native mode
 if (CONFIG.chains.default.asset === 'Native') {
@@ -90,7 +91,7 @@ if (CONFIG.chains.default.asset === 'Native') {
             });
 
             it('Should deposit native tokens for another address', async () => {
-                const depositForArgs = [accountB.address, { value: deposiNativetAmount }] as [
+                const depositForArgs = [accountB.address, ...depositArgs] as [
                     string,
                     { value: BigNumber },
                 ];
@@ -184,7 +185,6 @@ if (CONFIG.chains.default.asset === 'Native') {
             it('Should withdraw native tokens', async () => {
                 await iexecPocoAsAccountA.deposit(...depositArgs);
 
-                const withdrawArg = [withdrawAmount] as [BigNumber];
                 expect(await iexecPocoAsAccountA.callStatic.withdraw(...withdrawArg)).to.be.true;
                 await expect(iexecPocoAsAccountA.withdraw(...withdrawArg))
                     .to.changeEtherBalances(
@@ -198,7 +198,7 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should withdraw native tokens to another address', async () => {
                 await iexecPocoAsAccountA.deposit(...depositArgs);
-                const withdrawToArgs = [withdrawAmount, accountB.address] as [BigNumber, string];
+                const withdrawToArgs = [...withdrawArg, accountB.address] as [BigNumber, string];
                 expect(await iexecPocoAsAccountA.callStatic.withdrawTo(...withdrawToArgs)).to.be
                     .true;
                 await expect(iexecPocoAsAccountA.withdrawTo(...withdrawToArgs))
@@ -213,7 +213,7 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should not withdraw native tokens with empty balance', async () => {
                 await expect(
-                    iexecPocoAsAccountA.withdraw(withdrawAmount),
+                    iexecPocoAsAccountA.withdraw(...withdrawArg),
                 ).to.be.revertedWithoutReason();
             });
 
