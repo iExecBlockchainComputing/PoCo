@@ -13,8 +13,8 @@ import { getIexecAccounts } from '../../../utils/poco-tools';
 
 const depositAmount = BigNumber.from(100);
 const withdrawAmount = BigNumber.from(100);
-const deposiNativetAmount = ethers.utils.parseUnits(depositAmount.toString(), 9);
-const depositArgs = [{ value: deposiNativetAmount }] as [{ value: BigNumber }];
+const depositNativetAmount = ethers.utils.parseUnits(depositAmount.toString(), 9);
+const depositArgs = [{ value: depositNativetAmount }] as [{ value: BigNumber }];
 const withdrawArg = [withdrawAmount] as [BigNumber];
 
 // TODO: remove this when poco is also available in Native mode
@@ -43,12 +43,12 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(
                     accountA.sendTransaction({
                         to: iexecPoco.address,
-                        value: deposiNativetAmount,
+                        value: depositNativetAmount,
                     }),
                 )
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-deposiNativetAmount, deposiNativetAmount],
+                        [-depositNativetAmount, depositNativetAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -63,13 +63,13 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(
                     accountA.sendTransaction({
                         to: iexecPoco.address,
-                        value: deposiNativetAmount,
+                        value: depositNativetAmount,
                         data: randomData,
                     }),
                 )
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-deposiNativetAmount, deposiNativetAmount],
+                        [-depositNativetAmount, depositNativetAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -83,7 +83,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPocoAsAccountA.deposit(...depositArgs))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-deposiNativetAmount, deposiNativetAmount],
+                        [-depositNativetAmount, depositNativetAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -100,7 +100,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPocoAsAccountA.depositFor(...depositForArgs))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-deposiNativetAmount, deposiNativetAmount],
+                        [-depositNativetAmount, depositNativetAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountB], [depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -189,7 +189,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPocoAsAccountA.withdraw(...withdrawArg))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [deposiNativetAmount, -deposiNativetAmount],
+                        [depositNativetAmount, -depositNativetAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -204,7 +204,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPocoAsAccountA.withdrawTo(...withdrawToArgs))
                     .to.changeEtherBalances(
                         [accountB, iexecPoco],
-                        [deposiNativetAmount, -deposiNativetAmount],
+                        [depositNativetAmount, -depositNativetAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -230,7 +230,7 @@ if (CONFIG.chains.default.asset === 'Native') {
             it('Should recover extra balance', async () => {
                 await iexecAdmin.sendTransaction({
                     to: iexecPoco.address,
-                    value: deposiNativetAmount,
+                    value: depositNativetAmount,
                 });
                 await setStorageAt(
                     proxyAddress,
