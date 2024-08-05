@@ -108,6 +108,17 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountA.address, depositAmount);
             });
+
+            it('Should not deposit native tokens when caller is address 0', async () => {
+                const iexecPocoAsAddress0 = iexecPoco.connect(await ethers.getSigner(AddressZero));
+
+                await expect(iexecPocoAsAddress0.deposit(...depositArgs))
+                    .to.changeEtherBalances(
+                        [accountA, iexecPoco],
+                        [-nativeDepositAmount, nativeDepositAmount],
+                    )
+                    .to.be.revertedWith('ERC20: mint to the zero address');
+            });
         });
 
         describe('Deposit for', () => {
@@ -126,6 +137,16 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .to.changeTokenBalances(iexecPoco, [accountB], [depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountB.address, depositAmount);
+            });
+
+            it('Should not deposit native tokens for address 0', async () => {
+                const depositForArgs = [AddressZero, ...depositArgs] as [
+                    string,
+                    { value: BigNumber },
+                ];
+                await expect(iexecPocoAsAccountA.depositFor(...depositForArgs)).to.be.revertedWith(
+                    'ERC20: mint to the zero address',
+                );
             });
         });
 
@@ -242,6 +263,21 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount])
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(accountA.address, AddressZero, withdrawAmount);
+            });
+
+            it('Should not withdraw To native tokens with empty balance', async () => {
+                const withdrawToArgs = [...withdrawArg, accountB.address] as [BigNumber, string];
+                await expect(
+                    iexecPocoAsAccountA.withdrawTo(...withdrawToArgs),
+                ).to.be.revertedWithoutReason();
+            });
+
+            it('Should not withdraw To native tokens with insufficient balance', async () => {
+                await iexecPocoAsAccountA.deposit(...depositArgs);
+                const withdrawToArgs = [...withdrawArg, accountB.address] as [BigNumber, string];
+                await expect(
+                    iexecPocoAsAccountA.withdrawTo(withdrawToArgs[0].mul(2), withdrawToArgs[1]),
+                ).to.be.revertedWithoutReason();
             });
         });
 
