@@ -39,7 +39,7 @@ if (CONFIG.chains.default.asset === 'Native') {
         }
 
         describe('Receive and Fallback', () => {
-            it('Should call receive successfully', async () => {
+            it('Should receive', async () => {
                 await expect(
                     accountA.sendTransaction({
                         to: iexecPoco.address,
@@ -55,7 +55,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .withArgs(AddressZero, accountA.address, depositAmount);
             });
 
-            it('Should call fallback successfully', async () => {
+            it('Should fallback', async () => {
                 const randomData = ethers.utils.hexlify(
                     ethers.utils.toUtf8Bytes((Math.random() * 0xfffff).toString(16)),
                 );
@@ -94,8 +94,6 @@ if (CONFIG.chains.default.asset === 'Native') {
             it('Should deposit native tokens and return remainder', async () => {
                 // Create a small remainder value using BigNumber, bypassing underflow error
                 const depositRemainder = BigNumber.from(10).div(BigNumber.from(100));
-                console.log(depositRemainder);
-
                 const depositAmountWithRemainder = depositAmount.add(depositRemainder);
                 const nativeDepositAmountWithRemainder = toNativeAmount(depositAmountWithRemainder);
 
@@ -130,12 +128,12 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should depositForArray with exact value and good array lengths', async () => {
                 const depositAmounts = [depositAmount.mul(2), depositAmount];
-                const depositNativeTotalAmount = toNativeAmount(getTotalAmount(depositAmounts));
+                const nativeDepositTotalAmount = toNativeAmount(getTotalAmount(depositAmounts));
                 const targets = [iexecAdmin.address, accountB.address];
                 const depositForArrayArgs = [
                     depositAmounts,
                     targets,
-                    { value: depositNativeTotalAmount },
+                    { value: nativeDepositTotalAmount },
                 ] as [BigNumber[], string[], { value: BigNumber }];
 
                 expect(await iexecPocoAsAccountA.callStatic.depositForArray(...depositForArrayArgs))
@@ -143,7 +141,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPocoAsAccountA.depositForArray(...depositForArrayArgs))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-depositNativeTotalAmount, depositNativeTotalAmount],
+                        [-nativeDepositTotalAmount, nativeDepositTotalAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [iexecAdmin, accountB], [...depositAmounts])
                     .to.emit(iexecPoco, 'Transfer')
@@ -155,21 +153,21 @@ if (CONFIG.chains.default.asset === 'Native') {
             it('Should depositForArray with good array lengths and remainder value sent', async () => {
                 const depositAmounts = [depositAmount.mul(2), depositAmount];
                 const remainderNativeAmount = toNativeAmount(depositAmount);
-                const depositNativeTotalAmount = toNativeAmount(
+                const nativeDepositTotalAmount = toNativeAmount(
                     getTotalAmount(depositAmounts).add(remainderNativeAmount),
                 );
                 const targets = [iexecAdmin.address, accountB.address];
                 const depositForArrayArgs = [
                     depositAmounts,
                     targets,
-                    { value: depositNativeTotalAmount },
+                    { value: nativeDepositTotalAmount },
                 ] as [BigNumber[], string[], { value: BigNumber }];
                 await expect(iexecPocoAsAccountA.depositForArray(...depositForArrayArgs))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
                         [
-                            -depositNativeTotalAmount.sub(remainderNativeAmount),
-                            depositNativeTotalAmount.sub(remainderNativeAmount),
+                            -nativeDepositTotalAmount.sub(remainderNativeAmount),
+                            nativeDepositTotalAmount.sub(remainderNativeAmount),
                         ],
                     )
                     .to.changeTokenBalances(iexecPoco, [iexecAdmin, accountB], [...depositAmounts])
@@ -181,12 +179,12 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should not depositForArray with mismatched array lengths', async () => {
                 const depositAmounts = [depositAmount.mul(2), depositAmount, depositAmount.div(2)];
-                const depositNativeTotalAmount = toNativeAmount(getTotalAmount(depositAmounts));
+                const nativeDepositTotalAmount = toNativeAmount(getTotalAmount(depositAmounts));
                 const targets = [iexecAdmin.address, accountB.address];
                 const depositForArrayArgs = [
                     depositAmounts,
                     targets,
-                    { value: depositNativeTotalAmount },
+                    { value: nativeDepositTotalAmount },
                 ] as [BigNumber[], string[], { value: BigNumber }];
 
                 await expect(
