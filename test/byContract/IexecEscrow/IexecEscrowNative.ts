@@ -78,7 +78,7 @@ if (CONFIG.chains.default.asset === 'Native') {
         });
 
         // TODO 'Should deposit with zero value'
-        describe('Deposits', () => {
+        describe('Deposit', () => {
             it('Should deposit native tokens', async () => {
                 expect(await iexecPocoAsAccountA.callStatic.deposit(...depositArgs)).to.be.true;
                 await expect(iexecPocoAsAccountA.deposit(...depositArgs))
@@ -108,7 +108,9 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountA.address, depositAmount);
             });
+        });
 
+        describe('Deposit for', () => {
             it('Should deposit native tokens for another address', async () => {
                 const depositForArgs = [accountB.address, ...depositArgs] as [
                     string,
@@ -125,7 +127,9 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountB.address, depositAmount);
             });
+        });
 
+        describe('Deposit for array', () => {
             it('Should depositForArray with exact value and good array lengths', async () => {
                 const depositAmounts = [depositAmount.mul(2), depositAmount];
                 const nativeDepositTotalAmount = toNativeAmount(getTotalAmount(depositAmounts));
@@ -194,7 +198,7 @@ if (CONFIG.chains.default.asset === 'Native') {
         });
 
         // TODO 'Should withdraw with zero value'
-        describe('Withdrawals', () => {
+        describe('Withdraw', () => {
             it('Should withdraw native tokens', async () => {
                 await iexecPocoAsAccountA.deposit(...depositArgs);
 
@@ -209,6 +213,22 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .withArgs(accountA.address, AddressZero, withdrawAmount);
             });
 
+            it('Should not withdraw native tokens with empty balance', async () => {
+                await expect(
+                    iexecPocoAsAccountA.withdraw(...withdrawArg),
+                ).to.be.revertedWithoutReason();
+            });
+
+            it('Should not withdraw native tokens with insufficient balance', async () => {
+                await iexecPocoAsAccountA.deposit(...depositArgs);
+
+                await expect(
+                    iexecPocoAsAccountA.withdraw(depositAmount.mul(2)),
+                ).to.be.revertedWithoutReason();
+            });
+        });
+
+        describe('Withdraw to', () => {
             it('Should withdraw native tokens to another address', async () => {
                 await iexecPocoAsAccountA.deposit(...depositArgs);
                 const withdrawToArgs = [...withdrawArg, accountB.address] as [BigNumber, string];
@@ -222,19 +242,6 @@ if (CONFIG.chains.default.asset === 'Native') {
                     .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount])
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(accountA.address, AddressZero, withdrawAmount);
-            });
-            it('Should not withdraw native tokens with empty balance', async () => {
-                await expect(
-                    iexecPocoAsAccountA.withdraw(...withdrawArg),
-                ).to.be.revertedWithoutReason();
-            });
-
-            it('Should not withdraw native tokens with insufficient balance', async () => {
-                await iexecPocoAsAccountA.deposit(...depositArgs);
-
-                await expect(
-                    iexecPocoAsAccountA.withdraw(depositAmount.mul(2)),
-                ).to.be.revertedWithoutReason();
             });
         });
 
