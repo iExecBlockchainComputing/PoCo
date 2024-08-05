@@ -290,20 +290,20 @@ if (CONFIG.chains.default.asset === 'Native') {
                 const initTotalSupply = await iexecPoco.totalSupply();
                 expect(initTotalSupply).to.equal(depositAmount);
 
-                const expectDelta = BigNumber.from(5);
+                const expectedDelta = BigNumber.from(5);
                 await setStorageAt(
                     proxyAddress,
                     '0x0c', // Slot index of `m_totalSupply` in Store
-                    initTotalSupply.sub(expectDelta).toHexString(),
+                    initTotalSupply.sub(expectedDelta).toHexString(),
                 );
                 expect(await iexecPoco.totalSupply()).to.equal(
-                    initTotalSupply.sub(expectDelta).toHexString(),
+                    initTotalSupply.sub(expectedDelta).toHexString(),
                 );
 
-                expect(await iexecPocoAsAdmin.callStatic.recover()).to.equal(expectDelta);
+                expect(await iexecPocoAsAdmin.callStatic.recover()).to.equal(expectedDelta);
                 await expect(iexecPocoAsAdmin.recover())
                     .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(AddressZero, iexecAdmin.address, expectDelta);
+                    .withArgs(AddressZero, iexecAdmin.address, expectedDelta);
 
                 expect(await iexecPoco.totalSupply()).to.equal(initTotalSupply);
             });
