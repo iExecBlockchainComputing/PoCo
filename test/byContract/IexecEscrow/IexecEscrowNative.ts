@@ -12,9 +12,9 @@ import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../ty
 import { getIexecAccounts } from '../../../utils/poco-tools';
 
 const depositAmount = BigNumber.from(100);
+const depositNativeAmount = ethers.utils.parseUnits(depositAmount.toString(), 9);
+const depositArgs = [{ value: depositNativeAmount }] as [{ value: BigNumber }];
 const withdrawAmount = BigNumber.from(100);
-const depositNativetAmount = ethers.utils.parseUnits(depositAmount.toString(), 9);
-const depositArgs = [{ value: depositNativetAmount }] as [{ value: BigNumber }];
 const withdrawArg = [withdrawAmount] as [BigNumber];
 
 // TODO: remove this when poco is also available in Native mode
@@ -43,12 +43,12 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(
                     accountA.sendTransaction({
                         to: iexecPoco.address,
-                        value: depositNativetAmount,
+                        value: depositNativeAmount,
                     }),
                 )
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-depositNativetAmount, depositNativetAmount],
+                        [-depositNativeAmount, depositNativeAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -63,13 +63,13 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(
                     accountA.sendTransaction({
                         to: iexecPoco.address,
-                        value: depositNativetAmount,
+                        value: depositNativeAmount,
                         data: randomData,
                     }),
                 )
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-depositNativetAmount, depositNativetAmount],
+                        [-depositNativeAmount, depositNativeAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -83,11 +83,32 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPocoAsAccountA.deposit(...depositArgs))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-depositNativetAmount, depositNativetAmount],
+                        [-depositNativeAmount, depositNativeAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountA.address, depositAmount);
+            });
+
+            it('Should deposit native tokens and return excess', async () => {
+                const depositAmountExecess = 0.1;
+                const depositAmountWithExecess = 100.1;
+                const expectedTokenTransfer = depositAmountWithExecess - depositAmountExecess;
+
+                const depositNativeAmountExecess = ethers.utils.parseUnits('0.1', 9);
+                const depositNativeAmountWithExecess = ethers.utils.parseUnits('100.1', 9);
+                const expectedNativeTransfer = depositNativeAmountWithExecess.sub(
+                    depositNativeAmountExecess,
+                );
+
+                await expect(iexecPocoAsAccountA.deposit({ value: depositNativeAmountWithExecess }))
+                    .to.changeEtherBalances(
+                        [accountA, iexecPoco],
+                        [-expectedNativeTransfer, expectedNativeTransfer],
+                    )
+                    .to.changeTokenBalances(iexecPoco, [accountA], [expectedTokenTransfer])
+                    .to.emit(iexecPoco, 'Transfer')
+                    .withArgs(AddressZero, accountA.address, expectedTokenTransfer);
             });
 
             it('Should deposit native tokens for another address', async () => {
@@ -100,7 +121,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPocoAsAccountA.depositFor(...depositForArgs))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [-depositNativetAmount, depositNativetAmount],
+                        [-depositNativeAmount, depositNativeAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountB], [depositAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -189,7 +210,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPocoAsAccountA.withdraw(...withdrawArg))
                     .to.changeEtherBalances(
                         [accountA, iexecPoco],
-                        [depositNativetAmount, -depositNativetAmount],
+                        [depositNativeAmount, -depositNativeAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -204,7 +225,7 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await expect(iexecPocoAsAccountA.withdrawTo(...withdrawToArgs))
                     .to.changeEtherBalances(
                         [accountB, iexecPoco],
-                        [depositNativetAmount, -depositNativetAmount],
+                        [depositNativeAmount, -depositNativeAmount],
                     )
                     .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount])
                     .to.emit(iexecPoco, 'Transfer')
@@ -230,7 +251,7 @@ if (CONFIG.chains.default.asset === 'Native') {
             it('Should recover extra balance', async () => {
                 await iexecAdmin.sendTransaction({
                     to: iexecPoco.address,
-                    value: depositNativetAmount,
+                    value: depositNativeAmount,
                 });
                 await setStorageAt(
                     proxyAddress,
