@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HashZero as hashZero } from '@ethersproject/constants';
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
@@ -100,7 +100,7 @@ describe('Maintenance', async () => {
         it('Should update domain separator', async () => {
             await setDomainSeparatorInStorage(someDomainSeparator);
             expect(await iexecPoco.eip712domain_separator()).equal(someDomainSeparator);
-            await iexecPocoAsAdmin.updateDomainSeparator().then((tx) => tx.wait());
+            await iexecPoco.updateDomainSeparator().then((tx) => tx.wait());
             expect(await iexecPoco.eip712domain_separator()).equal(
                 await hashDomain(await iexecPoco.domain()),
             );
@@ -174,11 +174,11 @@ describe('Maintenance', async () => {
     }
 
     async function setDomainSeparatorInStorage(domainSeparator: string) {
-        await ethers.provider.send('hardhat_setStorageAt', [
+        await setStorageAt(
             proxyAddress,
             '0x10', // Slot index of EIP712DOMAIN_SEPARATOR in Store
             domainSeparator,
-        ]);
+        );
         // Double check the update of the domain separator happened
         expect(await iexecPoco.eip712domain_separator()).equal(domainSeparator);
     }
