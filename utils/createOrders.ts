@@ -1,12 +1,14 @@
-// SPDX-FileCopyrightText: 2023 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
+import { BigNumber } from '@ethersproject/bignumber';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
-import constants from './constants';
+import constants, { NULL } from './constants';
 import { utils } from './odb-tools';
+import { OrderOperationEnum } from './poco-tools';
 
 export type Orders = [
     IexecLibOrders_v5.AppOrderStruct,
@@ -50,6 +52,12 @@ export interface IexecOrders {
     dataset: IexecLibOrders_v5.DatasetOrderStruct;
     workerpool: IexecLibOrders_v5.WorkerpoolOrderStruct;
     requester: IexecLibOrders_v5.RequestOrderStruct;
+}
+
+export interface OrderOperation {
+    order: Record<string, any>;
+    operation: BigNumber;
+    sign: string;
 }
 
 export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
@@ -115,6 +123,13 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
         salt: constants.NULL.BYTES32,
         sign: constants.NULL.SIGNATURE,
     };
+}
+
+/**
+ * Create an order operation from an existing order.
+ */
+export function createOrderOperation<OrderType>(order: OrderType, operation: OrderOperationEnum) {
+    return { order, operation: BigNumber.from(operation), sign: NULL.SIGNATURE };
 }
 
 export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
@@ -238,6 +253,23 @@ export async function signOrder(
     signer: SignerWithAddress,
 ): Promise<void> {
     return utils.signStruct(getTypeOf(order), order, domain, signer);
+}
+
+/**
+ * Sign an iExec EIP712 order operation for app, dataset, workerpool or request
+ * order operations.
+ */
+export async function signOrderOperation(
+    domain: TypedDataDomain,
+    orderOperation: OrderOperation,
+    signer: SignerWithAddress,
+): Promise<void> {
+    return utils.signStruct(
+        getTypeOf(orderOperation.order) + 'Operation',
+        orderOperation,
+        domain,
+        signer,
+    );
 }
 
 /**
