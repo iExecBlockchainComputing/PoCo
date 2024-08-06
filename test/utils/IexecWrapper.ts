@@ -150,7 +150,7 @@ export class IexecWrapper {
             await IexecAccessors__factory.connect(
                 this.proxyAddress,
                 this.accounts.anyone,
-            ).viewConsumed(hashOrder(this.domain, requestOrder))
+            ).viewConsumed(this.hashOrder(requestOrder))
         ).toNumber();
         const dealId = getDealId(this.domain, requestOrder, taskIndex);
         const taskId = getTaskId(dealId, taskIndex);
