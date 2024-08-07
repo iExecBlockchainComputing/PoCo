@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, ContractReceipt } from 'ethers';
 import hre, { ethers } from 'hardhat';
@@ -18,7 +19,14 @@ import {
     WorkerpoolRegistry__factory,
 } from '../../typechain';
 import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
-import { IexecOrders, Orders, hashOrder, signOrders } from '../../utils/createOrders';
+import {
+    IexecOrders,
+    OrderOperation,
+    Orders,
+    hashOrder,
+    signOrderOperation,
+    signOrders,
+} from '../../utils/createOrders';
 import { IexecAccounts, getDealId, getTaskId, setNextBlockTimestamp } from '../../utils/poco-tools';
 import { extractEventsFromReceipt } from '../../utils/tools';
 const DEPLOYMENT_CONFIG = config.chains.default;
@@ -26,10 +34,17 @@ const DEPLOYMENT_CONFIG = config.chains.default;
 export class IexecWrapper {
     proxyAddress: string;
     accounts: IexecAccounts;
+    domain: TypedDataDomain;
 
     constructor(proxyAddress: string, accounts: IexecAccounts) {
         this.proxyAddress = proxyAddress;
         this.accounts = accounts;
+        this.domain = {
+            name: 'iExecODB',
+            version: '5.0.0',
+            chainId: hre.network.config.chainId,
+            verifyingContract: this.proxyAddress,
+        };
     }
 
     /**
@@ -89,6 +104,23 @@ export class IexecWrapper {
             .then((tx) => tx.wait());
     }
 
+    /**
+     * Hash an order using current domain.
+     */
+    hashOrder(order: Record<string, any>) {
+        return hashOrder(this.domain, order);
+    }
+
+    /**
+     * Sign an order operation using current domain.
+     */
+    async signOrderOperation(
+        orderOperation: OrderOperation,
+        signer: SignerWithAddress,
+    ): Promise<void> {
+        return signOrderOperation(this.domain, orderOperation, signer);
+    }
+
     async signAndSponsorMatchOrders(orders: IexecOrders) {
         return this._signAndMatchOrders(orders, true);
     }
@@ -104,13 +136,7 @@ export class IexecWrapper {
      * Otherwise the requester will be in charge of paying for the deal.
      */
     private async _signAndMatchOrders(orders: IexecOrders, withSponsor: boolean) {
-        const domain = {
-            name: 'iExecODB',
-            version: '5.0.0',
-            chainId: hre.network.config.chainId,
-            verifyingContract: this.proxyAddress,
-        };
-        await signOrders(domain, orders, {
+        await signOrders(this.domain, orders, {
             appOwner: this.accounts.appProvider,
             datasetOwner: this.accounts.datasetProvider,
             workerpoolOwner: this.accounts.scheduler,
@@ -124,9 +150,9 @@ export class IexecWrapper {
             await IexecAccessors__factory.connect(
                 this.proxyAddress,
                 this.accounts.anyone,
-            ).viewConsumed(hashOrder(domain, requestOrder))
+            ).viewConsumed(this.hashOrder(requestOrder))
         ).toNumber();
-        const dealId = getDealId(domain, requestOrder, taskIndex);
+        const dealId = getDealId(this.domain, requestOrder, taskIndex);
         const taskId = getTaskId(dealId, taskIndex);
         const volume = Number(requestOrder.volume);
         const taskPrice =

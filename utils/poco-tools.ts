@@ -22,6 +22,11 @@ export enum TaskStatusEnum {
     FAILED,
 }
 
+export enum OrderOperationEnum {
+    SIGN,
+    CLOSE,
+}
+
 export interface IexecAccounts {
     iexecAdmin: SignerWithAddress;
     requester: SignerWithAddress;
