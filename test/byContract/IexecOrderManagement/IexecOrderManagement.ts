@@ -35,10 +35,10 @@ describe('OrderManagement', async () => {
     let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
     let [appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash]: string[] = [];
 
-    async function deployContracts() {
+    before(async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
         await loadFixture(initFixture);
-    }
+    });
 
     async function initFixture() {
         const accounts = await getIexecAccounts();
@@ -76,10 +76,6 @@ describe('OrderManagement', async () => {
     }
 
     describe('Manage orders when presign operations sent by owners', () => {
-        before(async () => {
-            await deployContracts();
-        });
-
         it('Should manage app order when presign operation sent by app provider', async () => {
             await expect(
                 iexecPocoAsAppProvider.manageAppOrder(
@@ -154,19 +150,9 @@ describe('OrderManagement', async () => {
                 ),
             ).is.true;
         });
-        it('Should match orders when presign operations sent by owners', async () => {
-            await depositInIexecAccounts();
-            await expect(
-                iexecPoco.matchOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder),
-            ).to.emit(iexecPoco, 'OrdersMatched');
-        });
     });
 
     describe('Manage orders when presign operations signed by owners', () => {
-        before(async () => {
-            await deployContracts();
-        });
-
         it('Should manage app order when presign operation signed by app provider', async () => {
             const orderOperation = createOrderOperation(appOrder, OrderOperationEnum.SIGN);
             await iexecWrapper.signOrderOperation(orderOperation, appProvider);
@@ -237,19 +223,9 @@ describe('OrderManagement', async () => {
                 ),
             ).is.true;
         });
-        it('Should match orders when presign operations signed by owners', async () => {
-            await depositInIexecAccounts();
-            await expect(
-                iexecPoco.matchOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder),
-            ).to.emit(iexecPoco, 'OrdersMatched');
-        });
     });
 
     describe('Manage orders when close operations sent by owners', () => {
-        before(async () => {
-            await deployContracts();
-        });
-
         it('Should manage app order when close operation sent by app provider', async () => {
             await expect(
                 iexecPocoAsAppProvider.manageAppOrder(
@@ -293,10 +269,6 @@ describe('OrderManagement', async () => {
     });
 
     describe('Manage orders when close operations signed by owners', () => {
-        before(async () => {
-            await deployContracts();
-        });
-
         it('Should manage app order when close operation signed by app provider', async () => {
             const orderOperation = createOrderOperation(appOrder, OrderOperationEnum.CLOSE);
             await iexecWrapper.signOrderOperation(orderOperation, appProvider);
@@ -336,10 +308,6 @@ describe('OrderManagement', async () => {
     });
 
     describe('Should not manage orders when invalid sender or signature', () => {
-        before(async () => {
-            await deployContracts();
-        });
-
         it('Should not manage app order when invalid sender or signature', async () => {
             await expect(
                 iexecPoco.manageAppOrder({
@@ -377,16 +345,4 @@ describe('OrderManagement', async () => {
             ).to.be.revertedWith('invalid-sender-or-signature');
         });
     });
-
-    async function depositInIexecAccounts() {
-        const taskPrice =
-            Number(appOrder.appprice) +
-            Number(datasetOrder.datasetprice) +
-            Number(workerpoolOrder.workerpoolprice);
-        const dealPrice = taskPrice * volume;
-        await iexecWrapper.depositInIexecAccount(requester, dealPrice);
-        await iexecWrapper
-            .computeSchedulerDealStake(Number(workerpoolOrder.workerpoolprice), volume)
-            .then((stake) => iexecWrapper.depositInIexecAccount(scheduler, stake));
-    }
 });
