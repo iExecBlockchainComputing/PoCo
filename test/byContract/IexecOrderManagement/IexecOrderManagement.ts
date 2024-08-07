@@ -75,8 +75,8 @@ describe('OrderManagement', async () => {
         requestOrderHash = iexecWrapper.hashOrder(requestOrder);
     }
 
-    describe('Manage orders when presign operations sent by owners', () => {
-        it('Should manage app order when presign operation sent by app provider', async () => {
+    describe('Presign orders when operations are sent by owners', () => {
+        it('Should presign app order when operation is sent by app provider', async () => {
             await expect(
                 iexecPocoAsAppProvider.manageAppOrder(
                     createOrderOperation(appOrder, OrderOperationEnum.SIGN),
@@ -94,7 +94,7 @@ describe('OrderManagement', async () => {
                 ),
             ).is.true;
         });
-        it('Should manage dataset order when presign operation sent by dataset provider', async () => {
+        it('Should presign dataset order when operation is sent by dataset provider', async () => {
             await expect(
                 iexecPocoAsDatasetProvider.manageDatasetOrder(
                     createOrderOperation(datasetOrder, OrderOperationEnum.SIGN),
@@ -113,7 +113,7 @@ describe('OrderManagement', async () => {
                 ),
             ).is.true;
         });
-        it('Should manage workerpool order when presign operation sent by scheduler', async () => {
+        it('Should presign workerpool order when operation is sent by scheduler', async () => {
             await expect(
                 iexecPocoAsScheduler.manageWorkerpoolOrder(
                     createOrderOperation(workerpoolOrder, OrderOperationEnum.SIGN),
@@ -132,7 +132,7 @@ describe('OrderManagement', async () => {
                 ),
             ).is.true;
         });
-        it('Should manage request order when presign operation sent by requester', async () => {
+        it('Should presign request order when operation is sent by requester', async () => {
             await expect(
                 iexecPocoAsRequester.manageRequestOrder(
                     createOrderOperation(requestOrder, OrderOperationEnum.SIGN),
@@ -152,8 +152,8 @@ describe('OrderManagement', async () => {
         });
     });
 
-    describe('Manage orders when presign operations signed by owners', () => {
-        it('Should manage app order when presign operation signed by app provider', async () => {
+    describe('Presign orders when operations are signed by owners', () => {
+        it('Should presign app order when operation is signed by app provider', async () => {
             const orderOperation = createOrderOperation(appOrder, OrderOperationEnum.SIGN);
             await iexecWrapper.signOrderOperation(orderOperation, appProvider);
 
@@ -170,7 +170,7 @@ describe('OrderManagement', async () => {
                 ),
             ).is.true;
         });
-        it('Should manage dataset order when presign operation signed by dataset provider', async () => {
+        it('Should presign dataset order when operation is signed by dataset provider', async () => {
             const orderOperation = createOrderOperation(datasetOrder, OrderOperationEnum.SIGN);
             await iexecWrapper.signOrderOperation(orderOperation, datasetProvider);
 
@@ -188,7 +188,7 @@ describe('OrderManagement', async () => {
                 ),
             ).is.true;
         });
-        it('Should manage workerpool order when presign operation signed by workerpool provider', async () => {
+        it('Should presign workerpool order when operation is signed by workerpool provider', async () => {
             const orderOperation = createOrderOperation(workerpoolOrder, OrderOperationEnum.SIGN);
             await iexecWrapper.signOrderOperation(orderOperation, scheduler);
 
@@ -206,7 +206,7 @@ describe('OrderManagement', async () => {
                 ),
             ).is.true;
         });
-        it('Should manage request order when presign operation signed by requester', async () => {
+        it('Should presign request order when operation is signed by requester', async () => {
             const orderOperation = createOrderOperation(requestOrder, OrderOperationEnum.SIGN);
             await iexecWrapper.signOrderOperation(orderOperation, requester);
 
@@ -225,8 +225,8 @@ describe('OrderManagement', async () => {
         });
     });
 
-    describe('Manage orders when close operations sent by owners', () => {
-        it('Should manage app order when close operation sent by app provider', async () => {
+    describe('Close orders when operations are sent by owners', () => {
+        it('Should close app order when operation is sent by app provider', async () => {
             await expect(
                 iexecPocoAsAppProvider.manageAppOrder(
                     createOrderOperation(appOrder, OrderOperationEnum.CLOSE),
@@ -236,7 +236,7 @@ describe('OrderManagement', async () => {
                 .withArgs(appOrderHash);
             expect(await iexecPoco.viewConsumed(appOrderHash)).equal(volume);
         });
-        it('Should manage dataset order when close operation sent by dataset provider', async () => {
+        it('Should close dataset order when operation is sent by dataset provider', async () => {
             await expect(
                 iexecPocoAsDatasetProvider.manageDatasetOrder(
                     createOrderOperation(datasetOrder, OrderOperationEnum.CLOSE),
@@ -246,7 +246,7 @@ describe('OrderManagement', async () => {
                 .withArgs(datasetOrderHash);
             expect(await iexecPoco.viewConsumed(datasetOrderHash)).equal(volume);
         });
-        it('Should manage workerpool order when close operation sent by scheduler', async () => {
+        it('Should close workerpool order when operation is sent by scheduler', async () => {
             await expect(
                 iexecPocoAsScheduler.manageWorkerpoolOrder(
                     createOrderOperation(workerpoolOrder, OrderOperationEnum.CLOSE),
@@ -256,7 +256,7 @@ describe('OrderManagement', async () => {
                 .withArgs(workerpoolOrderHash);
             expect(await iexecPoco.viewConsumed(workerpoolOrderHash)).equal(volume);
         });
-        it('Should manage request order when close operation sent by requester', async () => {
+        it('Should close request order when operation is sent by requester', async () => {
             await expect(
                 iexecPocoAsRequester.manageRequestOrder(
                     createOrderOperation(requestOrder, OrderOperationEnum.CLOSE),
@@ -268,8 +268,8 @@ describe('OrderManagement', async () => {
         });
     });
 
-    describe('Manage orders when close operations signed by owners', () => {
-        it('Should manage app order when close operation signed by app provider', async () => {
+    describe('Close orders when operations are signed by owners', () => {
+        it('Should close app order when operation is signed by app provider', async () => {
             const orderOperation = createOrderOperation(appOrder, OrderOperationEnum.CLOSE);
             await iexecWrapper.signOrderOperation(orderOperation, appProvider);
 
@@ -278,7 +278,7 @@ describe('OrderManagement', async () => {
                 .withArgs(appOrderHash);
             expect(await iexecPoco.viewConsumed(appOrderHash)).equal(volume);
         });
-        it('Should manage dataset order when close operation signed by dataset provider', async () => {
+        it('Should close dataset order when operation is signed by dataset provider', async () => {
             const orderOperation = createOrderOperation(datasetOrder, OrderOperationEnum.CLOSE);
             await iexecWrapper.signOrderOperation(orderOperation, datasetProvider);
 
@@ -287,7 +287,7 @@ describe('OrderManagement', async () => {
                 .withArgs(datasetOrderHash);
             expect(await iexecPoco.viewConsumed(datasetOrderHash)).equal(volume);
         });
-        it('Should manage workerpool order when close operation signed by scheduler', async () => {
+        it('Should close workerpool order when operation is signed by scheduler', async () => {
             const orderOperation = createOrderOperation(workerpoolOrder, OrderOperationEnum.CLOSE);
             await iexecWrapper.signOrderOperation(orderOperation, scheduler);
 
@@ -296,7 +296,7 @@ describe('OrderManagement', async () => {
                 .withArgs(workerpoolOrderHash);
             expect(await iexecPoco.viewConsumed(workerpoolOrderHash)).equal(volume);
         });
-        it('Should manage request order when close operation signed by requester', async () => {
+        it('Should close request order when operation is signed by requester', async () => {
             const orderOperation = createOrderOperation(requestOrder, OrderOperationEnum.CLOSE);
             await iexecWrapper.signOrderOperation(orderOperation, requester);
 
