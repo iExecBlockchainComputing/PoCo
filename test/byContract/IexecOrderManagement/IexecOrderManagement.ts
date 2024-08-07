@@ -28,7 +28,6 @@ describe('OrderManagement', async () => {
         iexecPocoAsRequester,
     ]: IexecInterfaceNative[] = [];
     let iexecWrapper: IexecWrapper;
-    let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [anyone, appProvider, datasetProvider, scheduler, requester]: SignerWithAddress[] = [];
     let appOrder: IexecLibOrders_v5.AppOrderStruct;
     let datasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
@@ -45,7 +44,7 @@ describe('OrderManagement', async () => {
         const accounts = await getIexecAccounts();
         ({ appProvider, datasetProvider, scheduler, requester, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
-        ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
+        const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAppProvider = iexecPoco.connect(appProvider);
         iexecPocoAsDatasetProvider = iexecPoco.connect(datasetProvider);
