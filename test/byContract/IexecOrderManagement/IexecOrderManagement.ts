@@ -35,7 +35,7 @@ describe('OrderManagement', async () => {
     let requestOrder: IexecLibOrders_v5.RequestOrderStruct;
     let [appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash]: string[] = [];
 
-    before(async () => {
+    beforeEach(async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
         await loadFixture(initFixture);
     });
