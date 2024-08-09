@@ -2,6 +2,7 @@
 
 ## vNEXT
 - Migrate unit test files to Typescript & Hardhat:
+    - Add `.test` suffix to unit test files (#106)
     - ENSIntegration (#105)
     - IexecOrderManagement (#101, #102, #103, #104)
     - IexecMaintenance (#100)
