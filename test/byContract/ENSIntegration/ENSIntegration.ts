@@ -32,8 +32,7 @@ describe('ENSIntegration', async () => {
     });
 
     async function initFixture() {
-        const accounts = await getIexecAccounts();
-        ({ iexecAdmin, anyone } = accounts);
+        ({ iexecAdmin, anyone } = await getIexecAccounts());
         const ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
         ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
@@ -95,18 +94,33 @@ describe('ENSIntegration', async () => {
         });
     });
 
+    /**
+     * Get the address associated to the given ENS name using forward resolution.
+     * @param domain ENS domain name
+     * @returns ETH address
+     */
     async function resolve(domain: string) {
         const nameHash = ethers.utils.namehash(domain);
         const resolver = await getResolver(nameHash);
         return await resolver['addr(bytes32)'](nameHash);
     }
 
+    /**
+     * Get the primary ENS name associated to the given address using reverse resolution.
+     * @param address
+     * @returns ENS name
+     */
     async function lookup(address: string) {
         const nameHash = ethers.utils.namehash(`${address.substring(2)}.addr.reverse`);
         const reverseResolver = await getResolver(nameHash);
         return await reverseResolver.name(nameHash);
     }
 
+    /**
+     * Get resolver contract of the given name hash.
+     * @param nameHash namehash of the domain name
+     * @returns PublicResolver instance
+     */
     async function getResolver(nameHash: string) {
         const resolverAddress = await ensRegistry.resolver(nameHash);
         return PublicResolver__factory.connect(resolverAddress, anyone);
