@@ -16,13 +16,11 @@ import {
 import { getIexecAccounts } from '../../../utils/poco-tools';
 const CONFIG = require('../../../config/config.json');
 
-describe('ENSIntegration', async () => {
+describe('ENSIntegration', () => {
     let proxyAddress: string;
-    let iexecPoco: IexecInterfaceNative;
-    let iexecPocoAsAdmin: IexecInterfaceNative;
+    let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
+    let [iexecAdmin, anyone]: SignerWithAddress[] = [];
     let ensRegistry: ENSRegistry;
-    let iexecAdmin: SignerWithAddress;
-    let anyone: SignerWithAddress;
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
@@ -39,7 +37,7 @@ describe('ENSIntegration', async () => {
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
     }
 
-    describe('Forward resolution', async () => {
+    describe('Forward resolution', () => {
         it('Should resolve initial names', async () => {
             if (CONFIG.chains.default.asset === 'Token') {
                 expect(await resolve('rlc.iexec.eth')).to.equal(await iexecPoco.token());
@@ -56,7 +54,7 @@ describe('ENSIntegration', async () => {
         });
     });
 
-    describe('Reverse resolution', async () => {
+    describe('Reverse resolution', () => {
         it('Should lookup initial addresses', async () => {
             expect(await lookup(iexecAdmin.address)).to.equal('admin.iexec.eth');
             expect(await lookup(proxyAddress)).to.equal('core.v5.iexec.eth');
