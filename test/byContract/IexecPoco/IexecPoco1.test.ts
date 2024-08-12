@@ -7,13 +7,9 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
-    IexecAccessors,
-    IexecAccessors__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecPocoAccessors__factory,
-    WorkerpoolInterface__factory,
-    Workerpool__factory,
 } from '../../../typechain';
 import {
     OrdersActors,
@@ -34,12 +30,11 @@ const volume = taskIndex + 1;
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
-const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
 describe('IexecPoco1', () => {
     let proxyAddress: string;
-    let iexecAccessor: IexecAccessors;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
     let iexecWrapper: IexecWrapper;
     let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
@@ -77,11 +72,10 @@ describe('IexecPoco1', () => {
             anyone,
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
-        ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker(ethers.constants.AddressZero);
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
+        ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
+        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
-        iexecAccessor = IexecAccessors__factory.connect(proxyAddress, anyone);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -98,14 +92,10 @@ describe('IexecPoco1', () => {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
-
-        // ???
-        Workerpool__factory.connect(workerpoolAddress, anyone)
-            .changePolicy(35, 5)
-            .then((tx) => tx.wait());
-        WorkerpoolInterface__factory.connect(workerpoolAddress, anyone)
-            .changePolicy(35, 5)
-            .then((tx) => tx.wait());
+        // TODO check why this is done in 00_matchorders.js
+        // await Workerpool__factory.connect(workerpoolAddress, scheduler)
+        //     .changePolicy(35, 5)
+        //     .then((tx) => tx.wait());
     }
 
     // TODO
@@ -123,7 +113,7 @@ describe('IexecPoco1', () => {
                 prices: ordersPrices,
                 callback: AddressZero,
             });
-            expect(await iexecAccessor.balanceOf(proxyAddress)).to.be.equal(0);
+            expect(await iexecPoco.balanceOf(proxyAddress)).to.be.equal(0);
             // Compute prices, stakes, rewards, ...
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
@@ -142,10 +132,10 @@ describe('IexecPoco1', () => {
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Check balances before.
-            expect(await iexecAccessor.balanceOf(requester.address)).to.be.equal(dealPrice);
-            expect(await iexecAccessor.frozenOf(requester.address)).to.be.equal(0);
-            expect(await iexecAccessor.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
-            expect(await iexecAccessor.frozenOf(scheduler.address)).to.be.equal(0);
+            expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(dealPrice);
+            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
+            expect(await iexecPoco.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
+            expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(0);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             const { appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash } =
@@ -171,15 +161,13 @@ describe('IexecPoco1', () => {
                     volume,
                 );
             // Check balances after.
-            expect(await iexecAccessor.balanceOf(proxyAddress)).to.be.equal(
-                dealPrice + schedulerStake,
-            );
-            expect(await iexecAccessor.balanceOf(requester.address)).to.be.equal(0);
-            expect(await iexecAccessor.frozenOf(requester.address)).to.be.equal(dealPrice);
-            expect(await iexecAccessor.balanceOf(scheduler.address)).to.be.equal(0);
-            expect(await iexecAccessor.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
+            expect(await iexecPoco.balanceOf(proxyAddress)).to.be.equal(dealPrice + schedulerStake);
+            expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
+            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(dealPrice);
+            expect(await iexecPoco.balanceOf(scheduler.address)).to.be.equal(0);
+            expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
             // Check deal
-            const deal = await iexecAccessor.viewDeal(dealId);
+            const deal = await iexecPoco.viewDeal(dealId);
             expect(deal.app.pointer).to.equal(appAddress);
             expect(deal.app.owner).to.equal(appProvider.address);
             expect(Number(deal.app.price)).to.equal(appPrice);

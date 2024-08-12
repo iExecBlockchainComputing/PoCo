@@ -27,7 +27,7 @@ const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 
 /*
- * TODO make this real integration test (match, contribute, ..., finalize).
+ * TODO make this a real integration test (match, contribute, ..., finalize).
  */
 
 describe('IexecPoco (IT)', function () {

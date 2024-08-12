@@ -10,7 +10,7 @@ import constants, { NULL } from './constants';
 import { utils } from './odb-tools';
 import { OrderOperationEnum } from './poco-tools';
 
-// TODO use IexecOrders.toArray() everywhere and remove this
+// TODO use IexecOrders.toArray() for spreading and remove this
 // if not needed anymore.
 export type Orders = [
     IexecLibOrders_v5.AppOrderStruct,
@@ -67,6 +67,11 @@ export class IexecOrders {
         this.requester = requester;
     }
 
+    /**
+     * Convert this instance to an array to simplify spreading.
+     * foo(...orders.toArray());
+     * @returns an array with all orders
+     */
     toArray() {
         return [this.app, this.dataset, this.workerpool, this.requester] as [
             IexecLibOrders_v5.AppOrderStruct,
@@ -76,6 +81,11 @@ export class IexecOrders {
         ];
     }
 
+    /**
+     * Convert this instance to an object to simplify destructuring.
+     * const { appOrder } = orders.toObject();
+     * @returns an object with all orders
+     */
     toObject() {
         return {
             appOrder: this.app,
@@ -226,7 +236,8 @@ export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
     }
     return {
         orders: new IexecOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder),
-        // TODO remove these additional return values and use function toObject() :
+        // TODO remove these additional return values and use function toObject() for
+        // deserialization:
         // const {appOrder, ...} = orders.toObject();
         // Expose orders differently to make them easier to use in tests
         appOrder: appOrder,
