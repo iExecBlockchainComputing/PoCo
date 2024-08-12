@@ -17,6 +17,7 @@ import {
     RLC__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
+    Workerpool__factory,
 } from '../../typechain';
 import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
 import {
@@ -45,6 +46,14 @@ export class IexecWrapper {
             chainId: hre.network.config.chainId,
             verifyingContract: this.proxyAddress,
         };
+    }
+
+    /**
+     * Get configured domain.
+     * @returns domain object
+     */
+    getDomain() {
+        return this.domain;
     }
 
     /**
@@ -98,10 +107,53 @@ export class IexecWrapper {
         return ((workerpoolPrice * stakeRatio) / 100) * volume;
     }
 
+    /**
+     * Compute the amount of RLC tokens to be staked by the
+     * worker in order to contribute to a task.
+     * @param workerpoolAddress address of the workerpool
+     * @param workerpoolPrice price of the workerpool
+     * @returns value of worker stake
+     */
+    async computeWorkerTaskStake(workerpoolAddress: string, workerpoolPrice: number) {
+        // TODO make "m_workerStakeRatioPolicy()" as view function in IWorkerpool.v8 and use it.
+        const workerStakeRatio = (
+            await Workerpool__factory.connect(
+                workerpoolAddress,
+                this.accounts.anyone,
+            ).m_workerStakeRatioPolicy()
+        ).toNumber();
+        return (workerpoolPrice * workerStakeRatio) / 100;
+    }
+
+    /**
+     * Compute the amount of RLC tokens that the scheduler receives
+     * as a reward by task.
+     * @param workerpoolAddress address of the workerpool
+     * @returns value of the reward
+     */
+    async getSchedulerTaskRewardRatio(workerpoolAddress: string) {
+        return await Workerpool__factory.connect(
+            workerpoolAddress,
+            this.accounts.anyone,
+        ).m_schedulerRewardRatioPolicy();
+    }
+
     async setTeeBroker(brokerAddress: string) {
         await IexecMaintenanceDelegate__factory.connect(this.proxyAddress, this.accounts.iexecAdmin)
             .setTeeBroker(brokerAddress)
             .then((tx) => tx.wait());
+    }
+
+    /**
+     * Hash all orders using current domain.
+     */
+    hashOrders(orders: IexecOrders) {
+        return {
+            appOrderHash: this.hashOrder(orders.app),
+            datasetOrderHash: this.hashOrder(orders.dataset),
+            workerpoolOrderHash: this.hashOrder(orders.workerpool),
+            requestOrderHash: this.hashOrder(orders.requester),
+        };
     }
 
     /**
