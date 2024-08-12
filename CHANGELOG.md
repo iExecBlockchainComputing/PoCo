@@ -2,6 +2,7 @@
 
 ## vNEXT
 - Migrate unit test files to Typescript & Hardhat:
+    - IexecPoco/00_matchorders.js (#107)
     - Add `.test` suffix to unit test files (#106)
     - ENSIntegration (#105)
     - IexecOrderManagement (#101, #102, #103, #104)
