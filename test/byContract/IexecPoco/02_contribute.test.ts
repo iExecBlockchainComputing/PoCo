@@ -495,7 +495,7 @@ describe('Poco2#contribute', async () => {
                 worker,
             );
             // active task, before deadline, not contributed, enclave challenge
-            // not required valid scheduler signature, enclave signature not required
+            // not required, valid scheduler signature, enclave signature not required
             // but worker deposit missing
             await expect(
                 iexecPocoAsWorker.contribute(
