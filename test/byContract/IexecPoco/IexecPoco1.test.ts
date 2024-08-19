@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
@@ -18,26 +17,30 @@ import {
     buildOrders,
     signOrders,
 } from '../../../utils/createOrders';
-import { getDealId, getIexecAccounts } from '../../../utils/poco-tools';
+import { getDealId, getIexecAccounts, setNextBlockTimestamp } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 
 /*
  * TODO add TEE tests
  */
 
-const taskIndex = 0;
-const volume = taskIndex + 1;
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
+const trust = 3;
+const category = 2;
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
+const callback = ethers.Wallet.createRandom().address;
+const params = '<params>';
+const volume = 321;
+const taskIndex = 0;
 
 describe('IexecPoco1', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
     let iexecWrapper: IexecWrapper;
-    let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
+    let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
         iexecAdmin,
         requester,
@@ -72,7 +75,6 @@ describe('IexecPoco1', () => {
             anyone,
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
-        await iexecWrapper.setTeeBroker(ethers.constants.AddressZero);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
@@ -111,7 +113,11 @@ describe('IexecPoco1', () => {
                 beneficiary: beneficiary.address,
                 tag: standardDealTag,
                 prices: ordersPrices,
-                callback: AddressZero,
+                volume: volume,
+                callback: callback,
+                trust: trust,
+                category: category,
+                params: params,
             });
             expect(await iexecPoco.balanceOf(proxyAddress)).to.be.equal(0);
             // Compute prices, stakes, rewards, ...
@@ -122,7 +128,7 @@ describe('IexecPoco1', () => {
                 workerpoolPrice,
                 volume,
             );
-            const workerStakeByTask = await iexecWrapper.computeWorkerTaskStake(
+            const workerStakePerTask = await iexecWrapper.computeWorkerTaskStake(
                 workerpoolAddress,
                 workerpoolPrice,
             );
@@ -131,12 +137,13 @@ describe('IexecPoco1', () => {
             // Deposit required amounts.
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
-            // Check balances before.
+            // Check balances and frozen before.
             expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(dealPrice);
             expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
             expect(await iexecPoco.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
             expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(0);
             // Sign and match orders.
+            const startTime = await setNextBlockTimestamp();
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             const { appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash } =
                 iexecWrapper.hashOrders(orders);
@@ -150,7 +157,8 @@ describe('IexecPoco1', () => {
             expect(await iexecPocoAsRequester.callStatic.matchOrders(...orders.toArray())).to.equal(
                 dealId,
             );
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+            const tx = iexecPocoAsRequester.matchOrders(...orders.toArray());
+            await expect(tx)
                 .to.emit(iexecPoco, 'OrdersMatched')
                 .withArgs(
                     dealId,
@@ -160,35 +168,39 @@ describe('IexecPoco1', () => {
                     requestOrderHash,
                     volume,
                 );
-            // Check balances after.
-            expect(await iexecPoco.balanceOf(proxyAddress)).to.be.equal(dealPrice + schedulerStake);
-            expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
+            // Check balances and frozen after.
+            await expect(tx).to.changeTokenBalances(
+                iexecPoco,
+                [iexecPoco, requester, scheduler],
+                [dealPrice + schedulerStake, -dealPrice, -schedulerStake],
+            );
+            // TODO use predicate `(change) => boolean` when migrating to a recent version of Hardhat.
+            // See https://github.com/NomicFoundation/hardhat/blob/main/packages/hardhat-chai-matchers/src/internal/changeTokenBalance.ts#L42
             expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(dealPrice);
-            expect(await iexecPoco.balanceOf(scheduler.address)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
             // Check deal
             const deal = await iexecPoco.viewDeal(dealId);
             expect(deal.app.pointer).to.equal(appAddress);
             expect(deal.app.owner).to.equal(appProvider.address);
-            expect(Number(deal.app.price)).to.equal(appPrice);
+            expect(deal.app.price.toNumber()).to.equal(appPrice);
             expect(deal.dataset.pointer).to.equal(datasetAddress);
             expect(deal.dataset.owner).to.equal(datasetProvider.address);
-            expect(Number(deal.dataset.price)).to.equal(datasetPrice);
+            expect(deal.dataset.price.toNumber()).to.equal(datasetPrice);
             expect(deal.workerpool.pointer).to.equal(workerpoolAddress);
             expect(deal.workerpool.owner).to.equal(scheduler.address);
-            expect(Number(deal.workerpool.price)).to.equal(workerpoolPrice);
-            expect(Number(deal.trust)).to.equal(1);
-            expect(Number(deal.category)).to.equal(0);
-            expect(Number(deal.tag)).to.equal(0x0);
+            expect(deal.workerpool.price.toNumber()).to.equal(workerpoolPrice);
+            expect(deal.trust.toNumber()).to.equal(trust);
+            expect(deal.category.toNumber()).to.equal(category);
+            expect(deal.tag).to.equal(standardDealTag);
             expect(deal.requester).to.equal(requester.address);
             expect(deal.beneficiary).to.equal(beneficiary.address);
-            expect(deal.callback).to.equal(AddressZero);
-            expect(deal.params).to.equal('<params>');
-            expect(Number(deal.startTime)).greaterThan(0);
-            expect(Number(deal.botFirst)).to.equal(0);
-            expect(Number(deal.botSize)).to.equal(volume);
-            expect(Number(deal.workerStake)).to.equal(workerStakeByTask);
-            expect(Number(deal.schedulerRewardRatio)).to.equal(schedulerRewardByTask);
+            expect(deal.callback).to.equal(callback);
+            expect(deal.params).to.equal(params);
+            expect(deal.startTime.toNumber()).to.equal(startTime);
+            expect(deal.botFirst.toNumber()).to.equal(0);
+            expect(deal.botSize.toNumber()).to.equal(volume);
+            expect(deal.workerStake.toNumber()).to.equal(workerStakePerTask);
+            expect(deal.schedulerRewardRatio.toNumber()).to.equal(schedulerRewardByTask);
             expect(deal.sponsor).to.equal(requester.address);
         });
 

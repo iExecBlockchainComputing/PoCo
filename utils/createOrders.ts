@@ -40,6 +40,8 @@ export interface MatchOrdersArgs {
     volume?: number;
     callback?: string;
     trust?: number;
+    category?: number;
+    params?: string;
 }
 
 export interface OrdersActors {
@@ -131,7 +133,7 @@ export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct 
         requester: constants.NULL.ADDRESS,
         beneficiary: constants.NULL.ADDRESS,
         callback: constants.NULL.ADDRESS,
-        params: '<params>',
+        params: '',
         salt: constants.NULL.BYTES32,
         sign: constants.NULL.SIGNATURE,
     };
@@ -233,6 +235,15 @@ export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
     if (matchOrdersArgs.trust) {
         requestOrder.trust = matchOrdersArgs.trust;
         workerpoolOrder.trust = matchOrdersArgs.trust;
+    }
+    // Set category
+    if (matchOrdersArgs.category) {
+        requestOrder.category = matchOrdersArgs.category;
+        workerpoolOrder.category = matchOrdersArgs.category;
+    }
+    // Set params
+    if (matchOrdersArgs.params) {
+        requestOrder.params = matchOrdersArgs.params;
     }
     return {
         orders: new IexecOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder),

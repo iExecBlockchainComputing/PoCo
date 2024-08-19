@@ -132,10 +132,12 @@ export class IexecWrapper {
      * @returns value of the reward
      */
     async getSchedulerTaskRewardRatio(workerpoolAddress: string) {
-        return await Workerpool__factory.connect(
-            workerpoolAddress,
-            this.accounts.anyone,
-        ).m_schedulerRewardRatioPolicy();
+        return (
+            await Workerpool__factory.connect(
+                workerpoolAddress,
+                this.accounts.anyone,
+            ).m_schedulerRewardRatioPolicy()
+        ).toNumber();
     }
 
     async setTeeBroker(brokerAddress: string) {
