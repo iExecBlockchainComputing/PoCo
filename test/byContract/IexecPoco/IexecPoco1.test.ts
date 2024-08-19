@@ -119,7 +119,7 @@ describe('IexecPoco1', () => {
                 category: category,
                 params: params,
             });
-            expect(await iexecPoco.balanceOf(proxyAddress)).to.be.equal(0);
+            expect(await iexecPoco.balanceOf(proxyAddress)).to.equal(0);
             // Compute prices, stakes, rewards, ...
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
@@ -138,10 +138,10 @@ describe('IexecPoco1', () => {
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Check balances and frozen before.
-            expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(dealPrice);
-            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
-            expect(await iexecPoco.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
-            expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(0);
+            expect(await iexecPoco.balanceOf(requester.address)).to.equal(dealPrice);
+            expect(await iexecPoco.frozenOf(requester.address)).to.equal(0);
+            expect(await iexecPoco.balanceOf(scheduler.address)).to.equal(schedulerStake);
+            expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(0);
             // Sign and match orders.
             const startTime = await setNextBlockTimestamp();
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -176,8 +176,8 @@ describe('IexecPoco1', () => {
             );
             // TODO use predicate `(change) => boolean` when migrating to a recent version of Hardhat.
             // See https://github.com/NomicFoundation/hardhat/blob/main/packages/hardhat-chai-matchers/src/internal/changeTokenBalance.ts#L42
-            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(dealPrice);
-            expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
+            expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealPrice);
+            expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(schedulerStake);
             // Check deal
             const deal = await iexecPoco.viewDeal(dealId);
             expect(deal.app.pointer).to.equal(appAddress);
