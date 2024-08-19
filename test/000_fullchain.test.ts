@@ -10,12 +10,10 @@ import { IexecAccessors, IexecAccessors__factory, IexecPocoAccessors__factory } 
 import { IexecPoco1 } from '../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol';
 import { IexecPoco1__factory } from '../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
 import {
-    Orders,
     OrdersActors,
     OrdersAssets,
     OrdersPrices,
     buildOrders,
-    hashOrder,
     signOrders,
 } from '../utils/createOrders';
 import { getDealId, getIexecAccounts } from '../utils/poco-tools';
@@ -28,15 +26,17 @@ const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 
-describe('IexecPocoDelegate', function () {
+/*
+ * TODO make this a real integration test (match, contribute, ..., finalize).
+ */
+
+describe('IexecPoco (IT)', function () {
     let domain: TypedDataDomain;
     let proxyAddress: string;
     let iexecAccessor: IexecAccessors;
     let iexecPoco: IexecPoco1;
     let iexecWrapper: IexecWrapper;
-    let appAddress = '';
-    let workerpoolAddress = '';
-    let datasetAddress = '';
+    let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
     let [
         iexecAdmin,
         requester,
@@ -102,7 +102,7 @@ describe('IexecPocoDelegate', function () {
     describe('MatchOrders', function () {
         it('Should sponsor match orders (TEE)', async function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            const { orders } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
@@ -112,8 +112,8 @@ describe('IexecPocoDelegate', function () {
             });
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
-                1; // volume
-            expect(await iexecAccessor.balanceOf(iexecAccessor.address)).to.be.equal(0);
+                volume;
+            expect(await iexecAccessor.balanceOf(proxyAddress)).to.be.equal(0);
             await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
             expect(await iexecAccessor.balanceOf(sponsor.address)).to.be.equal(dealPrice);
             expect(await iexecAccessor.frozenOf(sponsor.address)).to.be.equal(0);
@@ -128,27 +128,19 @@ describe('IexecPocoDelegate', function () {
             expect(await iexecAccessor.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
             expect(await iexecAccessor.frozenOf(scheduler.address)).to.be.equal(0);
             await signOrders(domain, orders, ordersActors);
-            const dealId = getDealId(domain, requestOrder, taskIndex);
-            const appOrderHash = hashOrder(domain, appOrder);
-            const datasetOrderHash = hashOrder(domain, datasetOrder);
-            const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
-            const requestOrderHash = hashOrder(domain, requestOrder);
-            const matchOrdersArgs = [
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            ] as Orders;
+            const { appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash } =
+                iexecWrapper.hashOrders(orders);
+            const dealId = getDealId(domain, orders.requester, taskIndex);
             expect(
                 await IexecPocoAccessors__factory.connect(proxyAddress, anyone).computeDealVolume(
-                    ...matchOrdersArgs,
+                    ...orders.toArray(),
                 ),
             ).to.equal(volume);
 
             expect(
-                await iexecPoco.connect(sponsor).callStatic.sponsorMatchOrders(...matchOrdersArgs),
+                await iexecPoco.connect(sponsor).callStatic.sponsorMatchOrders(...orders.toArray()),
             ).to.equal(dealId);
-            await expect(iexecPoco.connect(sponsor).sponsorMatchOrders(...matchOrdersArgs))
+            await expect(iexecPoco.connect(sponsor).sponsorMatchOrders(...orders.toArray()))
                 .to.emit(iexecPoco, 'OrdersMatched')
                 .withArgs(
                     dealId,
@@ -160,7 +152,7 @@ describe('IexecPocoDelegate', function () {
                 )
                 .to.emit(iexecPoco, 'DealSponsored')
                 .withArgs(dealId, sponsor.address);
-            expect(await iexecAccessor.balanceOf(iexecAccessor.address)).to.be.equal(
+            expect(await iexecAccessor.balanceOf(proxyAddress)).to.be.equal(
                 dealPrice + schedulerStake,
             );
             expect(await iexecAccessor.balanceOf(sponsor.address)).to.be.equal(0);

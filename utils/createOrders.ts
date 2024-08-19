@@ -10,6 +10,8 @@ import constants, { NULL } from './constants';
 import { utils } from './odb-tools';
 import { OrderOperationEnum } from './poco-tools';
 
+// TODO use IexecOrders.toArray() for spreading and remove this
+// if not needed anymore.
 export type Orders = [
     IexecLibOrders_v5.AppOrderStruct,
     IexecLibOrders_v5.DatasetOrderStruct,
@@ -38,6 +40,8 @@ export interface MatchOrdersArgs {
     volume?: number;
     callback?: string;
     trust?: number;
+    category?: number;
+    params?: string;
 }
 
 export interface OrdersActors {
@@ -47,11 +51,51 @@ export interface OrdersActors {
     requester: SignerWithAddress;
 }
 
-export interface IexecOrders {
+export class IexecOrders {
     app: IexecLibOrders_v5.AppOrderStruct;
     dataset: IexecLibOrders_v5.DatasetOrderStruct;
     workerpool: IexecLibOrders_v5.WorkerpoolOrderStruct;
     requester: IexecLibOrders_v5.RequestOrderStruct;
+
+    constructor(
+        app: IexecLibOrders_v5.AppOrderStruct,
+        dataset: IexecLibOrders_v5.DatasetOrderStruct,
+        workerpool: IexecLibOrders_v5.WorkerpoolOrderStruct,
+        requester: IexecLibOrders_v5.RequestOrderStruct,
+    ) {
+        this.app = app;
+        this.dataset = dataset;
+        this.workerpool = workerpool;
+        this.requester = requester;
+    }
+
+    /**
+     * Convert this instance to an array to simplify spreading.
+     * foo(...orders.toArray());
+     * @returns an array with all orders
+     */
+    toArray() {
+        return [this.app, this.dataset, this.workerpool, this.requester] as [
+            IexecLibOrders_v5.AppOrderStruct,
+            IexecLibOrders_v5.DatasetOrderStruct,
+            IexecLibOrders_v5.WorkerpoolOrderStruct,
+            IexecLibOrders_v5.RequestOrderStruct,
+        ];
+    }
+
+    /**
+     * Convert this instance to an object to simplify destructuring.
+     * const { appOrder } = orders.toObject();
+     * @returns an object with all orders
+     */
+    toObject() {
+        return {
+            appOrder: this.app,
+            datasetOrder: this.dataset,
+            workerpoolOrder: this.workerpool,
+            requesterOrder: this.requester,
+        };
+    }
 }
 
 export interface OrderOperation {
@@ -192,13 +236,20 @@ export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
         requestOrder.trust = matchOrdersArgs.trust;
         workerpoolOrder.trust = matchOrdersArgs.trust;
     }
+    // Set category
+    if (matchOrdersArgs.category) {
+        requestOrder.category = matchOrdersArgs.category;
+        workerpoolOrder.category = matchOrdersArgs.category;
+    }
+    // Set params
+    if (matchOrdersArgs.params) {
+        requestOrder.params = matchOrdersArgs.params;
+    }
     return {
-        orders: {
-            app: appOrder,
-            dataset: datasetOrder,
-            workerpool: workerpoolOrder,
-            requester: requestOrder,
-        } as IexecOrders,
+        orders: new IexecOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder),
+        // TODO remove these additional return values and use function toObject() for
+        // deserialization:
+        // const {appOrder, ...} = orders.toObject();
         // Expose orders differently to make them easier to use in tests
         appOrder: appOrder,
         datasetOrder: datasetOrder,

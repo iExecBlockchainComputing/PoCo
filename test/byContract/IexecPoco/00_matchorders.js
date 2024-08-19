@@ -221,47 +221,6 @@ contract('Poco', async (accounts) => {
         );
     };
 
-    it('[Match - app-dataset-workerpool-user]', async () => {
-        await matchOrders({}, {}, {}, {});
-
-        deals = await odbtools.utils.requestToDeal(
-            IexecInstance,
-            odbtools.utils.hashRequestOrder(ERC712_domain, _requestorder),
-        );
-        assert.equal(
-            deals[0],
-            web3.utils.soliditySha3(
-                { t: 'bytes32', v: odbtools.utils.hashRequestOrder(ERC712_domain, _requestorder) },
-                { t: 'uint256', v: 0 },
-            ),
-            'check dealid',
-        );
-
-        deal = await IexecInstance.viewDeal(deals[0]);
-        assert.equal(deal.app.pointer, AppInstance.address);
-        assert.equal(deal.app.owner, appProvider.address);
-        assert.equal(Number(deal.app.price), 3);
-        assert.equal(deal.dataset.pointer, DatasetInstance.address);
-        assert.equal(deal.dataset.owner, datasetProvider.address);
-        assert.equal(Number(deal.dataset.price), 1);
-        assert.equal(deal.workerpool.pointer, WorkerpoolInstance.address);
-        assert.equal(deal.workerpool.owner, scheduler.address);
-        assert.equal(Number(deal.workerpool.price), 25);
-        assert.equal(Number(deal.trust), 1000);
-        assert.equal(Number(deal.category), 4);
-        assert.equal(Number(deal.tag), 0x0);
-        assert.equal(deal.requester, user.address);
-        assert.equal(deal.beneficiary, user.address);
-        assert.equal(deal.callback, constants.NULL.ADDRESS);
-        assert.equal(deal.params, '<parameters>');
-        assert.isAbove(Number(deal.startTime), 0);
-        assert.equal(Number(deal.botFirst), 0);
-        assert.equal(Number(deal.botSize), 1);
-        assert.equal(Number(deal.workerStake), 8); // 8 = floor(25*.3)
-        assert.equal(Number(deal.schedulerRewardRatio), 5);
-        assert.equal(deal.sponsor, user.address);
-    });
-
     it('[Match - app-workerpool-user]', async () => {
         await matchOrders({}, constants.NULL.DATAORDER, {}, { dataset: constants.NULL.ADDRESS });
 
