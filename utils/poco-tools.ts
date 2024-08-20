@@ -22,6 +22,13 @@ export enum TaskStatusEnum {
     FAILED,
 }
 
+export enum ContributionStatusEnum {
+    UNSET,
+    CONTRIBUTED,
+    PROVED,
+    REJECTED,
+}
+
 export enum OrderOperationEnum {
     SIGN,
     CLOSE,
@@ -140,12 +147,16 @@ export function buildResultCallbackAndDigestForIntegerOracle(
     return { resultsCallback, callbackResultDigest };
 }
 
+export function buildResultHash(taskId: string, resultDigest: string) {
+    return ethers.utils.solidityKeccak256(['bytes32', 'bytes'], [taskId, resultDigest]);
+}
+
 export function buildResultHashAndResultSeal(
     taskId: string,
     resultDigest: string,
     worker: SignerWithAddress,
 ) {
-    const resultHash = ethers.utils.solidityKeccak256(['bytes32', 'bytes'], [taskId, resultDigest]);
+    const resultHash = buildResultHash(taskId, resultDigest);
     const resultSeal = ethers.utils.solidityKeccak256(
         ['address', 'bytes32', 'bytes'],
         [worker.address, taskId, resultDigest],
@@ -153,6 +164,24 @@ export function buildResultHashAndResultSeal(
     return { resultHash, resultSeal };
 }
 
+/**
+ * Build & sign enclave message in Poco Classic mode.
+ */
+export async function buildAndSignPocoClassicEnclaveMessage(
+    resultHash: string,
+    resultSeal: string,
+    enclave: SignerWithAddress,
+) {
+    return await signMessage(
+        enclave,
+        ethers.utils.solidityKeccak256(['bytes32', 'bytes32'], [resultHash, resultSeal]),
+    );
+}
+
+/**
+ * Build & sign enclave message in Poco Boost mode.
+ */
+//TODO: Harmonize naming of buildAndSignEnclaveMessage in Classic & Boost modes
 export async function buildAndSignEnclaveMessage(
     workerAddress: string,
     taskId: string,
