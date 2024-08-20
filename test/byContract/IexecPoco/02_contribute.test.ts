@@ -4,7 +4,7 @@
 import { AddressZero, HashZero } from '@ethersproject/constants';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { assert, ethers, expect } from 'hardhat';
+import { assert, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { NULL } from '../../../utils/constants';
@@ -25,14 +25,14 @@ const CONFIG = require('../../../config/config.json');
 
 const timeRef = CONFIG.categories[0].workClockTimeRef;
 const volume = 3;
-const teeDealTag = ethers.utils.hexZeroPad('0x1', 32);
+const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const standardDealTag = HashZero;
 const { resultDigest } = buildUtf8ResultAndDigest('result');
-const { resultDigest: wrongResultDigest } = buildUtf8ResultAndDigest('wrong-result');
+const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
 const emptyEnclaveAddress = AddressZero;
 const emptyEnclaveSignature = NULL.SIGNATURE;
 
-describe('Poco2#contribute', async () => {
+describe('IexecPoco2#contribute', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsWorker]: IexecInterfaceNative[] = [];
     let iexecWrapper: IexecWrapper;
@@ -50,7 +50,7 @@ describe('Poco2#contribute', async () => {
     ]: SignerWithAddress[] = [];
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
-    let orders: IexecOrders;
+    let defaultOrders: IexecOrders;
 
     beforeEach(async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
@@ -88,7 +88,7 @@ describe('Poco2#contribute', async () => {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
-        ({ orders } = buildOrders({
+        ({ orders: defaultOrders } = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
@@ -116,30 +116,30 @@ describe('Poco2#contribute', async () => {
                 .viewDeal(dealId)
                 .then((deal) => deal.workerStake.toNumber());
             const workers = [
-                { wallet: worker1, resultDigest: resultDigest },
-                { wallet: worker2, resultDigest: wrongResultDigest },
-                { wallet: worker3, resultDigest: resultDigest },
-                { wallet: worker4, resultDigest: resultDigest },
+                { signer: worker1, resultDigest: resultDigest },
+                { signer: worker2, resultDigest: badResultDigest },
+                { signer: worker3, resultDigest: resultDigest },
+                { signer: worker4, resultDigest: resultDigest },
             ];
             const winningWorkers = [worker1, worker3, worker4];
             // worker2 is a losing worker
             let task;
             let contributeBlockTimestamp;
+            const viewFrozenOf = (address: string) =>
+                iexecPoco.frozenOf(address).then((frozen) => frozen.toNumber());
             for (let i = 0; i < workers.length; i++) {
                 const worker = workers[i];
-                const workerAddress = worker.wallet.address;
+                const workerAddress = worker.signer.address;
                 const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                     taskId,
                     worker.resultDigest,
-                    worker.wallet,
+                    worker.signer,
                 );
-                await iexecWrapper.depositInIexecAccount(worker.wallet, workerTaskStake);
-                const viewFrozenOf = (address: string) =>
-                    iexecPoco.frozenOf(address).then((frozen) => frozen.toNumber());
+                await iexecWrapper.depositInIexecAccount(worker.signer, workerTaskStake);
                 const frozenBefore = await viewFrozenOf(workerAddress);
                 contributeBlockTimestamp = await setNextBlockTimestamp();
                 const tx = await iexecPoco
-                    .connect(worker.wallet)
+                    .connect(worker.signer)
                     .contribute(
                         taskId,
                         resultHash,
@@ -157,6 +157,7 @@ describe('Poco2#contribute', async () => {
                             sms,
                         ),
                     );
+                await tx.wait();
                 const contribution = await iexecPoco.viewContribution(taskId, workerAddress);
                 expect(contribution.status).equal(ContributionStatusEnum.CONTRIBUTED);
                 expect(contribution.resultHash).equal(resultHash);
@@ -203,7 +204,7 @@ describe('Poco2#contribute', async () => {
             expect(task.winnerCounter).equal(winningWorkers.length);
         });
 
-        it('Should contribute TEE task', async () => {
+        it('Should contribute TEE task with one worker', async () => {
             const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
                 buildOrders({
                     assets: ordersAssets,
@@ -242,7 +243,8 @@ describe('Poco2#contribute', async () => {
         });
 
         it('Should contribute standard task', async () => {
-            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId, taskIndex, taskId } =
+                await iexecWrapper.signAndMatchOrders(defaultOrders);
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
@@ -271,7 +273,7 @@ describe('Poco2#contribute', async () => {
         });
 
         it('Should not contribute when task not active', async () => {
-            const { taskId } = await iexecWrapper.signAndMatchOrders(orders);
+            const { taskId } = await iexecWrapper.signAndMatchOrders(defaultOrders);
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,
@@ -295,7 +297,8 @@ describe('Poco2#contribute', async () => {
         });
 
         it('Should not contribute after deadline', async () => {
-            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId, taskIndex, taskId } =
+                await iexecWrapper.signAndMatchOrders(defaultOrders);
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
             const task = await iexecPoco.viewTask(taskId);
@@ -419,7 +422,8 @@ describe('Poco2#contribute', async () => {
         });
 
         it('Should not contribute when scheduler signature is invalid', async () => {
-            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId, taskIndex, taskId } =
+                await iexecWrapper.signAndMatchOrders(defaultOrders);
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
@@ -487,7 +491,8 @@ describe('Poco2#contribute', async () => {
         });
 
         it('Should not contribute when no deposit', async () => {
-            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId, taskIndex, taskId } =
+                await iexecWrapper.signAndMatchOrders(defaultOrders);
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
