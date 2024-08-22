@@ -1,13 +1,15 @@
 import '@nomicfoundation/hardhat-toolbox';
 import '@nomiclabs/hardhat-truffle5';
+import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
-import { HardhatUserConfig } from 'hardhat/config';
+import { HardhatUserConfig, task } from 'hardhat/config';
 import {
     HARDHAT_NETWORK_MNEMONIC,
     defaultHardhatNetworkParams,
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
+import 'solidity-docgen';
 import chainConfig from './config/config.json';
 
 const isNativeChainType = chainConfig.chains.default.asset == 'Native';
@@ -190,6 +192,46 @@ const config: HardhatUserConfig = {
         ],
         keep: true, // Slither requires compiled dependencies
     },
+    docgen: {
+        outputDir: 'docs/solidity',
+        templates: 'docs/solidity/templates',
+        exclude: [
+            'external',
+            'modules/delegates/IexecAccessorsABILegacyDelegate.sol', // not relevant
+            'modules/delegates/IexecEscrowTokenSwapDelegate.sol', // not relevant
+            'modules/delegates/SignatureVerifier.sol', // contains only internal/private
+            'modules/delegates/SignatureVerifier.v8.sol',
+            'modules/interfaces', // interesting for events but too much doc duplication is enabled
+            'registries', // ignore them for now
+            'tools',
+            'IexecInterfaceNativeABILegacy.sol', // ignore interfaces
+            'IexecInterfaceTokenABILegacy.sol',
+            'IexecInterfaceNative.sol',
+            'IexecInterfaceToken.sol',
+            'Store.sol', // almost empty
+            'Store.v8.sol',
+        ],
+    },
 };
+
+/**
+ * Ignore doc generation of contracts compiled with solc@0.4 (unsupported by docgen).
+ */
+task('docgen').setAction(async (taskArgs, hre, runSuper) => {
+    const ignoredSuffix = '.docgen-ignored';
+    const ignoredPaths: string[] = [];
+    for (const path of await hre.artifacts.getBuildInfoPaths()) {
+        const solcVersion: string = JSON.parse(fs.readFileSync(path, 'utf8')).solcVersion;
+        if (solcVersion.startsWith('0.4')) {
+            fs.renameSync(path, path + ignoredSuffix); // mark as docgen ignored
+            ignoredPaths.push(path);
+        }
+    }
+    await runSuper(taskArgs).finally(() => {
+        for (const path of ignoredPaths) {
+            fs.renameSync(path + ignoredSuffix, path); // restore build info as before
+        }
+    });
+});
 
 export default config;

@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Generate Solidity documentation. (#111)
 - Migrate unit test files to Typescript & Hardhat:
     - IexecPoco2
         - contribute (#108, #109, #110)
