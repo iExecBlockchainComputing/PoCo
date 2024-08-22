@@ -201,7 +201,7 @@ const config: HardhatUserConfig = {
             'modules/delegates/IexecEscrowTokenSwapDelegate.sol', // not relevant
             'modules/delegates/SignatureVerifier.sol', // contains only internal/private
             'modules/delegates/SignatureVerifier.v8.sol',
-            'modules/interfaces', // interesting for events but too much doc duplication is enabled
+            'modules/interfaces', // interesting for events but too much doc duplication if enabled
             'registries', // ignore them for now
             'tools',
             'IexecInterfaceNativeABILegacy.sol', // ignore interfaces
