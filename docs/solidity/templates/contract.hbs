@@ -1,0 +1,14 @@
+{{!-- 
+    Template to exclude internal functions.
+    See https://github.com/OpenZeppelin/solidity-docgen/issues/419.
+--}}
+{{>common}}
+
+{{#each items}}
+{{#unless (eq visibility "internal")}}
+{{#hsection}}
+{{>item}}
+{{/hsection}}
+{{/unless}}
+
+{{/each}}

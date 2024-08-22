@@ -32,6 +32,7 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 
 ## Documentation
 
+- [Solidity API documentation](./docs/solidity/index.md)
 - [Full PoCo documentation](https://protocol.docs.iex.ec/key-concepts/proof-of-contribution)
 
 # How to?
