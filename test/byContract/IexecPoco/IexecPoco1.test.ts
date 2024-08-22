@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { AddressZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
@@ -106,13 +107,13 @@ describe('IexecPoco1', () => {
     describe('Verify presignature or signature', () => {});
 
     describe('Match orders', () => {
-        it('Should match orders with all assets (Standard)', async () => {
+        it('[Standard] Should match orders with all assets, callback, and BoT', async () => {
             const { orders } = buildOrders({
                 assets: ordersAssets,
+                prices: ordersPrices,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
                 tag: standardDealTag,
-                prices: ordersPrices,
                 volume: volume,
                 callback: callback,
                 trust: trust,
@@ -158,16 +159,6 @@ describe('IexecPoco1', () => {
                 dealId,
             );
             const tx = iexecPocoAsRequester.matchOrders(...orders.toArray());
-            await expect(tx)
-                .to.emit(iexecPoco, 'OrdersMatched')
-                .withArgs(
-                    dealId,
-                    appOrderHash,
-                    datasetOrderHash,
-                    workerpoolOrderHash,
-                    requestOrderHash,
-                    volume,
-                );
             // Check balances and frozen after.
             await expect(tx).to.changeTokenBalances(
                 iexecPoco,
@@ -178,6 +169,17 @@ describe('IexecPoco1', () => {
             // See https://github.com/NomicFoundation/hardhat/blob/main/packages/hardhat-chai-matchers/src/internal/changeTokenBalance.ts#L42
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealPrice);
             expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(schedulerStake);
+            // Check events.
+            await expect(tx)
+                .to.emit(iexecPoco, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    appOrderHash,
+                    datasetOrderHash,
+                    workerpoolOrderHash,
+                    requestOrderHash,
+                    volume,
+                );
             // Check deal
             const deal = await iexecPoco.viewDeal(dealId);
             expect(deal.app.pointer).to.equal(appAddress);
@@ -204,10 +206,79 @@ describe('IexecPoco1', () => {
             expect(deal.sponsor).to.equal(requester.address);
         });
 
-        it('[TODO] Should match orders with all assets and callback (Standard)', () => {});
-        it('[TODO] Should match orders without dataset (Standard)', () => {});
-        it('[TODO] Should match orders without dataset and with callback (Standard)', () => {});
+        it('[Standard] Should match orders with all assets without callback', async () => {
+            const { orders } = buildOrders({
+                assets: ordersAssets,
+                prices: ordersPrices,
+                requester: requester.address,
+                tag: standardDealTag,
+                volume: volume,
+            });
+            await depositForRequesterAndSchedulerWithDefaultPrices();
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester, taskIndex);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
+                iexecPoco,
+                'OrdersMatched',
+            );
+            // Check deal
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.callback).to.equal(AddressZero);
+        });
+
+        it('[Standard] Should match orders without dataset', async () => {
+            const { orders } = buildOrders({
+                assets: { ...ordersAssets, dataset: AddressZero },
+                prices: { ...ordersPrices, dataset: 0 },
+                requester: requester.address,
+                tag: standardDealTag,
+                volume: volume,
+            });
+            // Compute prices, stakes, rewards, ...
+            const dealPrice = (appPrice + workerpoolPrice) * volume; // no dataset price
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+            // Deposit required amounts.
+            await iexecWrapper.depositInIexecAccount(requester, dealPrice);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester, taskIndex);
+            const tx = iexecPocoAsRequester.matchOrders(...orders.toArray());
+            // Check balances and frozen.
+            // Dataset price shouldn't be included.
+            await expect(tx).to.changeTokenBalances(
+                iexecPoco,
+                [iexecPoco, requester, scheduler],
+                [dealPrice + schedulerStake, -dealPrice, -schedulerStake],
+            );
+            expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealPrice);
+            // Check events.
+            await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
+            // Check deal
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.dataset.pointer).to.equal(AddressZero);
+            expect(deal.dataset.owner).to.equal(AddressZero);
+            expect(deal.dataset.price.toNumber()).to.equal(0);
+            // Should not be impacted by datasetVolume == 0
+            expect(deal.botSize.toNumber()).to.equal(volume);
+        });
+
         it('[TODO] Should match orders with replication', () => {});
     });
     describe('[TODO] Sponsor match orders', () => {});
+
+    async function depositForRequesterAndSchedulerWithDefaultPrices() {
+        const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
+        const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+            workerpoolPrice,
+            volume,
+        );
+        // Deposit required amounts.
+        await iexecWrapper.depositInIexecAccount(requester, dealPrice);
+        await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+    }
 });
