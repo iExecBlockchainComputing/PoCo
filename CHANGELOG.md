@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Update UML class diagrams. (#112)
 - Generate Solidity documentation. (#111)
 - Migrate unit test files to Typescript & Hardhat:
     - IexecPoco2
