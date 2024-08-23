@@ -12,6 +12,7 @@ import {
     IexecPocoAccessors__factory,
 } from '../../../typechain';
 import {
+    IexecOrders,
     OrdersActors,
     OrdersAssets,
     OrdersPrices,
@@ -36,6 +37,7 @@ const callback = ethers.Wallet.createRandom().address;
 const params = '<params>';
 const volume = 321;
 const taskIndex = 0;
+const randomAddress = ethers.Wallet.createRandom().address;
 
 describe('IexecPoco1', () => {
     let proxyAddress: string;
@@ -55,6 +57,7 @@ describe('IexecPoco1', () => {
     let ordersActors: OrdersActors;
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
+    let orders: IexecOrders;
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
@@ -95,6 +98,18 @@ describe('IexecPoco1', () => {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
+        ({ orders } = buildOrders({
+            assets: ordersAssets,
+            prices: ordersPrices,
+            requester: requester.address,
+            beneficiary: beneficiary.address,
+            tag: standardDealTag,
+            volume: volume,
+            callback: callback,
+            trust: trust,
+            category: category,
+            params: params,
+        }));
         // TODO check why this is done in 00_matchorders.js
         // await Workerpool__factory.connect(workerpoolAddress, scheduler)
         //     .changePolicy(35, 5)
@@ -108,6 +123,8 @@ describe('IexecPoco1', () => {
 
     describe('Match orders', () => {
         it('[Standard] Should match orders with all assets, callback, and BoT', async () => {
+            // Recreate orders here instead of using the default ones created
+            // in beforeEach to make this test as explicit as possible.
             const { orders } = buildOrders({
                 assets: ordersAssets,
                 prices: ordersPrices,
@@ -206,14 +223,8 @@ describe('IexecPoco1', () => {
             expect(deal.sponsor).to.equal(requester.address);
         });
 
-        it('[Standard] Should match orders with all assets without callback', async () => {
-            const { orders } = buildOrders({
-                assets: ordersAssets,
-                prices: ordersPrices,
-                requester: requester.address,
-                tag: standardDealTag,
-                volume: volume,
-            });
+        it('[Standard] Should match orders without callback', async () => {
+            orders.requester.callback = AddressZero;
             await depositForRequesterAndSchedulerWithDefaultPrices();
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -228,13 +239,8 @@ describe('IexecPoco1', () => {
         });
 
         it('[Standard] Should match orders without dataset', async () => {
-            const { orders } = buildOrders({
-                assets: { ...ordersAssets, dataset: AddressZero },
-                prices: { ...ordersPrices, dataset: 0 },
-                requester: requester.address,
-                tag: standardDealTag,
-                volume: volume,
-            });
+            orders.dataset.dataset = AddressZero;
+            orders.requester.dataset = AddressZero;
             // Compute prices, stakes, rewards, ...
             const dealPrice = (appPrice + workerpoolPrice) * volume; // no dataset price
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
@@ -267,10 +273,229 @@ describe('IexecPoco1', () => {
             expect(deal.botSize.toNumber()).to.equal(volume);
         });
 
+        it('[Standard] Should not match orders with bad request order category', async () => {
+            orders.requester.category = category + 1; // Valid but bad category.
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x00',
+            );
+        });
+
+        it('[Standard] Should not match orders with invalid category', async () => {
+            orders.requester.category = 123;
+            orders.workerpool.category = 123;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x01',
+            );
+        });
+
+        it('[Standard] Should not match orders with bad request order trust', async () => {
+            orders.requester.trust = 123;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x02',
+            );
+        });
+
+        it('[Standard] Should not match orders with bad request order app price', async () => {
+            orders.requester.appmaxprice = Number(orders.app.appprice) - 1;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x03',
+            );
+        });
+
+        it('[Standard] Should not match orders with bad request order dataset price', async () => {
+            orders.requester.datasetmaxprice = Number(orders.dataset.datasetprice) - 1;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x04',
+            );
+        });
+
+        it('[Standard] Should not match orders with bad request order workerpool price', async () => {
+            orders.requester.workerpoolmaxprice = Number(orders.workerpool.workerpoolprice) - 1;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x05',
+            );
+        });
+
+        it('[Standard] Should not match orders with bad request order tag', async () => {
+            orders.requester.tag = toBytes32('0x1101'); // Random, bytes32 short form.
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x06',
+            );
+        });
+
+        it('[Standard] Should not match orders with bad app order tag', async () => {
+            orders.app.tag = toBytes32('0x1101'); // Random, bytes32 short form.
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x06',
+            );
+        });
+
+        it('[Standard] Should not match orders with bad dataset order tag', async () => {
+            orders.app.tag = toBytes32('0x1101'); // Random, bytes32 short form.
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x06',
+            );
+        });
+
+        it('[Standard] Should not match orders with bad workerpool order tag', async () => {
+            orders.app.tag = toBytes32('0x1000'); // Random
+            orders.dataset.tag = toBytes32('0x1100'); // Random
+            orders.requester.tag = toBytes32('0x1010'); // Random
+            // Workerpool order has to satisfy conditions of different actors.
+            orders.workerpool.tag = toBytes32('0x1100'); // Bad tag, correct tag should be 0x001110
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x06',
+            );
+        });
+
+        it('[Standard] Should not match orders when TEE tag is not requested by app', async () => {
+            orders.app.tag = standardDealTag;
+            orders.dataset.tag = teeDealTag;
+            orders.requester.tag = teeDealTag;
+            orders.workerpool.tag = teeDealTag;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x07',
+            );
+        });
+
+        it('[Standard] Should not match orders with app mismatch', async () => {
+            orders.requester.app = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x10',
+            );
+        });
+
+        it('[Standard] Should not match orders with dataset mismatch', async () => {
+            orders.requester.dataset = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x11',
+            );
+        });
+
+        it('[Standard] Should not match orders with workerpool mismatch', async () => {
+            orders.requester.workerpool = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x12',
+            );
+        });
+
+        it('[Standard] Should not match orders when dataset restrict of app order is not matched', async () => {
+            orders.app.datasetrestrict = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x13',
+            );
+        });
+
+        it('[Standard] Should not match orders when workerpool restrict of app order is not matched', async () => {
+            orders.app.workerpoolrestrict = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x14',
+            );
+        });
+
+        it('[Standard] Should not match orders when requester restrict of app order is not matched', async () => {
+            orders.app.requesterrestrict = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x15',
+            );
+        });
+
+        it('[Standard] Should not match orders when app restrict of dataset order is not matched', async () => {
+            orders.dataset.apprestrict = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x16',
+            );
+        });
+
+        it('[Standard] Should not match orders when workerpool restrict of dataset order is not matched', async () => {
+            orders.dataset.workerpoolrestrict = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x17',
+            );
+        });
+
+        it('[Standard] Should not match orders when requester restrict of dataset order is not matched', async () => {
+            orders.dataset.requesterrestrict = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x18',
+            );
+        });
+
+        it('[Standard] Should not match orders when app restrict of workerpool order is not matched', async () => {
+            orders.workerpool.apprestrict = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x19',
+            );
+        });
+
+        it('[Standard] Should not match orders when dataset restrict of workerpool order is not matched', async () => {
+            orders.workerpool.datasetrestrict = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x1a',
+            );
+        });
+
+        it('[Standard] Should not match orders when requester restrict of workerpool order is not matched', async () => {
+            orders.workerpool.requesterrestrict = randomAddress;
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x1b',
+            );
+        });
+
         it('[TODO] Should match orders with replication', () => {});
     });
     describe('[TODO] Sponsor match orders', () => {});
 
+    /**
+     * Helper function to deposit requester and scheduler stakes with
+     * default prices for tests that do not rely on price changes.
+     */
     async function depositForRequesterAndSchedulerWithDefaultPrices() {
         const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
         const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
@@ -280,5 +505,14 @@ describe('IexecPoco1', () => {
         // Deposit required amounts.
         await iexecWrapper.depositInIexecAccount(requester, dealPrice);
         await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+    }
+
+    /**
+     * Pad string argument with zeros to make it 32 bytes length.
+     * @param hexString string to pad
+     * @returns the input hex string padded with zeros to reach 32 bytes
+     */
+    function toBytes32(hexString: string) {
+        return ethers.utils.hexZeroPad(hexString, 32);
     }
 });
