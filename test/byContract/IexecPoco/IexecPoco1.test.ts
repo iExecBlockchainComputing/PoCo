@@ -277,7 +277,7 @@ describe('IexecPoco1', () => {
             expect(deal.dataset.pointer).to.equal(AddressZero);
             expect(deal.dataset.owner).to.equal(AddressZero);
             expect(deal.dataset.price.toNumber()).to.equal(0);
-            // Should not be impacted by datasetVolume == 0
+            // Should not be impacted by datasetVolume > 0
             expect(deal.botSize.toNumber()).to.equal(volume);
         });
 
