@@ -249,6 +249,9 @@ describe('IexecPoco1', () => {
         it('[TEE] Should match orders without dataset', async () => {
             orders.dataset.dataset = AddressZero;
             orders.requester.dataset = AddressZero;
+            // Set dataset volume lower than other assets to make sure
+            // it does not impact final volume computation.
+            orders.dataset.volume = volume - 1;
             // Compute prices, stakes, rewards, ...
             const dealPrice = (appPrice + workerpoolPrice) * volume; // no dataset price
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
