@@ -284,23 +284,23 @@ describe('IexecPoco1', () => {
         it('[TODO][TEE] Should match orders with restrictions', async () => {});
 
         it('[TEE] Should fail when categories are different', async () => {
-            orders.requester.category = category + 1; // Valid but bad category.
+            orders.requester.category = category + 1; // Valid but different category.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x00',
             );
         });
 
         it('[TEE] Should fail when category is unknown', async () => {
-            const categoriesCount = (await iexecPoco.countCategory()).toNumber();
-            orders.requester.category = categoriesCount + 1;
-            orders.workerpool.category = categoriesCount + 1;
+            const lastCategoryIndex = (await iexecPoco.countCategory()).toNumber() - 1;
+            orders.requester.category = lastCategoryIndex + 1;
+            orders.workerpool.category = lastCategoryIndex + 1;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x01',
             );
         });
 
         it('[TEE] Should fail when requested trust is above workerpool trust', async () => {
-            orders.requester.trust = 123;
+            orders.requester.trust = Number(orders.workerpool.trust) + 1;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x02',
             );
@@ -327,7 +327,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('[TEE] Should fail when workerpool tag does not match all app, dataset and request tags', async () => {
+        it('[TEE] Should fail when workerpool tag does not satisfy app, dataset and request requirements', async () => {
             orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000001'; // 0b0001
             orders.dataset.tag =
                 '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
@@ -343,7 +343,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('[TEE] Should fail when the last bit of app tag does not match dataset or request tags', async () => {
+        it('[TEE] Should fail when the last bit of app tag does not satisfy dataset or request requirements', async () => {
             // The last bit of dataset and request tag is 1, but app tag does not set it
             orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
             orders.dataset.tag =

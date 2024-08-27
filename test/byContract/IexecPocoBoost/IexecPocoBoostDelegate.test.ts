@@ -1170,7 +1170,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Overpriced workerpool');
         });
 
-        it('Should fail when workerpool tag does not match all app, dataset and request tags', async function () {
+        it('Should fail when workerpool tag does not satisfy app, dataset and request requirements', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1195,7 +1195,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Workerpool tag does not match demand');
         });
 
-        it('Should fail when the last bit of app tag does not match dataset or request tags', async function () {
+        it('Should fail when the last bit of app tag does not satisfy dataset or request requirements', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
