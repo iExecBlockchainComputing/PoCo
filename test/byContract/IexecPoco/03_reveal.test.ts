@@ -175,8 +175,10 @@ describe('IexecPoco2#reveal', () => {
                 volume,
                 trust: 3,
                 tag: standardDealTag,
-                salt: ethers.utils.hexZeroPad('0x' + Date.now().toString(), 32), // make all
-            }).orders, // orders unique since some orders are already matched in beforeEach
+                salt: ethers.utils.hexZeroPad('0x' + Date.now().toString(), 32), // make
+            }).orders, // app and dataset orders unique since already matched in
+            // beforeEach. A useless salt is also added to workerpool and request
+            // orders to get an easy one-liner declaration.
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
