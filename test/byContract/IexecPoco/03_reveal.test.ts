@@ -145,6 +145,28 @@ describe('IexecPoco2#reveal', () => {
         await expect(iexecPocoAsWorker.reveal(taskId, resultDigest)).to.be.revertedWithoutReason(); // require#2
     });
 
+    it('Should not reveal when did not contribute', async () => {
+        await iexecPocoAsWorker
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).equal(TaskStatusEnum.REVEALING);
+        const contribution = await iexecPoco.viewContribution(taskId, worker2.address);
+        expect(contribution.status).equal(ContributionStatusEnum.UNSET);
+        // revealing task, before deadline
+        // but worker2 did not contribute before revealing
+        await expect(
+            iexecPoco.connect(worker2).reveal(taskId, resultDigest),
+        ).to.be.revertedWithoutReason(); // require#3
+    });
+
     it('Should not reveal twice', async () => {
         await iexecPocoAsWorker
             .contribute(
