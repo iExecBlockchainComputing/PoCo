@@ -284,7 +284,51 @@ describe('IexecPoco1', () => {
             expect(deal.botSize.toNumber()).to.equal(volume);
         });
 
-        it('[TODO][TEE] Should match orders with restrictions', async () => {});
+        it(`[TEE] Should match orders with full restrictions in all orders`, async function () {
+            orders.app.datasetrestrict = orders.dataset.dataset;
+            orders.app.workerpoolrestrict = orders.workerpool.workerpool;
+            orders.app.requesterrestrict = orders.requester.requester;
+
+            orders.dataset.apprestrict = orders.app.app;
+            orders.dataset.workerpoolrestrict = orders.workerpool.workerpool;
+            orders.dataset.requesterrestrict = orders.requester.requester;
+
+            orders.workerpool.apprestrict = orders.app.app;
+            orders.workerpool.datasetrestrict = orders.dataset.dataset;
+            orders.workerpool.requesterrestrict = orders.requester.requester;
+
+            await depositForRequesterAndSchedulerWithDefaultPrices();
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
+                iexecPoco,
+                'OrdersMatched',
+            );
+        });
+
+        /**
+         * Successful match orders with partial restrictions.
+         */
+        // No restrictions in request order.
+        ['app', 'dataset', 'workerpool'].forEach((orderName) => {
+            ['app', 'dataset', 'workerpool', 'requester'].forEach((assetName) => {
+                // Filter irrelevant cases (e.g. app - app).
+                if (orderName.includes(assetName)) {
+                    return;
+                }
+                it(`[TEE] Should match orders with ${assetName} restriction in ${orderName} order`, async function () {
+                    // e.g. orders.app.datasetrestrict = orders.dataset.dataset
+                    orders[orderName][assetName + 'restrict'] = orders[assetName][assetName];
+                    await depositForRequesterAndSchedulerWithDefaultPrices();
+                    // Sign and match orders.
+                    await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+                    await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
+                        iexecPoco,
+                        'OrdersMatched',
+                    );
+                });
+            });
+        });
 
         it('[TEE] Should fail when categories are different', async () => {
             orders.requester.category = category + 1; // Valid but different category.
@@ -388,8 +432,8 @@ describe('IexecPoco1', () => {
         });
 
         /**
-         * Dynamically generated tests for all different restrictions in orders
-         * (requesterrestrict, apprestrict, workerpoolrestrict, datasetrestrict).
+         * Failed match orders because of restriction mismatch (apprestrict,
+         * datasetrestrict, workerpoolrestrict, requesterrestrict).
          */
         const revertMessages: { [key: string]: { [key: string]: string } } = {
             app: {
@@ -408,22 +452,22 @@ describe('IexecPoco1', () => {
                 requester: 'iExecV5-matchOrders-0x1b',
             },
         };
-        ['app', 'workerpool', 'dataset'].forEach((orderName) => {
-            // No request order
-            ['requester', 'app', 'workerpool', 'dataset'].forEach((assetName) => {
-                // Filter irrelevant cases. E.g. no need to change the app address in the app order.
+        // No restrictions in request order.
+        ['app', 'dataset', 'workerpool'].forEach((orderName) => {
+            ['app', 'dataset', 'workerpool', 'requester'].forEach((assetName) => {
+                // Filter irrelevant cases (e.g. app - app).
                 if (orderName.includes(assetName)) {
                     return;
                 }
                 it(`[TEE] Should fail when ${orderName} order mismatch ${assetName} restriction (EOA, SC)`, async function () {
                     const message = revertMessages[orderName][assetName];
                     // EOA
-                    orders[orderName][assetName + 'restrict'] = randomAddress; // e.g. orders['app']['apprestrict'] = 0xEOA
+                    orders[orderName][assetName + 'restrict'] = randomAddress; // e.g. orders.app.datasetrestrict = 0xEOA
                     await expect(iexecPoco.matchOrders(...orders.toArray())).to.be.revertedWith(
                         message,
                     );
                     // SC
-                    orders[orderName][assetName + 'restrict'] = randomContract.address; // e.g. orders['app']['apprestrict'] = 0xSC
+                    orders[orderName][assetName + 'restrict'] = randomContract.address; // e.g. orders.app.datasetrestrict = 0xSC
                     await expect(iexecPoco.matchOrders(...orders.toArray())).to.be.revertedWith(
                         message,
                     );
