@@ -98,7 +98,7 @@ describe('IexecPoco2#reveal', () => {
     }
 
     describe('Reveal', () => {
-        it('Should reveal task', async () => {
+        it('Should reveal task contribution', async () => {
             await iexecPocoAsWorker
                 .contribute(
                     taskId,
@@ -235,7 +235,7 @@ describe('IexecPoco2#reveal', () => {
             ).to.be.revertedWithoutReason(); // require#4
         });
 
-        it('Should not reveal when no able to prove result value', async () => {
+        it('Should not reveal when unable to prove result value', async () => {
             await iexecPocoAsWorker
                 .contribute(
                     taskId,
@@ -278,7 +278,7 @@ describe('IexecPoco2#reveal', () => {
             expect(contribution.resultHash).equal(task.consensusValue);
             expect(contribution.resultHash).equal(buildResultHash(taskId, resultDigest));
             expect(contribution.resultSeal).not.equal(
-                buildResultHashAndResultSeal(taskId, resultDigest, worker),
+                buildResultHashAndResultSeal(taskId, resultDigest, worker).resultSeal,
             );
             // revealing task, before deadline, contribution status is contributed
             // contribution is part of the consensus, result proof is valid
