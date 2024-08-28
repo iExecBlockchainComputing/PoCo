@@ -277,7 +277,7 @@ describe('IexecPoco2#reveal', () => {
         ).to.be.revertedWithoutReason(); // require#5
     });
 
-    it('Should not reveal when no able to prove result ownership', async () => {
+    it('Should not reveal when unable to prove result ownership', async () => {
         await iexecPocoAsWorker
             .contribute(
                 taskId,
