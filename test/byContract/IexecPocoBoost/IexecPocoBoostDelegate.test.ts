@@ -1170,7 +1170,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Overpriced workerpool');
         });
 
-        it('Should fail when the workerpool tag does not provide what app, dataset and request expect', async function () {
+        it('Should fail when workerpool tag does not satisfy app, dataset and request requirements', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1195,7 +1195,7 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Workerpool tag does not match demand');
         });
 
-        it('Should fail when the last bit of app tag does not provide what dataset or request expect', async function () {
+        it('Should fail when the last bit of app tag does not satisfy dataset or request requirements', async function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -1258,39 +1258,20 @@ describe('IexecPocoBoostDelegate', function () {
             ).to.be.revertedWith('PocoBoost: Dataset mismatch');
         });
 
-        it('Should fail when request order workerpool mismatches workerpool order workerpool (EOA)', async function () {
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+        it('Should fail when request order workerpool mismatches workerpool order workerpool (EOA, SC)', async function () {
+            const { orders } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            // Request another workerpool address
-            requestOrder.workerpool = randomEOAAddress;
-
+            // EOA
+            orders.requester.workerpool = randomEOAAddress;
             await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
+                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
             ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
-        });
-
-        it('Should fail when request order workerpool mismatches workerpool order workerpool (SC)', async function () {
-            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-            });
-            // Request another workerpool address
-            requestOrder.workerpool = someContractInstance.address;
-
+            // SC
+            orders.requester.workerpool = someContractInstance.address;
             await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(
-                    appOrder,
-                    datasetOrder,
-                    workerpoolOrder,
-                    requestOrder,
-                ),
+                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
             ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
         });
 
@@ -1298,23 +1279,32 @@ describe('IexecPocoBoostDelegate', function () {
          * Dynamically generated tests for all different restrictions in orders
          * (requesterrestrict, apprestrict, workerpoolrestrict, datasetrestrict).
          */
-
-        // No request order
         ['app', 'workerpool', 'dataset'].forEach((orderName) => {
+            // No request order
             ['requester', 'app', 'workerpool', 'dataset'].forEach((assetName) => {
                 // Filter irrelevant cases. E.g. no need to change the app address in the app order.
                 if (orderName.includes(assetName)) {
                     return;
                 }
-                it(`Should fail when ${orderName} order mismatch ${assetName} restriction (EOA)`, async function () {
-                    await verifyOrderRestriction(orderName, assetName, randomEOAAddress);
-                });
-                it(`Should fail when ${orderName} order mismatch ${assetName} restriction (SC)`, async function () {
-                    await verifyOrderRestriction(
-                        orderName,
-                        assetName,
-                        someContractInstance.address,
-                    );
+                it(`Should fail when ${orderName} order mismatch ${assetName} restriction (EOA, SC)`, async function () {
+                    const capitalizedAssetName =
+                        assetName.charAt(0).toUpperCase() + assetName.substring(1); // app => App
+                    const revertMessage = `PocoBoost: ${capitalizedAssetName} restricted by ${orderName} order`;
+                    const { orders } = buildOrders({
+                        assets: ordersAssets,
+                        requester: requester.address,
+                    });
+                    // EOA
+                    // E.g. changes orders['app']['apprestrict'] = 0xAddress
+                    orders[orderName][assetName + 'restrict'] = randomEOAAddress;
+                    await expect(
+                        iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
+                    ).to.be.revertedWith(revertMessage);
+                    // SC
+                    orders[orderName][assetName + 'restrict'] = someContractInstance.address;
+                    await expect(
+                        iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
+                    ).to.be.revertedWith(revertMessage);
                 });
             });
         });
@@ -3050,31 +3040,6 @@ describe('IexecPocoBoostDelegate', function () {
             iexecPocoBoostInstance.address,
             anyone,
         ).viewDealBoost(dealId);
-    }
-
-    async function verifyOrderRestriction(
-        orderName: string,
-        assetName: string,
-        restrictionAddress: string,
-    ) {
-        const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
-            assets: ordersAssets,
-            requester: requester.address,
-        });
-        // Change target asset address.
-        const order: any = orders[orderName as keyof typeof orders]; // e.g. orders['app']
-        const restrictionName: string = assetName + 'restrict'; // e.g. apprestrict
-        order[restrictionName as keyof typeof order] = restrictionAddress; // e.g. order['apprestrict'] = 0xabc
-        const capitalizedAssetName = assetName.charAt(0).toUpperCase() + assetName.substring(1); // app => App
-        const revertMessage = `PocoBoost: ${capitalizedAssetName} restricted by ${orderName} order`;
-        await expect(
-            iexecPocoBoostInstance.matchOrdersBoost(
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            ),
-        ).to.be.revertedWith(revertMessage);
     }
 });
 
