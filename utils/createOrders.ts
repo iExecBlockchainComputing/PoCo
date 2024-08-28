@@ -42,6 +42,7 @@ export interface MatchOrdersArgs {
     trust?: number;
     category?: number;
     params?: string;
+    salt?: string;
 }
 
 export interface OrdersActors {
@@ -247,6 +248,13 @@ export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
     // Set params
     if (matchOrdersArgs.params) {
         requestOrder.params = matchOrdersArgs.params;
+    }
+    // Set salt
+    if (matchOrdersArgs.salt) {
+        appOrder.salt = matchOrdersArgs.salt;
+        datasetOrder.salt = matchOrdersArgs.salt;
+        workerpoolOrder.salt = matchOrdersArgs.salt;
+        requestOrder.salt = matchOrdersArgs.salt;
     }
     return {
         orders: new IexecOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder),
