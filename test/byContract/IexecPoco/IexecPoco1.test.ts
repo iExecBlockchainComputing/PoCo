@@ -280,7 +280,7 @@ describe('IexecPoco1', () => {
             expect(deal.dataset.pointer).to.equal(AddressZero);
             expect(deal.dataset.owner).to.equal(AddressZero);
             expect(deal.dataset.price.toNumber()).to.equal(0);
-            // Should not be impacted by datasetVolume > 0
+            // BoT size should not be impacted even if the dataset order is the order with the lowest volume
             expect(deal.botSize.toNumber()).to.equal(volume);
         });
 
