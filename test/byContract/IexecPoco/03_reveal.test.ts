@@ -282,7 +282,8 @@ describe('IexecPoco2#reveal', () => {
             .contribute(
                 taskId,
                 resultHash,
-                ethers.utils.hexZeroPad('0xbad5ea1', 32), // bad seal
+                // stolen result seal from another worker
+                buildResultHashAndResultSeal(taskId, resultDigest, worker2).resultSeal,
                 emptyEnclaveAddress,
                 emptyEnclaveSignature,
                 schedulerSignature,
