@@ -97,195 +97,185 @@ describe('IexecPoco2#reveal', () => {
         );
     }
 
-    describe('Reveal', () => {
-        it('Should reveal task contribution', async () => {
-            await iexecPocoAsWorker
-                .contribute(
-                    taskId,
-                    resultHash,
-                    resultSeal,
-                    emptyEnclaveAddress,
-                    emptyEnclaveSignature,
-                    schedulerSignature,
-                )
-                .then((tx) => tx.wait());
+    it('Should reveal task contribution', async () => {
+        await iexecPocoAsWorker
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
 
-            await expect(iexecPocoAsWorker.reveal(taskId, resultDigest))
-                .to.emit(iexecPoco, 'TaskReveal')
-                .withArgs(taskId, worker.address, resultDigest);
-            const contribution = await iexecPoco.viewContribution(taskId, worker.address);
-            expect(contribution.status).equal(ContributionStatusEnum.PROVED);
-            const task = await iexecPoco.viewTask(taskId);
-            expect(task.revealCounter).equal(1);
-            expect(task.resultDigest).equal(resultDigest);
-        });
+        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest))
+            .to.emit(iexecPoco, 'TaskReveal')
+            .withArgs(taskId, worker.address, resultDigest);
+        const contribution = await iexecPoco.viewContribution(taskId, worker.address);
+        expect(contribution.status).equal(ContributionStatusEnum.PROVED);
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.revealCounter).equal(1);
+        expect(task.resultDigest).equal(resultDigest);
+    });
 
-        it('Should not reveal when task is not in revealing status', async () => {
-            const task = await iexecPoco.viewTask(taskId);
-            expect(task.status).equal(TaskStatusEnum.ACTIVE);
+    it('Should not reveal when task is not in revealing status', async () => {
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).equal(TaskStatusEnum.ACTIVE);
 
-            await expect(
-                iexecPocoAsWorker.reveal(taskId, resultDigest),
-            ).to.be.revertedWithoutReason(); // require#1
-        });
+        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest)).to.be.revertedWithoutReason(); // require#1
+    });
 
-        it('Should not reveal after deadline', async () => {
-            await iexecPocoAsWorker
-                .contribute(
-                    taskId,
-                    resultHash,
-                    resultSeal,
-                    emptyEnclaveAddress,
-                    emptyEnclaveSignature,
-                    schedulerSignature,
-                )
-                .then((tx) => tx.wait());
-            const task = await iexecPoco.viewTask(taskId);
-            expect(task.status).equal(TaskStatusEnum.REVEALING);
-            await time.setNextBlockTimestamp(task.revealDeadline);
-            // revealing task
-            // but after deadline
-            await expect(
-                iexecPocoAsWorker.reveal(taskId, resultDigest),
-            ).to.be.revertedWithoutReason(); // require#2
-        });
+    it('Should not reveal after deadline', async () => {
+        await iexecPocoAsWorker
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).equal(TaskStatusEnum.REVEALING);
+        await time.setNextBlockTimestamp(task.revealDeadline);
+        // revealing task
+        // but after deadline
+        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest)).to.be.revertedWithoutReason(); // require#2
+    });
 
-        it('Should not reveal twice', async () => {
-            await iexecPocoAsWorker
-                .contribute(
-                    taskId,
-                    resultHash,
-                    resultSeal,
-                    emptyEnclaveAddress,
-                    emptyEnclaveSignature,
-                    schedulerSignature,
-                )
-                .then((tx) => tx.wait());
-            const task = await iexecPoco.viewTask(taskId);
-            expect(task.status).equal(TaskStatusEnum.REVEALING);
-            await iexecPocoAsWorker.reveal(taskId, resultDigest).then((tx) => tx.wait());
-            const contribution = await iexecPoco.viewContribution(taskId, worker.address);
-            expect(contribution.status).equal(ContributionStatusEnum.PROVED);
-            // revealing task, before deadline
-            // but contribution status not contributed anymore (since already proved)
-            await expect(
-                iexecPocoAsWorker.reveal(taskId, resultDigest),
-            ).to.be.revertedWithoutReason(); // require#3
-        });
+    it('Should not reveal twice', async () => {
+        await iexecPocoAsWorker
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).equal(TaskStatusEnum.REVEALING);
+        await iexecPocoAsWorker.reveal(taskId, resultDigest).then((tx) => tx.wait());
+        const contribution = await iexecPoco.viewContribution(taskId, worker.address);
+        expect(contribution.status).equal(ContributionStatusEnum.PROVED);
+        // revealing task, before deadline
+        // but contribution status not contributed anymore (since already proved)
+        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest)).to.be.revertedWithoutReason(); // require#3
+    });
 
-        it('Should not reveal when outside consensus', async () => {
-            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
-                buildOrders({
-                    assets: ordersAssets,
-                    requester: requester.address,
-                    prices: ordersPrices,
-                    volume,
-                    trust: 3,
-                    tag: standardDealTag,
-                    salt: ethers.utils.hexZeroPad('0x' + Date.now().toString(), 32), // make all
-                }).orders, // orders unique since some orders are already matched in beforeEach
+    it('Should not reveal when outside consensus', async () => {
+        const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
+            buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                prices: ordersPrices,
+                volume,
+                trust: 3,
+                tag: standardDealTag,
+                salt: ethers.utils.hexZeroPad('0x' + Date.now().toString(), 32), // make all
+            }).orders, // orders unique since some orders are already matched in beforeEach
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const workers = [
+            { signer: worker1, resultDigest: resultDigest },
+            { signer: worker2, resultDigest: badResultDigest },
+            { signer: worker3, resultDigest: resultDigest },
+            { signer: worker4, resultDigest: resultDigest },
+        ];
+        const loosingWorker = worker2;
+        // winning workers are worker1, worker3 & worker4
+        for (let i = 0; i < workers.length; i++) {
+            const worker = workers[i];
+            const workerAddress = worker.signer.address;
+            const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+                taskId,
+                worker.resultDigest,
+                worker.signer,
             );
-            await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-            const workerTaskStake = await iexecPoco
-                .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
-            const workers = [
-                { signer: worker1, resultDigest: resultDigest },
-                { signer: worker2, resultDigest: badResultDigest },
-                { signer: worker3, resultDigest: resultDigest },
-                { signer: worker4, resultDigest: resultDigest },
-            ];
-            const loosingWorker = worker2;
-            // winning workers are worker1, worker3 & worker4
-            for (let i = 0; i < workers.length; i++) {
-                const worker = workers[i];
-                const workerAddress = worker.signer.address;
-                const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            await iexecWrapper.depositInIexecAccount(worker.signer, workerTaskStake);
+            await iexecPoco
+                .connect(worker.signer)
+                .contribute(
                     taskId,
-                    worker.resultDigest,
-                    worker.signer,
-                );
-                await iexecWrapper.depositInIexecAccount(worker.signer, workerTaskStake);
-                await iexecPoco
-                    .connect(worker.signer)
-                    .contribute(
+                    resultHash,
+                    resultSeal,
+                    emptyEnclaveAddress,
+                    emptyEnclaveSignature,
+                    await buildAndSignContributionAuthorizationMessage(
+                        workerAddress,
                         taskId,
-                        resultHash,
-                        resultSeal,
                         emptyEnclaveAddress,
-                        emptyEnclaveSignature,
-                        await buildAndSignContributionAuthorizationMessage(
-                            workerAddress,
-                            taskId,
-                            emptyEnclaveAddress,
-                            scheduler,
-                        ),
-                    )
-                    .then((tx) => tx.wait());
-            }
-            const task = await iexecPoco.viewTask(taskId);
-            expect(task.status).equal(TaskStatusEnum.REVEALING);
-            const contribution = await iexecPoco.viewContribution(taskId, loosingWorker.address);
-            expect(contribution.status).equal(ContributionStatusEnum.CONTRIBUTED);
-            expect(contribution.resultHash).not.equal(task.consensusValue);
-            // revealing task, before deadline, contribution status is contributed
-            // but contribution outside consensus
-            await expect(
-                iexecPoco.connect(loosingWorker).reveal(taskId, resultDigest),
-            ).to.be.revertedWithoutReason(); // require#4
-        });
-
-        it('Should not reveal when unable to prove result value', async () => {
-            await iexecPocoAsWorker
-                .contribute(
-                    taskId,
-                    resultHash,
-                    resultSeal,
-                    emptyEnclaveAddress,
-                    emptyEnclaveSignature,
-                    schedulerSignature,
+                        scheduler,
+                    ),
                 )
                 .then((tx) => tx.wait());
-            const task = await iexecPoco.viewTask(taskId);
-            expect(task.status).equal(TaskStatusEnum.REVEALING);
-            const contribution = await iexecPoco.viewContribution(taskId, worker.address);
-            expect(contribution.status).equal(ContributionStatusEnum.CONTRIBUTED);
-            expect(contribution.resultHash).equal(task.consensusValue);
-            expect(contribution.resultHash).not.equal(buildResultHash(taskId, badResultDigest));
-            // revealing task, before deadline, contribution status is contributed
-            // contribution is part of the consensus
-            // but unable to prove result value
-            await expect(
-                iexecPocoAsWorker.reveal(taskId, badResultDigest),
-            ).to.be.revertedWithoutReason(); // require#5
-        });
+        }
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).equal(TaskStatusEnum.REVEALING);
+        const contribution = await iexecPoco.viewContribution(taskId, loosingWorker.address);
+        expect(contribution.status).equal(ContributionStatusEnum.CONTRIBUTED);
+        expect(contribution.resultHash).not.equal(task.consensusValue);
+        // revealing task, before deadline, contribution status is contributed
+        // but contribution outside consensus
+        await expect(
+            iexecPoco.connect(loosingWorker).reveal(taskId, resultDigest),
+        ).to.be.revertedWithoutReason(); // require#4
+    });
 
-        it('Should not reveal when no able to prove result ownership', async () => {
-            await iexecPocoAsWorker
-                .contribute(
-                    taskId,
-                    resultHash,
-                    ethers.utils.hexZeroPad('0xbad5ea1', 32), // bad seal
-                    emptyEnclaveAddress,
-                    emptyEnclaveSignature,
-                    schedulerSignature,
-                )
-                .then((tx) => tx.wait());
-            const task = await iexecPoco.viewTask(taskId);
-            expect(task.status).equal(TaskStatusEnum.REVEALING);
-            const contribution = await iexecPoco.viewContribution(taskId, worker.address);
-            expect(contribution.status).equal(ContributionStatusEnum.CONTRIBUTED);
-            expect(contribution.resultHash).equal(task.consensusValue);
-            expect(contribution.resultHash).equal(buildResultHash(taskId, resultDigest));
-            expect(contribution.resultSeal).not.equal(
-                buildResultHashAndResultSeal(taskId, resultDigest, worker).resultSeal,
-            );
-            // revealing task, before deadline, contribution status is contributed
-            // contribution is part of the consensus, result proof is valid
-            // but unable to prove result ownership
-            await expect(
-                iexecPocoAsWorker.reveal(taskId, resultDigest),
-            ).to.be.revertedWithoutReason(); // require#6
-        });
+    it('Should not reveal when unable to prove result value', async () => {
+        await iexecPocoAsWorker
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).equal(TaskStatusEnum.REVEALING);
+        const contribution = await iexecPoco.viewContribution(taskId, worker.address);
+        expect(contribution.status).equal(ContributionStatusEnum.CONTRIBUTED);
+        expect(contribution.resultHash).equal(task.consensusValue);
+        expect(contribution.resultHash).not.equal(buildResultHash(taskId, badResultDigest));
+        // revealing task, before deadline, contribution status is contributed
+        // contribution is part of the consensus
+        // but unable to prove result value
+        await expect(
+            iexecPocoAsWorker.reveal(taskId, badResultDigest),
+        ).to.be.revertedWithoutReason(); // require#5
+    });
+
+    it('Should not reveal when no able to prove result ownership', async () => {
+        await iexecPocoAsWorker
+            .contribute(
+                taskId,
+                resultHash,
+                ethers.utils.hexZeroPad('0xbad5ea1', 32), // bad seal
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).equal(TaskStatusEnum.REVEALING);
+        const contribution = await iexecPoco.viewContribution(taskId, worker.address);
+        expect(contribution.status).equal(ContributionStatusEnum.CONTRIBUTED);
+        expect(contribution.resultHash).equal(task.consensusValue);
+        expect(contribution.resultHash).equal(buildResultHash(taskId, resultDigest));
+        expect(contribution.resultSeal).not.equal(
+            buildResultHashAndResultSeal(taskId, resultDigest, worker).resultSeal,
+        );
+        // revealing task, before deadline, contribution status is contributed
+        // contribution is part of the consensus, result proof is valid
+        // but unable to prove result ownership
+        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest)).to.be.revertedWithoutReason(); // require#6
     });
 });
