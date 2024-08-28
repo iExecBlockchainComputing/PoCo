@@ -13,6 +13,8 @@ import {
     TestClient,
     TestClient__factory,
 } from '../../../typechain';
+import { IexecPoco1 } from '../../../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol';
+import { IexecPoco1__factory } from '../../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
 import {
     IexecOrders,
     OrdersActors,
@@ -38,6 +40,7 @@ const volume = 321;
 describe('IexecPoco1', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
+    let iexecPocoAsSponsor: IexecPoco1; // Sponsor function not available in IexecInterfaceNative yet.
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
@@ -71,6 +74,7 @@ describe('IexecPoco1', () => {
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
+        iexecPocoAsSponsor = IexecPoco1__factory.connect(proxyAddress, sponsor);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -209,6 +213,63 @@ describe('IexecPoco1', () => {
             expect(deal.sponsor).to.equal(requester.address);
         });
 
+        it.only('[Standard] Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
+            const callback = ethers.Wallet.createRandom().address;
+            const trust = 3;
+            const category = 2;
+            const params = '<params>';
+            // Use orders with full configuration.
+            const { orders: standardOrders } = buildOrders({
+                assets: ordersAssets,
+                prices: ordersPrices,
+                requester: requester.address,
+                beneficiary: beneficiary.address,
+                tag: standardDealTag,
+                volume: volume,
+                callback: callback,
+                trust: trust,
+                category: category,
+                params: params,
+            });
+            await depositForRequesterAndSchedulerWithDefaultPrices();
+            // Sign and match orders.
+            const startTime = await setNextBlockTimestamp();
+            await signOrders(iexecWrapper.getDomain(), standardOrders, ordersActors);
+            const dealId = getDealId(iexecWrapper.getDomain(), standardOrders.requester);
+            await expect(iexecPocoAsRequester.matchOrders(...standardOrders.toArray())).to.emit(
+                iexecPoco,
+                'OrdersMatched',
+            );
+            // Check deal
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.app.pointer).to.equal(appAddress);
+            expect(deal.app.owner).to.equal(appProvider.address);
+            expect(deal.app.price).to.equal(appPrice);
+            expect(deal.dataset.pointer).to.equal(datasetAddress);
+            expect(deal.dataset.owner).to.equal(datasetProvider.address);
+            expect(deal.dataset.price).to.equal(datasetPrice);
+            expect(deal.workerpool.pointer).to.equal(workerpoolAddress);
+            expect(deal.workerpool.owner).to.equal(scheduler.address);
+            expect(deal.workerpool.price).to.equal(workerpoolPrice);
+            expect(deal.trust).to.equal(trust);
+            expect(deal.category).to.equal(category);
+            expect(deal.tag).to.equal(standardDealTag);
+            expect(deal.requester).to.equal(requester.address);
+            expect(deal.beneficiary).to.equal(beneficiary.address);
+            expect(deal.callback).to.equal(callback);
+            expect(deal.params).to.equal(params);
+            expect(deal.startTime).to.equal(startTime);
+            expect(deal.botFirst).to.equal(0);
+            expect(deal.botSize).to.equal(volume);
+            expect(deal.workerStake).to.equal(
+                await iexecWrapper.computeWorkerTaskStake(workerpoolAddress, workerpoolPrice),
+            );
+            expect(deal.schedulerRewardRatio).to.equal(
+                await iexecWrapper.getSchedulerTaskRewardRatio(workerpoolAddress),
+            );
+            expect(deal.sponsor).to.equal(requester.address);
+        });
+
         it('[TEE] Should match orders without beneficiary, BoT, callback, replication', async () => {
             await depositForRequesterAndSchedulerWithDefaultPrices();
             // Sign and match orders.
@@ -224,6 +285,38 @@ describe('IexecPoco1', () => {
             expect(deal.botSize).to.equal(1);
             expect(deal.callback).to.equal(AddressZero);
             expect(deal.trust).to.equal(1);
+        });
+
+        it.only('[TEE] Should sponsor match orders', async () => {
+            // Compute prices, stakes, rewards, ...
+            const dealPrice =
+                (appPrice + datasetPrice + workerpoolPrice) * // task price
+                volume;
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+            // Deposit required amounts.
+            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
+            const tx = iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray());
+            // Check balances and frozen.
+            await expect(tx).to.changeTokenBalances(
+                iexecPoco,
+                [iexecPoco, sponsor, scheduler, requester],
+                [dealPrice + schedulerStake, -dealPrice, -schedulerStake, 0],
+            );
+            expect(await iexecPoco.frozenOf(requester.address)).to.equal(0);
+            expect(await iexecPoco.frozenOf(sponsor.address)).to.equal(dealPrice);
+            expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(schedulerStake);
+            // Check events.
+            await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
+            // Check deal
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.sponsor).to.equal(sponsor.address);
         });
 
         it('[TEE] Should match orders without dataset', async () => {
@@ -262,6 +355,23 @@ describe('IexecPoco1', () => {
             expect(deal.dataset.price).to.equal(0);
             // BoT size should not be impacted even if the dataset order is the order with the lowest volume
             expect(deal.botSize).to.equal(volume);
+        });
+
+        it('[TEE] Should match orders without beneficiary, BoT, callback, replication', async () => {
+            await depositForRequesterAndSchedulerWithDefaultPrices();
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
+                iexecPoco,
+                'OrdersMatched',
+            );
+            // Check deal
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.beneficiary).to.equal(AddressZero);
+            expect(deal.botSize).to.equal(1);
+            expect(deal.callback).to.equal(AddressZero);
+            expect(deal.trust).to.equal(1);
         });
 
         it(`[TEE] Should match orders with full restrictions in all orders`, async function () {
@@ -309,6 +419,12 @@ describe('IexecPoco1', () => {
                 });
             });
         });
+
+        // TODO add success tests for:
+        //   - identity groups
+        //   - pre-signatures
+        //   - low orders volumes
+        //   - multiple matches of the same order
 
         it('[TEE] Should fail when categories are different', async () => {
             orders.requester.category = Number(orders.workerpool.category) + 1; // Valid but different category.
@@ -455,7 +571,6 @@ describe('IexecPoco1', () => {
             });
         });
     });
-    describe('[TODO] Sponsor match orders', () => {});
 
     /**
      * Helper function to deposit requester and scheduler stakes with
