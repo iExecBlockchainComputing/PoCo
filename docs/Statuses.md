@@ -71,5 +71,5 @@ flowchart LR
     BROADCASTED_ORDER --> |"matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
 
     classDef offchain fill:brown
-    classDef onchain fill:blue
+    classDef onchain fill:CornflowerBlue
 ```
