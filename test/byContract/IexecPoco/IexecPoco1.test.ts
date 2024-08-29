@@ -287,7 +287,7 @@ describe('IexecPoco1', () => {
             expect(deal.trust).to.equal(1);
         });
 
-        it.only('[TEE] Should sponsor match orders', async () => {
+        it('[TEE] Should sponsor match orders', async () => {
             // Compute prices, stakes, rewards, ...
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
