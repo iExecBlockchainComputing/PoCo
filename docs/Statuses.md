@@ -57,18 +57,18 @@ flowchart LR
     PARTIALLY_CONSUMED_ORDER["Partially (or fully) \n consumed order"]:::onchain
 
     UNSIGNED_ORDER --> |"owner signs order \n with private key"| SIGNED_ORDER
-    SIGNED_ORDER --> |"owner publishes signed order offchain"| MARKETPLACE_ORDER
-    SIGNED_ORDER --> |"owner broadcasts signed order onchain"| BROADCASTED_ORDER
+    SIGNED_ORDER --> |"owner publishes \n signed order offchain"| MARKETPLACE_ORDER
+    SIGNED_ORDER --> |"owner broadcasts \n signed order onchain"| BROADCASTED_ORDER
     UNSIGNED_ORDER --> |"owner calls \n manageOrder(unsignedOrder,SIGN) \n to presign order onchain"| PRESIGNED_ORDER
     UNSIGNED_ORDER --> |"owner signs \n signOrderOperation \n with private key"| SIGNED_SIGNORDEROPERATION
     SIGNED_SIGNORDEROPERATION --> |"someone calls \n manageOrder(signedSignOrderOperation,SIGN) \n to presign order onchain"| PRESIGNED_ORDER
-    PRESIGNED_ORDER --> |"matchOrders(unsignedOrder)"| PARTIALLY_CONSUMED_ORDER
+    PRESIGNED_ORDER --> |"someone calls \n matchOrders(unsignedOrder)"| PARTIALLY_CONSUMED_ORDER
     UNSIGNED_ORDER --> |"owner call \n manageOrder(unsignedOrder,CLOSE) \n to cancel order onchain"| CONSUMED_ORDER
     UNSIGNED_ORDER --> |"owner signs \n closeOrderOperation \n with private key"| SIGNED_CLOSEORDEROPERATION
     SIGNED_CLOSEORDEROPERATION --> |"someone calls \n manageOrder(signedCloseOrderOperation,CLOSE) \n to cancel order onchain"| CONSUMED_ORDER
-    SIGNED_ORDER --> |"matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
-    MARKETPLACE_ORDER --> |"matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
-    BROADCASTED_ORDER --> |"matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
+    SIGNED_ORDER --> |"someone calls \n matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
+    MARKETPLACE_ORDER --> |"someone calls \n matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
+    BROADCASTED_ORDER --> |"someone calls \n matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
 
     classDef offchain fill:brown
     classDef onchain fill:CornflowerBlue
