@@ -36,3 +36,40 @@ flowchart TB
 - Boost flow
 
 No contributions statuses in Boost flow.
+
+## Order flows
+
+```mermaid
+flowchart LR
+    subgraph Legend
+        ONCHAIN:::onchain
+        OFFCHAIN:::offchain
+    end
+
+    UNSIGNED_ORDER["Unsigned order"]:::offchain
+    SIGNED_ORDER["Signed order"]:::offchain
+    MARKETPLACE_ORDER["Signed order available \n in offchain marketplace"]:::offchain
+    BROADCASTED_ORDER["Signed order available \n in blockchain events \n through eth node RPC"]:::offchain
+    SIGNED_SIGNORDEROPERATION["Signed signOrderOperation"]:::offchain
+    PRESIGNED_ORDER["Presigned order"]:::onchain
+    SIGNED_CLOSEORDEROPERATION["Signed closeOrderOperation"]:::offchain
+    CONSUMED_ORDER["Fully \n consumed order"]:::onchain
+    PARTIALLY_CONSUMED_ORDER["Partially (or fully) \n consumed order"]:::onchain
+
+    UNSIGNED_ORDER --> |"owner signs order \n with private key"| SIGNED_ORDER
+    SIGNED_ORDER --> |"owner publishes signed order offchain"| MARKETPLACE_ORDER
+    SIGNED_ORDER --> |"owner broadcasts signed order onchain"| BROADCASTED_ORDER
+    UNSIGNED_ORDER --> |"owner calls \n manageOrder(unsignedOrder,SIGN) \n to presign order onchain"| PRESIGNED_ORDER
+    UNSIGNED_ORDER --> |"owner signs \n signOrderOperation \n with private key"| SIGNED_SIGNORDEROPERATION
+    SIGNED_SIGNORDEROPERATION --> |"someone calls \n manageOrder(signedSignOrderOperation,SIGN) \n to presign order onchain"| PRESIGNED_ORDER
+    PRESIGNED_ORDER --> |"matchOrders(unsignedOrder)"| PARTIALLY_CONSUMED_ORDER
+    UNSIGNED_ORDER --> |"owner call \n manageOrder(unsignedOrder,CLOSE) \n to cancel order onchain"| CONSUMED_ORDER
+    UNSIGNED_ORDER --> |"owner signs \n closeOrderOperation \n with private key"| SIGNED_CLOSEORDEROPERATION
+    SIGNED_CLOSEORDEROPERATION --> |"someone calls \n manageOrder(signedCloseOrderOperation,CLOSE) \n to cancel order onchain"| CONSUMED_ORDER
+    SIGNED_ORDER --> |"matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
+    MARKETPLACE_ORDER --> |"matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
+    BROADCASTED_ORDER --> |"matchOrders(signedOrder)"| PARTIALLY_CONSUMED_ORDER
+
+    classDef offchain fill:brown
+    classDef onchain fill:blue
+```
