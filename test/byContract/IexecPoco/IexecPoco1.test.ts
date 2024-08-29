@@ -35,7 +35,8 @@ const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const volume = 321;
+const volume = 1;
+const botVolume = 321;
 
 describe('IexecPoco1', () => {
     let proxyAddress: string;
@@ -127,7 +128,7 @@ describe('IexecPoco1', () => {
                 requester: requester.address,
                 beneficiary: beneficiary.address,
                 tag: teeDealTag,
-                volume: volume,
+                volume: botVolume,
                 callback: callback,
                 trust: trust,
                 category: category,
@@ -136,10 +137,10 @@ describe('IexecPoco1', () => {
             // Compute prices, stakes, rewards, ...
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
-                volume;
+                botVolume;
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
                 workerpoolPrice,
-                volume,
+                botVolume,
             );
             const workerStakePerTask = await iexecWrapper.computeWorkerTaskStake(
                 workerpoolAddress,
@@ -160,7 +161,7 @@ describe('IexecPoco1', () => {
                 await IexecPocoAccessors__factory.connect(proxyAddress, anyone).computeDealVolume(
                     ...fullConfigOrders.toArray(),
                 ),
-            ).to.equal(volume);
+            ).to.equal(botVolume);
 
             expect(
                 await iexecPocoAsRequester.callStatic.matchOrders(...fullConfigOrders.toArray()),
@@ -185,7 +186,7 @@ describe('IexecPoco1', () => {
                     datasetOrderHash,
                     workerpoolOrderHash,
                     requestOrderHash,
-                    volume,
+                    botVolume,
                 );
             // Check deal
             const deal = await iexecPoco.viewDeal(dealId);
@@ -207,7 +208,7 @@ describe('IexecPoco1', () => {
             expect(deal.params).to.equal(params);
             expect(deal.startTime).to.equal(startTime);
             expect(deal.botFirst).to.equal(0);
-            expect(deal.botSize).to.equal(volume);
+            expect(deal.botSize).to.equal(botVolume);
             expect(deal.workerStake).to.equal(workerStakePerTask);
             expect(deal.schedulerRewardRatio).to.equal(schedulerRewardByTask);
             expect(deal.sponsor).to.equal(requester.address);
@@ -225,13 +226,13 @@ describe('IexecPoco1', () => {
                 requester: requester.address,
                 beneficiary: beneficiary.address,
                 tag: standardDealTag,
-                volume: volume,
+                volume: botVolume,
                 callback: callback,
                 trust: trust,
                 category: category,
                 params: params,
             });
-            await depositForRequesterAndSchedulerWithDefaultPrices();
+            await depositForRequesterAndSchedulerWithDefaultPrices(botVolume);
             // Sign and match orders.
             const startTime = await setNextBlockTimestamp();
             await signOrders(iexecWrapper.getDomain(), standardOrders, ordersActors);
@@ -260,7 +261,7 @@ describe('IexecPoco1', () => {
             expect(deal.params).to.equal(params);
             expect(deal.startTime).to.equal(startTime);
             expect(deal.botFirst).to.equal(0);
-            expect(deal.botSize).to.equal(volume);
+            expect(deal.botSize).to.equal(botVolume);
             expect(deal.workerStake).to.equal(
                 await iexecWrapper.computeWorkerTaskStake(workerpoolAddress, workerpoolPrice),
             );
@@ -271,7 +272,7 @@ describe('IexecPoco1', () => {
         });
 
         it('[TEE] Should match orders without beneficiary, BoT, callback, replication', async () => {
-            await depositForRequesterAndSchedulerWithDefaultPrices();
+            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
@@ -286,6 +287,99 @@ describe('IexecPoco1', () => {
             expect(deal.callback).to.equal(AddressZero);
             expect(deal.trust).to.equal(1);
         });
+
+        it('[TEE] Should match orders without dataset', async () => {
+            orders.dataset.dataset = AddressZero;
+            orders.requester.dataset = AddressZero;
+            // Set dataset volume lower than other assets to make sure
+            // it does not impact final volume computation.
+            orders.dataset.volume = botVolume - 1;
+            orders.app.volume = botVolume;
+            orders.workerpool.volume = botVolume;
+            orders.requester.volume = botVolume;
+            // Compute prices, stakes, rewards, ...
+            const dealPrice = (appPrice + workerpoolPrice) * botVolume; // no dataset price
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                botVolume,
+            );
+            // Deposit required amounts.
+            await iexecWrapper.depositInIexecAccount(requester, dealPrice);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
+            const tx = iexecPocoAsRequester.matchOrders(...orders.toArray());
+            // Check balances and frozen.
+            // Dataset price shouldn't be included.
+            await expect(tx).to.changeTokenBalances(
+                iexecPoco,
+                [iexecPoco, requester, scheduler],
+                [dealPrice + schedulerStake, -dealPrice, -schedulerStake],
+            );
+            expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealPrice);
+            // Check events.
+            await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
+            // Check deal
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.dataset.pointer).to.equal(AddressZero);
+            expect(deal.dataset.owner).to.equal(AddressZero);
+            expect(deal.dataset.price).to.equal(0);
+            // BoT size should not be impacted even if the dataset order is the order with the lowest volume
+            expect(deal.botSize).to.equal(botVolume);
+        });
+
+        it(`[TEE] Should match orders with full restrictions in all orders`, async function () {
+            orders.app.datasetrestrict = orders.dataset.dataset;
+            orders.app.workerpoolrestrict = orders.workerpool.workerpool;
+            orders.app.requesterrestrict = orders.requester.requester;
+
+            orders.dataset.apprestrict = orders.app.app;
+            orders.dataset.workerpoolrestrict = orders.workerpool.workerpool;
+            orders.dataset.requesterrestrict = orders.requester.requester;
+
+            orders.workerpool.apprestrict = orders.app.app;
+            orders.workerpool.datasetrestrict = orders.dataset.dataset;
+            orders.workerpool.requesterrestrict = orders.requester.requester;
+
+            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
+                iexecPoco,
+                'OrdersMatched',
+            );
+        });
+
+        /**
+         * Successful match orders with partial restrictions.
+         */
+        // No restrictions in request order.
+        ['app', 'dataset', 'workerpool'].forEach((orderName) => {
+            ['app', 'dataset', 'workerpool', 'requester'].forEach((assetName) => {
+                // Filter irrelevant cases (e.g. app - app).
+                if (orderName.includes(assetName)) {
+                    return;
+                }
+                it(`[TEE] Should match orders with ${assetName} restriction in ${orderName} order`, async function () {
+                    // e.g. orders.app.datasetrestrict = orders.dataset.dataset
+                    orders[orderName][assetName + 'restrict'] = orders[assetName][assetName];
+                    await depositForRequesterAndSchedulerWithDefaultPrices(volume);
+                    // Sign and match orders.
+                    await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+                    await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
+                        iexecPoco,
+                        'OrdersMatched',
+                    );
+                });
+            });
+        });
+
+        // TODO add success tests for:
+        //   - identity groups
+        //   - pre-signatures
+        //   - low orders volumes
+        //   - multiple matches of the same order
 
         it('[TEE] Should sponsor match orders', async () => {
             // Compute prices, stakes, rewards, ...
@@ -318,113 +412,6 @@ describe('IexecPoco1', () => {
             const deal = await iexecPoco.viewDeal(dealId);
             expect(deal.sponsor).to.equal(sponsor.address);
         });
-
-        it('[TEE] Should match orders without dataset', async () => {
-            orders.dataset.dataset = AddressZero;
-            orders.requester.dataset = AddressZero;
-            // Set dataset volume lower than other assets to make sure
-            // it does not impact final volume computation.
-            orders.dataset.volume = volume - 1;
-            // Compute prices, stakes, rewards, ...
-            const dealPrice = (appPrice + workerpoolPrice) * volume; // no dataset price
-            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
-                workerpoolPrice,
-                volume,
-            );
-            // Deposit required amounts.
-            await iexecWrapper.depositInIexecAccount(requester, dealPrice);
-            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
-            // Sign and match orders.
-            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
-            const tx = iexecPocoAsRequester.matchOrders(...orders.toArray());
-            // Check balances and frozen.
-            // Dataset price shouldn't be included.
-            await expect(tx).to.changeTokenBalances(
-                iexecPoco,
-                [iexecPoco, requester, scheduler],
-                [dealPrice + schedulerStake, -dealPrice, -schedulerStake],
-            );
-            expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealPrice);
-            // Check events.
-            await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
-            // Check deal
-            const deal = await iexecPoco.viewDeal(dealId);
-            expect(deal.dataset.pointer).to.equal(AddressZero);
-            expect(deal.dataset.owner).to.equal(AddressZero);
-            expect(deal.dataset.price).to.equal(0);
-            // BoT size should not be impacted even if the dataset order is the order with the lowest volume
-            expect(deal.botSize).to.equal(volume);
-        });
-
-        it('[TEE] Should match orders without beneficiary, BoT, callback, replication', async () => {
-            await depositForRequesterAndSchedulerWithDefaultPrices();
-            // Sign and match orders.
-            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
-                iexecPoco,
-                'OrdersMatched',
-            );
-            // Check deal
-            const deal = await iexecPoco.viewDeal(dealId);
-            expect(deal.beneficiary).to.equal(AddressZero);
-            expect(deal.botSize).to.equal(1);
-            expect(deal.callback).to.equal(AddressZero);
-            expect(deal.trust).to.equal(1);
-        });
-
-        it(`[TEE] Should match orders with full restrictions in all orders`, async function () {
-            orders.app.datasetrestrict = orders.dataset.dataset;
-            orders.app.workerpoolrestrict = orders.workerpool.workerpool;
-            orders.app.requesterrestrict = orders.requester.requester;
-
-            orders.dataset.apprestrict = orders.app.app;
-            orders.dataset.workerpoolrestrict = orders.workerpool.workerpool;
-            orders.dataset.requesterrestrict = orders.requester.requester;
-
-            orders.workerpool.apprestrict = orders.app.app;
-            orders.workerpool.datasetrestrict = orders.dataset.dataset;
-            orders.workerpool.requesterrestrict = orders.requester.requester;
-
-            await depositForRequesterAndSchedulerWithDefaultPrices();
-            // Sign and match orders.
-            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
-                iexecPoco,
-                'OrdersMatched',
-            );
-        });
-
-        /**
-         * Successful match orders with partial restrictions.
-         */
-        // No restrictions in request order.
-        ['app', 'dataset', 'workerpool'].forEach((orderName) => {
-            ['app', 'dataset', 'workerpool', 'requester'].forEach((assetName) => {
-                // Filter irrelevant cases (e.g. app - app).
-                if (orderName.includes(assetName)) {
-                    return;
-                }
-                it(`[TEE] Should match orders with ${assetName} restriction in ${orderName} order`, async function () {
-                    // e.g. orders.app.datasetrestrict = orders.dataset.dataset
-                    orders[orderName][assetName + 'restrict'] = orders[assetName][assetName];
-                    await depositForRequesterAndSchedulerWithDefaultPrices();
-                    // Sign and match orders.
-                    await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-                    await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
-                        iexecPoco,
-                        'OrdersMatched',
-                    );
-                });
-            });
-        });
-
-        // TODO add success tests for:
-        //   - identity groups
-        //   - pre-signatures
-        //   - low orders volumes
-        //   - multiple matches of the same order
 
         it('[TEE] Should fail when categories are different', async () => {
             orders.requester.category = Number(orders.workerpool.category) + 1; // Valid but different category.
