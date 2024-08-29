@@ -213,7 +213,7 @@ describe('IexecPoco1', () => {
             expect(deal.sponsor).to.equal(requester.address);
         });
 
-        it.only('[Standard] Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
+        it('[Standard] Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
             const callback = ethers.Wallet.createRandom().address;
             const trust = 3;
             const category = 2;
