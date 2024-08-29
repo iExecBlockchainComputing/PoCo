@@ -10,8 +10,8 @@ import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecPocoAccessors__factory,
-    TestClient,
-    TestClient__factory,
+    OwnableMock,
+    OwnableMock__factory,
 } from '../../../typechain';
 import { IexecPoco1 } from '../../../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol';
 import { IexecPoco1__factory } from '../../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
@@ -21,6 +21,7 @@ import {
     OrdersAssets,
     OrdersPrices,
     buildOrders,
+    signOrder,
     signOrders,
 } from '../../../utils/createOrders';
 import { getDealId, getIexecAccounts, setNextBlockTimestamp } from '../../../utils/poco-tools';
@@ -58,7 +59,7 @@ describe('IexecPoco1', () => {
     let ordersPrices: OrdersPrices;
     let orders: IexecOrders;
     let randomAddress: string;
-    let randomContract: TestClient;
+    let randomContract: OwnableMock;
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
@@ -100,7 +101,7 @@ describe('IexecPoco1', () => {
             volume: volume,
         }));
         randomAddress = ethers.Wallet.createRandom().address;
-        randomContract = await new TestClient__factory()
+        randomContract = await new OwnableMock__factory()
             .connect(anyone)
             .deploy()
             .then((contract) => contract.deployed());
@@ -179,6 +180,8 @@ describe('IexecPoco1', () => {
             expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(schedulerStake);
             // Check events.
             await expect(tx)
+                .to.emit(iexecPoco, 'SchedulerNotice')
+                .withArgs(workerpoolAddress, dealId)
                 .to.emit(iexecPoco, 'OrdersMatched')
                 .withArgs(
                     dealId,
@@ -557,13 +560,138 @@ describe('IexecPoco1', () => {
                 });
             });
         });
+
+        it('Should fail when app is not registered', async function () {
+            orders.app.app = randomContract.address; // Must be an Ownable contract.
+            orders.requester.app = randomContract.address;
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x20',
+            );
+        });
+
+        it('Should fail when invalid app order signature (EOA)', async function () {
+            await signOrder(iexecWrapper.getDomain(), orders.app, anyone); // Bad signature.
+            await signOrder(iexecWrapper.getDomain(), orders.dataset, datasetProvider);
+            await signOrder(iexecWrapper.getDomain(), orders.workerpool, scheduler);
+            await signOrder(iexecWrapper.getDomain(), orders.requester, requester);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x21',
+            );
+        });
+        it('Should fail when dataset is not registered', async function () {
+            orders.dataset.dataset = randomContract.address; // Must be an Ownable contract.
+            orders.requester.dataset = randomContract.address;
+            await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x30',
+            );
+        });
+
+        it('Should fail when invalid dataset order signature from EOA', async function () {
+            await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
+            await signOrder(iexecWrapper.getDomain(), orders.dataset, anyone); // Bad signature.
+            await signOrder(iexecWrapper.getDomain(), orders.workerpool, scheduler);
+            await signOrder(iexecWrapper.getDomain(), orders.requester, requester);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x31',
+            );
+        });
+
+        it('Should fail when workerpool is not registered', async function () {
+            orders.workerpool.workerpool = randomContract.address; // Must be an Ownable contract.
+            orders.requester.workerpool = randomContract.address;
+            await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
+            await signOrder(iexecWrapper.getDomain(), orders.dataset, datasetProvider);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x40',
+            );
+        });
+
+        it('Should fail when invalid workerpool order signature from EOA', async function () {
+            await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
+            await signOrder(iexecWrapper.getDomain(), orders.dataset, datasetProvider);
+            await signOrder(iexecWrapper.getDomain(), orders.workerpool, anyone); // Bad signature.
+            await signOrder(iexecWrapper.getDomain(), orders.requester, requester);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x41',
+            );
+        });
+
+        it('Should fail when invalid request order signature from EOA', async function () {
+            await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
+            await signOrder(iexecWrapper.getDomain(), orders.dataset, datasetProvider);
+            await signOrder(iexecWrapper.getDomain(), orders.workerpool, scheduler);
+            await signOrder(iexecWrapper.getDomain(), orders.requester, anyone); // Bad signature.
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x50',
+            );
+        });
+
+        it('Should fail if one or more orders are consumed', async function () {
+            orders.app.volume = 0;
+            // TODO Set order as consumed directly in storage using the following code.
+            // Needs more debugging.
+            //
+            // const appOrderHash = iexecWrapper.hashOrder(orders.app);
+            // const appOrderConsumedSlotIndex = ethers.utils.keccak256(
+            //     ethers.utils.concat([
+            //         appOrderHash, // key in the mapping.
+            //         '0x12', // m_consumed mapping index.
+            //     ])
+            // );
+            // // Set order as fully consumed.
+            // await setStorageAt(
+            //     iexecPoco.address,
+            //     appOrderConsumedSlotIndex,
+            //     ethers.utils.hexlify(Number(orders.app.volume)),
+            // );
+            await depositForRequesterAndSchedulerWithDefaultPrices(botVolume);
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x60',
+            );
+        });
+
+        it('Should fail when requester has insufficient balance', async () => {
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+            // Deposit less than deal price in the requester's account.
+            await iexecWrapper.depositInIexecAccount(requester, dealPrice - 1);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            expect(await iexecPoco.balanceOf(requester.address)).to.be.lessThan(dealPrice);
+            expect(await iexecPoco.balanceOf(scheduler.address)).to.equal(schedulerStake);
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'IexecEscrow: Transfer amount exceeds balance',
+            );
+        });
+
+        it('Should fail when scheduler has insufficient balance', async () => {
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+            await iexecWrapper.depositInIexecAccount(requester, dealPrice);
+            // Deposit less than stake value in the scheduler's account.
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake - 1);
+            expect(await iexecPoco.balanceOf(requester.address)).to.equal(dealPrice);
+            expect(await iexecPoco.balanceOf(scheduler.address)).to.be.lessThan(schedulerStake);
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'IexecEscrow: Transfer amount exceeds balance',
+            );
+        });
     });
 
     /**
      * Helper function to deposit requester and scheduler stakes with
      * default prices for tests that do not rely on price changes.
      */
-    async function depositForRequesterAndSchedulerWithDefaultPrices() {
+    async function depositForRequesterAndSchedulerWithDefaultPrices(volume: number) {
         const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
         const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
             workerpoolPrice,
