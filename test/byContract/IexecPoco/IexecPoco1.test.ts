@@ -42,10 +42,14 @@ const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000
 const volume = 1;
 const botVolume = 321;
 
+/**
+ * Note: TEE is the default in tests.
+ */
+
 describe('IexecPoco1', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
-    let iexecPocoAsSponsor: IexecPoco1; // Sponsor function not available in IexecInterfaceNative yet.
+    let iexecPocoAsSponsor: IexecPoco1; // Sponsor function not available yet in IexecInterfaceNative.
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
@@ -122,7 +126,7 @@ describe('IexecPoco1', () => {
     describe('Verify presignature or signature', () => {});
 
     describe('Match orders', () => {
-        it('[TEE] Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
+        it('Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
             const trust = 3;
             const category = 2;
             const params = '<params>';
@@ -277,7 +281,7 @@ describe('IexecPoco1', () => {
             expect(deal.sponsor).to.equal(requester.address);
         });
 
-        it('[TEE] Should match orders without beneficiary, BoT, callback, replication', async () => {
+        it('Should match orders without beneficiary, BoT, callback, replication', async () => {
             await depositForRequesterAndSchedulerWithDefaultPrices(volume);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -294,7 +298,7 @@ describe('IexecPoco1', () => {
             expect(deal.trust).to.equal(1);
         });
 
-        it('[TEE] Should match orders without dataset', async () => {
+        it('Should match orders without dataset', async () => {
             orders.dataset.dataset = AddressZero;
             orders.requester.dataset = AddressZero;
             // Set dataset volume lower than other assets to make sure
@@ -335,7 +339,7 @@ describe('IexecPoco1', () => {
             expect(deal.botSize).to.equal(botVolume);
         });
 
-        it(`[TEE] Should match orders with full restrictions in all orders`, async function () {
+        it(`Should match orders with full restrictions in all orders`, async function () {
             orders.app.datasetrestrict = orders.dataset.dataset;
             orders.app.workerpoolrestrict = orders.workerpool.workerpool;
             orders.app.requesterrestrict = orders.requester.requester;
@@ -367,7 +371,7 @@ describe('IexecPoco1', () => {
                 if (orderName.includes(assetName)) {
                     return;
                 }
-                it(`[TEE] Should match orders with ${assetName} restriction in ${orderName} order`, async function () {
+                it(`Should match orders with ${assetName} restriction in ${orderName} order`, async function () {
                     // e.g. orders.app.datasetrestrict = orders.dataset.dataset
                     orders[orderName][assetName + 'restrict'] = orders[assetName][assetName];
                     await depositForRequesterAndSchedulerWithDefaultPrices(volume);
@@ -387,14 +391,14 @@ describe('IexecPoco1', () => {
         //   - low orders volumes
         //   - multiple matches of the same order
 
-        it('[TEE] Should fail when categories are different', async () => {
+        it('Should fail when categories are different', async () => {
             orders.requester.category = Number(orders.workerpool.category) + 1; // Valid but different category.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x00',
             );
         });
 
-        it('[TEE] Should fail when category is unknown', async () => {
+        it('Should fail when category is unknown', async () => {
             const lastCategoryIndex = (await iexecPoco.countCategory()).toNumber() - 1;
             orders.requester.category = lastCategoryIndex + 1;
             orders.workerpool.category = lastCategoryIndex + 1;
@@ -403,35 +407,35 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('[TEE] Should fail when requested trust is above workerpool trust', async () => {
+        it('Should fail when requested trust is above workerpool trust', async () => {
             orders.requester.trust = Number(orders.workerpool.trust) + 1;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x02',
             );
         });
 
-        it('[TEE] Should fail when app max price is less than app price', async () => {
+        it('Should fail when app max price is less than app price', async () => {
             orders.requester.appmaxprice = Number(orders.app.appprice) - 1;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x03',
             );
         });
 
-        it('[TEE] Should fail when dataset max price is less than dataset price', async () => {
+        it('Should fail when dataset max price is less than dataset price', async () => {
             orders.requester.datasetmaxprice = Number(orders.dataset.datasetprice) - 1;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x04',
             );
         });
 
-        it('[TEE] Should fail when workerpool max price is less than workerpool price', async () => {
+        it('Should fail when workerpool max price is less than workerpool price', async () => {
             orders.requester.workerpoolmaxprice = Number(orders.workerpool.workerpoolprice) - 1;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x05',
             );
         });
 
-        it('[TEE] Should fail when workerpool tag does not satisfy app, dataset and request requirements', async () => {
+        it('Should fail when workerpool tag does not satisfy app, dataset and request requirements', async () => {
             orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000001'; // 0b0001
             orders.dataset.tag =
                 '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
@@ -447,7 +451,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('[TEE] Should fail when the last bit of app tag does not satisfy dataset or request requirements', async () => {
+        it('Should fail when the last bit of app tag does not satisfy dataset or request requirements', async () => {
             // The last bit of dataset and request tag is 1, but app tag does not set it
             orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
             orders.dataset.tag =
@@ -463,21 +467,21 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('[TEE] Should fail when apps are different', async () => {
+        it('Should fail when apps are different', async () => {
             orders.requester.app = randomAddress;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x10',
             );
         });
 
-        it('[TEE] Should fail when datasets are different', async () => {
+        it('Should fail when datasets are different', async () => {
             orders.requester.dataset = randomAddress;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x11',
             );
         });
 
-        it('[TEE] Should fail when request order workerpool mismatches workerpool order workerpool (EOA, SC)', async () => {
+        it('Should fail when request order workerpool mismatches workerpool order workerpool (EOA, SC)', async () => {
             orders.requester.workerpool = randomAddress;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x12',
@@ -516,7 +520,7 @@ describe('IexecPoco1', () => {
                 if (orderName.includes(assetName)) {
                     return;
                 }
-                it(`[TEE] Should fail when ${orderName} order mismatch ${assetName} restriction (EOA, SC)`, async function () {
+                it(`Should fail when ${orderName} order mismatch ${assetName} restriction (EOA, SC)`, async function () {
                     const message = revertMessages[orderName][assetName];
                     // EOA
                     orders[orderName][assetName + 'restrict'] = randomAddress; // e.g. orders.app.datasetrestrict = 0xEOA
@@ -758,7 +762,7 @@ describe('IexecPoco1', () => {
     });
 
     describe('Sponsor match orders', () => {
-        it('[TEE] Should sponsor match orders', async () => {
+        it('Should sponsor match orders', async () => {
             // Compute prices, stakes, rewards, ...
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
