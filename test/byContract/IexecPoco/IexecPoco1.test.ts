@@ -7,6 +7,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
+    ERC1271Mock__factory,
+    IERC721__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecPocoAccessors__factory,
@@ -21,6 +23,7 @@ import {
     OrdersAssets,
     OrdersPrices,
     buildOrders,
+    hashOrder,
     signOrder,
     signOrders,
 } from '../../../utils/createOrders';
@@ -58,7 +61,7 @@ describe('IexecPoco1', () => {
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
     let orders: IexecOrders;
-    let randomAddress: string;
+    let [randomAddress, randomSignature]: string[] = [];
     let randomContract: OwnableMock;
 
     beforeEach('Deploy', async () => {
@@ -100,7 +103,9 @@ describe('IexecPoco1', () => {
             tag: teeDealTag,
             volume: volume,
         }));
-        randomAddress = ethers.Wallet.createRandom().address;
+        const randomWallet = ethers.Wallet.createRandom();
+        randomAddress = randomWallet.address;
+        randomSignature = await randomWallet.signMessage('random');
         randomContract = await new OwnableMock__factory()
             .connect(anyone)
             .deploy()
@@ -118,7 +123,6 @@ describe('IexecPoco1', () => {
 
     describe('Match orders', () => {
         it('[TEE] Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
-            const callback = ethers.Wallet.createRandom().address;
             const trust = 3;
             const category = 2;
             const params = '<params>';
@@ -130,7 +134,7 @@ describe('IexecPoco1', () => {
                 beneficiary: beneficiary.address,
                 tag: teeDealTag,
                 volume: botVolume,
-                callback: callback,
+                callback: randomAddress,
                 trust: trust,
                 category: category,
                 params: params,
@@ -207,7 +211,7 @@ describe('IexecPoco1', () => {
             expect(deal.tag).to.equal(teeDealTag);
             expect(deal.requester).to.equal(requester.address);
             expect(deal.beneficiary).to.equal(beneficiary.address);
-            expect(deal.callback).to.equal(callback);
+            expect(deal.callback).to.equal(randomAddress);
             expect(deal.params).to.equal(params);
             expect(deal.startTime).to.equal(startTime);
             expect(deal.botFirst).to.equal(0);
@@ -218,7 +222,6 @@ describe('IexecPoco1', () => {
         });
 
         it('[Standard] Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
-            const callback = ethers.Wallet.createRandom().address;
             const trust = 3;
             const category = 2;
             const params = '<params>';
@@ -230,7 +233,7 @@ describe('IexecPoco1', () => {
                 beneficiary: beneficiary.address,
                 tag: standardDealTag,
                 volume: botVolume,
-                callback: callback,
+                callback: randomAddress,
                 trust: trust,
                 category: category,
                 params: params,
@@ -260,7 +263,7 @@ describe('IexecPoco1', () => {
             expect(deal.tag).to.equal(standardDealTag);
             expect(deal.requester).to.equal(requester.address);
             expect(deal.beneficiary).to.equal(beneficiary.address);
-            expect(deal.callback).to.equal(callback);
+            expect(deal.callback).to.equal(randomAddress);
             expect(deal.params).to.equal(params);
             expect(deal.startTime).to.equal(startTime);
             expect(deal.botFirst).to.equal(0);
@@ -569,15 +572,42 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when invalid app order signature (EOA)', async function () {
-            await signOrder(iexecWrapper.getDomain(), orders.app, anyone); // Bad signature.
-            await signOrder(iexecWrapper.getDomain(), orders.dataset, datasetProvider);
-            await signOrder(iexecWrapper.getDomain(), orders.workerpool, scheduler);
-            await signOrder(iexecWrapper.getDomain(), orders.requester, requester);
+        it('Should fail when invalid app order signature from EOA', async function () {
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            orders.app.sign = randomSignature; // Override signature.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x21',
             );
         });
+
+        it('Should fail when invalid app order signature from SC', async function () {
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            orders.app.sign = randomSignature; // Override signature.
+            // Deploy an ERC1271 mock contract.
+            const erc1271Contract = await new ERC1271Mock__factory()
+                .connect(anyone)
+                .deploy()
+                .then((contract) => contract.deployed());
+            // Transfer ownership of the app to the ERC1271 contract.
+            await IERC721__factory.connect(await iexecPoco.appregistry(), appProvider)
+                .transferFrom(
+                    appProvider.address,
+                    erc1271Contract.address,
+                    appAddress, // tokenId
+                )
+                .then((tx) => tx.wait());
+            // Make sure the test does not fail because of another reason.
+            const signatureAddress = ethers.utils.verifyMessage(
+                hashOrder(iexecWrapper.getDomain(), orders.app),
+                orders.app.sign as any,
+            );
+            expect(signatureAddress).to.not.equal(erc1271Contract.address); // owner of app.
+            // Match orders.
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x21',
+            );
+        });
+
         it('Should fail when dataset is not registered', async function () {
             orders.dataset.dataset = randomContract.address; // Must be an Ownable contract.
             orders.requester.dataset = randomContract.address;
@@ -588,10 +618,36 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when invalid dataset order signature from EOA', async function () {
-            await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
-            await signOrder(iexecWrapper.getDomain(), orders.dataset, anyone); // Bad signature.
-            await signOrder(iexecWrapper.getDomain(), orders.workerpool, scheduler);
-            await signOrder(iexecWrapper.getDomain(), orders.requester, requester);
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            orders.dataset.sign = randomSignature; // Override signature.
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x31',
+            );
+        });
+
+        it('Should fail when invalid dataset order signature from SC', async function () {
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            orders.dataset.sign = randomSignature; // Override signature.
+            // Deploy an ERC1271 mock contract.
+            const erc1271Contract = await new ERC1271Mock__factory()
+                .connect(anyone)
+                .deploy()
+                .then((contract) => contract.deployed());
+            // Transfer ownership of the dataset to the ERC1271 contract.
+            await IERC721__factory.connect(await iexecPoco.datasetregistry(), datasetProvider)
+                .transferFrom(
+                    datasetProvider.address,
+                    erc1271Contract.address,
+                    datasetAddress, // tokenId
+                )
+                .then((tx) => tx.wait());
+            // Make sure the test does not fail because of another reason.
+            const signatureAddress = ethers.utils.verifyMessage(
+                hashOrder(iexecWrapper.getDomain(), orders.dataset),
+                orders.dataset.sign as any,
+            );
+            expect(signatureAddress).to.not.equal(erc1271Contract.address); // owner of dataset.
+            // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x31',
             );
@@ -608,20 +664,66 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when invalid workerpool order signature from EOA', async function () {
-            await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
-            await signOrder(iexecWrapper.getDomain(), orders.dataset, datasetProvider);
-            await signOrder(iexecWrapper.getDomain(), orders.workerpool, anyone); // Bad signature.
-            await signOrder(iexecWrapper.getDomain(), orders.requester, requester);
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            orders.workerpool.sign = randomSignature; // Override signature.
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x41',
+            );
+        });
+
+        it('Should fail when invalid workerpool order signature from SC', async function () {
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            orders.workerpool.sign = randomSignature; // Override signature.
+            // Deploy an ERC1271 mock contract.
+            const erc1271Contract = await new ERC1271Mock__factory()
+                .connect(anyone)
+                .deploy()
+                .then((contract) => contract.deployed());
+            // Transfer ownership of the workerpool to the ERC1271 contract.
+            await IERC721__factory.connect(await iexecPoco.workerpoolregistry(), scheduler)
+                .transferFrom(
+                    scheduler.address,
+                    erc1271Contract.address,
+                    workerpoolAddress, // tokenId
+                )
+                .then((tx) => tx.wait());
+            // Make sure the test does not fail because of another reason.
+            const signatureAddress = ethers.utils.verifyMessage(
+                hashOrder(iexecWrapper.getDomain(), orders.workerpool),
+                orders.workerpool.sign as any,
+            );
+            expect(signatureAddress).to.not.equal(erc1271Contract.address); // owner of workerpool.
+            // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x41',
             );
         });
 
         it('Should fail when invalid request order signature from EOA', async function () {
-            await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
-            await signOrder(iexecWrapper.getDomain(), orders.dataset, datasetProvider);
-            await signOrder(iexecWrapper.getDomain(), orders.workerpool, scheduler);
-            await signOrder(iexecWrapper.getDomain(), orders.requester, anyone); // Bad signature.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            orders.requester.sign = randomSignature; // Override signature.
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x50',
+            );
+        });
+
+        it('Should fail when invalid request order signature from SC', async function () {
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            orders.requester.sign = randomSignature; // Override signature.
+            // Deploy an ERC1271 mock contract.
+            const erc1271Contract = await new ERC1271Mock__factory()
+                .connect(anyone)
+                .deploy()
+                .then((contract) => contract.deployed());
+            // Set the smart contract as the requester.
+            orders.requester.requester = erc1271Contract.address;
+            // Make sure the test does not fail because of another reason.
+            const signatureAddress = ethers.utils.verifyMessage(
+                hashOrder(iexecWrapper.getDomain(), orders.requester),
+                orders.requester.sign as any,
+            );
+            expect(signatureAddress).to.not.equal(erc1271Contract.address); // Requester.
+            // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x50',
             );
