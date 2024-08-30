@@ -114,16 +114,7 @@ describe('IexecPoco1', () => {
             .connect(anyone)
             .deploy()
             .then((contract) => contract.deployed());
-        // TODO check why this is done in 00_matchorders.js
-        // await Workerpool__factory.connect(workerpoolAddress, scheduler)
-        //     .changePolicy(35, 5)
-        //     .then((tx) => tx.wait());
     }
-
-    // TODO
-    describe('Verify signature', () => {});
-    describe('Verify presignature', () => {});
-    describe('Verify presignature or signature', () => {});
 
     describe('Match orders', () => {
         it('Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
