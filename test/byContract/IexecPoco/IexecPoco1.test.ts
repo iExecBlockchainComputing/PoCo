@@ -757,7 +757,7 @@ describe('IexecPoco1', () => {
         });
     });
 
-    describe.only('Sponsor match orders', () => {
+    describe('Sponsor match orders', () => {
         it('[TEE] Should sponsor match orders', async () => {
             // Compute prices, stakes, rewards, ...
             const dealPrice =
