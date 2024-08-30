@@ -387,38 +387,6 @@ describe('IexecPoco1', () => {
         //   - low orders volumes
         //   - multiple matches of the same order
 
-        it('[TEE] Should sponsor match orders', async () => {
-            // Compute prices, stakes, rewards, ...
-            const dealPrice =
-                (appPrice + datasetPrice + workerpoolPrice) * // task price
-                volume;
-            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
-                workerpoolPrice,
-                volume,
-            );
-            // Deposit required amounts.
-            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
-            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
-            // Sign and match orders.
-            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
-            const tx = iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray());
-            // Check balances and frozen.
-            await expect(tx).to.changeTokenBalances(
-                iexecPoco,
-                [iexecPoco, sponsor, scheduler, requester],
-                [dealPrice + schedulerStake, -dealPrice, -schedulerStake, 0],
-            );
-            expect(await iexecPoco.frozenOf(requester.address)).to.equal(0);
-            expect(await iexecPoco.frozenOf(sponsor.address)).to.equal(dealPrice);
-            expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(schedulerStake);
-            // Check events.
-            await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
-            // Check deal
-            const deal = await iexecPoco.viewDeal(dealId);
-            expect(deal.sponsor).to.equal(sponsor.address);
-        });
-
         it('[TEE] Should fail when categories are different', async () => {
             orders.requester.category = Number(orders.workerpool.category) + 1; // Valid but different category.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
@@ -786,6 +754,59 @@ describe('IexecPoco1', () => {
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'IexecEscrow: Transfer amount exceeds balance',
             );
+        });
+    });
+
+    describe.only('Sponsor match orders', () => {
+        it('[TEE] Should sponsor match orders', async () => {
+            // Compute prices, stakes, rewards, ...
+            const dealPrice =
+                (appPrice + datasetPrice + workerpoolPrice) * // task price
+                volume;
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+            // Deposit required amounts.
+            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
+            const tx = iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray());
+            // Check balances and frozen.
+            await expect(tx).to.changeTokenBalances(
+                iexecPoco,
+                [iexecPoco, sponsor, scheduler, requester],
+                [dealPrice + schedulerStake, -dealPrice, -schedulerStake, 0],
+            );
+            expect(await iexecPoco.frozenOf(requester.address)).to.equal(0);
+            expect(await iexecPoco.frozenOf(sponsor.address)).to.equal(dealPrice);
+            expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(schedulerStake);
+            // Check events.
+            await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
+            // Check deal
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.sponsor).to.equal(sponsor.address);
+        });
+
+        it('Should fail when sponsor has insufficient balance', async () => {
+            // Compute prices, stakes, rewards, ...
+            const dealPrice =
+                (appPrice + datasetPrice + workerpoolPrice) * // task price
+                volume;
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+            // Deposit less than deal price in the sponsor's account.
+            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice - 1);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(
+                iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray()),
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
     });
 
