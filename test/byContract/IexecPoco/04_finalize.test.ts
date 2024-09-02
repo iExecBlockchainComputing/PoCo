@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { AddressZero } from '@ethersproject/constants';
+import { loadFixture, setStorageAt, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
@@ -29,16 +30,15 @@ const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
-const emptyEnclaveAddress = ethers.constants.AddressZero;
+const emptyEnclaveAddress = AddressZero;
 const emptyEnclaveSignature = '0x';
 
-describe('Poco', async () => {
+describe('IexecPoco2#finalize', async () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsAnyone]: IexecInterfaceNative[] = [];
+    let [iexecPoco, iexecPocoAsScheduler]: IexecInterfaceNative[] = [];
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
-        iexecAdmin,
         requester,
         sponsor,
         appProvider,
@@ -63,7 +63,6 @@ describe('Poco', async () => {
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({
-            iexecAdmin,
             requester,
             sponsor,
             appProvider,
@@ -78,8 +77,8 @@ describe('Poco', async () => {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
-        iexecPocoAsAnyone = iexecPoco.connect(anyone);
+        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPocoAsScheduler = iexecPoco.connect(scheduler);
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -92,8 +91,9 @@ describe('Poco', async () => {
         };
     }
 
+    //TODO: Remove describe wrapper
     describe('Finalize', async function () {
-        it('Should finalize task of deal payed by sponsor', async function () {
+        it('Should finalize task of deal payed by sponsor (with callback)', async function () {
             const oracleConsumerInstance = await new TestClient__factory()
                 .connect(anyone)
                 .deploy()
@@ -116,7 +116,7 @@ describe('Poco', async () => {
             );
             const schedulerTaskStake = schedulerDealStake / expectedVolume;
             const kittyAddress = await iexecPoco.kitty_address();
-            await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
+            await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
                 .then((deal) => deal.workerStake.toNumber());
@@ -130,6 +130,13 @@ describe('Poco', async () => {
             ];
             const winningWorkers = [worker1, worker3, worker4];
             const losingWorker = worker2;
+            // Set same non-zero score to each worker.
+            // Each winning worker should win 1 workerScore point.
+            // Losing worker should loose at least 33% of its workerScore (here
+            // it will loose 1 point since score is an integer).
+            for (const worker of workers) {
+                await setWorkerScoreInStorage(worker.wallet.address, 1);
+            }
             for (const worker of workers) {
                 const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                     taskId,
@@ -175,15 +182,19 @@ describe('Poco', async () => {
             for (const worker of [...winningWorkers, losingWorker]) {
                 expect(await iexecPoco.balanceOf(worker.address)).to.be.equal(0);
                 expect(await iexecPoco.frozenOf(worker.address)).to.be.equal(workerTaskStake);
-                expect(await iexecPoco.viewScore(worker.address)).to.be.equal(0);
+                expect(await iexecPoco.viewScore(worker.address)).to.be.equal(1);
             }
             expect(await iexecPoco.balanceOf(kittyAddress)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(0);
-            expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.REVEALING);
+            const taskBefore = await iexecPoco.viewTask(taskId);
+            expect(taskBefore.status).to.equal(TaskStatusEnum.REVEALING);
+            expect(taskBefore.revealCounter).to.equal(taskBefore.winnerCounter);
 
-            const finalizeTx = await iexecPoco
-                .connect(scheduler)
-                .finalize(taskId, results, resultsCallback);
+            const finalizeTx = await iexecPocoAsScheduler.finalize(
+                taskId,
+                results,
+                resultsCallback,
+            );
             await finalizeTx.wait();
             await expect(finalizeTx)
                 .to.emit(iexecPoco, 'Seize')
@@ -259,26 +270,29 @@ describe('Poco', async () => {
                     workerTaskStake + workerReward,
                 );
                 expect(await iexecPoco.frozenOf(worker.address)).to.be.equal(0);
-                expect(await iexecPoco.viewScore(worker.address)).to.be.equal(1);
+                expect(await iexecPoco.viewScore(worker.address)).to.be.equal(2);
             }
             expect(await iexecPoco.balanceOf(losingWorker.address)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(losingWorker.address)).to.be.equal(0);
-            // TODO: Add score history to losing worker to test score punishing
             expect(await iexecPoco.viewScore(losingWorker.address)).to.be.equal(0);
             // TODO: Update test with non-empty kitty
             expect(await iexecPoco.balanceOf(kittyAddress)).to.be.equal(0);
             expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(0);
         });
 
-        it('Should finalize task of deal payed by requester', async function () {
+        it('Should finalize task of deal payed by requester (no callback, no dataset)', async function () {
             const { orders } = buildOrders({
-                assets: ordersAssets,
+                assets: {
+                    app: appAddress,
+                    dataset: AddressZero,
+                    workerpool: workerpoolAddress,
+                },
                 requester: requester.address,
                 prices: ordersPrices,
             });
-            const { dealId, taskId, taskIndex, dealPrice } =
-                await iexecWrapper.signAndMatchOrders(orders);
-            await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
+            const taskPrice = appPrice + workerpoolPrice;
+            const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+            await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
                 .then((deal) => deal.workerStake.toNumber());
@@ -309,21 +323,273 @@ describe('Poco', async () => {
                 .connect(worker1)
                 .reveal(taskId, resultDigest)
                 .then((tx) => tx.wait());
-            expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(taskPrice);
-            expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(0);
+            const requesterFrozenBefore = (await iexecPoco.frozenOf(requester.address)).toNumber();
+            const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
 
-            await expect(iexecPoco.connect(scheduler).finalize(taskId, results, '0x'))
-                .to.emit(iexecPoco, 'Seize')
-                .withArgs(requester.address, taskPrice, taskId)
-                .to.emit(iexecPoco, 'TaskFinalize');
-            expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
-            expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(0);
+            await expect(
+                iexecPocoAsScheduler.finalize(taskId, results, '0x'),
+            ).to.changeTokenBalances(
+                iexecPoco,
+                [requester, sponsor, appProvider, datasetProvider],
+                [
+                    0, // requester balance is unchanged, only frozen is changed
+                    0,
+                    appPrice, // app provider is rewarded
+                    0, // but dataset provider is not rewarded
+                ],
+            );
+            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(
+                requesterFrozenBefore - taskPrice,
+            );
+            expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(sponsorFrozenBefore);
+            const task = await iexecPoco.viewTask(taskId);
+            expect(task.resultsCallback).to.equal('0x'); // deal without callback
         });
     });
 
-    // TODO: Continue `finalize` tests migration (`Should/Should not`)
+    it('Should finalize task after reveal deadline with at least one reveal', async function () {
+        const volume = 1;
+        const { orders } = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+            volume,
+            trust: 3,
+        });
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const workers = [worker1, worker2];
+        for (const worker of workers) {
+            const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+                taskId,
+                resultDigest,
+                worker,
+            );
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+                worker.address,
+                taskId,
+                emptyEnclaveAddress,
+                scheduler,
+            );
+            await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
+            await iexecPoco
+                .connect(worker)
+                .contribute(
+                    taskId,
+                    resultHash,
+                    resultSeal,
+                    emptyEnclaveAddress,
+                    emptyEnclaveSignature,
+                    schedulerSignature,
+                )
+                .then((tx) => tx.wait());
+        }
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, resultDigest)
+            .then((tx) => tx.wait());
+        const taskBefore = await iexecPoco.viewTask(taskId);
+        expect(taskBefore.status).to.equal(TaskStatusEnum.REVEALING);
+        expect(taskBefore.revealCounter).to.equal(1);
+        await time.setNextBlockTimestamp(taskBefore.revealDeadline);
+        // worker2 did not reveal
+        // so task can be finalized after revealDeadline
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x')).to.emit(
+            iexecPoco,
+            'TaskFinalize',
+        );
+    });
+
+    it('Should not finalize when caller is not scheduler', async function () {
+        const { dealId, taskId } = await iexecWrapper.signAndMatchOrders(
+            buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            }).orders,
+        );
+        const deal = await iexecPoco.viewDeal(dealId);
+        expect(deal.workerpool.owner).to.equal(scheduler.address).not.equal(anyone.address);
+        // caller is not scheduler
+        await expect(
+            iexecPoco.connect(anyone).finalize(taskId, results, '0x'),
+        ).to.be.revertedWithoutReason(); // onlyScheduler modifier
+    });
+
+    it('Should not finalize task when task status is not revealing', async function () {
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            }).orders,
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).to.equal(TaskStatusEnum.ACTIVE);
+        // caller is scheduler
+        // but task status is not revealing
+        await expect(
+            iexecPocoAsScheduler.finalize(taskId, results, '0x'),
+        ).to.be.revertedWithoutReason(); // require#1
+    });
+
+    it('Should not finalize task after final deadline', async function () {
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            }).orders,
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            resultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).to.equal(TaskStatusEnum.REVEALING);
+        await time.setNextBlockTimestamp(task.finalDeadline);
+        // caller is scheduler, task status is revealing
+        // but after final deadline
+        await expect(
+            iexecPocoAsScheduler.finalize(taskId, results, '0x'),
+        ).to.be.revertedWithoutReason(); // require#2
+    });
+
+    it('Should not finalize when winner counter not reached nor at least one worker revealed', async function () {
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                trust: 3,
+            }).orders,
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const workers = [worker1, worker2];
+        for (const worker of workers) {
+            const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+                taskId,
+                resultDigest,
+                worker,
+            );
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+                worker.address,
+                taskId,
+                emptyEnclaveAddress,
+                scheduler,
+            );
+            await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
+            await iexecPoco
+                .connect(worker)
+                .contribute(
+                    taskId,
+                    resultHash,
+                    resultSeal,
+                    emptyEnclaveAddress,
+                    emptyEnclaveSignature,
+                    schedulerSignature,
+                )
+                .then((tx) => tx.wait());
+        }
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).to.equal(TaskStatusEnum.REVEALING);
+        expect(task.winnerCounter).to.equal(2).not.equal(task.revealCounter);
+        await time.setNextBlockTimestamp(task.revealDeadline);
+        // caller is scheduler, task status is revealing, before final deadline
+        // winner counter is not reached and reveal deadline is reached but not
+        // even one worker revealed
+        await expect(
+            iexecPocoAsScheduler.finalize(taskId, results, '0x'),
+        ).to.be.revertedWithoutReason(); // require#3
+    });
+
+    it('Should not finalize task when resultsCallback is not expected', async function () {
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+            }).orders,
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            resultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, resultDigest)
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).to.equal(TaskStatusEnum.REVEALING);
+        expect(task.revealCounter).to.equal(1);
+        // caller is scheduler, task status is revealing, before final deadline,
+        // reveal counter is reached
+        // but resultsCallback is not expected
+        await expect(
+            iexecPocoAsScheduler.finalize(taskId, results, '0x01'),
+        ).to.be.revertedWithoutReason(); // require#4
+    });
+
+    async function setWorkerScoreInStorage(worker: string, score: number) {
+        const workerScoreSlot = ethers.utils.hexStripZeros(
+            ethers.utils.keccak256(
+                ethers.utils.defaultAbiCoder.encode(
+                    ['address', 'uint256'],
+                    [
+                        worker,
+                        23, // Slot index of m_workerScores in Store
+                    ],
+                ),
+            ),
+        );
+        await setStorageAt(proxyAddress, workerScoreSlot, score);
+    }
 });
