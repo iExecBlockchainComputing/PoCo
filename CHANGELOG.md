@@ -6,7 +6,7 @@
 - Migrate unit test files to Typescript & Hardhat:
     - IexecPoco2
         - finalize (#117)
-        - reveal (#114)
+        - reveal (#114, #118)
         - contribute (#108, #109, #110)
     - IexecPoco1 (#107, #113)
     - Add `.test` suffix to unit test files (#106)
