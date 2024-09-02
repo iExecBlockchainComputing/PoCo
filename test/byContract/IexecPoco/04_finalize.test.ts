@@ -479,7 +479,7 @@ describe('IexecPoco2#finalize', async () => {
         ).to.be.revertedWithoutReason(); // require#2
     });
 
-    it('Should not finalize when winner counter not reached nor at least one worker revealed', async () => {
+    it('Should not finalize when winner counter is not reached nor at least one worker revealed', async () => {
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
             buildOrders({
                 assets: ordersAssets,
