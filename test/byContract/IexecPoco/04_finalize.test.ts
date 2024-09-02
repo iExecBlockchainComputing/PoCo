@@ -391,10 +391,10 @@ describe('IexecPoco2#finalize', async () => {
             .connect(worker1)
             .reveal(taskId, resultDigest)
             .then((tx) => tx.wait());
-        const taskBefore = await iexecPoco.viewTask(taskId);
-        expect(taskBefore.status).to.equal(TaskStatusEnum.REVEALING);
-        expect(taskBefore.revealCounter).to.equal(1);
-        await time.setNextBlockTimestamp(taskBefore.revealDeadline);
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).to.equal(TaskStatusEnum.REVEALING);
+        expect(task.revealCounter).to.equal(1);
+        await time.setNextBlockTimestamp(task.revealDeadline);
         // worker2 did not reveal
         // so task can be finalized after revealDeadline
         await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x')).to.emit(
