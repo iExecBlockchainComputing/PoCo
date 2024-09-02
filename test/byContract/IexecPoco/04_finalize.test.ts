@@ -92,8 +92,8 @@ describe('IexecPoco2#finalize', async () => {
     }
 
     //TODO: Remove describe wrapper
-    describe('Finalize', async function () {
-        it('Should finalize task of deal payed by sponsor (with callback)', async function () {
+    describe('Finalize', async () => {
+        it('Should finalize task of deal payed by sponsor (with callback)', async () => {
             const oracleConsumerInstance = await new TestClient__factory()
                 .connect(anyone)
                 .deploy()
@@ -280,7 +280,7 @@ describe('IexecPoco2#finalize', async () => {
             expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(0);
         });
 
-        it('Should finalize task of deal payed by requester (no callback, no dataset)', async function () {
+        it('Should finalize task of deal payed by requester (no callback, no dataset)', async () => {
             const { orders } = buildOrders({
                 assets: {
                     app: appAddress,
@@ -347,7 +347,7 @@ describe('IexecPoco2#finalize', async () => {
         });
     });
 
-    it('Should finalize task after reveal deadline with at least one reveal', async function () {
+    it('Should finalize task after reveal deadline with at least one reveal', async () => {
         const volume = 1;
         const { orders } = buildOrders({
             assets: ordersAssets,
@@ -403,7 +403,7 @@ describe('IexecPoco2#finalize', async () => {
         );
     });
 
-    it('Should not finalize when caller is not scheduler', async function () {
+    it('Should not finalize when caller is not scheduler', async () => {
         const { dealId, taskId } = await iexecWrapper.signAndMatchOrders(
             buildOrders({
                 assets: ordersAssets,
@@ -418,7 +418,7 @@ describe('IexecPoco2#finalize', async () => {
         ).to.be.revertedWithoutReason(); // onlyScheduler modifier
     });
 
-    it('Should not finalize task when task status is not revealing', async function () {
+    it('Should not finalize task when task status is not revealing', async () => {
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
             buildOrders({
                 assets: ordersAssets,
@@ -435,7 +435,7 @@ describe('IexecPoco2#finalize', async () => {
         ).to.be.revertedWithoutReason(); // require#1
     });
 
-    it('Should not finalize task after final deadline', async function () {
+    it('Should not finalize task after final deadline', async () => {
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
             buildOrders({
                 assets: ordersAssets,
@@ -479,7 +479,7 @@ describe('IexecPoco2#finalize', async () => {
         ).to.be.revertedWithoutReason(); // require#2
     });
 
-    it('Should not finalize when winner counter not reached nor at least one worker revealed', async function () {
+    it('Should not finalize when winner counter not reached nor at least one worker revealed', async () => {
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
             buildOrders({
                 assets: ordersAssets,
@@ -529,7 +529,7 @@ describe('IexecPoco2#finalize', async () => {
         ).to.be.revertedWithoutReason(); // require#3
     });
 
-    it('Should not finalize task when resultsCallback is not expected', async function () {
+    it('Should not finalize task when resultsCallback is not expected', async () => {
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
             buildOrders({
                 assets: ordersAssets,
