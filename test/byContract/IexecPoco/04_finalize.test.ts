@@ -123,10 +123,10 @@ describe('IexecPoco2#finalize', async () => {
             const { callbackResultDigest: wrongCallbackResultDigest } =
                 buildResultCallbackAndDigest(567);
             const workers = [
-                { wallet: worker1, callbackResultDigest: callbackResultDigest },
-                { wallet: worker2, callbackResultDigest: wrongCallbackResultDigest },
-                { wallet: worker3, callbackResultDigest: callbackResultDigest },
-                { wallet: worker4, callbackResultDigest: callbackResultDigest },
+                { signer: worker1, callbackResultDigest: callbackResultDigest },
+                { signer: worker2, callbackResultDigest: wrongCallbackResultDigest },
+                { signer: worker3, callbackResultDigest: callbackResultDigest },
+                { signer: worker4, callbackResultDigest: callbackResultDigest },
             ];
             const winningWorkers = [worker1, worker3, worker4];
             const losingWorker = worker2;
@@ -135,23 +135,23 @@ describe('IexecPoco2#finalize', async () => {
             // Losing worker should loose at least 33% of its workerScore (here
             // it will loose 1 point since score is an integer).
             for (const worker of workers) {
-                await setWorkerScoreInStorage(worker.wallet.address, 1);
+                await setWorkerScoreInStorage(worker.signer.address, 1);
             }
             for (const worker of workers) {
                 const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                     taskId,
                     worker.callbackResultDigest,
-                    worker.wallet,
+                    worker.signer,
                 );
                 const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
-                    worker.wallet.address,
+                    worker.signer.address,
                     taskId,
                     emptyEnclaveAddress,
                     scheduler,
                 );
-                await iexecWrapper.depositInIexecAccount(worker.wallet, workerTaskStake);
+                await iexecWrapper.depositInIexecAccount(worker.signer, workerTaskStake);
                 await iexecPoco
-                    .connect(worker.wallet)
+                    .connect(worker.signer)
                     .contribute(
                         taskId,
                         resultHash,
@@ -284,8 +284,8 @@ describe('IexecPoco2#finalize', async () => {
                 schedulerFrozenBefore - schedulerTaskStake,
             );
             for (const worker of workers) {
-                expect(await iexecPoco.frozenOf(worker.wallet.address)).to.be.equal(
-                    workersFrozenBefore[worker.wallet.address] - workerTaskStake,
+                expect(await iexecPoco.frozenOf(worker.signer.address)).to.be.equal(
+                    workersFrozenBefore[worker.signer.address] - workerTaskStake,
                 );
             }
             for (const worker of winningWorkers) {
