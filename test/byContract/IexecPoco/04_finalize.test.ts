@@ -168,24 +168,17 @@ describe('IexecPoco2#finalize', async () => {
                     .reveal(taskId, callbackResultDigest)
                     .then((tx) => tx.wait());
             }
-            expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
-                dealPrice + schedulerDealStake + workers.length * workerTaskStake,
-            );
-            expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
-            expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(dealPrice);
-            expect(await iexecPoco.balanceOf(appProvider.address)).to.be.equal(0);
-            expect(await iexecPoco.balanceOf(datasetProvider.address)).to.be.equal(0);
-            expect(await iexecPoco.balanceOf(scheduler.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
+            const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
+            const sponsorFrozenBefore = (await iexecPoco.frozenOf(sponsor.address)).toNumber();
+            const schedulerFrozenBefore = (await iexecPoco.frozenOf(scheduler.address)).toNumber();
+            const workersFrozenBefore: { [name: string]: number } = {};
             for (const worker of [...winningWorkers, losingWorker]) {
-                expect(await iexecPoco.balanceOf(worker.address)).to.be.equal(0);
-                expect(await iexecPoco.frozenOf(worker.address)).to.be.equal(workerTaskStake);
+                workersFrozenBefore[worker.address] = (
+                    await iexecPoco.frozenOf(worker.address)
+                ).toNumber();
                 expect(await iexecPoco.viewScore(worker.address)).to.be.equal(1);
             }
-            expect(await iexecPoco.balanceOf(kittyAddress)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(0);
+            const kittyFrozenBefore = await iexecPoco.frozenOf(kittyAddress);
             const taskBefore = await iexecPoco.viewTask(taskId);
             expect(taskBefore.status).to.equal(TaskStatusEnum.REVEALING);
             expect(taskBefore.revealCounter).to.equal(taskBefore.winnerCounter);
@@ -247,37 +240,59 @@ describe('IexecPoco2#finalize', async () => {
             expect(task.status).equal(TaskStatusEnum.COMPLETED);
             expect(task.results).equal(hexResults);
             expect(task.resultsCallback).equal(resultsCallback);
-            expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
-                remainingTasksToFinalize * (taskPrice + schedulerTaskStake),
+            await expect(finalizeTx).to.changeTokenBalances(
+                iexecPoco,
+                [
+                    iexecPoco,
+                    requester,
+                    sponsor,
+                    appProvider,
+                    datasetProvider,
+                    scheduler,
+                    worker1,
+                    worker2,
+                    worker3,
+                    worker4,
+                    kittyAddress,
+                ],
+                [
+                    -(
+                        appPrice + // iExec Poco rewards asset providers and unlock/seize stakes
+                        datasetPrice +
+                        workerpoolPrice +
+                        schedulerTaskStake +
+                        workerTaskStake * workers.length
+                    ),
+                    0, // requester is unrelated to this test
+                    0, // sponsor balance is unchanged, only frozen is changed
+                    appPrice, // app provider is rewarded
+                    datasetPrice, // dataset provider is rewarded
+                    schedulerReward + // scheduler is rewarded for first task
+                        schedulerTaskStake, // and also get unlocked stake for first task
+                    workerTaskStake + workerReward, // worker1 is a winning worker
+                    0, // worker2 is a losing worker
+                    workerTaskStake + workerReward, // worker3 is a winning worker
+                    workerTaskStake + workerReward, // worker4 is a winning worker
+                    0, // TODO: Update test with non-empty kitty
+                ],
             );
-            expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
-            expect(await iexecPoco.balanceOf(sponsor.address)).to.be.equal(0);
+            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(requesterFrozenBefore);
             expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(
-                remainingTasksToFinalize * taskPrice,
-            );
-            expect(await iexecPoco.balanceOf(appProvider.address)).to.be.equal(appPrice);
-            expect(await iexecPoco.balanceOf(datasetProvider.address)).to.be.equal(datasetPrice);
-            expect(await iexecPoco.balanceOf(scheduler.address)).to.be.equal(
-                schedulerTaskStake + // unlocked stake from first task
-                    schedulerReward, // reward from first task
+                sponsorFrozenBefore - taskPrice,
             );
             expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(
-                remainingTasksToFinalize * schedulerTaskStake,
+                schedulerFrozenBefore - schedulerTaskStake,
             );
-            for (const worker of winningWorkers) {
-                expect(await iexecPoco.balanceOf(worker.address)).to.be.equal(
-                    workerTaskStake + workerReward,
+            for (const worker of workers) {
+                expect(await iexecPoco.frozenOf(worker.wallet.address)).to.be.equal(
+                    workersFrozenBefore[worker.wallet.address] - workerTaskStake,
                 );
-                expect(await iexecPoco.frozenOf(worker.address)).to.be.equal(0);
+            }
+            for (const worker of winningWorkers) {
                 expect(await iexecPoco.viewScore(worker.address)).to.be.equal(2);
             }
-            expect(await iexecPoco.balanceOf(losingWorker.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(losingWorker.address)).to.be.equal(0);
             expect(await iexecPoco.viewScore(losingWorker.address)).to.be.equal(0);
-            // TODO: Update test with non-empty kitty
-            expect(await iexecPoco.balanceOf(kittyAddress)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(0);
+            expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(kittyFrozenBefore);
         });
 
         it('Should finalize task of deal payed by requester (no callback, no dataset)', async () => {
@@ -326,18 +341,18 @@ describe('IexecPoco2#finalize', async () => {
             const requesterFrozenBefore = (await iexecPoco.frozenOf(requester.address)).toNumber();
             const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
 
-            await expect(
-                iexecPocoAsScheduler.finalize(taskId, results, '0x'),
-            ).to.changeTokenBalances(
-                iexecPoco,
-                [requester, sponsor, appProvider, datasetProvider],
-                [
-                    0, // requester balance is unchanged, only frozen is changed
-                    0,
-                    appPrice, // app provider is rewarded
-                    0, // but dataset provider is not rewarded
-                ],
-            );
+            await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
+                .to.emit(iexecPoco, 'TaskFinalize')
+                .to.changeTokenBalances(
+                    iexecPoco,
+                    [requester, sponsor, appProvider, datasetProvider],
+                    [
+                        0, // requester balance is unchanged, only frozen is changed
+                        0,
+                        appPrice, // app provider is rewarded
+                        0, // but dataset provider is not rewarded
+                    ],
+                );
             expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(
                 requesterFrozenBefore - taskPrice,
             );
