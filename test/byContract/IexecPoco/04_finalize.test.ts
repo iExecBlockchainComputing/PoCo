@@ -90,241 +90,64 @@ describe('IexecPoco2#finalize', async () => {
             workerpool: workerpoolPrice,
         };
     }
-
-    //TODO: Remove describe wrapper
-    describe('Finalize', async () => {
-        it('Should finalize task of deal payed by sponsor (with callback)', async () => {
-            const oracleConsumerInstance = await new TestClient__factory()
-                .connect(anyone)
-                .deploy()
-                .then((contract) => contract.deployed());
-            const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
-            const { orders } = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-                prices: ordersPrices,
-                volume: expectedVolume,
-                trust: 3,
-                callback: oracleConsumerInstance.address,
-            });
-            const { dealId, taskId, taskIndex, dealPrice } =
-                await iexecWrapper.signAndSponsorMatchOrders(orders);
-            const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
-                workerpoolPrice,
-                expectedVolume,
-            );
-            const schedulerTaskStake = schedulerDealStake / expectedVolume;
-            const kittyAddress = await iexecPoco.kitty_address();
-            await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-            const workerTaskStake = await iexecPoco
-                .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
-            const { callbackResultDigest: wrongCallbackResultDigest } =
-                buildResultCallbackAndDigest(567);
-            const workers = [
-                { signer: worker1, callbackResultDigest: callbackResultDigest },
-                { signer: worker2, callbackResultDigest: wrongCallbackResultDigest },
-                { signer: worker3, callbackResultDigest: callbackResultDigest },
-                { signer: worker4, callbackResultDigest: callbackResultDigest },
-            ];
-            const winningWorkers = [worker1, worker3, worker4];
-            const losingWorker = worker2;
-            // Set same non-zero score to each worker.
-            // Each winning worker should win 1 workerScore point.
-            // Losing worker should loose at least 33% of its workerScore (here
-            // it will loose 1 point since score is an integer).
-            for (const worker of workers) {
-                await setWorkerScoreInStorage(worker.signer.address, 1);
-            }
-            for (const worker of workers) {
-                const { resultHash, resultSeal } = buildResultHashAndResultSeal(
-                    taskId,
-                    worker.callbackResultDigest,
-                    worker.signer,
-                );
-                const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
-                    worker.signer.address,
-                    taskId,
-                    emptyEnclaveAddress,
-                    scheduler,
-                );
-                await iexecWrapper.depositInIexecAccount(worker.signer, workerTaskStake);
-                await iexecPoco
-                    .connect(worker.signer)
-                    .contribute(
-                        taskId,
-                        resultHash,
-                        resultSeal,
-                        emptyEnclaveAddress,
-                        emptyEnclaveSignature,
-                        schedulerSignature,
-                    )
-                    .then((tx) => tx.wait());
-            }
-            for (const worker of winningWorkers) {
-                await iexecPoco
-                    .connect(worker)
-                    .reveal(taskId, callbackResultDigest)
-                    .then((tx) => tx.wait());
-            }
-            const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
-            const sponsorFrozenBefore = (await iexecPoco.frozenOf(sponsor.address)).toNumber();
-            const schedulerFrozenBefore = (await iexecPoco.frozenOf(scheduler.address)).toNumber();
-            const workersFrozenBefore: { [name: string]: number } = {};
-            for (const worker of workers) {
-                const workerAddress = worker.signer.address;
-                workersFrozenBefore[workerAddress] = await iexecPoco
-                    .frozenOf(workerAddress)
-                    .then((frozen) => frozen.toNumber());
-                expect(await iexecPoco.viewScore(workerAddress)).to.be.equal(1);
-            }
-            const kittyFrozenBefore = await iexecPoco.frozenOf(kittyAddress);
-            const taskBefore = await iexecPoco.viewTask(taskId);
-            expect(taskBefore.status).to.equal(TaskStatusEnum.REVEALING);
-            expect(taskBefore.revealCounter).to.equal(taskBefore.winnerCounter);
-
-            const finalizeTx = await iexecPocoAsScheduler.finalize(
-                taskId,
-                results,
-                resultsCallback,
-            );
-            await finalizeTx.wait();
-            await expect(finalizeTx)
-                .to.emit(iexecPoco, 'Seize')
-                .withArgs(sponsor.address, taskPrice, taskId)
-                .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPoco.address, appProvider.address, appPrice)
-                .to.emit(iexecPoco, 'Reward')
-                .withArgs(appProvider.address, appPrice, taskId)
-                .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPoco.address, datasetProvider.address, datasetPrice)
-                .to.emit(iexecPoco, 'Reward')
-                .withArgs(datasetProvider.address, datasetPrice, taskId)
-                .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPoco.address, scheduler.address, schedulerTaskStake)
-                .to.emit(iexecPoco, 'Unlock')
-                .withArgs(scheduler.address, schedulerTaskStake);
-            const workerReward = 429000000;
-            for (const worker of winningWorkers) {
-                await expect(finalizeTx)
-                    .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(iexecPoco.address, worker.address, workerTaskStake)
-                    .to.emit(iexecPoco, 'Unlock')
-                    .withArgs(worker.address, workerTaskStake)
-                    .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(iexecPoco.address, worker.address, workerReward)
-                    .to.emit(iexecPoco, 'Reward')
-                    .withArgs(worker.address, workerReward, taskId)
-                    .to.emit(iexecPoco, 'AccurateContribution')
-                    .withArgs(worker.address, taskId);
-            }
-            await expect(finalizeTx)
-                .to.emit(iexecPoco, 'Seize')
-                .withArgs(losingWorker.address, workerTaskStake, taskId)
-                .to.emit(iexecPoco, 'FaultyContribution')
-                .withArgs(losingWorker.address, taskId);
-            const schedulerReward =
-                workerpoolPrice -
-                winningWorkers.length * workerReward + // winning workers rewards
-                workerTaskStake; // losing worker stake
-            await expect(finalizeTx)
-                .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPoco.address, scheduler.address, schedulerReward)
-                .to.emit(iexecPoco, 'Reward')
-                .withArgs(scheduler.address, schedulerReward, taskId)
-                .to.emit(iexecPoco, 'TaskFinalize')
-                .withArgs(taskId, hexResults)
-                .to.emit(oracleConsumerInstance, 'GotResult')
-                .withArgs(taskId, resultsCallback);
-            const task = await iexecPoco.viewTask(taskId);
-            expect(task.status).equal(TaskStatusEnum.COMPLETED);
-            expect(task.results).equal(hexResults);
-            expect(task.resultsCallback).equal(resultsCallback);
-            await expect(finalizeTx).to.changeTokenBalances(
-                iexecPoco,
-                [
-                    iexecPoco,
-                    requester,
-                    sponsor,
-                    appProvider,
-                    datasetProvider,
-                    scheduler,
-                    worker1,
-                    worker2,
-                    worker3,
-                    worker4,
-                    kittyAddress,
-                ],
-                [
-                    -(
-                        appPrice + // iExec Poco rewards asset providers and unlock/seize stakes
-                        datasetPrice +
-                        workerpoolPrice +
-                        schedulerTaskStake +
-                        workerTaskStake * workers.length
-                    ),
-                    0, // requester is unrelated to this test
-                    0, // sponsor balance is unchanged, only frozen is changed
-                    appPrice, // app provider is rewarded
-                    datasetPrice, // dataset provider is rewarded
-                    schedulerReward + // scheduler is rewarded for first task
-                        schedulerTaskStake, // and also get unlocked stake for first task
-                    workerTaskStake + workerReward, // worker1 is a winning worker
-                    0, // worker2 is a losing worker
-                    workerTaskStake + workerReward, // worker3 is a winning worker
-                    workerTaskStake + workerReward, // worker4 is a winning worker
-                    0, // TODO: Update test with non-empty kitty
-                ],
-            );
-            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(requesterFrozenBefore);
-            expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(
-                sponsorFrozenBefore - taskPrice,
-            );
-            expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(
-                schedulerFrozenBefore - schedulerTaskStake,
-            );
-            for (const worker of workers) {
-                expect(await iexecPoco.frozenOf(worker.signer.address)).to.be.equal(
-                    workersFrozenBefore[worker.signer.address] - workerTaskStake,
-                );
-            }
-            for (const worker of winningWorkers) {
-                expect(await iexecPoco.viewScore(worker.address)).to.be.equal(2);
-            }
-            expect(await iexecPoco.viewScore(losingWorker.address)).to.be.equal(0);
-            expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(kittyFrozenBefore);
+    it('Should finalize task of deal payed by sponsor (with callback)', async () => {
+        const oracleConsumerInstance = await new TestClient__factory()
+            .connect(anyone)
+            .deploy()
+            .then((contract) => contract.deployed());
+        const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
+        const { orders } = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+            volume: expectedVolume,
+            trust: 3,
+            callback: oracleConsumerInstance.address,
         });
-
-        it('Should finalize task of deal payed by requester (no callback, no dataset)', async () => {
-            const { orders } = buildOrders({
-                assets: {
-                    app: appAddress,
-                    dataset: AddressZero,
-                    workerpool: workerpoolAddress,
-                },
-                requester: requester.address,
-                prices: ordersPrices,
-            });
-            const taskPrice = appPrice + workerpoolPrice;
-            const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
-            await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-            const workerTaskStake = await iexecPoco
-                .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
+        const { dealId, taskId, taskIndex, dealPrice } =
+            await iexecWrapper.signAndSponsorMatchOrders(orders);
+        const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
+            workerpoolPrice,
+            expectedVolume,
+        );
+        const schedulerTaskStake = schedulerDealStake / expectedVolume;
+        const kittyAddress = await iexecPoco.kitty_address();
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { callbackResultDigest: wrongCallbackResultDigest } =
+            buildResultCallbackAndDigest(567);
+        const workers = [
+            { signer: worker1, callbackResultDigest: callbackResultDigest },
+            { signer: worker2, callbackResultDigest: wrongCallbackResultDigest },
+            { signer: worker3, callbackResultDigest: callbackResultDigest },
+            { signer: worker4, callbackResultDigest: callbackResultDigest },
+        ];
+        const winningWorkers = [worker1, worker3, worker4];
+        const losingWorker = worker2;
+        // Set same non-zero score to each worker.
+        // Each winning worker should win 1 workerScore point.
+        // Losing worker should loose at least 33% of its workerScore (here
+        // it will loose 1 point since score is an integer).
+        for (const worker of workers) {
+            await setWorkerScoreInStorage(worker.signer.address, 1);
+        }
+        for (const worker of workers) {
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
-                resultDigest,
-                worker1,
+                worker.callbackResultDigest,
+                worker.signer,
             );
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
-                worker1.address,
+                worker.signer.address,
                 taskId,
                 emptyEnclaveAddress,
                 scheduler,
             );
-            await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+            await iexecWrapper.depositInIexecAccount(worker.signer, workerTaskStake);
             await iexecPoco
-                .connect(worker1)
+                .connect(worker.signer)
                 .contribute(
                     taskId,
                     resultHash,
@@ -334,32 +157,201 @@ describe('IexecPoco2#finalize', async () => {
                     schedulerSignature,
                 )
                 .then((tx) => tx.wait());
+        }
+        for (const worker of winningWorkers) {
             await iexecPoco
-                .connect(worker1)
-                .reveal(taskId, resultDigest)
+                .connect(worker)
+                .reveal(taskId, callbackResultDigest)
                 .then((tx) => tx.wait());
-            const requesterFrozenBefore = (await iexecPoco.frozenOf(requester.address)).toNumber();
-            const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
+        }
+        const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
+        const sponsorFrozenBefore = (await iexecPoco.frozenOf(sponsor.address)).toNumber();
+        const schedulerFrozenBefore = (await iexecPoco.frozenOf(scheduler.address)).toNumber();
+        const workersFrozenBefore: { [name: string]: number } = {};
+        for (const worker of workers) {
+            const workerAddress = worker.signer.address;
+            workersFrozenBefore[workerAddress] = await iexecPoco
+                .frozenOf(workerAddress)
+                .then((frozen) => frozen.toNumber());
+            expect(await iexecPoco.viewScore(workerAddress)).to.be.equal(1);
+        }
+        const kittyFrozenBefore = await iexecPoco.frozenOf(kittyAddress);
+        const taskBefore = await iexecPoco.viewTask(taskId);
+        expect(taskBefore.status).to.equal(TaskStatusEnum.REVEALING);
+        expect(taskBefore.revealCounter).to.equal(taskBefore.winnerCounter);
 
-            await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
-                .to.emit(iexecPoco, 'TaskFinalize')
-                .to.changeTokenBalances(
-                    iexecPoco,
-                    [requester, sponsor, appProvider, datasetProvider],
-                    [
-                        0, // requester balance is unchanged, only frozen is changed
-                        0,
-                        appPrice, // app provider is rewarded
-                        0, // but dataset provider is not rewarded
-                    ],
-                );
-            expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(
-                requesterFrozenBefore - taskPrice,
+        const finalizeTx = await iexecPocoAsScheduler.finalize(taskId, results, resultsCallback);
+        await finalizeTx.wait();
+        await expect(finalizeTx)
+            .to.emit(iexecPoco, 'Seize')
+            .withArgs(sponsor.address, taskPrice, taskId)
+            .to.emit(iexecPoco, 'Transfer')
+            .withArgs(iexecPoco.address, appProvider.address, appPrice)
+            .to.emit(iexecPoco, 'Reward')
+            .withArgs(appProvider.address, appPrice, taskId)
+            .to.emit(iexecPoco, 'Transfer')
+            .withArgs(iexecPoco.address, datasetProvider.address, datasetPrice)
+            .to.emit(iexecPoco, 'Reward')
+            .withArgs(datasetProvider.address, datasetPrice, taskId)
+            .to.emit(iexecPoco, 'Transfer')
+            .withArgs(iexecPoco.address, scheduler.address, schedulerTaskStake)
+            .to.emit(iexecPoco, 'Unlock')
+            .withArgs(scheduler.address, schedulerTaskStake);
+        const workerReward = 429000000;
+        for (const worker of winningWorkers) {
+            await expect(finalizeTx)
+                .to.emit(iexecPoco, 'Transfer')
+                .withArgs(iexecPoco.address, worker.address, workerTaskStake)
+                .to.emit(iexecPoco, 'Unlock')
+                .withArgs(worker.address, workerTaskStake)
+                .to.emit(iexecPoco, 'Transfer')
+                .withArgs(iexecPoco.address, worker.address, workerReward)
+                .to.emit(iexecPoco, 'Reward')
+                .withArgs(worker.address, workerReward, taskId)
+                .to.emit(iexecPoco, 'AccurateContribution')
+                .withArgs(worker.address, taskId);
+        }
+        await expect(finalizeTx)
+            .to.emit(iexecPoco, 'Seize')
+            .withArgs(losingWorker.address, workerTaskStake, taskId)
+            .to.emit(iexecPoco, 'FaultyContribution')
+            .withArgs(losingWorker.address, taskId);
+        const schedulerReward =
+            workerpoolPrice -
+            winningWorkers.length * workerReward + // winning workers rewards
+            workerTaskStake; // losing worker stake
+        await expect(finalizeTx)
+            .to.emit(iexecPoco, 'Transfer')
+            .withArgs(iexecPoco.address, scheduler.address, schedulerReward)
+            .to.emit(iexecPoco, 'Reward')
+            .withArgs(scheduler.address, schedulerReward, taskId)
+            .to.emit(iexecPoco, 'TaskFinalize')
+            .withArgs(taskId, hexResults)
+            .to.emit(oracleConsumerInstance, 'GotResult')
+            .withArgs(taskId, resultsCallback);
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).equal(TaskStatusEnum.COMPLETED);
+        expect(task.results).equal(hexResults);
+        expect(task.resultsCallback).equal(resultsCallback);
+        await expect(finalizeTx).to.changeTokenBalances(
+            iexecPoco,
+            [
+                iexecPoco,
+                requester,
+                sponsor,
+                appProvider,
+                datasetProvider,
+                scheduler,
+                worker1,
+                worker2,
+                worker3,
+                worker4,
+                kittyAddress,
+            ],
+            [
+                -(
+                    appPrice + // iExec Poco rewards asset providers and unlock/seize stakes
+                    datasetPrice +
+                    workerpoolPrice +
+                    schedulerTaskStake +
+                    workerTaskStake * workers.length
+                ),
+                0, // requester is unrelated to this test
+                0, // sponsor balance is unchanged, only frozen is changed
+                appPrice, // app provider is rewarded
+                datasetPrice, // dataset provider is rewarded
+                schedulerReward + // scheduler is rewarded for first task
+                    schedulerTaskStake, // and also get unlocked stake for first task
+                workerTaskStake + workerReward, // worker1 is a winning worker
+                0, // worker2 is a losing worker
+                workerTaskStake + workerReward, // worker3 is a winning worker
+                workerTaskStake + workerReward, // worker4 is a winning worker
+                0, // TODO: Update test with non-empty kitty
+            ],
+        );
+        expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(requesterFrozenBefore);
+        expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(
+            sponsorFrozenBefore - taskPrice,
+        );
+        expect(await iexecPoco.frozenOf(scheduler.address)).to.be.equal(
+            schedulerFrozenBefore - schedulerTaskStake,
+        );
+        for (const worker of workers) {
+            expect(await iexecPoco.frozenOf(worker.signer.address)).to.be.equal(
+                workersFrozenBefore[worker.signer.address] - workerTaskStake,
             );
-            expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(sponsorFrozenBefore);
-            const task = await iexecPoco.viewTask(taskId);
-            expect(task.resultsCallback).to.equal('0x'); // deal without callback
+        }
+        for (const worker of winningWorkers) {
+            expect(await iexecPoco.viewScore(worker.address)).to.be.equal(2);
+        }
+        expect(await iexecPoco.viewScore(losingWorker.address)).to.be.equal(0);
+        expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(kittyFrozenBefore);
+    });
+
+    it('Should finalize task of deal payed by requester (no callback, no dataset)', async () => {
+        const { orders } = buildOrders({
+            assets: {
+                app: appAddress,
+                dataset: AddressZero,
+                workerpool: workerpoolAddress,
+            },
+            requester: requester.address,
+            prices: ordersPrices,
         });
+        const taskPrice = appPrice + workerpoolPrice;
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            resultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, resultDigest)
+            .then((tx) => tx.wait());
+        const requesterFrozenBefore = (await iexecPoco.frozenOf(requester.address)).toNumber();
+        const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
+
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
+            .to.emit(iexecPoco, 'TaskFinalize')
+            .to.changeTokenBalances(
+                iexecPoco,
+                [requester, sponsor, appProvider, datasetProvider],
+                [
+                    0, // requester balance is unchanged, only frozen is changed
+                    0,
+                    appPrice, // app provider is rewarded
+                    0, // but dataset provider is not rewarded
+                ],
+            );
+        expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(
+            requesterFrozenBefore - taskPrice,
+        );
+        expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(sponsorFrozenBefore);
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.resultsCallback).to.equal('0x'); // deal without callback
     });
 
     it('Should finalize task after reveal deadline with at least one reveal', async () => {
