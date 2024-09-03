@@ -99,7 +99,6 @@ describe('IexecPoco2#finalize', async () => {
                 .deploy()
                 .then((contract) => contract.deployed());
             const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
-            const remainingTasksToFinalize = expectedVolume - 1;
             const { orders } = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -172,11 +171,12 @@ describe('IexecPoco2#finalize', async () => {
             const sponsorFrozenBefore = (await iexecPoco.frozenOf(sponsor.address)).toNumber();
             const schedulerFrozenBefore = (await iexecPoco.frozenOf(scheduler.address)).toNumber();
             const workersFrozenBefore: { [name: string]: number } = {};
-            for (const worker of [...winningWorkers, losingWorker]) {
-                workersFrozenBefore[worker.address] = (
-                    await iexecPoco.frozenOf(worker.address)
-                ).toNumber();
-                expect(await iexecPoco.viewScore(worker.address)).to.be.equal(1);
+            for (const worker of workers) {
+                const workerAddress = worker.signer.address;
+                workersFrozenBefore[workerAddress] = await iexecPoco
+                    .frozenOf(workerAddress)
+                    .then((frozen) => frozen.toNumber());
+                expect(await iexecPoco.viewScore(workerAddress)).to.be.equal(1);
             }
             const kittyFrozenBefore = await iexecPoco.frozenOf(kittyAddress);
             const taskBefore = await iexecPoco.viewTask(taskId);
