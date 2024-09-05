@@ -5,7 +5,8 @@
 - Generate Solidity documentation. (#111)
 - Migrate unit test files to Typescript & Hardhat:
     - IexecPoco2
-        - reveal (#114)
+        - finalize (#79, #117, #119)
+        - reveal (#114, #118)
         - contribute (#108, #109, #110)
     - IexecPoco1 (#107, #113, #115, #116)
     - Add `.test` suffix to unit test files (#106)
@@ -30,8 +31,6 @@
 - Seize sponsor on success task. (#79)
 - Refund sponsor on `claim`. (#77)
 - Sponsor match orders boost. (#67, #78)
-- Start migration to hardhat tests:
-    - `finalize` (#79)
 - Migrate to hardhat tests related to:
     - `initialize` (#74, #75)
     - `claim` (#65, #66, #72, #76)
