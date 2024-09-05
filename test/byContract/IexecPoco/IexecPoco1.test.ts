@@ -1,12 +1,15 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero } from '@ethersproject/constants';
+import { AddressZero, HashZero } from '@ethersproject/constants';
+import { Contract } from '@ethersproject/contracts';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
+    ERC1271Mock,
+    ERC1271Mock__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecPocoAccessors__factory,
@@ -43,6 +46,7 @@ const taskIndex = 0;
 describe('IexecPoco1', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
+    let iexecPocoContract: Contract;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
@@ -61,6 +65,7 @@ describe('IexecPoco1', () => {
     let orders: IexecOrders;
     let randomAddress: string;
     let randomContract: TestClient;
+    let erc1271Contract: ERC1271Mock;
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
@@ -85,6 +90,7 @@ describe('IexecPoco1', () => {
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
+        iexecPocoContract = iexecPoco as Contract;
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -118,14 +124,59 @@ describe('IexecPoco1', () => {
             .connect(anyone)
             .deploy()
             .then((contract) => contract.deployed());
+        erc1271Contract = await new ERC1271Mock__factory()
+            .connect(anyone)
+            .deploy()
+            .then((contract) => contract.deployed());
         // TODO check why this is done in 00_matchorders.js
         // await Workerpool__factory.connect(workerpoolAddress, scheduler)
         //     .changePolicy(35, 5)
         //     .then((tx) => tx.wait());
     }
 
+    describe('Verify signature', () => {
+        ['verifySignature', 'verifyPresignatureOrSignature'].forEach((verifySignatureFunction) => {
+            it(`Should ${verifySignatureFunction} of smart contract`, async () => {
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        erc1271Contract.address,
+                        HashZero, // any is fine here
+                        ethers.utils.id('valid-signature'),
+                    ),
+                ).to.be.true;
+            });
+            it(`Should fail to ${verifySignatureFunction} of smart contract when validation returns false`, async () => {
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        erc1271Contract.address,
+                        HashZero, // any is fine here
+                        ethers.utils.id('invalid-signature'),
+                    ),
+                ).to.be.false;
+            });
+            it(`Should fail to ${verifySignatureFunction} of smart contract when validation reverts`, async () => {
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        erc1271Contract.address,
+                        HashZero, // any is fine here
+                        ethers.utils.id('reverting-signature'),
+                    ),
+                ).to.be.false;
+            });
+            it(`Should ${verifySignatureFunction} of EoA`, async () => {
+                const wallet = ethers.Wallet.createRandom();
+                const someMessage = 'some-message';
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        wallet.address,
+                        ethers.utils.hashMessage(someMessage),
+                        wallet.signMessage(someMessage),
+                    ),
+                ).to.be.true;
+            });
+        });
+    });
     // TODO
-    describe('Verify signature', () => {});
     describe('Verify presignature', () => {});
     describe('Verify presignature or signature', () => {});
 
