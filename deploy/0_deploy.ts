@@ -146,6 +146,43 @@ module.exports = async function () {
         [],
         transferOwnershipCall,
     );
+
+    const appRegistryInstance = AppRegistry__factory.connect(appRegistryAddress, owner);
+    const datasetRegistryInstance = DatasetRegistry__factory.connect(datasetRegistryAddress, owner);
+    const workerpoolRegistryInstance = WorkerpoolRegistry__factory.connect(
+        workerpoolRegistryAddress,
+        owner,
+    );
+
+    // Check if registries have been initialized and set base URIs
+    const appRegistryInitialized = await appRegistryInstance.initialized();
+    if (!appRegistryInitialized) {
+        await appRegistryInstance.initialize(
+            deploymentOptions.v3.AppRegistry || ethers.constants.AddressZero,
+        );
+        await appRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/app/${chainId}/`);
+    }
+
+    const datasetRegistryInitialized = await datasetRegistryInstance.initialized();
+    if (!datasetRegistryInitialized) {
+        await datasetRegistryInstance.initialize(
+            deploymentOptions.v3.DatasetRegistry || ethers.constants.AddressZero,
+        );
+        await datasetRegistryInstance.setBaseURI(
+            `https://nfts-metadata.iex.ec/dataset/${chainId}/`,
+        );
+    }
+
+    const workerpoolRegistryInitialized = await workerpoolRegistryInstance.initialized();
+    if (!workerpoolRegistryInitialized) {
+        await workerpoolRegistryInstance.initialize(
+            deploymentOptions.v3.WorkerpoolRegistry || ethers.constants.AddressZero,
+        );
+        await workerpoolRegistryInstance.setBaseURI(
+            `https://nfts-metadata.iex.ec/workerpool/${chainId}/`,
+        );
+    }
+
     // Set main configuration
     const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
     const iexecInitialized =
