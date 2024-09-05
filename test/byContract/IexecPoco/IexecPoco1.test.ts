@@ -588,11 +588,11 @@ describe('IexecPoco1', () => {
                 )
                 .then((tx) => tx.wait());
             // Make sure the test does not fail because of another reason.
-            const signatureAddress = ethers.utils.verifyMessage(
+            const signerAddress = ethers.utils.verifyMessage(
                 hashOrder(iexecWrapper.getDomain(), orders.app),
                 orders.app.sign as any,
             );
-            expect(signatureAddress).to.not.equal(erc1271MockContract.address); // owner of app.
+            expect(signerAddress).to.not.equal(erc1271MockContract.address); // owner of app.
             // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x21',
@@ -628,11 +628,11 @@ describe('IexecPoco1', () => {
                 )
                 .then((tx) => tx.wait());
             // Make sure the test does not fail because of another reason.
-            const signatureAddress = ethers.utils.verifyMessage(
+            const signerAddress = ethers.utils.verifyMessage(
                 hashOrder(iexecWrapper.getDomain(), orders.dataset),
                 orders.dataset.sign as any,
             );
-            expect(signatureAddress).to.not.equal(erc1271MockContract.address); // owner of dataset.
+            expect(signerAddress).to.not.equal(erc1271MockContract.address); // owner of dataset.
             // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x31',
@@ -669,11 +669,11 @@ describe('IexecPoco1', () => {
                 )
                 .then((tx) => tx.wait());
             // Make sure the test does not fail because of another reason.
-            const signatureAddress = ethers.utils.verifyMessage(
+            const signerAddress = ethers.utils.verifyMessage(
                 hashOrder(iexecWrapper.getDomain(), orders.workerpool),
                 orders.workerpool.sign as any,
             );
-            expect(signatureAddress).to.not.equal(erc1271MockContract.address); // owner of workerpool.
+            expect(signerAddress).to.not.equal(erc1271MockContract.address); // owner of workerpool.
             // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x41',
@@ -694,11 +694,11 @@ describe('IexecPoco1', () => {
             // Set the smart contract as the requester.
             orders.requester.requester = erc1271MockContract.address;
             // Make sure the test does not fail because of another reason.
-            const signatureAddress = ethers.utils.verifyMessage(
+            const signerAddress = ethers.utils.verifyMessage(
                 hashOrder(iexecWrapper.getDomain(), orders.requester),
                 orders.requester.sign as any,
             );
-            expect(signatureAddress).to.not.equal(erc1271MockContract.address); // Requester.
+            expect(signerAddress).to.not.equal(erc1271MockContract.address); // Requester.
             // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x50',
