@@ -117,7 +117,7 @@ describe('IexecPoco1', () => {
     }
 
     describe('Match orders', () => {
-        it('Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
+        it('Should match orders with: all assets, beneficiary, BoT, callback, replication', async () => {
             const trust = 3;
             const category = 2;
             const params = '<params>';
@@ -151,6 +151,9 @@ describe('IexecPoco1', () => {
             // Deposit required amounts.
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            // Save frozen balances before match.
+            const requesterFrozenBefore = (await iexecPoco.frozenOf(requester.address)).toNumber();
+            const schedulerFrozenBefore = (await iexecPoco.frozenOf(scheduler.address)).toNumber();
             // Sign and match orders.
             const startTime = await setNextBlockTimestamp();
             await signOrders(iexecWrapper.getDomain(), fullConfigOrders, ordersActors);
@@ -163,9 +166,9 @@ describe('IexecPoco1', () => {
                 ),
             ).to.equal(botVolume);
 
-            expect(
-                await iexecPocoAsRequester.callStatic.matchOrders(...fullConfigOrders.toArray()),
-            ).to.equal(dealId);
+            expect(await iexecPoco.callStatic.matchOrders(...fullConfigOrders.toArray())).to.equal(
+                dealId,
+            );
             const tx = iexecPocoAsRequester.matchOrders(...fullConfigOrders.toArray());
             // Check balances and frozen.
             await expect(tx).to.changeTokenBalances(
@@ -175,8 +178,12 @@ describe('IexecPoco1', () => {
             );
             // TODO use predicate `(change) => boolean` when migrating to a recent version of Hardhat.
             // See https://github.com/NomicFoundation/hardhat/blob/main/packages/hardhat-chai-matchers/src/internal/changeTokenBalance.ts#L42
-            expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealPrice);
-            expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(schedulerStake);
+            expect(await iexecPoco.frozenOf(requester.address)).to.equal(
+                requesterFrozenBefore + dealPrice,
+            );
+            expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(
+                schedulerFrozenBefore + schedulerStake,
+            );
             // Check events.
             await expect(tx)
                 .to.emit(iexecPoco, 'SchedulerNotice')
@@ -216,7 +223,7 @@ describe('IexecPoco1', () => {
             expect(deal.sponsor).to.equal(requester.address);
         });
 
-        it('[Standard] Should match orders with all assets, beneficiary, BoT, callback, replication', async () => {
+        it('[Standard] Should match orders with: all assets, beneficiary, BoT, callback, replication', async () => {
             const trust = 3;
             const category = 2;
             const params = '<params>';
@@ -272,7 +279,7 @@ describe('IexecPoco1', () => {
             expect(deal.sponsor).to.equal(requester.address);
         });
 
-        it('Should match orders without beneficiary, BoT, callback, replication', async () => {
+        it('Should match orders without: beneficiary, BoT, callback, replication', async () => {
             await depositForRequesterAndSchedulerWithDefaultPrices(volume);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -289,7 +296,7 @@ describe('IexecPoco1', () => {
             expect(deal.trust).to.equal(1);
         });
 
-        it('Should match orders without dataset', async () => {
+        it('Should match orders without: dataset', async () => {
             orders.dataset.dataset = AddressZero;
             orders.requester.dataset = AddressZero;
             // Set dataset volume lower than other assets to make sure
@@ -307,6 +314,8 @@ describe('IexecPoco1', () => {
             // Deposit required amounts.
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            // Save frozen balances before match.
+            const requesterFrozenBefore = (await iexecPoco.frozenOf(requester.address)).toNumber();
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
@@ -318,7 +327,9 @@ describe('IexecPoco1', () => {
                 [iexecPoco, requester, scheduler],
                 [dealPrice + schedulerStake, -dealPrice, -schedulerStake],
             );
-            expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealPrice);
+            expect(await iexecPoco.frozenOf(requester.address)).to.equal(
+                requesterFrozenBefore + dealPrice,
+            );
             // Check events.
             await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
             // Check deal
@@ -330,7 +341,7 @@ describe('IexecPoco1', () => {
             expect(deal.botSize).to.equal(botVolume);
         });
 
-        it(`Should match orders with full restrictions in all orders`, async function () {
+        it(`Should match orders with full restrictions in all orders`, async () => {
             orders.app.datasetrestrict = orders.dataset.dataset;
             orders.app.workerpoolrestrict = orders.workerpool.workerpool;
             orders.app.requesterrestrict = orders.requester.requester;
@@ -343,6 +354,9 @@ describe('IexecPoco1', () => {
             orders.workerpool.datasetrestrict = orders.dataset.dataset;
             orders.workerpool.requesterrestrict = orders.requester.requester;
 
+            // requestOrder.workerpool is a restriction.
+            orders.requester.workerpool = orders.workerpool.workerpool;
+
             await depositForRequesterAndSchedulerWithDefaultPrices(volume);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -354,15 +368,16 @@ describe('IexecPoco1', () => {
 
         /**
          * Successful match orders with partial restrictions.
+         * Note: Workerpool is the only restriction in request order and it is
+         * tested elsewhere.
          */
-        // No restrictions in request order.
         ['app', 'dataset', 'workerpool'].forEach((orderName) => {
             ['app', 'dataset', 'workerpool', 'requester'].forEach((assetName) => {
                 // Filter irrelevant cases (e.g. app - app).
                 if (orderName.includes(assetName)) {
                     return;
                 }
-                it(`Should match orders with ${assetName} restriction in ${orderName} order`, async function () {
+                it(`Should match orders with ${assetName} restriction in ${orderName} order`, async () => {
                     // e.g. orders.app.datasetrestrict = orders.dataset.dataset
                     orders[orderName][assetName + 'restrict'] = orders[assetName][assetName];
                     await depositForRequesterAndSchedulerWithDefaultPrices(volume);
@@ -374,6 +389,17 @@ describe('IexecPoco1', () => {
                     );
                 });
             });
+        });
+
+        it(`Should match orders with any workerpool when request order has no workerpool restriction`, async () => {
+            orders.requester.workerpool = AddressZero; // No restriction.
+            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
+            // Sign and match orders.
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
+                iexecPoco,
+                'OrdersMatched',
+            );
         });
 
         // TODO add success tests for:
@@ -472,7 +498,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when request order workerpool mismatches workerpool order workerpool (EOA, SC)', async () => {
+        it('Should fail when request order mismatches workerpool restriction (EOA, SC)', async () => {
             orders.requester.workerpool = randomAddress;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x12',
@@ -486,6 +512,8 @@ describe('IexecPoco1', () => {
         /**
          * Failed match orders because of restriction mismatch (apprestrict,
          * datasetrestrict, workerpoolrestrict, requesterrestrict).
+         * Note: Workerpool is the only restriction in request order and it is
+         * tested elsewhere.
          */
         const revertMessages: { [key: string]: { [key: string]: string } } = {
             app: {
@@ -504,14 +532,13 @@ describe('IexecPoco1', () => {
                 requester: 'iExecV5-matchOrders-0x1b',
             },
         };
-        // No restrictions in request order.
         ['app', 'dataset', 'workerpool'].forEach((orderName) => {
             ['app', 'dataset', 'workerpool', 'requester'].forEach((assetName) => {
                 // Filter irrelevant cases (e.g. app - app).
                 if (orderName.includes(assetName)) {
                     return;
                 }
-                it(`Should fail when ${orderName} order mismatch ${assetName} restriction (EOA, SC)`, async function () {
+                it(`Should fail when ${orderName} order mismatches ${assetName} restriction (EOA, SC)`, async () => {
                     const message = revertMessages[orderName][assetName];
                     // EOA
                     orders[orderName][assetName + 'restrict'] = randomAddress; // e.g. orders.app.datasetrestrict = 0xEOA
@@ -527,7 +554,7 @@ describe('IexecPoco1', () => {
             });
         });
 
-        it('Should fail when app is not registered', async function () {
+        it('Should fail when app is not registered', async () => {
             orders.app.app = randomContract.address; // Must be an Ownable contract.
             orders.requester.app = randomContract.address;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
@@ -535,7 +562,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when invalid app order signature from EOA', async function () {
+        it('Should fail when invalid app order signature from EOA', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.app.sign = randomSignature; // Override signature.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
@@ -543,7 +570,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when invalid app order signature from SC', async function () {
+        it('Should fail when invalid app order signature from SC', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.app.sign = randomSignature; // Override signature.
             // Deploy an ERC1271 mock contract.
@@ -571,7 +598,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when dataset is not registered', async function () {
+        it('Should fail when dataset is not registered', async () => {
             orders.dataset.dataset = randomContract.address; // Must be an Ownable contract.
             orders.requester.dataset = randomContract.address;
             await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
@@ -580,7 +607,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when invalid dataset order signature from EOA', async function () {
+        it('Should fail when invalid dataset order signature from EOA', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.dataset.sign = randomSignature; // Override signature.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
@@ -588,7 +615,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when invalid dataset order signature from SC', async function () {
+        it('Should fail when invalid dataset order signature from SC', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.dataset.sign = randomSignature; // Override signature.
             // Deploy an ERC1271 mock contract.
@@ -616,7 +643,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when workerpool is not registered', async function () {
+        it('Should fail when workerpool is not registered', async () => {
             orders.workerpool.workerpool = randomContract.address; // Must be an Ownable contract.
             orders.requester.workerpool = randomContract.address;
             await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
@@ -626,7 +653,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when invalid workerpool order signature from EOA', async function () {
+        it('Should fail when invalid workerpool order signature from EOA', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.workerpool.sign = randomSignature; // Override signature.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
@@ -634,7 +661,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when invalid workerpool order signature from SC', async function () {
+        it('Should fail when invalid workerpool order signature from SC', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.workerpool.sign = randomSignature; // Override signature.
             // Deploy an ERC1271 mock contract.
@@ -662,7 +689,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when invalid request order signature from EOA', async function () {
+        it('Should fail when invalid request order signature from EOA', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.requester.sign = randomSignature; // Override signature.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
@@ -670,7 +697,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail when invalid request order signature from SC', async function () {
+        it('Should fail when invalid request order signature from SC', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.requester.sign = randomSignature; // Override signature.
             // Deploy an ERC1271 mock contract.
@@ -692,7 +719,7 @@ describe('IexecPoco1', () => {
             );
         });
 
-        it('Should fail if one or more orders are consumed', async function () {
+        it('Should fail if one or more orders are consumed', async () => {
             orders.app.volume = 0;
             // TODO Set order as consumed directly in storage using the following code.
             // Needs more debugging.
@@ -765,6 +792,8 @@ describe('IexecPoco1', () => {
             // Deposit required amounts.
             await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+            // Save frozen balances before match.
+            const sponsorFrozenBefore = (await iexecPoco.frozenOf(sponsor.address)).toNumber();
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
@@ -776,8 +805,9 @@ describe('IexecPoco1', () => {
                 [dealPrice + schedulerStake, -dealPrice, -schedulerStake, 0],
             );
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(0);
-            expect(await iexecPoco.frozenOf(sponsor.address)).to.equal(dealPrice);
-            expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(schedulerStake);
+            expect(await iexecPoco.frozenOf(sponsor.address)).to.equal(
+                sponsorFrozenBefore + dealPrice,
+            );
             // Check events.
             await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
             // Check deal
