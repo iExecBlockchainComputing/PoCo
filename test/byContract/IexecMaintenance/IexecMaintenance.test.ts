@@ -42,7 +42,7 @@ describe('Maintenance', async () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
     let iexecMaintenanceExtra: IexecMaintenanceExtra;
-    let [iexecAdmin, anyone]: SignerWithAddress[] = [];
+    let [iexecAdmin, worker, anyone]: SignerWithAddress[] = [];
 
     beforeEach('Deploy', async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
@@ -51,7 +51,7 @@ describe('Maintenance', async () => {
 
     async function initFixture() {
         const accounts = await getIexecAccounts();
-        ({ iexecAdmin, anyone } = accounts);
+        ({ iexecAdmin, worker, anyone } = accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
         iexecMaintenanceExtra = IexecMaintenanceExtra__factory.connect(proxyAddress, anyone);
@@ -112,7 +112,33 @@ describe('Maintenance', async () => {
     });
 
     describe('Import score', () => {
-        // Not tested
+        it('Should import score', async () => {
+            // Not tested
+        });
+        it('Should not import score when no v3_iexecHub configured', async () => {
+            await expect(iexecPoco.importScore(worker.address)).to.be.reverted;
+        });
+        it('Should not import score when already imported', async () => {
+            const workerScoreImportedSlot = ethers.utils.hexStripZeros(
+                ethers.utils.keccak256(
+                    ethers.utils.defaultAbiCoder.encode(
+                        ['address', 'uint256'],
+                        [
+                            worker.address,
+                            28, // Slot index of m_v3_scoreImported in Store
+                        ],
+                    ),
+                ),
+            );
+            await setStorageAt(
+                proxyAddress,
+                workerScoreImportedSlot,
+                '0x01', // true: score already imported
+            );
+            await expect(iexecPoco.importScore(worker.address)).to.be.revertedWith(
+                'score-already-imported',
+            );
+        });
     });
 
     describe('Set TEE broker', () => {
