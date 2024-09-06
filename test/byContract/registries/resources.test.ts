@@ -25,9 +25,8 @@ import {
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 const constants = require('../../../utils/constants');
-const randomAddress = () => ethers.Wallet.createRandom().address;
 
-describe('Registries', () => {
+describe('Ressources', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
@@ -35,7 +34,6 @@ describe('Registries', () => {
     let appRegistry: AppRegistry;
     let datasetRegistry: DatasetRegistry;
     let workerpoolRegistry: WorkerpoolRegistry;
-    let newAppRegistry: AppRegistry;
 
     let app: App;
     let dataset: Dataset;
