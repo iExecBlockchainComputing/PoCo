@@ -285,17 +285,14 @@ describe('Registries', () => {
     });
 
     describe('Workerpool Registry', () => {
-        const createWorkerpooltArgs = [`Workerpool description`] as [string];
+        const createWorkerpoolArgs = [`Workerpool description`] as [string];
 
         it('Should predict the correct address for future workerpool creation', async () => {
             const proxyCode = await workerpoolRegistry.proxyCode();
             const proxyCodeHash = ethers.utils.keccak256(proxyCode);
 
             const iface = new ethers.utils.Interface(['function initialize(string)']);
-            const encodedInitializer = iface.encodeFunctionData(
-                'initialize',
-                createWorkerpooltArgs,
-            );
+            const encodedInitializer = iface.encodeFunctionData('initialize', createWorkerpoolArgs);
 
             const salt = ethers.utils.solidityKeccak256(
                 ['bytes', 'address'],
@@ -310,7 +307,7 @@ describe('Registries', () => {
 
             const predictedAddress = await workerpoolRegistry.predictWorkerpool(
                 scheduler.address,
-                ...createWorkerpooltArgs,
+                ...createWorkerpoolArgs,
             );
 
             expect(predictedAddress).to.equal(expectedAddress);
@@ -319,12 +316,12 @@ describe('Registries', () => {
         it('Should create the workerpool', async () => {
             const predictedAddress = await workerpoolRegistry.predictWorkerpool(
                 scheduler.address,
-                ...createWorkerpooltArgs,
+                ...createWorkerpoolArgs,
             );
             await expect(
                 await workerpoolRegistry.createWorkerpool(
                     scheduler.address,
-                    ...createWorkerpooltArgs,
+                    ...createWorkerpoolArgs,
                 ),
             )
                 .to.emit(workerpoolRegistry, 'Transfer')
@@ -337,9 +334,9 @@ describe('Registries', () => {
         it('Should check that a new workerpool is well registered', async () => {
             const workerpoolCreatedAddress = await workerpoolRegistry.callStatic.createWorkerpool(
                 scheduler.address,
-                ...createWorkerpooltArgs,
+                ...createWorkerpoolArgs,
             );
-            await workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpooltArgs);
+            await workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs);
             const isRegistered = await workerpoolRegistry.isRegistered(workerpoolCreatedAddress);
             expect(isRegistered).to.be.true;
         });
@@ -347,10 +344,10 @@ describe('Registries', () => {
             expect(await workerpoolRegistry.isRegistered(randomAddress())).to.be.false;
         });
         it('Should not allow creating the same workerpool twice', async () => {
-            await workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpooltArgs);
+            await workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs);
 
             await expect(
-                workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpooltArgs),
+                workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs),
             ).to.be.revertedWith('Create2: Failed on deploy');
         });
     });
