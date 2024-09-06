@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Accept any signature format in `SignatureVerifier.v8` when the account is a smart contract. (#120)
 - Update UML class diagrams. (#112)
 - Generate Solidity documentation. (#111)
 - Migrate unit test files to Typescript & Hardhat:

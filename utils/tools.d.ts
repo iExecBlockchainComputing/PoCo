@@ -8,3 +8,5 @@ export function extractEventsFromReceipt(
     address: string,
     name: string,
 ): Event[];
+
+export function compactSignature(signature: string): string;

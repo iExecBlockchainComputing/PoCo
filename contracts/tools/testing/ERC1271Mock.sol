@@ -5,22 +5,16 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
 
-// Note: section that are not covered by tests are commented.
-// TODO: uncomment when adding signature verification tests.
-
 contract ERC1271Mock is IERC1271 {
-    // bool public shouldValidateSignature;
-
-    // function setShouldValidateSignature(bool value) external {
-    //     shouldValidateSignature = value;
-    // }
-
     function isValidSignature(
-        bytes32,
-        bytes memory
-    ) external view override returns (bytes4 magicValue) {
-        // if (shouldValidateSignature) {
-        //     magicValue = IERC1271.isValidSignature.selector;
-        // }
+        bytes32, // message hash
+        bytes calldata signature
+    ) external pure override returns (bytes4 magicValue) {
+        if (bytes32(signature) == keccak256("valid-signature")) {
+            return magicValue = IERC1271.isValidSignature.selector;
+        } else if (bytes32(signature) == keccak256("invalid-signature")) {
+            return magicValue = bytes4(0);
+        }
+        revert("ERC1271Mock: invalid signature");
     }
 }

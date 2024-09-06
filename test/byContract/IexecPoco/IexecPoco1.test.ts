@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero } from '@ethersproject/constants';
+import { AddressZero, HashZero } from '@ethersproject/constants';
+import { Contract } from '@ethersproject/contracts';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
@@ -29,6 +30,7 @@ import {
     signOrders,
 } from '../../../utils/createOrders';
 import { getDealId, getIexecAccounts, setNextBlockTimestamp } from '../../../utils/poco-tools';
+import { compactSignature } from '../../../utils/tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 
 /*
@@ -42,6 +44,8 @@ const standardDealTag = '0x00000000000000000000000000000000000000000000000000000
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const volume = 1;
 const botVolume = 321;
+const someMessage = 'some-message';
+const someWallet = ethers.Wallet.createRandom();
 
 /**
  * Note: TEE is the default in tests.
@@ -51,6 +55,7 @@ describe('IexecPoco1', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
     let iexecPocoAsSponsor: IexecPoco1; // Sponsor function not available yet in IexecInterfaceNative.
+    let iexecPocoContract: Contract;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
@@ -86,6 +91,7 @@ describe('IexecPoco1', () => {
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
         iexecPocoAsSponsor = IexecPoco1__factory.connect(proxyAddress, sponsor);
+        iexecPocoContract = iexecPoco as Contract;
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -121,6 +127,88 @@ describe('IexecPoco1', () => {
             .deploy()
             .then((contract) => contract.deployed());
     }
+
+    describe('Verify signature', () => {
+        ['verifySignature', 'verifyPresignatureOrSignature'].forEach((verifySignatureFunction) => {
+            it(`Should ${verifySignatureFunction} of smart contract`, async () => {
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        erc1271MockContract.address,
+                        HashZero, // any is fine here
+                        ethers.utils.id('valid-signature'),
+                    ),
+                ).to.be.true;
+            });
+
+            it(`Should fail to ${verifySignatureFunction} of smart contract when validation returns false`, async () => {
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        erc1271MockContract.address,
+                        HashZero, // any is fine here
+                        ethers.utils.id('invalid-signature'),
+                    ),
+                ).to.be.false;
+            });
+
+            it(`Should fail to ${verifySignatureFunction} of smart contract when validation reverts`, async () => {
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        erc1271MockContract.address,
+                        HashZero, // any is fine here
+                        ethers.utils.id('reverting-signature'),
+                    ),
+                ).to.be.false;
+            });
+
+            it(`Should ${verifySignatureFunction} of EoA`, async () => {
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        someWallet.address,
+                        ethers.utils.hashMessage(someMessage),
+                        someWallet.signMessage(someMessage),
+                    ),
+                ).to.be.true;
+            });
+
+            it(`Should ${verifySignatureFunction} of EoA when compact signature`, async () => {
+                const compactEoaSignature = compactSignature(
+                    await someWallet.signMessage(someMessage),
+                );
+                expect(ethers.utils.arrayify(compactEoaSignature).length).equal(64);
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        someWallet.address,
+                        ethers.utils.hashMessage(someMessage),
+                        compactEoaSignature,
+                    ),
+                ).to.be.true;
+            });
+
+            it(`Should fail to ${verifySignatureFunction} of EoA when invalid format`, async () => {
+                await expect(
+                    iexecPocoContract[verifySignatureFunction](
+                        someWallet.address,
+                        ethers.utils.hashMessage(someMessage),
+                        '0x01', // bad signature format
+                    ),
+                ).to.be.revertedWith('invalid-signature-format');
+            });
+
+            it(`Should fail to ${verifySignatureFunction} of EoA when bad signer`, async () => {
+                expect(
+                    await iexecPocoContract[verifySignatureFunction](
+                        someWallet.address, // some EOA
+                        ethers.utils.hashMessage(someMessage),
+                        ethers.Wallet.createRandom() // signature from another EOA
+                            .signMessage(someMessage),
+                    ),
+                ).to.be.false;
+            });
+        });
+    });
+    // TODO
+    describe('Verify presignature', () => {});
+    describe('Verify presignature or signature', () => {});
 
     describe('Match orders', () => {
         it('Should match orders with: all assets, beneficiary, BoT, callback, replication', async () => {
