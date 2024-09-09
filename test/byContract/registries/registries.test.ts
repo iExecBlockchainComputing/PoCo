@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { BytesLike } from '@ethersproject/bytes';
-
 import { AddressZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -175,7 +174,6 @@ describe('Registries', () => {
         it('Should not have a random address registered in app registry', async () => {
             expect(await appRegistry.isRegistered(randomAddress())).to.be.false;
         });
-
         it('Should not allow creating the same app twice', async () => {
             await appRegistry.createApp(appProvider.address, ...createAppArgs);
 
@@ -188,8 +186,8 @@ describe('Registries', () => {
             factoryDeployer = new FactoryDeployerHelper(iexecAdmin, salt);
 
             const transferOwnershipCall = await Ownable__factory.connect(
-                ethers.constants.AddressZero, // any is fine
-                iexecAdmin, // any is fine
+                ethers.constants.AddressZero,
+                iexecAdmin,
             )
                 .populateTransaction.transferOwnership(iexecAdmin.address)
                 .then((tx) => tx.data)
