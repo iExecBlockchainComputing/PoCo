@@ -96,7 +96,7 @@ describe('IexecPoco2#finalize', async () => {
             .deploy()
             .then((contract) => contract.deployed());
         const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
-        const { orders } = buildOrders({
+        const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
@@ -289,7 +289,7 @@ describe('IexecPoco2#finalize', async () => {
     });
 
     it('Should finalize task of deal payed by requester (no callback, no dataset)', async () => {
-        const { orders } = buildOrders({
+        const orders = buildOrders({
             assets: {
                 app: appAddress,
                 dataset: AddressZero,
@@ -356,7 +356,7 @@ describe('IexecPoco2#finalize', async () => {
 
     it('Should finalize task after reveal deadline with at least one reveal', async () => {
         const volume = 1;
-        const { orders } = buildOrders({
+        const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
@@ -415,7 +415,7 @@ describe('IexecPoco2#finalize', async () => {
             buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-            }).orders,
+            }),
         );
         const deal = await iexecPoco.viewDeal(dealId);
         expect(deal.workerpool.owner).to.equal(scheduler.address).not.equal(anyone.address);
@@ -430,7 +430,7 @@ describe('IexecPoco2#finalize', async () => {
             buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-            }).orders,
+            }),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const task = await iexecPoco.viewTask(taskId);
@@ -447,7 +447,7 @@ describe('IexecPoco2#finalize', async () => {
             buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-            }).orders,
+            }),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
@@ -492,7 +492,7 @@ describe('IexecPoco2#finalize', async () => {
                 assets: ordersAssets,
                 requester: requester.address,
                 trust: 3,
-            }).orders,
+            }),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
@@ -541,7 +541,7 @@ describe('IexecPoco2#finalize', async () => {
             buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-            }).orders,
+            }),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco

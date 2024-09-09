@@ -88,14 +88,14 @@ describe('IexecPoco2#contribute', () => {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
-        ({ orders: defaultOrders } = buildOrders({
+        defaultOrders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
             volume,
             trust: 0,
             tag: standardDealTag,
-        }));
+        });
     }
 
     describe('Contribute', () => {
@@ -109,7 +109,7 @@ describe('IexecPoco2#contribute', () => {
                     volume,
                     trust: 3,
                     tag: teeDealTag,
-                }).orders,
+                }),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
@@ -213,7 +213,7 @@ describe('IexecPoco2#contribute', () => {
                     volume,
                     trust: 0,
                     tag: teeDealTag,
-                }).orders,
+                }),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
@@ -336,7 +336,7 @@ describe('IexecPoco2#contribute', () => {
                     volume,
                     trust: 3, // so consensus is not yet reached on first contribution
                     tag: standardDealTag,
-                }).orders,
+                }),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
@@ -394,7 +394,7 @@ describe('IexecPoco2#contribute', () => {
                     volume,
                     trust: 0,
                     tag: teeDealTag,
-                }).orders,
+                }),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -458,7 +458,7 @@ describe('IexecPoco2#contribute', () => {
                     volume,
                     trust: 0,
                     tag: teeDealTag,
-                }).orders,
+                }),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(

@@ -72,7 +72,7 @@ describe('IexecPoco2#claim', async () => {
     it('Should claim task of deal payed by sponsor', async () => {
         const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
         const claimedTasks = 1;
-        const { orders } = buildOrders({
+        const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
@@ -191,7 +191,7 @@ describe('IexecPoco2#claim', async () => {
     });
 
     it('Should claim task of deal payed by requester', async () => {
-        const { orders } = buildOrders({
+        const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
@@ -218,7 +218,7 @@ describe('IexecPoco2#claim', async () => {
     });
 
     it('Should claim active task after deadline', async () => {
-        const { orders } = buildOrders({
+        const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
@@ -233,7 +233,7 @@ describe('IexecPoco2#claim', async () => {
     });
 
     it('Should not claim unset task', async () => {
-        const { orders } = buildOrders({
+        const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
@@ -245,7 +245,7 @@ describe('IexecPoco2#claim', async () => {
     });
 
     it('Should not claim completed task', async () => {
-        const { orders } = buildOrders({
+        const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
@@ -281,7 +281,7 @@ describe('IexecPoco2#claim', async () => {
     });
 
     it('Should not claim before deadline', async () => {
-        const { orders } = buildOrders({
+        const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
@@ -296,7 +296,7 @@ describe('IexecPoco2#claim', async () => {
     describe('Claim array', () => {
         it('Should claim array', async () => {
             const volume = 3;
-            const { orders } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
@@ -322,7 +322,7 @@ describe('IexecPoco2#claim', async () => {
 
         it('Should not claim array when one is not claimable', async () => {
             const volume = 2;
-            const { orders } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
@@ -347,7 +347,7 @@ describe('IexecPoco2#claim', async () => {
         describe('Initialize and claim array', () => {
             it('Should initialize and claim array', async () => {
                 const volume = 3;
-                const { orders } = buildOrders({
+                const orders = buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,
@@ -386,7 +386,7 @@ describe('IexecPoco2#claim', async () => {
 
             it('Should not initialize and claim array if one specific fails', async () => {
                 const volume = 2;
-                const { orders } = buildOrders({
+                const orders = buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,

@@ -7,6 +7,7 @@ import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import {
+    IexecOrders,
     OrdersAssets,
     OrdersPrices,
     buildOrders,
@@ -21,7 +22,7 @@ const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 
-describe('Poco', async () => {
+describe('IexecPoco2#initialize', async () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
     let iexecPocoAsAnyone: IexecInterfaceNative;
@@ -60,7 +61,7 @@ describe('Poco', async () => {
 
     describe('Initialize', function () {
         it('Should initialize', async function () {
-            const { orders } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
@@ -93,7 +94,7 @@ describe('Poco', async () => {
                 requester: requester.address,
                 prices: ordersPrices,
                 volume: 10,
-            });
+            }).toObject();
             const workerpoolOrder0 = {
                 ...createEmptyWorkerpoolOrder(),
                 workerpool: workerpoolAddress,
@@ -107,18 +108,12 @@ describe('Poco', async () => {
                 volume: 9,
             };
             // Request order is matched in 2 deals
-            const { dealId: dealId0 } = await iexecWrapper.signAndMatchOrders({
-                app: appOrder,
-                dataset: datasetOrder,
-                workerpool: workerpoolOrder0,
-                requester: requestOrder,
-            });
-            const { dealId: dealId1 } = await iexecWrapper.signAndMatchOrders({
-                app: appOrder,
-                dataset: datasetOrder,
-                workerpool: workerpoolOrder1,
-                requester: requestOrder,
-            });
+            const { dealId: dealId0 } = await iexecWrapper.signAndMatchOrders(
+                new IexecOrders(appOrder, datasetOrder, workerpoolOrder0, requestOrder),
+            );
+            const { dealId: dealId1 } = await iexecWrapper.signAndMatchOrders(
+                new IexecOrders(appOrder, datasetOrder, workerpoolOrder1, requestOrder),
+            );
             expect((await iexecPoco.viewDeal(dealId0)).botFirst).equal(0);
             expect((await iexecPoco.viewDeal(dealId1)).botFirst).equal(1);
 
@@ -127,7 +122,7 @@ describe('Poco', async () => {
         });
 
         it('Should not initialize since index is too high', async function () {
-            const { orders } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
@@ -142,7 +137,7 @@ describe('Poco', async () => {
         });
 
         it('Should not initialize twice', async function () {
-            const { orders } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
@@ -160,7 +155,7 @@ describe('Poco', async () => {
     describe('Initialize array', function () {
         it('Should initialize array', async function () {
             const volume = 3;
-            const { orders } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
@@ -196,7 +191,7 @@ describe('Poco', async () => {
 
         it('Should not initialize array if one specific fails', async function () {
             const volume = 2;
-            const { orders } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
