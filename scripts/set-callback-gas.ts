@@ -10,14 +10,16 @@ import { IexecAccessors__factory, IexecMaintenanceDelegate__factory } from '../t
         console.error('`CALLBACK_GAS` env variable is missing. Aborting.');
         process.exit(1);
     }
-    console.log(`Setting callbackGas to ${requestedCallbackGas} ..`);
+    console.log(`Setting callback-gas to ${requestedCallbackGas.toLocaleString()} ..`);
     const [owner] = await hre.ethers.getSigners();
     const erc1538ProxyAddress = (await deployments.get('ERC1538Proxy')).address;
-    const getCallbackGas = async () =>
-        IexecAccessors__factory.connect(erc1538ProxyAddress, owner).callbackgas();
-    const callbackGasBefore = await getCallbackGas();
+    const viewCallbackGas = async () =>
+        (await IexecAccessors__factory.connect(erc1538ProxyAddress, owner).callbackgas())
+            .toNumber()
+            .toLocaleString();
+    const callbackGasBefore = await viewCallbackGas();
     await IexecMaintenanceDelegate__factory.connect(erc1538ProxyAddress, owner)
         .setCallbackGas(requestedCallbackGas)
         .then((tx) => tx.wait());
-    console.log(`Changed callbackGas from ${callbackGasBefore} to ${await getCallbackGas()}`);
-})();
+    console.log(`Changed callback-gas from ${callbackGasBefore} to ${await viewCallbackGas()}`);
+})().catch((error) => console.log(error));
