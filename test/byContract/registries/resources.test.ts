@@ -61,14 +61,14 @@ describe('Ressources', () => {
     }
 
     describe('App', () => {
-        const createAppArgs = [
-            `App`,
-            'DOCKER',
-            constants.MULTIADDR_BYTES,
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(`Content of my app`)),
-            '0x1234',
-        ] as [string, string, BytesLike, BytesLike, BytesLike];
         it('should create an app and verify its details', async () => {
+            const createAppArgs = [
+                `App`,
+                'DOCKER',
+                constants.MULTIADDR_BYTES,
+                ethers.utils.keccak256(ethers.utils.toUtf8Bytes(`Content of my app`)),
+                '0x1234',
+            ] as [string, string, BytesLike, BytesLike, BytesLike];
             const appAddress = await appRegistry.callStatic.createApp(
                 appProvider.address,
                 ...createAppArgs,
