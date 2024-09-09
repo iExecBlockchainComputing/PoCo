@@ -49,9 +49,6 @@ export class IexecOrders {
     workerpool: IexecLibOrders_v5.WorkerpoolOrderStruct;
     requester: IexecLibOrders_v5.RequestOrderStruct;
 
-    // Index signature to allow dynamic string keys
-    [key: string]: any;
-
     constructor(
         app: IexecLibOrders_v5.AppOrderStruct,
         dataset: IexecLibOrders_v5.DatasetOrderStruct,

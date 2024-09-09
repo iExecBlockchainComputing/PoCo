@@ -1228,11 +1228,13 @@ describe('IexecPocoBoostDelegate', function () {
                     });
                     // EOA
                     // E.g. changes orders['app']['apprestrict'] = 0xAddress
+                    // @ts-ignore
                     orders[orderName][assetName + 'restrict'] = randomEOAAddress;
                     await expect(
                         iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
                     ).to.be.revertedWith(revertMessage);
                     // SC
+                    // @ts-ignore
                     orders[orderName][assetName + 'restrict'] = someContractInstance.address;
                     await expect(
                         iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
