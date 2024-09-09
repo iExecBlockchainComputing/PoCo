@@ -23,7 +23,6 @@ import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules
 import {
     IexecOrders,
     OrderOperation,
-    Orders,
     hashOrder,
     signOrderOperation,
     signOrders,
@@ -221,11 +220,10 @@ export class IexecWrapper {
         );
         const startTime = await setNextBlockTimestamp();
         const iexecPocoAsDealPayer = IexecPoco1__factory.connect(this.proxyAddress, dealPayer);
-        const matchOrdersArgs = [appOrder, datasetOrder, workerpoolOrder, requestOrder] as Orders;
         await (
             withSponsor
-                ? iexecPocoAsDealPayer.sponsorMatchOrders(...matchOrdersArgs)
-                : iexecPocoAsDealPayer.matchOrders(...matchOrdersArgs)
+                ? iexecPocoAsDealPayer.sponsorMatchOrders(...orders.toArray())
+                : iexecPocoAsDealPayer.matchOrders(...orders.toArray())
         ).then((tx) => tx.wait());
         return { dealId, taskId, taskIndex, dealPrice, startTime };
     }

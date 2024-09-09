@@ -10,15 +10,6 @@ import constants, { NULL } from './constants';
 import { utils } from './odb-tools';
 import { OrderOperationEnum } from './poco-tools';
 
-// TODO use IexecOrders.toArray() for spreading and remove this
-// if not needed anymore.
-export type Orders = [
-    IexecLibOrders_v5.AppOrderStruct,
-    IexecLibOrders_v5.DatasetOrderStruct,
-    IexecLibOrders_v5.WorkerpoolOrderStruct,
-    IexecLibOrders_v5.RequestOrderStruct,
-];
-
 export interface OrdersAssets {
     app: string;
     dataset: string;
@@ -88,7 +79,7 @@ export class IexecOrders {
     }
 
     /**
-     * Convert this instance to an object to simplify destructuring.
+     * Convert this instance to a JS object to simplify destructuring.
      * const { appOrder } = orders.toObject();
      * @returns an object with all orders
      */
@@ -98,6 +89,8 @@ export class IexecOrders {
             datasetOrder: this.dataset,
             workerpoolOrder: this.workerpool,
             requesterOrder: this.requester,
+            // An alias for convenience
+            requestOrder: this.requester,
         };
     }
 }
@@ -256,17 +249,7 @@ export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
         workerpoolOrder.salt = matchOrdersArgs.salt;
         requestOrder.salt = matchOrdersArgs.salt;
     }
-    return {
-        orders: new IexecOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder),
-        // TODO remove these additional return values and use function toObject() for
-        // deserialization:
-        // const {appOrder, ...} = orders.toObject();
-        // Expose orders differently to make them easier to use in tests
-        appOrder: appOrder,
-        datasetOrder: datasetOrder,
-        workerpoolOrder: workerpoolOrder,
-        requestOrder: requestOrder,
-    };
+    return new IexecOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder);
 }
 
 /**
