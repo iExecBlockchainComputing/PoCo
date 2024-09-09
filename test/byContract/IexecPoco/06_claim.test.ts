@@ -33,17 +33,8 @@ describe('Poco', async () => {
     let iexecPocoAsAnyone: IexecInterfaceNative;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
-    let [
-        iexecAdmin,
-        requester,
-        sponsor,
-        appProvider,
-        datasetProvider,
-        scheduler,
-        worker1,
-        worker2,
-        anyone,
-    ]: SignerWithAddress[] = [];
+    let [iexecAdmin, requester, sponsor, scheduler, worker1, worker2, anyone]: SignerWithAddress[] =
+        [];
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
 
@@ -56,17 +47,7 @@ describe('Poco', async () => {
 
     async function initFixture() {
         const accounts = await getIexecAccounts();
-        ({
-            iexecAdmin,
-            requester,
-            sponsor,
-            appProvider,
-            datasetProvider,
-            scheduler,
-            worker1,
-            worker2,
-            anyone,
-        } = accounts);
+        ({ iexecAdmin, requester, sponsor, scheduler, worker1, worker2, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
@@ -89,7 +70,7 @@ describe('Poco', async () => {
      * Generic claim test (longest code path) where it should claim a revealing
      * task after deadline. The task comes from a deal payed by a sponsor.
      */
-    it('Should claim task of deal payed by sponsor', async function () {
+    it('Should claim task of deal payed by sponsor', async () => {
         const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
         const claimedTasks = 1;
         const { orders } = buildOrders({
@@ -210,7 +191,7 @@ describe('Poco', async () => {
         await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
-    it('Should claim task of deal payed by requester', async function () {
+    it('Should claim task of deal payed by requester', async () => {
         const { orders } = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -237,7 +218,7 @@ describe('Poco', async () => {
         expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(0);
     });
 
-    it('Should claim active task after deadline', async function () {
+    it('Should claim active task after deadline', async () => {
         const { orders } = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -252,7 +233,7 @@ describe('Poco', async () => {
         await expect(iexecPocoAsAnyone.claim(taskId)).to.emit(iexecPoco, 'TaskClaimed');
     });
 
-    it('Should not claim unset task', async function () {
+    it('Should not claim unset task', async () => {
         const { orders } = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -264,7 +245,7 @@ describe('Poco', async () => {
         await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
-    it('Should not claim completed task', async function () {
+    it('Should not claim completed task', async () => {
         const { orders } = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -300,7 +281,7 @@ describe('Poco', async () => {
         await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
-    it('Should not claim before deadline', async function () {
+    it('Should not claim before deadline', async () => {
         const { orders } = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -313,8 +294,8 @@ describe('Poco', async () => {
         await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
     });
 
-    describe('Claim array', function () {
-        it('Should claim array', async function () {
+    describe('Claim array', () => {
+        it('Should claim array', async () => {
             const volume = 3;
             const { orders } = buildOrders({
                 assets: ordersAssets,
@@ -340,7 +321,7 @@ describe('Poco', async () => {
             }
         });
 
-        it('Should not claim array when one is not claimable', async function () {
+        it('Should not claim array when one is not claimable', async () => {
             const volume = 2;
             const { orders } = buildOrders({
                 assets: ordersAssets,
@@ -364,8 +345,8 @@ describe('Poco', async () => {
             await expect(iexecPoco.claimArray([taskId1, taskId2])).to.be.revertedWithoutReason();
         });
 
-        describe('Initialize and claim array', function () {
-            it('Should initialize and claim array', async function () {
+        describe('Initialize and claim array', () => {
+            it('Should initialize and claim array', async () => {
                 const volume = 3;
                 const { orders } = buildOrders({
                     assets: ordersAssets,
@@ -397,14 +378,14 @@ describe('Poco', async () => {
                 }
             });
 
-            it('Should not initialize and claim array if incompatible length of inputs', async function () {
+            it('Should not initialize and claim array if incompatible length of inputs', async () => {
                 const dealId = ethers.utils.hashMessage('dealId');
                 await expect(
                     iexecPoco.initializeAndClaimArray([dealId, dealId], [0]),
                 ).to.be.revertedWithoutReason();
             });
 
-            it('Should not initialize and claim array if one specific fails', async function () {
+            it('Should not initialize and claim array if one specific fails', async () => {
                 const volume = 2;
                 const { orders } = buildOrders({
                     assets: ordersAssets,
