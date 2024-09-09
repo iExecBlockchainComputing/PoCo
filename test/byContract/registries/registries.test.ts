@@ -14,11 +14,9 @@ import {
     DatasetRegistry__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
-    Ownable__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
 } from '../../../typechain';
-import { FactoryDeployerHelper } from '../../../utils/FactoryDeployerHelper';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 const constants = require('../../../utils/constants');
 const randomAddress = () => ethers.Wallet.createRandom().address;
@@ -32,8 +30,6 @@ describe('Registries', () => {
     let appRegistry: AppRegistry;
     let datasetRegistry: DatasetRegistry;
     let workerpoolRegistry: WorkerpoolRegistry;
-    let factoryDeployer: FactoryDeployerHelper;
-    let newAppRegistry: AppRegistry;
 
     beforeEach(async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
@@ -182,36 +178,18 @@ describe('Registries', () => {
             ).to.be.revertedWith('Create2: Failed on deploy');
         });
         it('Should check that a new app is well registered on new app registry', async () => {
-            const salt = ethers.utils.hexZeroPad('0x' + Date.now().toString(), 32);
-            factoryDeployer = new FactoryDeployerHelper(iexecAdmin, salt);
-
-            const transferOwnershipCall = await Ownable__factory.connect(
-                ethers.constants.AddressZero,
-                iexecAdmin,
-            )
-                .populateTransaction.transferOwnership(iexecAdmin.address)
-                .then((tx) => tx.data)
-                .catch(() => {
-                    throw new Error('Failed to prepare transferOwnership data');
-                });
-
-            const newAppRegistryAddress = await factoryDeployer.deployWithFactory(
-                new AppRegistry__factory(),
-                [],
-                transferOwnershipCall,
-            );
-            newAppRegistry = AppRegistry__factory.connect(newAppRegistryAddress, iexecAdmin);
-            console.log('newAppRegistryAddress =>', newAppRegistryAddress);
-            console.log('appRegistry.address =>', appRegistry.address);
-            const newAppRegistryInitialized = await newAppRegistry.initialized();
-            console.log('newAppRegistryInitialized', newAppRegistryInitialized);
-            await newAppRegistry.initialize(appRegistry.address);
-
             const appCreatedAddress = await appRegistry.callStatic.createApp(
                 appProvider.address,
                 ...createAppArgs,
             );
             await appRegistry.createApp(appProvider.address, ...createAppArgs);
+
+            const newAppRegistry = await new AppRegistry__factory()
+                .connect(iexecAdmin)
+                .deploy()
+                .then((contract) => contract.deployed());
+
+            await newAppRegistry.initialize(appRegistry.address);
             const isRegistered = await newAppRegistry.isRegistered(appCreatedAddress);
             expect(isRegistered).to.be.true;
         });
