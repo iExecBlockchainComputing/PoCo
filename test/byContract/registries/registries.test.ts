@@ -40,18 +40,19 @@ describe('Registries', () => {
         ({ iexecAdmin, appProvider, datasetProvider, scheduler, anyone } =
             await getIexecAccounts());
         ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
-        const appRegistryAddress = (await deployments.get('AppRegistry')).address;
-        appRegistry = AppRegistry__factory.connect(appRegistryAddress, iexecAdmin);
-        const datasetRegistryAddress = (await deployments.get('DatasetRegistry')).address;
-        datasetRegistry = DatasetRegistry__factory.connect(datasetRegistryAddress, iexecAdmin);
-        const workerpoolRegistryAddress = (await deployments.get('WorkerpoolRegistry')).address;
-        workerpoolRegistry = WorkerpoolRegistry__factory.connect(
-            workerpoolRegistryAddress,
-            iexecAdmin,
-        );
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
+
+        appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), iexecAdmin);
+        datasetRegistry = DatasetRegistry__factory.connect(
+            await iexecPoco.datasetregistry(),
+            iexecAdmin,
+        );
+        workerpoolRegistry = WorkerpoolRegistry__factory.connect(
+            await iexecPoco.workerpoolregistry(),
+            iexecAdmin,
+        );
     }
 
     describe('Registry', () => {
