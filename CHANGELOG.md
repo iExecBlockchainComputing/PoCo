@@ -1,6 +1,8 @@
 # Changelog
 
 ## vNEXT
+- Add `set-callback-gas.ts` script. (#121)
+- Accept any signature format in `SignatureVerifier.v8` when the account is a smart contract. (#120)
 - Update UML class diagrams. (#112)
 - Generate Solidity documentation. (#111)
 - Migrate unit test files to Typescript & Hardhat:
@@ -8,7 +10,7 @@
         - finalize (#79, #117, #119)
         - reveal (#114, #118)
         - contribute (#108, #109, #110)
-    - IexecPoco1 (#107, #113)
+    - IexecPoco1 (#107, #113, #115, #116)
     - Add `.test` suffix to unit test files (#106)
     - ENSIntegration (#105)
     - IexecOrderManagement (#101, #102, #103, #104)

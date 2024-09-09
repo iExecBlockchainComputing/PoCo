@@ -79,11 +79,7 @@ const { domain, domainSeparator } = buildDomain();
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
-const someSignature =
-    '0x' +
-    '0000000000000000000000000000000000000000000000000000000000000001' +
-    '0000000000000000000000000000000000000000000000000000000000000001' +
-    '1c';
+const someSignature = '0xabcd'; // contract signatures could have arbitrary formats
 const randomEOAAddress = '0xc0ffee254729296a45a3885639AC7E10F9d54979';
 
 async function deployBoostFixture() {

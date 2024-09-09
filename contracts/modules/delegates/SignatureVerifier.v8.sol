@@ -56,6 +56,14 @@ contract SignatureVerifier is DelegateBase {
         bytes32 messageHash,
         bytes calldata signature
     ) internal view returns (bool) {
+        // When the account is a smart contract, delegate signature verification.
+        if (account.code.length > 0) {
+            try IERC1271(account).isValidSignature(messageHash, signature) returns (bytes4 result) {
+                return result == IERC1271.isValidSignature.selector;
+            } catch {}
+            return false;
+        }
+        // When the account is an EoA, check signature validity.
         address recoveredAddress = address(0); // Initialize local variable
         if (signature.length == 65) {
             //slither-disable-next-line unused-return
@@ -69,15 +77,7 @@ contract SignatureVerifier is DelegateBase {
         } else {
             revert("invalid-signature-format");
         }
-        if (recoveredAddress == account) {
-            return true;
-        }
-        if (account.code.length > 0) {
-            try IERC1271(account).isValidSignature(messageHash, signature) returns (bytes4 result) {
-                return result == IERC1271.isValidSignature.selector;
-            } catch {}
-        }
-        return false;
+        return recoveredAddress == account;
     }
 
     /**
