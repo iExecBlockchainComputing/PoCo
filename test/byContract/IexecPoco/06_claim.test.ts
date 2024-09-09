@@ -27,7 +27,7 @@ const workerpoolPrice = 1_000_000_000;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
 const enclaveAddress = ethers.constants.AddressZero;
 
-describe('Poco', async () => {
+describe('IexecPoco2#claim', async () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
     let iexecPocoAsAnyone: IexecInterfaceNative;
@@ -65,7 +65,6 @@ describe('Poco', async () => {
         };
     }
 
-    // TODO: Wrap tests inside `describe('Claim ' [...]`
     /**
      * Generic claim test (longest code path) where it should claim a revealing
      * task after deadline. The task comes from a deal payed by a sponsor.
