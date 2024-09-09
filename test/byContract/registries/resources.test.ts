@@ -15,8 +15,12 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
+    ENSRegistry,
+    ENSRegistry__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    PublicResolver__factory,
+    ReverseRegistrar__factory,
     Workerpool,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
@@ -30,6 +34,8 @@ describe('Ressources', () => {
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
+    let ensRegistryAddress: string;
+    let ensRegistry: ENSRegistry;
     let appRegistry: AppRegistry;
     let datasetRegistry: DatasetRegistry;
     let workerpoolRegistry: WorkerpoolRegistry;
@@ -46,6 +52,9 @@ describe('Ressources', () => {
     async function initFixture() {
         ({ iexecAdmin, appProvider, datasetProvider, scheduler, anyone } =
             await getIexecAccounts());
+        ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
+        ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
+
         const appRegistryAddress = (await deployments.get('AppRegistry')).address;
         appRegistry = AppRegistry__factory.connect(appRegistryAddress, iexecAdmin);
         const datasetRegistryAddress = (await deployments.get('DatasetRegistry')).address;
@@ -61,26 +70,53 @@ describe('Ressources', () => {
     }
 
     describe('App', () => {
-        it('should create an app and verify its details', async () => {
-            const createAppArgs = [
-                `App`,
-                'DOCKER',
-                constants.MULTIADDR_BYTES,
-                ethers.utils.keccak256(ethers.utils.toUtf8Bytes(`Content of my app`)),
-                '0x1234',
-            ] as [string, string, BytesLike, BytesLike, BytesLike];
+        const createAppArgs = [
+            `App`,
+            'DOCKER',
+            constants.MULTIADDR_BYTES,
+            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(`Content of my app`)),
+            '0x1234',
+        ] as [string, string, BytesLike, BytesLike, BytesLike];
+
+        beforeEach(async () => {
             const appAddress = await appRegistry.callStatic.createApp(
                 appProvider.address,
                 ...createAppArgs,
             );
             await appRegistry.createApp(appProvider.address, ...createAppArgs);
             app = App__factory.connect(appAddress, appProvider);
+        });
+
+        it('should create an app and verify its details', async () => {
+            expect(await app.registry()).to.equal(appRegistry.address);
             expect(await app.owner()).to.equal(appProvider.address);
             expect(await app.m_appName()).to.equal(createAppArgs[0]);
             expect(await app.m_appType()).to.equal(createAppArgs[1]);
             expect(await app.m_appMultiaddr()).to.equal(createAppArgs[2]);
             expect(await app.m_appChecksum()).to.equal(createAppArgs[3]);
             expect(await app.m_appMREnclave()).to.equal(createAppArgs[4]);
+        });
+        it('should set the ENS name for the app', async () => {
+            const newENSName = 'myApp.eth';
+            const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
+            const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
+            const reverseResolverAddress = await ReverseRegistrar__factory.connect(
+                reverseRegistrarAddress,
+                anyone,
+            ).defaultResolver();
+            const reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
+
+            await app.setName(ensRegistry.address, newENSName);
+
+            const nameHash = ethers.utils.namehash(`${app.address.substring(2)}.addr.reverse`);
+            expect(await reverseResolver.name(nameHash)).to.equal(newENSName);
+        });
+
+        it('should revert when a non-owner tries to set the ENS name', async () => {
+            const newENSName = 'unauthorized.eth';
+            await expect(
+                app.connect(anyone).setName(ensRegistry.address, newENSName),
+            ).to.be.revertedWith('caller is not the owner');
         });
     });
 
