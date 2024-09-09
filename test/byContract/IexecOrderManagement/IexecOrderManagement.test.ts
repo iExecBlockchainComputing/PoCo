@@ -68,7 +68,7 @@ describe('OrderManagement', async () => {
             requester: requester.address,
             prices: ordersPrices,
             volume,
-        }));
+        }).toObject());
         appOrderHash = iexecWrapper.hashOrder(appOrder);
         datasetOrderHash = iexecWrapper.hashOrder(datasetOrder);
         workerpoolOrderHash = iexecWrapper.hashOrder(workerpoolOrder);
