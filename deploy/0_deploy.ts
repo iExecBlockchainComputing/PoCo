@@ -157,7 +157,7 @@ module.exports = async function () {
     const baseURIApp = CONFIG.registriesBaseUri.app || 'https://default.app.url/';
     const baseURIDataset = CONFIG.registriesBaseUri.dataset || 'https://default.dataset.url/';
     const baseURIWorkerpool =
-        CONFIG.baseregistriesBaseUriURI.workerpool || 'https://default.workerpool.url/';
+        CONFIG.registriesBaseUri.workerpool || 'https://default.workerpool.url/';
     // Check if registries have been initialized and set base URIs
     if (!(await appRegistryInstance.initialized())) {
         await appRegistryInstance
