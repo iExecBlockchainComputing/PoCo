@@ -73,7 +73,7 @@ describe('Ressources', () => {
             `App`,
             'DOCKER',
             constants.MULTIADDR_BYTES,
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(`Content of my app`)),
+            ethers.utils.id(`Content of my app`),
             '0x1234',
         ] as [string, string, BytesLike, BytesLike, BytesLike];
 
@@ -123,7 +123,7 @@ describe('Ressources', () => {
         const createDatasetArgs = [
             `Dataset`,
             constants.MULTIADDR_BYTES,
-            ethers.utils.keccak256(ethers.utils.toUtf8Bytes(`Content of my dataset`)),
+            ethers.utils.id(`Content of my dataset`),
         ] as [string, BytesLike, BytesLike];
         it('should create a dataset and verify its details', async () => {
             const datasetAddress = await datasetRegistry.callStatic.createDataset(
