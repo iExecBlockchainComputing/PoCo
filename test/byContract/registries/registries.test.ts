@@ -126,23 +126,17 @@ describe('Registries', () => {
             const reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
 
             await appRegistryAsAdmin.setName(ensRegistry.address, appRegistryENSName);
-            const appRegistryNameHash = ethers.utils.namehash(
-                `${appRegistry.address.substring(2)}.addr.reverse`,
-            );
+            const appRegistryNameHash = computeNameHash(appRegistry.address);
             expect(await reverseResolver.name(appRegistryNameHash)).to.equal(appRegistryENSName);
 
             await datasetRegistryAsAdmin.setName(ensRegistry.address, datasetRegistryENSName);
-            const datasetRegistryNameHash = ethers.utils.namehash(
-                `${datasetRegistry.address.substring(2)}.addr.reverse`,
-            );
+            const datasetRegistryNameHash = computeNameHash(datasetRegistry.address);
             expect(await reverseResolver.name(datasetRegistryNameHash)).to.equal(
                 datasetRegistryENSName,
             );
 
             await workerpoolRegistryAsAdmin.setName(ensRegistry.address, workerpoolRegistryENSName);
-            const workerpoolRegistryNameHash = ethers.utils.namehash(
-                `${workerpoolRegistry.address.substring(2)}.addr.reverse`,
-            );
+            const workerpoolRegistryNameHash = computeNameHash(workerpoolRegistry.address);
             expect(await reverseResolver.name(workerpoolRegistryNameHash)).to.equal(
                 workerpoolRegistryENSName,
             );
@@ -395,4 +389,7 @@ describe('Registries', () => {
             ).to.be.revertedWith('Create2: Failed on deploy');
         });
     });
+
+    const computeNameHash = (address: string) =>
+        ethers.utils.namehash(`${address.substring(2)}.addr.reverse`);
 });
