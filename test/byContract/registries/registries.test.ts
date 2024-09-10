@@ -16,6 +16,7 @@ import {
     ENSRegistry__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    PublicResolver,
     PublicResolver__factory,
     ReverseRegistrar__factory,
     WorkerpoolRegistry,
@@ -69,7 +70,7 @@ describe('Registries', () => {
                 .connect(iexecAdmin)
                 .deploy()
                 .then((contract) => contract.deployed());
-            await newAppRegistry.initialize(appRegistry.address);
+            await newAppRegistry.initialize(appRegistry.address).then((tx) => tx.wait());
             expect(await newAppRegistry.initialized()).to.be.true;
             expect(await newAppRegistry.previous()).to.equal(appRegistry.address);
 
@@ -77,7 +78,7 @@ describe('Registries', () => {
                 .connect(iexecAdmin)
                 .deploy()
                 .then((contract) => contract.deployed());
-            await newDatasetRegistry.initialize(datasetRegistry.address);
+            await newDatasetRegistry.initialize(datasetRegistry.address).then((tx) => tx.wait());
             expect(await newDatasetRegistry.initialized()).to.be.true;
             expect(await newDatasetRegistry.previous()).to.equal(datasetRegistry.address);
 
@@ -85,7 +86,9 @@ describe('Registries', () => {
                 .connect(iexecAdmin)
                 .deploy()
                 .then((contract) => contract.deployed());
-            await newWorkerpoolRegistry.initialize(workerpoolRegistry.address);
+            await newWorkerpoolRegistry
+                .initialize(workerpoolRegistry.address)
+                .then((tx) => tx.wait());
             expect(await newWorkerpoolRegistry.initialized()).to.be.true;
             expect(await newWorkerpoolRegistry.previous()).to.equal(workerpoolRegistry.address);
         });
@@ -112,31 +115,52 @@ describe('Registries', () => {
     });
 
     describe('setName', () => {
-        it('should set the ENS name for registries', async () => {
-            const appRegistryENSName = 'myAppRegistry.eth';
-            const datasetRegistryENSName = 'myDatasetRegistry.eth';
-            const workerpoolRegistryENSName = 'myWorkerpoolRegistry.eth';
+        let reverseResolver: PublicResolver;
+        let [appRegistryNameHash, datasetRegistryNameHash, workerpoolRegistryNameHash]: string[] =
+            [];
 
+        beforeEach(async () => {
             const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
             const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
             const reverseResolverAddress = await ReverseRegistrar__factory.connect(
                 reverseRegistrarAddress,
                 anyone,
             ).defaultResolver();
-            const reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
+            reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
+            appRegistryNameHash = computeNameHash(appRegistry.address);
+            datasetRegistryNameHash = computeNameHash(datasetRegistry.address);
+            workerpoolRegistryNameHash = computeNameHash(workerpoolRegistry.address);
+        });
 
-            await appRegistryAsAdmin.setName(ensRegistry.address, appRegistryENSName);
-            const appRegistryNameHash = computeNameHash(appRegistry.address);
+        it('Should retrieve the ENS name for registries', async () => {
+            expect(await reverseResolver.name(appRegistryNameHash)).to.equal('apps.v5.iexec.eth');
+            expect(await reverseResolver.name(datasetRegistryNameHash)).to.equal(
+                'datasets.v5.iexec.eth',
+            );
+            expect(await reverseResolver.name(workerpoolRegistryNameHash)).to.equal(
+                'workerpools.v5.iexec.eth',
+            );
+        });
+        it('should set the ENS name for registries', async () => {
+            const appRegistryENSName = 'myAppRegistry.eth';
+            const datasetRegistryENSName = 'myDatasetRegistry.eth';
+            const workerpoolRegistryENSName = 'myWorkerpoolRegistry.eth';
+
+            await appRegistryAsAdmin
+                .setName(ensRegistry.address, appRegistryENSName)
+                .then((tx) => tx.wait());
             expect(await reverseResolver.name(appRegistryNameHash)).to.equal(appRegistryENSName);
 
-            await datasetRegistryAsAdmin.setName(ensRegistry.address, datasetRegistryENSName);
-            const datasetRegistryNameHash = computeNameHash(datasetRegistry.address);
+            await datasetRegistryAsAdmin
+                .setName(ensRegistry.address, datasetRegistryENSName)
+                .then((tx) => tx.wait());
             expect(await reverseResolver.name(datasetRegistryNameHash)).to.equal(
                 datasetRegistryENSName,
             );
 
-            await workerpoolRegistryAsAdmin.setName(ensRegistry.address, workerpoolRegistryENSName);
-            const workerpoolRegistryNameHash = computeNameHash(workerpoolRegistry.address);
+            await workerpoolRegistryAsAdmin
+                .setName(ensRegistry.address, workerpoolRegistryENSName)
+                .then((tx) => tx.wait());
             expect(await reverseResolver.name(workerpoolRegistryNameHash)).to.equal(
                 workerpoolRegistryENSName,
             );
@@ -229,7 +253,9 @@ describe('Registries', () => {
                 appProvider.address,
                 ...createAppArgs,
             );
-            await appRegistry.createApp(appProvider.address, ...createAppArgs);
+            await appRegistry
+                .createApp(appProvider.address, ...createAppArgs)
+                .then((tx) => tx.wait());
             const isRegistered = await appRegistry.isRegistered(appCreatedAddress);
             expect(isRegistered).to.be.true;
         });
@@ -237,7 +263,9 @@ describe('Registries', () => {
             expect(await appRegistry.isRegistered(randomAddress())).to.be.false;
         });
         it('Should not allow creating the same app twice', async () => {
-            await appRegistry.createApp(appProvider.address, ...createAppArgs);
+            await appRegistry
+                .createApp(appProvider.address, ...createAppArgs)
+                .then((tx) => tx.wait());
 
             await expect(
                 appRegistry.createApp(appProvider.address, ...createAppArgs),
@@ -248,14 +276,16 @@ describe('Registries', () => {
                 appProvider.address,
                 ...createAppArgs,
             );
-            await appRegistry.createApp(appProvider.address, ...createAppArgs);
+            await appRegistry
+                .createApp(appProvider.address, ...createAppArgs)
+                .then((tx) => tx.wait());
 
             const newAppRegistry = await new AppRegistry__factory()
                 .connect(iexecAdmin)
                 .deploy()
                 .then((contract) => contract.deployed());
 
-            await newAppRegistry.initialize(appRegistry.address);
+            await newAppRegistry.initialize(appRegistry.address).then((tx) => tx.wait());
             const isRegistered = await newAppRegistry.isRegistered(appCreatedAddress);
             expect(isRegistered).to.be.true;
         });
@@ -308,7 +338,9 @@ describe('Registries', () => {
                 datasetProvider.address,
                 ...createDatasetArgs,
             );
-            await datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs);
+            await datasetRegistry
+                .createDataset(datasetProvider.address, ...createDatasetArgs)
+                .then((tx) => tx.wait());
             const isRegistered = await datasetRegistry.isRegistered(datasetCreatedAddress);
             expect(isRegistered).to.be.true;
         });
@@ -316,7 +348,9 @@ describe('Registries', () => {
             expect(await datasetRegistry.isRegistered(randomAddress())).to.be.false;
         });
         it('Should not allow creating the same dataset twice', async () => {
-            await datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs);
+            await datasetRegistry
+                .createDataset(datasetProvider.address, ...createDatasetArgs)
+                .then((tx) => tx.wait());
 
             await expect(
                 datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs),
@@ -374,7 +408,9 @@ describe('Registries', () => {
                 scheduler.address,
                 ...createWorkerpoolArgs,
             );
-            await workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs);
+            await workerpoolRegistry
+                .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
+                .then((tx) => tx.wait());
             const isRegistered = await workerpoolRegistry.isRegistered(workerpoolCreatedAddress);
             expect(isRegistered).to.be.true;
         });
@@ -382,7 +418,9 @@ describe('Registries', () => {
             expect(await workerpoolRegistry.isRegistered(randomAddress())).to.be.false;
         });
         it('Should not allow creating the same workerpool twice', async () => {
-            await workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs);
+            await workerpoolRegistry
+                .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
+                .then((tx) => tx.wait());
 
             await expect(
                 workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs),
