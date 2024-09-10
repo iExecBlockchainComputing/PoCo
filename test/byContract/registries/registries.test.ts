@@ -142,27 +142,27 @@ describe('Registries', () => {
             );
         });
         it('should set the ENS name for registries', async () => {
-            const appRegistryENSName = 'myAppRegistry.eth';
-            const datasetRegistryENSName = 'myDatasetRegistry.eth';
-            const workerpoolRegistryENSName = 'myWorkerpoolRegistry.eth';
+            const appRegistryEnsName = 'myAppRegistry.eth';
+            const datasetRegistryEnsName = 'myDatasetRegistry.eth';
+            const workerpoolRegistryEnsName = 'myWorkerpoolRegistry.eth';
 
             await appRegistryAsAdmin
-                .setName(ensRegistry.address, appRegistryENSName)
+                .setName(ensRegistry.address, appRegistryEnsName)
                 .then((tx) => tx.wait());
-            expect(await reverseResolver.name(appRegistryNameHash)).to.equal(appRegistryENSName);
+            expect(await reverseResolver.name(appRegistryNameHash)).to.equal(appRegistryEnsName);
 
             await datasetRegistryAsAdmin
-                .setName(ensRegistry.address, datasetRegistryENSName)
+                .setName(ensRegistry.address, datasetRegistryEnsName)
                 .then((tx) => tx.wait());
             expect(await reverseResolver.name(datasetRegistryNameHash)).to.equal(
-                datasetRegistryENSName,
+                datasetRegistryEnsName,
             );
 
             await workerpoolRegistryAsAdmin
-                .setName(ensRegistry.address, workerpoolRegistryENSName)
+                .setName(ensRegistry.address, workerpoolRegistryEnsName)
                 .then((tx) => tx.wait());
             expect(await reverseResolver.name(workerpoolRegistryNameHash)).to.equal(
-                workerpoolRegistryENSName,
+                workerpoolRegistryEnsName,
             );
         });
         it('Should not set name when user is not the owner', async () => {
