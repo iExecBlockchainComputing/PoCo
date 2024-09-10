@@ -96,7 +96,7 @@ describe('Registries', () => {
             expect(await newWorkerpoolRegistry.previous()).to.equal(workerpoolRegistry.address);
         });
 
-        it('Should not call initialize when user is not the owner', async () => {
+        it('Should not initialize when user is not the owner', async () => {
             await expect(appRegistry.initialize(AddressZero)).to.be.revertedWith(
                 'Ownable: caller is not the owner',
             );
