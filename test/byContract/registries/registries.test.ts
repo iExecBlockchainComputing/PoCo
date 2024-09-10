@@ -12,8 +12,12 @@ import {
     AppRegistry__factory,
     DatasetRegistry,
     DatasetRegistry__factory,
+    ENSRegistry,
+    ENSRegistry__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    PublicResolver__factory,
+    ReverseRegistrar__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
 } from '../../../typechain';
@@ -26,7 +30,7 @@ describe('Registries', () => {
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
-    let ensRegistryAddress: string;
+    let ensRegistry: ENSRegistry;
     let [appRegistry, appRegistryAsAdmin]: AppRegistry[] = [];
     let [datasetRegistry, datasetRegistryAsAdmin]: DatasetRegistry[] = [];
     let [workerpoolRegistry, workerpoolRegistryAsAdmin]: WorkerpoolRegistry[] = [];
@@ -39,7 +43,8 @@ describe('Registries', () => {
     async function initFixture() {
         ({ iexecAdmin, appProvider, datasetProvider, scheduler, anyone } =
             await getIexecAccounts());
-        ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
+        const ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
+        ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
@@ -59,18 +64,6 @@ describe('Registries', () => {
     }
 
     describe('Registry', () => {
-        it('Should retrieve base URI', async () => {
-            const chainId = hre.network.config.chainId;
-            expect(await appRegistry.baseURI()).to.equal(
-                `https://nfts-metadata.iex.ec/app/${chainId}/`,
-            );
-            expect(await datasetRegistry.baseURI()).to.equal(
-                `https://nfts-metadata.iex.ec/dataset/${chainId}/`,
-            );
-            expect(await workerpoolRegistry.baseURI()).to.equal(
-                `https://nfts-metadata.iex.ec/workerpool/${chainId}/`,
-            );
-        });
         it('Should initialize new deployed registries', async () => {
             const newAppRegistry = await new AppRegistry__factory()
                 .connect(iexecAdmin)
@@ -96,15 +89,62 @@ describe('Registries', () => {
             expect(await newWorkerpoolRegistry.initialized()).to.be.true;
             expect(await newWorkerpoolRegistry.previous()).to.equal(workerpoolRegistry.address);
         });
+        it('should set the ENS name for registries', async () => {
+            const appRegistryENSName = 'myAppRegistry.eth';
+            const datasetRegistryENSName = 'myDatasetRegistry.eth';
+            const workerpoolRegistryENSName = 'myWorkerpoolRegistry.eth';
+
+            const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
+            const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
+            const reverseResolverAddress = await ReverseRegistrar__factory.connect(
+                reverseRegistrarAddress,
+                anyone,
+            ).defaultResolver();
+            const reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
+
+            await appRegistryAsAdmin.setName(ensRegistry.address, appRegistryENSName);
+            const appRegistryNameHash = ethers.utils.namehash(
+                `${appRegistry.address.substring(2)}.addr.reverse`,
+            );
+            expect(await reverseResolver.name(appRegistryNameHash)).to.equal(appRegistryENSName);
+
+            await datasetRegistryAsAdmin.setName(ensRegistry.address, datasetRegistryENSName);
+            const datasetRegistryNameHash = ethers.utils.namehash(
+                `${datasetRegistry.address.substring(2)}.addr.reverse`,
+            );
+            expect(await reverseResolver.name(datasetRegistryNameHash)).to.equal(
+                datasetRegistryENSName,
+            );
+
+            await workerpoolRegistryAsAdmin.setName(ensRegistry.address, workerpoolRegistryENSName);
+            const workerpoolRegistryNameHash = ethers.utils.namehash(
+                `${workerpoolRegistry.address.substring(2)}.addr.reverse`,
+            );
+            expect(await reverseResolver.name(workerpoolRegistryNameHash)).to.equal(
+                workerpoolRegistryENSName,
+            );
+        });
+        it('Should retrieve base URI', async () => {
+            const chainId = hre.network.config.chainId;
+            expect(await appRegistry.baseURI()).to.equal(
+                `https://nfts-metadata.iex.ec/app/${chainId}/`,
+            );
+            expect(await datasetRegistry.baseURI()).to.equal(
+                `https://nfts-metadata.iex.ec/dataset/${chainId}/`,
+            );
+            expect(await workerpoolRegistry.baseURI()).to.equal(
+                `https://nfts-metadata.iex.ec/workerpool/${chainId}/`,
+            );
+        });
         it('Should not set name when user is not the owner', async () => {
             await expect(
-                appRegistry.setName(ensRegistryAddress, 'new.app.registry.eth'),
+                appRegistry.setName(ensRegistry.address, 'new.app.registry.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
             await expect(
-                datasetRegistry.setName(ensRegistryAddress, 'new.dataset.registry.eth'),
+                datasetRegistry.setName(ensRegistry.address, 'new.dataset.registry.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
             await expect(
-                workerpoolRegistry.setName(ensRegistryAddress, 'new.workerpool.registry.eth'),
+                workerpoolRegistry.setName(ensRegistry.address, 'new.workerpool.registry.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
         });
         it('Should not set base URI when user is not the owner', async () => {
