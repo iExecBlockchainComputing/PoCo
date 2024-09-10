@@ -153,14 +153,17 @@ module.exports = async function () {
         workerpoolRegistryAddress,
         owner,
     );
-
+    // Base URI configuration from config.json
+    const baseURIApp = CONFIG.baseURI.app || 'https://default.app.url/';
+    const baseURIDataset = CONFIG.baseURI.dataset || 'https://default.dataset.url/';
+    const baseURIWorkerpool = CONFIG.baseURI.workerpool || 'https://default.workerpool.url/';
     // Check if registries have been initialized and set base URIs
     const appRegistryInitialized = await appRegistryInstance.initialized();
     if (!appRegistryInitialized) {
         await appRegistryInstance.initialize(
             deploymentOptions.v3.AppRegistry || ethers.constants.AddressZero,
         );
-        await appRegistryInstance.setBaseURI(`https://nfts-metadata.iex.ec/app/${chainId}/`);
+        await appRegistryInstance.setBaseURI(`${baseURIApp}${chainId}/`);
     }
 
     const datasetRegistryInitialized = await datasetRegistryInstance.initialized();
@@ -168,9 +171,7 @@ module.exports = async function () {
         await datasetRegistryInstance.initialize(
             deploymentOptions.v3.DatasetRegistry || ethers.constants.AddressZero,
         );
-        await datasetRegistryInstance.setBaseURI(
-            `https://nfts-metadata.iex.ec/dataset/${chainId}/`,
-        );
+        await datasetRegistryInstance.setBaseURI(`${baseURIDataset}${chainId}/`);
     }
 
     const workerpoolRegistryInitialized = await workerpoolRegistryInstance.initialized();
@@ -178,9 +179,7 @@ module.exports = async function () {
         await workerpoolRegistryInstance.initialize(
             deploymentOptions.v3.WorkerpoolRegistry || ethers.constants.AddressZero,
         );
-        await workerpoolRegistryInstance.setBaseURI(
-            `https://nfts-metadata.iex.ec/workerpool/${chainId}/`,
-        );
+        await workerpoolRegistryInstance.setBaseURI(`${baseURIWorkerpool}${chainId}/`);
     }
 
     // Set main configuration
