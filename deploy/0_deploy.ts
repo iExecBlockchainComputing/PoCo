@@ -160,26 +160,30 @@ module.exports = async function () {
     // Check if registries have been initialized and set base URIs
     const appRegistryInitialized = await appRegistryInstance.initialized();
     if (!appRegistryInitialized) {
-        await appRegistryInstance.initialize(
-            deploymentOptions.v3.AppRegistry || ethers.constants.AddressZero,
-        );
-        await appRegistryInstance.setBaseURI(`${baseURIApp}${chainId}/`);
+        await appRegistryInstance
+            .initialize(deploymentOptions.v3.AppRegistry || ethers.constants.AddressZero)
+            .then((tx) => tx.wait());
+        await appRegistryInstance.setBaseURI(`${baseURIApp}${chainId}/`).then((tx) => tx.wait());
     }
 
     const datasetRegistryInitialized = await datasetRegistryInstance.initialized();
     if (!datasetRegistryInitialized) {
-        await datasetRegistryInstance.initialize(
-            deploymentOptions.v3.DatasetRegistry || ethers.constants.AddressZero,
-        );
-        await datasetRegistryInstance.setBaseURI(`${baseURIDataset}${chainId}/`);
+        await datasetRegistryInstance
+            .initialize(deploymentOptions.v3.DatasetRegistry || ethers.constants.AddressZero)
+            .then((tx) => tx.wait());
+        await datasetRegistryInstance
+            .setBaseURI(`${baseURIDataset}${chainId}/`)
+            .then((tx) => tx.wait());
     }
 
     const workerpoolRegistryInitialized = await workerpoolRegistryInstance.initialized();
     if (!workerpoolRegistryInitialized) {
-        await workerpoolRegistryInstance.initialize(
-            deploymentOptions.v3.WorkerpoolRegistry || ethers.constants.AddressZero,
-        );
-        await workerpoolRegistryInstance.setBaseURI(`${baseURIWorkerpool}${chainId}/`);
+        await workerpoolRegistryInstance
+            .initialize(deploymentOptions.v3.WorkerpoolRegistry || ethers.constants.AddressZero)
+            .then((tx) => tx.wait());
+        await workerpoolRegistryInstance
+            .setBaseURI(`${baseURIWorkerpool}${chainId}/`)
+            .then((tx) => tx.wait());
     }
 
     // Set main configuration
