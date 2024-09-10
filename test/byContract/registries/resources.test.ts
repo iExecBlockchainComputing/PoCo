@@ -34,7 +34,6 @@ describe('Ressources', () => {
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
-    let ensRegistryAddress: string;
     let ensRegistry: ENSRegistry;
     let appRegistry: AppRegistry;
     let datasetRegistry: DatasetRegistry;
@@ -52,7 +51,7 @@ describe('Ressources', () => {
     async function initFixture() {
         ({ iexecAdmin, appProvider, datasetProvider, scheduler, anyone } =
             await getIexecAccounts());
-        ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
+        const ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
         ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
