@@ -63,7 +63,7 @@ describe('Registries', () => {
         workerpoolRegistryAsAdmin = workerpoolRegistry.connect(iexecAdmin);
     }
 
-    describe('Registry', () => {
+    describe('initialize', () => {
         it('Should initialize new deployed registries', async () => {
             const newAppRegistry = await new AppRegistry__factory()
                 .connect(iexecAdmin)
@@ -89,6 +89,29 @@ describe('Registries', () => {
             expect(await newWorkerpoolRegistry.initialized()).to.be.true;
             expect(await newWorkerpoolRegistry.previous()).to.equal(workerpoolRegistry.address);
         });
+        it('Should not call initialize when user is not the owner', async () => {
+            await expect(appRegistry.initialize(AddressZero)).to.be.revertedWith(
+                'Ownable: caller is not the owner',
+            );
+            await expect(datasetRegistry.initialize(AddressZero)).to.be.revertedWith(
+                'Ownable: caller is not the owner',
+            );
+            await expect(workerpoolRegistry.initialize(AddressZero)).to.be.revertedWith(
+                'Ownable: caller is not the owner',
+            );
+        });
+        it('Should not reinitialize', async () => {
+            await expect(appRegistryAsAdmin.initialize(AddressZero)).to.be.revertedWithoutReason();
+            await expect(
+                datasetRegistryAsAdmin.initialize(AddressZero),
+            ).to.be.revertedWithoutReason();
+            await expect(
+                workerpoolRegistryAsAdmin.initialize(AddressZero),
+            ).to.be.revertedWithoutReason();
+        });
+    });
+
+    describe('setName', () => {
         it('should set the ENS name for registries', async () => {
             const appRegistryENSName = 'myAppRegistry.eth';
             const datasetRegistryENSName = 'myDatasetRegistry.eth';
@@ -124,6 +147,20 @@ describe('Registries', () => {
                 workerpoolRegistryENSName,
             );
         });
+        it('Should not set name when user is not the owner', async () => {
+            await expect(
+                appRegistry.setName(ensRegistry.address, 'new.app.registry.eth'),
+            ).to.be.revertedWith('Ownable: caller is not the owner');
+            await expect(
+                datasetRegistry.setName(ensRegistry.address, 'new.dataset.registry.eth'),
+            ).to.be.revertedWith('Ownable: caller is not the owner');
+            await expect(
+                workerpoolRegistry.setName(ensRegistry.address, 'new.workerpool.registry.eth'),
+            ).to.be.revertedWith('Ownable: caller is not the owner');
+        });
+    });
+
+    describe('setBaseURI', () => {
         it('Should retrieve base URI', async () => {
             const chainId = hre.network.config.chainId;
             expect(await appRegistry.baseURI()).to.equal(
@@ -136,17 +173,6 @@ describe('Registries', () => {
                 `https://nfts-metadata.iex.ec/workerpool/${chainId}/`,
             );
         });
-        it('Should not set name when user is not the owner', async () => {
-            await expect(
-                appRegistry.setName(ensRegistry.address, 'new.app.registry.eth'),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
-            await expect(
-                datasetRegistry.setName(ensRegistry.address, 'new.dataset.registry.eth'),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
-            await expect(
-                workerpoolRegistry.setName(ensRegistry.address, 'new.workerpool.registry.eth'),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
-        });
         it('Should not set base URI when user is not the owner', async () => {
             await expect(appRegistry.setBaseURI(`https://new.url.iex.ec/app/`)).to.be.revertedWith(
                 'Ownable: caller is not the owner',
@@ -158,26 +184,6 @@ describe('Registries', () => {
                 workerpoolRegistry.setBaseURI(`https://new.url.iex.ec/workerpool/`),
             ).to.be.revertedWith('Ownable: caller is not the owner');
         });
-        it('Should not call initialize when user is not the owner', async () => {
-            await expect(appRegistry.initialize(AddressZero)).to.be.revertedWith(
-                'Ownable: caller is not the owner',
-            );
-            await expect(datasetRegistry.initialize(AddressZero)).to.be.revertedWith(
-                'Ownable: caller is not the owner',
-            );
-            await expect(workerpoolRegistry.initialize(AddressZero)).to.be.revertedWith(
-                'Ownable: caller is not the owner',
-            );
-        });
-        it('Should not reinitialize', async () => {
-            await expect(appRegistryAsAdmin.initialize(AddressZero)).to.be.revertedWithoutReason();
-            await expect(
-                datasetRegistryAsAdmin.initialize(AddressZero),
-            ).to.be.revertedWithoutReason();
-            await expect(
-                workerpoolRegistryAsAdmin.initialize(AddressZero),
-            ).to.be.revertedWithoutReason();
-        });
     });
 
     describe('App Registry', () => {
@@ -188,7 +194,6 @@ describe('Registries', () => {
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes(`Content of my app`)),
             '0x1234',
         ] as [string, string, BytesLike, BytesLike, BytesLike];
-
         it('Should predict the correct address for future app creation', async () => {
             const code = await appRegistry.proxyCode();
             const proxyCodeHash = ethers.utils.keccak256(code);
@@ -212,7 +217,6 @@ describe('Registries', () => {
                 predictedAddress,
             );
         });
-
         it('Should create the app', async () => {
             const predictedAddress = await appRegistry.predictApp(
                 appProvider.address,
@@ -226,7 +230,6 @@ describe('Registries', () => {
                     ethers.BigNumber.from(predictedAddress).toString(),
                 );
         });
-
         it('Should check that a new app is well registered', async () => {
             const appCreatedAddress = await appRegistry.callStatic.createApp(
                 appProvider.address,
@@ -270,7 +273,6 @@ describe('Registries', () => {
             constants.MULTIADDR_BYTES,
             ethers.utils.keccak256(ethers.utils.toUtf8Bytes(`Content of my dataset`)),
         ] as [string, BytesLike, BytesLike];
-
         it('Should predict the correct address for future dataset creation', async () => {
             const code = await datasetRegistry.proxyCode();
             const proxyCodeHash = ethers.utils.keccak256(code);
@@ -292,7 +294,6 @@ describe('Registries', () => {
                 await datasetRegistry.predictDataset(datasetProvider.address, ...createDatasetArgs),
             ).to.equal(predictedAddress);
         });
-
         it('Should create the dataset', async () => {
             const predictedAddress = await datasetRegistry.predictDataset(
                 datasetProvider.address,
@@ -331,7 +332,6 @@ describe('Registries', () => {
 
     describe('Workerpool Registry', () => {
         const createWorkerpoolArgs = [`Workerpool description`] as [string];
-
         it('Should predict the correct address for future workerpool creation', async () => {
             const proxyCode = await workerpoolRegistry.proxyCode();
             const proxyCodeHash = ethers.utils.keccak256(proxyCode);
@@ -357,7 +357,6 @@ describe('Registries', () => {
 
             expect(predictedAddress).to.equal(expectedAddress);
         });
-
         it('Should create the workerpool', async () => {
             const predictedAddress = await workerpoolRegistry.predictWorkerpool(
                 scheduler.address,
