@@ -71,6 +71,31 @@ describe('Registries', () => {
                 `https://nfts-metadata.iex.ec/workerpool/${chainId}/`,
             );
         });
+        it('Should initialize new deployed registries', async () => {
+            const newAppRegistry = await new AppRegistry__factory()
+                .connect(iexecAdmin)
+                .deploy()
+                .then((contract) => contract.deployed());
+            await newAppRegistry.initialize(appRegistry.address);
+            expect(await newAppRegistry.initialized()).to.be.true;
+            expect(await newAppRegistry.previous()).to.equal(appRegistry.address);
+
+            const newDatasetRegistry = await new DatasetRegistry__factory()
+                .connect(iexecAdmin)
+                .deploy()
+                .then((contract) => contract.deployed());
+            await newDatasetRegistry.initialize(datasetRegistry.address);
+            expect(await newDatasetRegistry.initialized()).to.be.true;
+            expect(await newDatasetRegistry.previous()).to.equal(datasetRegistry.address);
+
+            const newWorkerpoolRegistry = await new WorkerpoolRegistry__factory()
+                .connect(iexecAdmin)
+                .deploy()
+                .then((contract) => contract.deployed());
+            await newWorkerpoolRegistry.initialize(workerpoolRegistry.address);
+            expect(await newWorkerpoolRegistry.initialized()).to.be.true;
+            expect(await newWorkerpoolRegistry.previous()).to.equal(workerpoolRegistry.address);
+        });
         it('Should not set name when user is not the owner', async () => {
             await expect(
                 appRegistry.setName(ensRegistryAddress, 'new.app.registry.eth'),
