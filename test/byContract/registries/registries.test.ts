@@ -27,9 +27,9 @@ describe('Registries', () => {
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let ensRegistryAddress: string;
-    let appRegistry: AppRegistry;
-    let datasetRegistry: DatasetRegistry;
-    let workerpoolRegistry: WorkerpoolRegistry;
+    let [appRegistry, appRegistryAsAdmin]: AppRegistry[] = [];
+    let [datasetRegistry, datasetRegistryAsAdmin]: DatasetRegistry[] = [];
+    let [workerpoolRegistry, workerpoolRegistryAsAdmin]: WorkerpoolRegistry[] = [];
 
     beforeEach(async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
@@ -44,15 +44,18 @@ describe('Registries', () => {
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
 
-        appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), iexecAdmin);
+        appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
+        appRegistryAsAdmin = appRegistry.connect(iexecAdmin);
         datasetRegistry = DatasetRegistry__factory.connect(
             await iexecPoco.datasetregistry(),
-            iexecAdmin,
+            anyone,
         );
+        datasetRegistryAsAdmin = datasetRegistry.connect(iexecAdmin);
         workerpoolRegistry = WorkerpoolRegistry__factory.connect(
             await iexecPoco.workerpoolregistry(),
-            iexecAdmin,
+            anyone,
         );
+        workerpoolRegistryAsAdmin = workerpoolRegistry.connect(iexecAdmin);
     }
 
     describe('Registry', () => {
@@ -70,45 +73,45 @@ describe('Registries', () => {
         });
         it('Should not set name when user is not the owner', async () => {
             await expect(
-                appRegistry.connect(anyone).setName(ensRegistryAddress, 'new.app.registry.eth'),
+                appRegistry.setName(ensRegistryAddress, 'new.app.registry.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
             await expect(
-                datasetRegistry
-                    .connect(anyone)
-                    .setName(ensRegistryAddress, 'new.dataset.registry.eth'),
+                datasetRegistry.setName(ensRegistryAddress, 'new.dataset.registry.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
             await expect(
-                workerpoolRegistry
-                    .connect(anyone)
-                    .setName(ensRegistryAddress, 'new.workerpool.registry.eth'),
+                workerpoolRegistry.setName(ensRegistryAddress, 'new.workerpool.registry.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
         });
         it('Should not set base URI when user is not the owner', async () => {
-            await expect(
-                appRegistry.connect(anyone).setBaseURI(`https://new.url.iex.ec/app/`),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
-            await expect(
-                datasetRegistry.connect(anyone).setBaseURI(`https://new.url.iex.ec/dataset/`),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
-            await expect(
-                workerpoolRegistry.connect(anyone).setBaseURI(`https://new.url.iex.ec/workerpool/`),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
-        });
-        it('Should not call initialize when user is not the owner', async () => {
-            await expect(appRegistry.connect(anyone).initialize(AddressZero)).to.be.revertedWith(
+            await expect(appRegistry.setBaseURI(`https://new.url.iex.ec/app/`)).to.be.revertedWith(
                 'Ownable: caller is not the owner',
             );
             await expect(
-                datasetRegistry.connect(anyone).initialize(AddressZero),
+                datasetRegistry.setBaseURI(`https://new.url.iex.ec/dataset/`),
             ).to.be.revertedWith('Ownable: caller is not the owner');
             await expect(
-                workerpoolRegistry.connect(anyone).initialize(AddressZero),
+                workerpoolRegistry.setBaseURI(`https://new.url.iex.ec/workerpool/`),
             ).to.be.revertedWith('Ownable: caller is not the owner');
         });
+        it('Should not call initialize when user is not the owner', async () => {
+            await expect(appRegistry.initialize(AddressZero)).to.be.revertedWith(
+                'Ownable: caller is not the owner',
+            );
+            await expect(datasetRegistry.initialize(AddressZero)).to.be.revertedWith(
+                'Ownable: caller is not the owner',
+            );
+            await expect(workerpoolRegistry.initialize(AddressZero)).to.be.revertedWith(
+                'Ownable: caller is not the owner',
+            );
+        });
         it('Should not reinitialize', async () => {
-            await expect(appRegistry.initialize(AddressZero)).to.be.revertedWithoutReason();
-            await expect(datasetRegistry.initialize(AddressZero)).to.be.revertedWithoutReason();
-            await expect(workerpoolRegistry.initialize(AddressZero)).to.be.revertedWithoutReason();
+            await expect(appRegistryAsAdmin.initialize(AddressZero)).to.be.revertedWithoutReason();
+            await expect(
+                datasetRegistryAsAdmin.initialize(AddressZero),
+            ).to.be.revertedWithoutReason();
+            await expect(
+                workerpoolRegistryAsAdmin.initialize(AddressZero),
+            ).to.be.revertedWithoutReason();
         });
     });
 

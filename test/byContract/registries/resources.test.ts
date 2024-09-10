@@ -58,14 +58,14 @@ describe('Ressources', () => {
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
 
-        appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), iexecAdmin);
+        appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
         datasetRegistry = DatasetRegistry__factory.connect(
             await iexecPoco.datasetregistry(),
-            iexecAdmin,
+            anyone,
         );
         workerpoolRegistry = WorkerpoolRegistry__factory.connect(
             await iexecPoco.workerpoolregistry(),
-            iexecAdmin,
+            anyone,
         );
     }
 
