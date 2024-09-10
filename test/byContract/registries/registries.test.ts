@@ -92,6 +92,7 @@ describe('Registries', () => {
             expect(await newWorkerpoolRegistry.initialized()).to.be.true;
             expect(await newWorkerpoolRegistry.previous()).to.equal(workerpoolRegistry.address);
         });
+
         it('Should not call initialize when user is not the owner', async () => {
             await expect(appRegistry.initialize(AddressZero)).to.be.revertedWith(
                 'Ownable: caller is not the owner',
@@ -103,6 +104,7 @@ describe('Registries', () => {
                 'Ownable: caller is not the owner',
             );
         });
+
         it('Should not reinitialize', async () => {
             await expect(appRegistryAsAdmin.initialize(AddressZero)).to.be.revertedWithoutReason();
             await expect(
@@ -141,6 +143,7 @@ describe('Registries', () => {
                 'workerpools.v5.iexec.eth',
             );
         });
+
         it('should set the ENS name for registries', async () => {
             const appRegistryEnsName = 'myAppRegistry.eth';
             const datasetRegistryEnsName = 'myDatasetRegistry.eth';
@@ -165,6 +168,7 @@ describe('Registries', () => {
                 workerpoolRegistryEnsName,
             );
         });
+
         it('Should not set name when user is not the owner', async () => {
             await expect(
                 appRegistry.setName(ensRegistry.address, 'new.app.registry.eth'),
@@ -191,6 +195,7 @@ describe('Registries', () => {
                 `https://nfts-metadata.iex.ec/workerpool/${chainId}/`,
             );
         });
+
         it('Should not set base URI when user is not the owner', async () => {
             await expect(appRegistry.setBaseURI(`https://new.url.iex.ec/app/`)).to.be.revertedWith(
                 'Ownable: caller is not the owner',
@@ -235,6 +240,7 @@ describe('Registries', () => {
                 predictedAddress,
             );
         });
+
         it('Should create the app', async () => {
             const predictedAddress = await appRegistry.predictApp(
                 appProvider.address,
@@ -248,6 +254,7 @@ describe('Registries', () => {
                     ethers.BigNumber.from(predictedAddress).toString(),
                 );
         });
+
         it('Should check that a new app is well registered', async () => {
             const appCreatedAddress = await appRegistry.callStatic.createApp(
                 appProvider.address,
@@ -259,9 +266,11 @@ describe('Registries', () => {
             const isRegistered = await appRegistry.isRegistered(appCreatedAddress);
             expect(isRegistered).to.be.true;
         });
+
         it('Should not have a random address registered in app registry', async () => {
             expect(await appRegistry.isRegistered(randomAddress())).to.be.false;
         });
+
         it('Should not allow creating the same app twice', async () => {
             await appRegistry
                 .createApp(appProvider.address, ...createAppArgs)
@@ -271,6 +280,7 @@ describe('Registries', () => {
                 appRegistry.createApp(appProvider.address, ...createAppArgs),
             ).to.be.revertedWith('Create2: Failed on deploy');
         });
+
         it('Should check that a new app is well registered on new app registry', async () => {
             const appCreatedAddress = await appRegistry.callStatic.createApp(
                 appProvider.address,
@@ -318,6 +328,7 @@ describe('Registries', () => {
                 await datasetRegistry.predictDataset(datasetProvider.address, ...createDatasetArgs),
             ).to.equal(predictedAddress);
         });
+
         it('Should create the dataset', async () => {
             const predictedAddress = await datasetRegistry.predictDataset(
                 datasetProvider.address,
@@ -333,6 +344,7 @@ describe('Registries', () => {
                     ethers.BigNumber.from(predictedAddress).toString(),
                 );
         });
+
         it('Should check that a new dataset is well registered', async () => {
             const datasetCreatedAddress = await datasetRegistry.callStatic.createDataset(
                 datasetProvider.address,
@@ -344,9 +356,11 @@ describe('Registries', () => {
             const isRegistered = await datasetRegistry.isRegistered(datasetCreatedAddress);
             expect(isRegistered).to.be.true;
         });
+
         it('Should not have a random address registered in dataset registry', async () => {
             expect(await datasetRegistry.isRegistered(randomAddress())).to.be.false;
         });
+
         it('Should not allow creating the same dataset twice', async () => {
             await datasetRegistry
                 .createDataset(datasetProvider.address, ...createDatasetArgs)
@@ -385,6 +399,7 @@ describe('Registries', () => {
 
             expect(predictedAddress).to.equal(expectedAddress);
         });
+
         it('Should create the workerpool', async () => {
             const predictedAddress = await workerpoolRegistry.predictWorkerpool(
                 scheduler.address,
@@ -403,6 +418,7 @@ describe('Registries', () => {
                     ethers.BigNumber.from(predictedAddress).toString(),
                 );
         });
+
         it('Should check that a new workerpool is well registered', async () => {
             const workerpoolCreatedAddress = await workerpoolRegistry.callStatic.createWorkerpool(
                 scheduler.address,
@@ -414,9 +430,11 @@ describe('Registries', () => {
             const isRegistered = await workerpoolRegistry.isRegistered(workerpoolCreatedAddress);
             expect(isRegistered).to.be.true;
         });
+
         it('Should not have a random address registered in workerpool registry', async () => {
             expect(await workerpoolRegistry.isRegistered(randomAddress())).to.be.false;
         });
+
         it('Should not allow creating the same workerpool twice', async () => {
             await workerpoolRegistry
                 .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
