@@ -10,8 +10,10 @@ import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-d
 import {
     AppRegistry,
     AppRegistry__factory,
+    App__factory,
     DatasetRegistry,
     DatasetRegistry__factory,
+    Dataset__factory,
     ENSRegistry,
     ENSRegistry__factory,
     IexecInterfaceNative,
@@ -21,6 +23,7 @@ import {
     ReverseRegistrar__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
+    Workerpool__factory,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 const constants = require('../../../utils/constants');
@@ -220,12 +223,10 @@ describe('Registries', () => {
         it('Should predict the correct address for future app creation', async () => {
             const code = await appRegistry.proxyCode();
             const proxyCodeHash = ethers.utils.keccak256(code);
-
-            const iface = new ethers.utils.Interface([
-                'function initialize(string,string,bytes,bytes32,bytes)',
-            ]);
-            const encodedInitializer = iface.encodeFunctionData('initialize', createAppArgs);
-
+            const encodedInitializer = App__factory.createInterface().encodeFunctionData(
+                'initialize',
+                createAppArgs,
+            );
             const salt = ethers.utils.solidityKeccak256(
                 ['bytes', 'address'],
                 [encodedInitializer, appProvider.address],
@@ -310,10 +311,10 @@ describe('Registries', () => {
         it('Should predict the correct address for future dataset creation', async () => {
             const code = await datasetRegistry.proxyCode();
             const proxyCodeHash = ethers.utils.keccak256(code);
-
-            const iface = new ethers.utils.Interface(['function initialize(string,bytes,bytes32)']);
-            const encodedInitializer = iface.encodeFunctionData('initialize', createDatasetArgs);
-
+            const encodedInitializer = Dataset__factory.createInterface().encodeFunctionData(
+                'initialize',
+                createDatasetArgs,
+            );
             const salt = ethers.utils.solidityKeccak256(
                 ['bytes', 'address'],
                 [encodedInitializer, datasetProvider.address],
@@ -377,10 +378,10 @@ describe('Registries', () => {
         it('Should predict the correct address for future workerpool creation', async () => {
             const proxyCode = await workerpoolRegistry.proxyCode();
             const proxyCodeHash = ethers.utils.keccak256(proxyCode);
-
-            const iface = new ethers.utils.Interface(['function initialize(string)']);
-            const encodedInitializer = iface.encodeFunctionData('initialize', createWorkerpoolArgs);
-
+            const encodedInitializer = Workerpool__factory.createInterface().encodeFunctionData(
+                'initialize',
+                createWorkerpoolArgs,
+            );
             const salt = ethers.utils.solidityKeccak256(
                 ['bytes', 'address'],
                 [encodedInitializer, scheduler.address],
