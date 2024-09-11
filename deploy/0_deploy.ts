@@ -146,6 +146,41 @@ module.exports = async function () {
         [],
         transferOwnershipCall,
     );
+
+    const appRegistryInstance = AppRegistry__factory.connect(appRegistryAddress, owner);
+    const datasetRegistryInstance = DatasetRegistry__factory.connect(datasetRegistryAddress, owner);
+    const workerpoolRegistryInstance = WorkerpoolRegistry__factory.connect(
+        workerpoolRegistryAddress,
+        owner,
+    );
+    // Base URI configuration from config.json
+    const baseURIApp = CONFIG.registriesBaseUri.app;
+    const baseURIDataset = CONFIG.registriesBaseUri.dataset;
+    const baseURIWorkerpool = CONFIG.registriesBaseUri.workerpool;
+    // Check if registries have been initialized and set base URIs
+    if (!(await appRegistryInstance.initialized())) {
+        await appRegistryInstance
+            .initialize(deploymentOptions.v3.AppRegistry || ethers.constants.AddressZero)
+            .then((tx) => tx.wait());
+        await appRegistryInstance.setBaseURI(`${baseURIApp}/${chainId}/`).then((tx) => tx.wait());
+    }
+    if (!(await datasetRegistryInstance.initialized())) {
+        await datasetRegistryInstance
+            .initialize(deploymentOptions.v3.DatasetRegistry || ethers.constants.AddressZero)
+            .then((tx) => tx.wait());
+        await datasetRegistryInstance
+            .setBaseURI(`${baseURIDataset}/${chainId}/`)
+            .then((tx) => tx.wait());
+    }
+    if (!(await workerpoolRegistryInstance.initialized())) {
+        await workerpoolRegistryInstance
+            .initialize(deploymentOptions.v3.WorkerpoolRegistry || ethers.constants.AddressZero)
+            .then((tx) => tx.wait());
+        await workerpoolRegistryInstance
+            .setBaseURI(`${baseURIWorkerpool}/${chainId}/`)
+            .then((tx) => tx.wait());
+    }
+
     // Set main configuration
     const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
     const iexecInitialized =
