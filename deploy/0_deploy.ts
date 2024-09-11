@@ -154,23 +154,22 @@ module.exports = async function () {
         owner,
     );
     // Base URI configuration from config.json
-    const baseURIApp = CONFIG.registriesBaseUri.app || 'https://default.app.url/';
-    const baseURIDataset = CONFIG.registriesBaseUri.dataset || 'https://default.dataset.url/';
-    const baseURIWorkerpool =
-        CONFIG.registriesBaseUri.workerpool || 'https://default.workerpool.url/';
+    const baseURIApp = CONFIG.registriesBaseUri.app;
+    const baseURIDataset = CONFIG.registriesBaseUri.dataset;
+    const baseURIWorkerpool = CONFIG.registriesBaseUri.workerpool;
     // Check if registries have been initialized and set base URIs
     if (!(await appRegistryInstance.initialized())) {
         await appRegistryInstance
             .initialize(deploymentOptions.v3.AppRegistry || ethers.constants.AddressZero)
             .then((tx) => tx.wait());
-        await appRegistryInstance.setBaseURI(`${baseURIApp}${chainId}/`).then((tx) => tx.wait());
+        await appRegistryInstance.setBaseURI(`${baseURIApp}/${chainId}/`).then((tx) => tx.wait());
     }
     if (!(await datasetRegistryInstance.initialized())) {
         await datasetRegistryInstance
             .initialize(deploymentOptions.v3.DatasetRegistry || ethers.constants.AddressZero)
             .then((tx) => tx.wait());
         await datasetRegistryInstance
-            .setBaseURI(`${baseURIDataset}${chainId}/`)
+            .setBaseURI(`${baseURIDataset}/${chainId}/`)
             .then((tx) => tx.wait());
     }
     if (!(await workerpoolRegistryInstance.initialized())) {
@@ -178,7 +177,7 @@ module.exports = async function () {
             .initialize(deploymentOptions.v3.WorkerpoolRegistry || ethers.constants.AddressZero)
             .then((tx) => tx.wait());
         await workerpoolRegistryInstance
-            .setBaseURI(`${baseURIWorkerpool}${chainId}/`)
+            .setBaseURI(`${baseURIWorkerpool}/${chainId}/`)
             .then((tx) => tx.wait());
     }
 

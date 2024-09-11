@@ -28,10 +28,11 @@ import {
 import { getIexecAccounts } from '../../../utils/poco-tools';
 const constants = require('../../../utils/constants');
 const randomAddress = () => ethers.Wallet.createRandom().address;
+const CONFIG = require('../../../config/config.json');
 
 describe('Registries', () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
+    let iexecPoco: IexecInterfaceNative;
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let ensRegistry: ENSRegistry;
@@ -51,7 +52,6 @@ describe('Registries', () => {
         ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
-        iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
 
         appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
         appRegistryAsAdmin = appRegistry.connect(iexecAdmin);
@@ -188,15 +188,12 @@ describe('Registries', () => {
     describe('setBaseURI', () => {
         it('Should retrieve base URI', async () => {
             const chainId = hre.network.config.chainId;
-            expect(await appRegistry.baseURI()).to.equal(
-                `https://nfts-metadata.iex.ec/app/${chainId}/`,
-            );
-            expect(await datasetRegistry.baseURI()).to.equal(
-                `https://nfts-metadata.iex.ec/dataset/${chainId}/`,
-            );
-            expect(await workerpoolRegistry.baseURI()).to.equal(
-                `https://nfts-metadata.iex.ec/workerpool/${chainId}/`,
-            );
+            const baseURIApp = CONFIG.registriesBaseUri.app;
+            const baseURIDataset = CONFIG.registriesBaseUri.dataset;
+            const baseURIWorkerpool = CONFIG.registriesBaseUri.workerpool;
+            expect(await appRegistry.baseURI()).to.equal(`${baseURIApp}/${chainId}/`);
+            expect(await datasetRegistry.baseURI()).to.equal(`${baseURIDataset}/${chainId}/`);
+            expect(await workerpoolRegistry.baseURI()).to.equal(`${baseURIWorkerpool}/${chainId}/`);
         });
 
         it('Should not set base URI when user is not the owner', async () => {
