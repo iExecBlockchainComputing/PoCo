@@ -209,37 +209,25 @@ describe('Registries', () => {
         });
     });
 
-    describe('getters', () => {
+    describe('Registry Getters', () => {
         it('Should check that masters are deployed at master addresses', async () => {
-            const appCode = (await ethers.getContractFactory('App')).bytecode;
-            const datasetCode = (await ethers.getContractFactory('Dataset')).bytecode;
-            const workerpoolCode = (await ethers.getContractFactory('Workerpool')).bytecode;
+            const appCode = await getBytecode('App');
+            const datasetCode = await getBytecode('Dataset');
+            const workerpoolCode = await getBytecode('Workerpool');
 
-            const deployedCodeAtAppRegistryMaster = await ethers.provider.getCode(
-                await appRegistry.master(),
-            );
-            const deployedCodeAtDatasetRegistryMaster = await ethers.provider.getCode(
-                await datasetRegistry.master(),
-            );
-            const deployedCodeAtWorkerpoolRegistryMaster = await ethers.provider.getCode(
-                await workerpoolRegistry.master(),
-            );
+            const deployedCodeAtAppRegistryMaster = (
+                await ethers.provider.getCode(await appRegistry.master())
+            ).replace('0x', '');
+            const deployedCodeAtDatasetRegistryMaster = (
+                await ethers.provider.getCode(await datasetRegistry.master())
+            ).replace('0x', '');
+            const deployedCodeAtWorkerpoolRegistryMaster = (
+                await ethers.provider.getCode(await workerpoolRegistry.master())
+            ).replace('0x', '');
 
-            expect(
-                appCode
-                    .replace('0x', '')
-                    .includes(deployedCodeAtAppRegistryMaster.replace('0x', '')),
-            ).to.be.true;
-            expect(
-                datasetCode
-                    .replace('0x', '')
-                    .includes(deployedCodeAtDatasetRegistryMaster.replace('0x', '')),
-            ).to.be.true;
-            expect(
-                workerpoolCode
-                    .replace('0x', '')
-                    .includes(deployedCodeAtWorkerpoolRegistryMaster.replace('0x', '')),
-            ).to.be.true;
+            expect(appCode.includes(deployedCodeAtAppRegistryMaster)).to.be.true;
+            expect(datasetCode.includes(deployedCodeAtDatasetRegistryMaster)).to.be.true;
+            expect(workerpoolCode.includes(deployedCodeAtWorkerpoolRegistryMaster)).to.be.true;
         });
 
         it('Should retrieve correct ERC 721 name', async () => {
@@ -280,7 +268,7 @@ describe('Registries', () => {
             );
         });
 
-        it('Should return the correct value for previous', async () => {
+        it('Should return the correct value for previous registry', async () => {
             expect(await appRegistry.previous()).to.equal(AddressZero);
             expect(await datasetRegistry.previous()).to.equal(AddressZero);
             expect(await workerpoolRegistry.previous()).to.equal(AddressZero);
@@ -553,4 +541,9 @@ describe('Registries', () => {
 
     const computeNameHash = (address: string) =>
         ethers.utils.namehash(`${address.substring(2)}.addr.reverse`);
+
+    const getBytecode = async (contractName: string) => {
+        const contractFactory = await ethers.getContractFactory(contractName);
+        return contractFactory.bytecode;
+    };
 });
