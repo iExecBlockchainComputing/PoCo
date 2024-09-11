@@ -147,7 +147,7 @@ describe('Registries', () => {
             );
         });
 
-        it('should set the ENS name for registries', async () => {
+        it('Should set the ENS name for registries', async () => {
             const appRegistryEnsName = 'myAppRegistry.eth';
             const datasetRegistryEnsName = 'myDatasetRegistry.eth';
             const workerpoolRegistryEnsName = 'myWorkerpoolRegistry.eth';
