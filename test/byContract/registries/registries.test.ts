@@ -18,6 +18,7 @@ import {
     ENSRegistry__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    InitializableUpgradeabilityProxy__factory,
     PublicResolver,
     PublicResolver__factory,
     ReverseRegistrar__factory,
@@ -211,9 +212,9 @@ describe('Registries', () => {
 
     describe('Registry Getters', () => {
         it('Should check that masters are deployed at master addresses', async () => {
-            const appCode = await getBytecode('App');
-            const datasetCode = await getBytecode('Dataset');
-            const workerpoolCode = await getBytecode('Workerpool');
+            const appCode = App__factory.bytecode.replace('0x', '');
+            const datasetCode = Dataset__factory.bytecode.replace('0x', '');
+            const workerpoolCode = Workerpool__factory.bytecode.replace('0x', '');
 
             const deployedCodeAtAppRegistryMaster = (
                 await ethers.provider.getCode(await appRegistry.master())
@@ -243,22 +244,14 @@ describe('Registries', () => {
         });
 
         it('Should return the correct value for proxyCode', async () => {
-            const InitializableUpgradeabilityProxy = await ethers.getContractFactory(
-                'InitializableUpgradeabilityProxy',
-            );
-            const expectedProxyCode = InitializableUpgradeabilityProxy.bytecode;
-
+            const expectedProxyCode = InitializableUpgradeabilityProxy__factory.bytecode;
             expect(await appRegistry.proxyCode()).to.equal(expectedProxyCode);
             expect(await datasetRegistry.proxyCode()).to.equal(expectedProxyCode);
             expect(await workerpoolRegistry.proxyCode()).to.equal(expectedProxyCode);
         });
 
         it('Should return the correct value for proxyCodeHash', async () => {
-            const InitializableUpgradeabilityProxy = await ethers.getContractFactory(
-                'InitializableUpgradeabilityProxy',
-            );
-            const proxyCode = InitializableUpgradeabilityProxy.bytecode;
-
+            const proxyCode = InitializableUpgradeabilityProxy__factory.bytecode;
             expect(await appRegistry.proxyCodeHash()).to.equal(ethers.utils.keccak256(proxyCode));
             expect(await datasetRegistry.proxyCodeHash()).to.equal(
                 ethers.utils.keccak256(proxyCode),
@@ -541,9 +534,4 @@ describe('Registries', () => {
 
     const computeNameHash = (address: string) =>
         ethers.utils.namehash(`${address.substring(2)}.addr.reverse`);
-
-    const getBytecode = async (contractName: string) => {
-        const contractFactory = await ethers.getContractFactory(contractName);
-        return contractFactory.bytecode;
-    };
 });
