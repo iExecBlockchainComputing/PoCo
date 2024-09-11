@@ -243,6 +243,9 @@ describe('Registries', () => {
         });
 
         it('Should create the app', async () => {
+            const initialAppBalance = await appRegistry.balanceOf(appProvider.address);
+            expect(initialAppBalance).to.equal(0);
+
             const predictedAddress = await appRegistry.predictApp(
                 appProvider.address,
                 ...createAppArgs,
@@ -254,6 +257,10 @@ describe('Registries', () => {
                     appProvider.address,
                     ethers.BigNumber.from(predictedAddress).toString(),
                 );
+            expect(await appRegistry.balanceOf(appProvider.address)).to.equal(
+                initialAppBalance.add(1),
+            );
+            expect(await appRegistry.ownerOf(predictedAddress)).to.equal(appProvider.address);
         });
 
         it('Should check that a new app is well registered', async () => {
