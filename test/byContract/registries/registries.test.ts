@@ -209,6 +209,58 @@ describe('Registries', () => {
         });
     });
 
+    describe('getters', () => {
+        it('Should retrieve correct ERC 721 name', async () => {
+            expect(await appRegistry.name()).to.equal('iExec Application Registry (V5)');
+            expect(await datasetRegistry.name()).to.equal('iExec Dataset Registry (V5)');
+            expect(await workerpoolRegistry.name()).to.equal('iExec Workerpool Registry (V5)');
+        });
+
+        it('Should retrieve correct ERC 721 symbol', async () => {
+            expect(await appRegistry.symbol()).to.equal('iExecAppsV5');
+            expect(await datasetRegistry.symbol()).to.equal('iExecDatasetsV5');
+            expect(await workerpoolRegistry.symbol()).to.equal('iExecWorkerpoolV5');
+        });
+
+        it('Should return the correct value for proxyCode', async () => {
+            const InitializableUpgradeabilityProxy = await ethers.getContractFactory(
+                'InitializableUpgradeabilityProxy',
+            );
+            const expectedProxyCode = InitializableUpgradeabilityProxy.bytecode;
+
+            expect(await appRegistry.proxyCode()).to.equal(expectedProxyCode);
+            expect(await datasetRegistry.proxyCode()).to.equal(expectedProxyCode);
+            expect(await workerpoolRegistry.proxyCode()).to.equal(expectedProxyCode);
+        });
+
+        it('Should return the correct value for proxyCodeHash', async () => {
+            const InitializableUpgradeabilityProxy = await ethers.getContractFactory(
+                'InitializableUpgradeabilityProxy',
+            );
+            const proxyCode = InitializableUpgradeabilityProxy.bytecode;
+
+            expect(await appRegistry.proxyCodeHash()).to.equal(ethers.utils.keccak256(proxyCode));
+            expect(await datasetRegistry.proxyCodeHash()).to.equal(
+                ethers.utils.keccak256(proxyCode),
+            );
+            expect(await workerpoolRegistry.proxyCodeHash()).to.equal(
+                ethers.utils.keccak256(proxyCode),
+            );
+        });
+
+        it('Should return the correct value for previous', async () => {
+            expect(await appRegistry.previous()).to.equal(AddressZero);
+            expect(await datasetRegistry.previous()).to.equal(AddressZero);
+            expect(await workerpoolRegistry.previous()).to.equal(AddressZero);
+        });
+
+        it('Should current regitries be initialized', async () => {
+            expect(await appRegistry.initialized()).to.be.true;
+            expect(await datasetRegistry.initialized()).to.be.true;
+            expect(await workerpoolRegistry.initialized()).to.be.true;
+        });
+    });
+
     describe('App Registry', () => {
         const createAppArgs = [
             `App`,
