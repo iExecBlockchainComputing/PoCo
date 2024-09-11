@@ -210,6 +210,38 @@ describe('Registries', () => {
     });
 
     describe('getters', () => {
+        it('Should check that masters are deployed at master addresses', async () => {
+            const appCode = (await ethers.getContractFactory('App')).bytecode;
+            const datasetCode = (await ethers.getContractFactory('Dataset')).bytecode;
+            const workerpoolCode = (await ethers.getContractFactory('Workerpool')).bytecode;
+
+            const deployedCodeAtAppRegistryMaster = await ethers.provider.getCode(
+                await appRegistry.master(),
+            );
+            const deployedCodeAtDatasetRegistryMaster = await ethers.provider.getCode(
+                await datasetRegistry.master(),
+            );
+            const deployedCodeAtWorkerpoolRegistryMaster = await ethers.provider.getCode(
+                await workerpoolRegistry.master(),
+            );
+
+            expect(
+                appCode
+                    .replace('0x', '')
+                    .includes(deployedCodeAtAppRegistryMaster.replace('0x', '')),
+            ).to.be.true;
+            expect(
+                datasetCode
+                    .replace('0x', '')
+                    .includes(deployedCodeAtDatasetRegistryMaster.replace('0x', '')),
+            ).to.be.true;
+            expect(
+                workerpoolCode
+                    .replace('0x', '')
+                    .includes(deployedCodeAtWorkerpoolRegistryMaster.replace('0x', '')),
+            ).to.be.true;
+        });
+
         it('Should retrieve correct ERC 721 name', async () => {
             expect(await appRegistry.name()).to.equal('iExec Application Registry (V5)');
             expect(await datasetRegistry.name()).to.equal('iExec Dataset Registry (V5)');
