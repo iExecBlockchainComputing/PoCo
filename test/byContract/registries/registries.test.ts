@@ -338,6 +338,9 @@ describe('Registries', () => {
         });
 
         it('Should create the dataset', async () => {
+            const initialDatasetBalance = await datasetRegistry.balanceOf(datasetProvider.address);
+            expect(initialDatasetBalance).to.equal(0);
+
             const predictedAddress = await datasetRegistry.predictDataset(
                 datasetProvider.address,
                 ...createDatasetArgs,
@@ -351,6 +354,12 @@ describe('Registries', () => {
                     datasetProvider.address,
                     ethers.BigNumber.from(predictedAddress).toString(),
                 );
+            expect(await datasetRegistry.balanceOf(datasetProvider.address)).to.equal(
+                initialDatasetBalance.add(1),
+            );
+            expect(await datasetRegistry.ownerOf(predictedAddress)).to.equal(
+                datasetProvider.address,
+            );
         });
 
         it('Should check that a new dataset is well registered', async () => {
@@ -409,6 +418,9 @@ describe('Registries', () => {
         });
 
         it('Should create the workerpool', async () => {
+            const initialWorkerpoolBalance = await workerpoolRegistry.balanceOf(scheduler.address);
+            expect(initialWorkerpoolBalance).to.equal(0);
+
             const predictedAddress = await workerpoolRegistry.predictWorkerpool(
                 scheduler.address,
                 ...createWorkerpoolArgs,
@@ -425,6 +437,10 @@ describe('Registries', () => {
                     scheduler.address,
                     ethers.BigNumber.from(predictedAddress).toString(),
                 );
+            expect(await workerpoolRegistry.balanceOf(scheduler.address)).to.equal(
+                initialWorkerpoolBalance.add(1),
+            );
+            expect(await workerpoolRegistry.ownerOf(predictedAddress)).to.equal(scheduler.address);
         });
 
         it('Should check that a new workerpool is well registered', async () => {
