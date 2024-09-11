@@ -105,7 +105,7 @@ describe('IexecPoco2#finalize', async () => {
             callback: oracleConsumerInstance.address,
         });
         const { dealId, taskId, taskIndex, dealPrice } =
-            await iexecWrapper.signAndSponsorMatchOrders(orders);
+            await iexecWrapper.signAndSponsorMatchOrders(...orders.toArray());
         const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
             workerpoolPrice,
             expectedVolume,
@@ -299,7 +299,9 @@ describe('IexecPoco2#finalize', async () => {
             prices: ordersPrices,
         });
         const taskPrice = appPrice + workerpoolPrice;
-        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
@@ -363,7 +365,9 @@ describe('IexecPoco2#finalize', async () => {
             volume,
             trust: 3,
         });
-        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
@@ -412,10 +416,10 @@ describe('IexecPoco2#finalize', async () => {
 
     it('Should not finalize when caller is not scheduler', async () => {
         const { dealId, taskId } = await iexecWrapper.signAndMatchOrders(
-            buildOrders({
+            ...buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-            }),
+            }).toArray(),
         );
         const deal = await iexecPoco.viewDeal(dealId);
         expect(deal.workerpool.owner).to.equal(scheduler.address).not.equal(anyone.address);
@@ -427,10 +431,10 @@ describe('IexecPoco2#finalize', async () => {
 
     it('Should not finalize task when task status is not revealing', async () => {
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
-            buildOrders({
+            ...buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-            }),
+            }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const task = await iexecPoco.viewTask(taskId);
@@ -444,10 +448,10 @@ describe('IexecPoco2#finalize', async () => {
 
     it('Should not finalize task after final deadline', async () => {
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
-            buildOrders({
+            ...buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-            }),
+            }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
@@ -488,11 +492,11 @@ describe('IexecPoco2#finalize', async () => {
 
     it('Should not finalize when winner counter is not reached nor at least one worker revealed', async () => {
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
-            buildOrders({
+            ...buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 trust: 3,
-            }),
+            }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
@@ -538,10 +542,10 @@ describe('IexecPoco2#finalize', async () => {
 
     it('Should not finalize task when resultsCallback is not expected', async () => {
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
-            buildOrders({
+            ...buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-            }),
+            }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco

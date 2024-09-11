@@ -7,7 +7,6 @@ import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import {
-    IexecOrders,
     OrdersAssets,
     OrdersPrices,
     buildOrders,
@@ -66,8 +65,9 @@ describe('IexecPoco2#initialize', async () => {
                 requester: requester.address,
                 prices: ordersPrices,
             });
-            const { dealId, taskId, taskIndex, startTime } =
-                await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId, taskId, taskIndex, startTime } = await iexecWrapper.signAndMatchOrders(
+                ...orders.toArray(),
+            );
             expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
 
             expect(await iexecPocoAsAnyone.callStatic.initialize(dealId, taskIndex)).to.equal(
@@ -109,10 +109,16 @@ describe('IexecPoco2#initialize', async () => {
             };
             // Request order is matched in 2 deals
             const { dealId: dealId0 } = await iexecWrapper.signAndMatchOrders(
-                new IexecOrders(appOrder, datasetOrder, workerpoolOrder0, requestOrder),
+                appOrder,
+                datasetOrder,
+                workerpoolOrder0,
+                requestOrder,
             );
             const { dealId: dealId1 } = await iexecWrapper.signAndMatchOrders(
-                new IexecOrders(appOrder, datasetOrder, workerpoolOrder1, requestOrder),
+                appOrder,
+                datasetOrder,
+                workerpoolOrder1,
+                requestOrder,
             );
             expect((await iexecPoco.viewDeal(dealId0)).botFirst).equal(0);
             expect((await iexecPoco.viewDeal(dealId1)).botFirst).equal(1);
@@ -127,7 +133,7 @@ describe('IexecPoco2#initialize', async () => {
                 requester: requester.address,
                 prices: ordersPrices,
             });
-            const { dealId } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId } = await iexecWrapper.signAndMatchOrders(...orders.toArray());
             const deal = await iexecPoco.viewDeal(dealId);
             expect(deal.botFirst).equal(0);
             expect(deal.botSize).equal(1);
@@ -142,7 +148,9 @@ describe('IexecPoco2#initialize', async () => {
                 requester: requester.address,
                 prices: ordersPrices,
             });
-            const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+                ...orders.toArray(),
+            );
             await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
             expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
 
@@ -161,7 +169,7 @@ describe('IexecPoco2#initialize', async () => {
                 prices: ordersPrices,
                 volume,
             });
-            const { dealId } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId } = await iexecWrapper.signAndMatchOrders(...orders.toArray());
             const dealIds = [dealId, dealId, dealId];
             const taskIndexes = [0, 1, 2];
             for (const taskIndex of taskIndexes) {
@@ -197,7 +205,7 @@ describe('IexecPoco2#initialize', async () => {
                 prices: ordersPrices,
                 volume,
             });
-            const { dealId } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId } = await iexecWrapper.signAndMatchOrders(...orders.toArray());
             const taskIndex0 = 0;
             const taskIndex1 = 1;
             await iexecPocoAsAnyone // Make first task already initialized

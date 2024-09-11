@@ -80,7 +80,7 @@ describe('IexecPoco2#claim', async () => {
             trust: 4, // Consensus is reachable with 2 fresh workers
         });
         const { dealId, taskId, taskIndex, dealPrice, startTime } =
-            await iexecWrapper.signAndSponsorMatchOrders(orders);
+            await iexecWrapper.signAndSponsorMatchOrders(...orders.toArray());
         const schedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
             workerpoolPrice,
             expectedVolume,
@@ -197,7 +197,7 @@ describe('IexecPoco2#claim', async () => {
             prices: ordersPrices,
         });
         const { dealId, taskId, taskIndex, dealPrice, startTime } =
-            await iexecWrapper.signAndMatchOrders(orders);
+            await iexecWrapper.signAndMatchOrders(...orders.toArray());
         await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
         expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(dealPrice);
@@ -223,8 +223,9 @@ describe('IexecPoco2#claim', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { dealId, taskId, taskIndex, startTime } =
-            await iexecWrapper.signAndMatchOrders(orders);
+        const { dealId, taskId, taskIndex, startTime } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
         await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.ACTIVE);
         await time.setNextBlockTimestamp(startTime + maxDealDuration);
@@ -238,7 +239,7 @@ describe('IexecPoco2#claim', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { taskId } = await iexecWrapper.signAndMatchOrders(orders);
+        const { taskId } = await iexecWrapper.signAndMatchOrders(...orders.toArray());
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.UNSET);
 
         await expect(iexecPocoAsAnyone.claim(taskId)).to.be.revertedWithoutReason();
@@ -251,7 +252,9 @@ describe('IexecPoco2#claim', async () => {
             prices: ordersPrices,
             trust: 0,
         });
-        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
         await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
             worker1.address,
@@ -286,7 +289,9 @@ describe('IexecPoco2#claim', async () => {
             requester: requester.address,
             prices: ordersPrices,
         });
-        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(orders);
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
         await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
         // No time traveling after deadline
 
@@ -302,7 +307,9 @@ describe('IexecPoco2#claim', async () => {
                 prices: ordersPrices,
                 volume,
             });
-            const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(
+                ...orders.toArray(),
+            );
             const taskIds = [];
             for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
                 taskIds.push(getTaskId(dealId, taskIndex));
@@ -328,7 +335,9 @@ describe('IexecPoco2#claim', async () => {
                 prices: ordersPrices,
                 volume,
             });
-            const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
+            const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(
+                ...orders.toArray(),
+            );
             const taskIndex1 = 0;
             const taskIndex2 = 1;
             const taskId1 = getTaskId(dealId, taskIndex1);
@@ -353,7 +362,9 @@ describe('IexecPoco2#claim', async () => {
                     prices: ordersPrices,
                     volume,
                 });
-                const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
+                const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(
+                    ...orders.toArray(),
+                );
                 const dealIds = [dealId, dealId, dealId];
                 const taskIndexes = [0, 1, 2];
                 await time.setNextBlockTimestamp(startTime + maxDealDuration).then(() => mine());
@@ -392,7 +403,9 @@ describe('IexecPoco2#claim', async () => {
                     prices: ordersPrices,
                     volume,
                 });
-                const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(orders);
+                const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(
+                    ...orders.toArray(),
+                );
                 const taskIndex0 = 0;
                 const taskIndex1 = 1;
                 await iexecPoco // Make first task already initialized

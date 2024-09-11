@@ -13,6 +13,7 @@ import {
     DatasetRegistry__factory,
     IexecAccessors__factory,
     IexecInterfaceNative__factory,
+    IexecLibOrders_v5,
     IexecMaintenanceDelegate__factory,
     RLC__factory,
     WorkerpoolRegistry,
@@ -174,12 +175,28 @@ export class IexecWrapper {
         return signOrderOperation(this.domain, orderOperation, signer);
     }
 
-    async signAndSponsorMatchOrders(orders: IexecOrders) {
-        return this._signAndMatchOrders(orders, true);
+    async signAndSponsorMatchOrders(
+        appOrder: IexecLibOrders_v5.AppOrderStruct,
+        datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
+        workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
+        requestOrder: IexecLibOrders_v5.RequestOrderStruct,
+    ) {
+        return this._signAndMatchOrders(
+            new IexecOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder),
+            true,
+        );
     }
 
-    async signAndMatchOrders(orders: IexecOrders) {
-        return this._signAndMatchOrders(orders, false);
+    async signAndMatchOrders(
+        appOrder: IexecLibOrders_v5.AppOrderStruct,
+        datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
+        workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
+        requestOrder: IexecLibOrders_v5.RequestOrderStruct,
+    ) {
+        return this._signAndMatchOrders(
+            new IexecOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder),
+            false,
+        );
     }
 
     /**
