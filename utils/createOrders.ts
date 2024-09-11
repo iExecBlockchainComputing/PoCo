@@ -87,6 +87,7 @@ export class IexecOrders {
             workerpoolOrder: this.workerpool,
             requesterOrder: this.requester,
             // An alias for convenience
+            // TODO use requestOrder instead of requesterOrder everywhere.
             requestOrder: this.requester,
         };
     }
