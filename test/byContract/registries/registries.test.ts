@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { BigNumber } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
 import { AddressZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
@@ -29,6 +28,7 @@ import {
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 const constants = require('../../../utils/constants');
+const tools = require('../../../utils/tools');
 const randomAddress = () => ethers.Wallet.createRandom().address;
 const CONFIG = require('../../../config/config.json');
 
@@ -326,7 +326,7 @@ describe('Registries', () => {
             expect(await appRegistry.ownerOf(predictedAddress)).to.equal(appProvider.address);
 
             const tokenAtIndex = await appRegistry.tokenOfOwnerByIndex(appProvider.address, 0);
-            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
+            expect(ethers.utils.getAddress(tools.BN2Address(tokenAtIndex))).to.equal(
                 ethers.utils.getAddress(predictedAddress),
             );
 
@@ -437,7 +437,7 @@ describe('Registries', () => {
                 datasetProvider.address,
                 0,
             );
-            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
+            expect(ethers.utils.getAddress(tools.BN2Address(tokenAtIndex))).to.equal(
                 ethers.utils.getAddress(predictedAddress),
             );
 
@@ -527,7 +527,7 @@ describe('Registries', () => {
             expect(await workerpoolRegistry.ownerOf(predictedAddress)).to.equal(scheduler.address);
 
             const tokenAtIndex = await workerpoolRegistry.tokenOfOwnerByIndex(scheduler.address, 0);
-            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
+            expect(ethers.utils.getAddress(tools.BN2Address(tokenAtIndex))).to.equal(
                 ethers.utils.getAddress(predictedAddress),
             );
 
@@ -565,10 +565,4 @@ describe('Registries', () => {
 
     const computeNameHash = (address: string) =>
         ethers.utils.namehash(`${address.substring(2)}.addr.reverse`);
-
-    function BN2Address(n: BigNumber): string {
-        const hexValue = ethers.utils.hexlify(n);
-        const paddedHex = ethers.utils.hexZeroPad(hexValue, 20);
-        return ethers.utils.getAddress(paddedHex);
-    }
 });
