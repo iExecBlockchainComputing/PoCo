@@ -6,6 +6,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import hre, { deployments, ethers, expect } from 'hardhat';
+import CONFIG from '../../../config/config.json';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     AppRegistry,
@@ -26,11 +27,10 @@ import {
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../../typechain';
+import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
-const constants = require('../../../utils/constants');
-const tools = require('../../../utils/tools');
+import { BN2Address } from '../../../utils/tools';
 const randomAddress = () => ethers.Wallet.createRandom().address;
-const CONFIG = require('../../../config/config.json');
 
 describe('Registries', () => {
     let proxyAddress: string;
@@ -279,7 +279,7 @@ describe('Registries', () => {
         const createAppArgs = [
             `App`,
             'DOCKER',
-            constants.MULTIADDR_BYTES,
+            MULTIADDR_BYTES,
             ethers.utils.id(`Content of my app`),
             '0x1234',
         ] as [string, string, BytesLike, BytesLike, BytesLike];
@@ -326,7 +326,7 @@ describe('Registries', () => {
             expect(await appRegistry.ownerOf(predictedAddress)).to.equal(appProvider.address);
 
             const tokenAtIndex = await appRegistry.tokenOfOwnerByIndex(appProvider.address, 0);
-            expect(ethers.utils.getAddress(tools.BN2Address(tokenAtIndex))).to.equal(
+            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
                 ethers.utils.getAddress(predictedAddress),
             );
 
@@ -384,7 +384,7 @@ describe('Registries', () => {
     describe('Dataset Registry', () => {
         const createDatasetArgs = [
             `Dataset`,
-            constants.MULTIADDR_BYTES,
+            MULTIADDR_BYTES,
             ethers.utils.id(`Content of my dataset`),
         ] as [string, BytesLike, BytesLike];
         it('Should predict the correct address for future dataset creation', async () => {
@@ -437,7 +437,7 @@ describe('Registries', () => {
                 datasetProvider.address,
                 0,
             );
-            expect(ethers.utils.getAddress(tools.BN2Address(tokenAtIndex))).to.equal(
+            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
                 ethers.utils.getAddress(predictedAddress),
             );
 
@@ -527,7 +527,7 @@ describe('Registries', () => {
             expect(await workerpoolRegistry.ownerOf(predictedAddress)).to.equal(scheduler.address);
 
             const tokenAtIndex = await workerpoolRegistry.tokenOfOwnerByIndex(scheduler.address, 0);
-            expect(ethers.utils.getAddress(tools.BN2Address(tokenAtIndex))).to.equal(
+            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
                 ethers.utils.getAddress(predictedAddress),
             );
 
