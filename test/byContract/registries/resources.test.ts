@@ -87,6 +87,7 @@ describe('Ressources', () => {
         });
 
         it('Should create an app and verify its details', async () => {
+            expect(await appRegistry.isRegistered(app.address)).to.be.true;
             expect(await app.registry()).to.equal(appRegistry.address);
             expect(await app.owner()).to.equal(appProvider.address);
             expect(await app.m_appName()).to.equal(createAppArgs[0]);
@@ -95,6 +96,7 @@ describe('Ressources', () => {
             expect(await app.m_appChecksum()).to.equal(createAppArgs[3]);
             expect(await app.m_appMREnclave()).to.equal(createAppArgs[4]);
         });
+
         it('Should set the ENS name for the app', async () => {
             const newENSName = 'myApp.eth';
             const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
@@ -132,6 +134,8 @@ describe('Ressources', () => {
             );
             await datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs);
             dataset = Dataset__factory.connect(datasetAddress, datasetProvider);
+            expect(await datasetRegistry.isRegistered(dataset.address)).to.be.true;
+            expect(await dataset.registry()).to.equal(datasetRegistry.address);
             expect(await dataset.owner()).to.equal(datasetProvider.address);
             expect(await dataset.m_datasetName()).to.equal(createDatasetArgs[0]);
             expect(await dataset.m_datasetMultiaddr()).to.equal(createDatasetArgs[1]);
@@ -152,6 +156,8 @@ describe('Ressources', () => {
         });
 
         it('Should create a workerpool and verify its details', async () => {
+            expect(await workerpoolRegistry.isRegistered(workerpool.address)).to.be.true;
+            expect(await workerpool.registry()).to.equal(workerpoolRegistry.address);
             expect(await workerpool.owner()).to.equal(scheduler.address);
             expect(await workerpool.m_workerpoolDescription()).to.equal(createWorkerpoolArgs[0]);
             expect(await workerpool.m_workerStakeRatioPolicy()).to.equal(30);
