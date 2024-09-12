@@ -6,7 +6,7 @@
 - Update UML class diagrams. (#112)
 - Generate Solidity documentation. (#111)
 - Migrate unit test files to Typescript & Hardhat:
-    - Registries (#122)
+    - Registries (#122, #124)
     - IexecPoco2
         - finalize (#79, #117, #119)
         - reveal (#114, #118)
