@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
+// TODO: will do in next
 
 const loadTruffleFixtureDeployment = require('../../../scripts/truffle-fixture-deployer');
 // Config
