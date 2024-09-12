@@ -113,6 +113,12 @@ describe('Ressources', () => {
             expect(await reverseResolver.name(nameHash)).to.equal(newENSName);
         });
 
+        it('Should not reinitialize created app', async () => {
+            await expect(app.initialize(...createAppArgs)).to.be.revertedWith(
+                'already initialized',
+            );
+        });
+
         it('Should revert when a non-owner tries to set the ENS name', async () => {
             const newENSName = 'unauthorized.eth';
             await expect(
@@ -127,19 +133,29 @@ describe('Ressources', () => {
             constants.MULTIADDR_BYTES,
             ethers.utils.id(`Content of my dataset`),
         ] as [string, BytesLike, BytesLike];
-        it('Should create a dataset and verify its details', async () => {
+
+        beforeEach(async () => {
             const datasetAddress = await datasetRegistry.callStatic.createDataset(
                 datasetProvider.address,
                 ...createDatasetArgs,
             );
             await datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs);
             dataset = Dataset__factory.connect(datasetAddress, datasetProvider);
+        });
+
+        it('Should create a dataset and verify its details', async () => {
             expect(await datasetRegistry.isRegistered(dataset.address)).to.be.true;
             expect(await dataset.registry()).to.equal(datasetRegistry.address);
             expect(await dataset.owner()).to.equal(datasetProvider.address);
             expect(await dataset.m_datasetName()).to.equal(createDatasetArgs[0]);
             expect(await dataset.m_datasetMultiaddr()).to.equal(createDatasetArgs[1]);
             expect(await dataset.m_datasetChecksum()).to.equal(createDatasetArgs[2]);
+        });
+
+        it('Should not reinitialize created dataset', async () => {
+            await expect(dataset.initialize(...createDatasetArgs)).to.be.revertedWith(
+                'already initialized',
+            );
         });
     });
 
@@ -168,6 +184,12 @@ describe('Ressources', () => {
             await workerpool.changePolicy(35, 5, { from: scheduler.address });
             expect(await workerpool.m_workerStakeRatioPolicy()).to.equal(35);
             expect(await workerpool.m_schedulerRewardRatioPolicy()).to.equal(5);
+        });
+
+        it('Should not reinitialize created workerpool', async () => {
+            await expect(workerpool.initialize(...createWorkerpoolArgs)).to.be.revertedWith(
+                'already initialized',
+            );
         });
 
         it('Should reject configuration from non-owner', async () => {
