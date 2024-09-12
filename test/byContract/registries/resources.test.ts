@@ -31,8 +31,8 @@ const constants = require('../../../utils/constants');
 
 describe('Ressources', () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
-    let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
+    let iexecPoco: IexecInterfaceNative;
+    let [appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let ensRegistry: ENSRegistry;
     let appRegistry: AppRegistry;
@@ -49,13 +49,11 @@ describe('Ressources', () => {
     });
 
     async function initFixture() {
-        ({ iexecAdmin, appProvider, datasetProvider, scheduler, anyone } =
-            await getIexecAccounts());
+        ({ appProvider, datasetProvider, scheduler, anyone } = await getIexecAccounts());
         const ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
         ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
-        iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
 
         appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
         datasetRegistry = DatasetRegistry__factory.connect(
@@ -85,7 +83,7 @@ describe('Ressources', () => {
             await appRegistry
                 .createApp(appProvider.address, ...createAppArgs)
                 .then((tx) => tx.wait());
-            app = App__factory.connect(appAddress, appProvider);
+            app = App__factory.connect(appAddress, anyone);
         });
 
         it('Should create an app and verify its details', async () => {
@@ -109,7 +107,10 @@ describe('Ressources', () => {
             ).defaultResolver();
             const reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
 
-            await app.setName(ensRegistry.address, newENSName).then((tx) => tx.wait());
+            await app
+                .connect(appProvider)
+                .setName(ensRegistry.address, newENSName)
+                .then((tx) => tx.wait());
 
             const nameHash = ethers.utils.namehash(`${app.address.substring(2)}.addr.reverse`);
             expect(await reverseResolver.name(nameHash)).to.equal(newENSName);
@@ -123,9 +124,9 @@ describe('Ressources', () => {
 
         it('Should revert when a non-owner tries to set the ENS name', async () => {
             const newENSName = 'unauthorized.eth';
-            await expect(
-                app.connect(anyone).setName(ensRegistry.address, newENSName),
-            ).to.be.revertedWith('caller is not the owner');
+            await expect(app.setName(ensRegistry.address, newENSName)).to.be.revertedWith(
+                'caller is not the owner',
+            );
         });
     });
 
@@ -144,7 +145,7 @@ describe('Ressources', () => {
             await datasetRegistry
                 .createDataset(datasetProvider.address, ...createDatasetArgs)
                 .then((tx) => tx.wait());
-            dataset = Dataset__factory.connect(datasetAddress, datasetProvider);
+            dataset = Dataset__factory.connect(datasetAddress, anyone);
         });
 
         it('Should create a dataset and verify its details', async () => {
@@ -174,7 +175,7 @@ describe('Ressources', () => {
             await workerpoolRegistry
                 .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
                 .then((tx) => tx.wait());
-            workerpool = Workerpool__factory.connect(workerpoolAddress, scheduler);
+            workerpool = Workerpool__factory.connect(workerpoolAddress, anyone);
         });
 
         it('Should create a workerpool and verify its details', async () => {
@@ -188,6 +189,7 @@ describe('Ressources', () => {
 
         it('Should allow the owner to configure the workerpool', async () => {
             await workerpool
+                .connect(scheduler)
                 .changePolicy(35, 5, { from: scheduler.address })
                 .then((tx) => tx.wait());
             expect(await workerpool.m_workerStakeRatioPolicy()).to.equal(35);
@@ -202,13 +204,13 @@ describe('Ressources', () => {
 
         it('Should reject configuration from non-owner', async () => {
             await expect(
-                workerpool.connect(anyone).changePolicy(0, 0, { from: anyone.address }),
+                workerpool.changePolicy(0, 0, { from: anyone.address }),
             ).to.be.revertedWith('caller is not the owner');
         });
 
         it('Should reject invalid configuration', async () => {
             await expect(
-                workerpool.changePolicy(100, 150, { from: scheduler.address }),
+                workerpool.connect(scheduler).changePolicy(100, 150, { from: scheduler.address }),
             ).to.be.revertedWithoutReason();
         });
     });
