@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Clean some TODOs and harmonize unit tests. (#123)
 - Add `set-callback-gas.ts` script. (#121)
 - Accept any signature format in `SignatureVerifier.v8` when the account is a smart contract. (#120)
 - Update UML class diagrams. (#112)

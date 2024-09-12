@@ -19,7 +19,6 @@ import {
 } from '../typechain';
 import constants from '../utils/constants';
 import {
-    Orders,
     OrdersActors,
     OrdersAssets,
     OrdersPrices,
@@ -131,7 +130,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     describe('MatchOrders', function () {
         it('Should match orders (TEE)', async function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
@@ -139,6 +138,12 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 prices: ordersPrices,
                 callback: callbackAddress,
             });
+            const {
+                appOrder,
+                datasetOrder,
+                workerpoolOrder,
+                requesterOrder: requestOrder,
+            } = orders.toObject();
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
@@ -157,17 +162,11 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const startTime = await setNextBlockTimestamp();
-            const matchOrdersArgs = [
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            ] as Orders;
 
             expect(
-                await iexecPocoBoostInstance.callStatic.matchOrdersBoost(...matchOrdersArgs),
+                await iexecPocoBoostInstance.callStatic.matchOrdersBoost(...orders.toArray()),
             ).to.equal(dealId);
-            await expect(iexecPocoBoostInstance.matchOrdersBoost(...matchOrdersArgs))
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
                 .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
                 .withArgs(
                     workerpoolAddress,
@@ -237,7 +236,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 requester: requester.address,
                 beneficiary: beneficiary.address,
                 tag: teeDealTag,
-            });
+            }).toObject();
             await iexecOrderManagementInstance.connect(appProvider).manageAppOrder({
                 order: appOrder,
                 operation: 0,
@@ -292,7 +291,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
 
         it('Should sponsor match orders (TEE)', async function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
@@ -300,6 +299,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
                 prices: ordersPrices,
                 callback: callbackAddress,
             });
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
                 1; // volume
@@ -320,20 +320,16 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const startTime = await setNextBlockTimestamp();
-            const matchOrdersArgs = [
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            ] as Orders;
 
             expect(
                 await iexecPocoBoostInstance
                     .connect(sponsor)
-                    .callStatic.sponsorMatchOrdersBoost(...matchOrdersArgs),
+                    .callStatic.sponsorMatchOrdersBoost(...orders.toArray()),
             ).to.equal(dealId);
             await expect(
-                iexecPocoBoostInstance.connect(sponsor).sponsorMatchOrdersBoost(...matchOrdersArgs),
+                iexecPocoBoostInstance
+                    .connect(sponsor)
+                    .sponsorMatchOrdersBoost(...orders.toArray()),
             )
                 .to.emit(iexecPocoBoostInstance, 'SchedulerNoticeBoost')
                 .withArgs(
@@ -402,11 +398,12 @@ describe('IexecPocoBoostDelegate (IT)', function () {
 
     describe('PushResult', function () {
         it('Should push result (TEE & callback)', async function () {
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
             });
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             const oracleConsumerInstance = await new TestClient__factory()
                 .connect(anyone)
                 .deploy()
@@ -458,13 +455,14 @@ describe('IexecPocoBoostDelegate (IT)', function () {
 
         it('Should push result (TEE with contribution authorization signed by scheduler)', async function () {
             const volume = 3;
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
                 prices: ordersPrices,
                 volume: volume,
             });
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * volume;
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
@@ -569,10 +567,11 @@ describe('IexecPocoBoostDelegate (IT)', function () {
 
         it('Should push result (TEE with contribution authorization signed by broker)', async function () {
             await iexecWrapper.setTeeBroker(teeBroker.address);
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
             });
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -616,13 +615,14 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             const claimedTasks = 1;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
                 prices: ordersPrices,
                 volume: expectedVolume,
             });
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);
@@ -697,13 +697,14 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             const claimedTasks = 1;
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const dealPrice = taskPrice * expectedVolume;
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
                 prices: ordersPrices,
                 volume: expectedVolume,
             });
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, requestOrder, taskIndex);
             const taskId = getTaskId(dealId, taskIndex);

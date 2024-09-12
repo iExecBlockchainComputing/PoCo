@@ -102,7 +102,7 @@ describe('IexecPoco (IT)', function () {
     describe('MatchOrders', function () {
         it('Should sponsor match orders (TEE)', async function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
-            const { orders } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
