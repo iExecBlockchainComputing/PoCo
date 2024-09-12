@@ -4,6 +4,7 @@
 import { BytesLike } from '@ethersproject/bytes';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { ContractTransaction } from 'ethers';
 import { deployments, ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
@@ -67,6 +68,7 @@ describe('Ressources', () => {
     }
 
     describe('App', () => {
+        let createAppTx: ContractTransaction;
         const createAppArgs = [
             `App`,
             'DOCKER',
@@ -80,13 +82,17 @@ describe('Ressources', () => {
                 appProvider.address,
                 ...createAppArgs,
             );
-            await appRegistry
-                .createApp(appProvider.address, ...createAppArgs)
-                .then((tx) => tx.wait());
+            createAppTx = await appRegistry.createApp(appProvider.address, ...createAppArgs);
+            await createAppTx.wait();
             app = App__factory.connect(appAddress, anyone);
         });
 
         it('Should create an app and verify its details', async () => {
+            await expect(createAppTx)
+                .to.emit(appRegistry, 'Transfer')
+                .withArgs(ethers.constants.AddressZero, appProvider.address, app.address);
+            expect(await appRegistry.balanceOf(appProvider.address)).to.equal(1);
+            expect(await appRegistry.ownerOf(app.address)).to.equal(appProvider.address);
             expect(await appRegistry.isRegistered(app.address)).to.be.true;
             expect(await app.registry()).to.equal(appRegistry.address);
             expect(await app.owner()).to.equal(appProvider.address);
@@ -131,6 +137,7 @@ describe('Ressources', () => {
     });
 
     describe('Dataset', () => {
+        let createDatasetTx: ContractTransaction;
         const createDatasetArgs = [
             `Dataset`,
             constants.MULTIADDR_BYTES,
@@ -142,13 +149,23 @@ describe('Ressources', () => {
                 datasetProvider.address,
                 ...createDatasetArgs,
             );
-            await datasetRegistry
-                .createDataset(datasetProvider.address, ...createDatasetArgs)
-                .then((tx) => tx.wait());
+            createDatasetTx = await datasetRegistry.createDataset(
+                datasetProvider.address,
+                ...createDatasetArgs,
+            );
+            await createDatasetTx.wait();
             dataset = Dataset__factory.connect(datasetAddress, anyone);
         });
 
         it('Should create a dataset and verify its details', async () => {
+            await expect(createDatasetTx)
+                .to.emit(datasetRegistry, 'Transfer')
+                .withArgs(ethers.constants.AddressZero, datasetProvider.address, dataset.address);
+            expect(await datasetRegistry.balanceOf(datasetProvider.address)).to.equal(1);
+            expect(await datasetRegistry.ownerOf(dataset.address)).to.equal(
+                datasetProvider.address,
+            );
+            expect(await datasetRegistry.isRegistered(dataset.address)).to.be.true;
             expect(await datasetRegistry.isRegistered(dataset.address)).to.be.true;
             expect(await dataset.registry()).to.equal(datasetRegistry.address);
             expect(await dataset.owner()).to.equal(datasetProvider.address);
@@ -165,20 +182,29 @@ describe('Ressources', () => {
     });
 
     describe('Workerpool', () => {
+        let createWorkerpoolTx: ContractTransaction;
         const createWorkerpoolArgs = [`Workerpool description`] as [string];
-
         beforeEach(async () => {
             const workerpoolAddress = await workerpoolRegistry.callStatic.createWorkerpool(
                 scheduler.address,
                 ...createWorkerpoolArgs,
             );
-            await workerpoolRegistry
-                .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
-                .then((tx) => tx.wait());
+            createWorkerpoolTx = await workerpoolRegistry.createWorkerpool(
+                scheduler.address,
+                ...createWorkerpoolArgs,
+            );
+            await createWorkerpoolTx.wait();
             workerpool = Workerpool__factory.connect(workerpoolAddress, anyone);
         });
 
         it('Should create a workerpool and verify its details', async () => {
+            await expect(createWorkerpoolTx)
+                .to.emit(workerpoolRegistry, 'Transfer')
+                .withArgs(ethers.constants.AddressZero, scheduler.address, workerpool.address);
+            expect(await workerpoolRegistry.balanceOf(scheduler.address)).to.equal(1);
+            expect(await workerpoolRegistry.ownerOf(workerpool.address)).to.equal(
+                scheduler.address,
+            );
             expect(await workerpoolRegistry.isRegistered(workerpool.address)).to.be.true;
             expect(await workerpool.registry()).to.equal(workerpoolRegistry.address);
             expect(await workerpool.owner()).to.equal(scheduler.address);
