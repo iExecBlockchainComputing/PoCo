@@ -74,15 +74,17 @@ describe('IexecPoco2#reveal', () => {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
-        ({ orders } = buildOrders({
+        orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
             volume,
             trust: 1,
             tag: standardDealTag,
-        }));
-        ({ dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(orders));
+        });
+        ({ dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        ));
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
@@ -190,7 +192,7 @@ describe('IexecPoco2#reveal', () => {
 
     it('Should not reveal when outside consensus', async () => {
         const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
-            buildOrders({
+            ...buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
@@ -198,7 +200,7 @@ describe('IexecPoco2#reveal', () => {
                 trust: 3,
                 tag: standardDealTag,
                 salt: ethers.utils.hexZeroPad('0x' + Date.now().toString(), 32), // make
-            }).orders, // app and dataset orders unique since already matched in
+            }).toArray(), // app and dataset orders unique since already matched in
             // beforeEach. A useless salt is also added to workerpool and request
             // orders to get an easy one-liner declaration.
         );

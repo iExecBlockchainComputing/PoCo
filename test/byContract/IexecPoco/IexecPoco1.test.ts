@@ -108,13 +108,13 @@ describe('IexecPoco1', () => {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
-        ({ orders } = buildOrders({
+        orders = buildOrders({
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
             tag: teeDealTag,
             volume: volume,
-        }));
+        });
         const randomWallet = ethers.Wallet.createRandom();
         randomAddress = randomWallet.address;
         randomSignature = await randomWallet.signMessage('random');
@@ -216,7 +216,7 @@ describe('IexecPoco1', () => {
             const category = 2;
             const params = '<params>';
             // Use orders with full configuration.
-            const { orders: fullConfigOrders } = buildOrders({
+            const fullConfigOrders = buildOrders({
                 assets: ordersAssets,
                 prices: ordersPrices,
                 requester: requester.address,
@@ -322,7 +322,7 @@ describe('IexecPoco1', () => {
             const category = 2;
             const params = '<params>';
             // Use orders with full configuration.
-            const { orders: standardOrders } = buildOrders({
+            const standardOrders = buildOrders({
                 assets: ordersAssets,
                 prices: ordersPrices,
                 requester: requester.address,
@@ -473,6 +473,7 @@ describe('IexecPoco1', () => {
                 }
                 it(`Should match orders with ${assetName} restriction in ${orderName} order`, async () => {
                     // e.g. orders.app.datasetrestrict = orders.dataset.dataset
+                    // @ts-ignore
                     orders[orderName][assetName + 'restrict'] = orders[assetName][assetName];
                     await depositForRequesterAndSchedulerWithDefaultPrices(volume);
                     // Sign and match orders.
@@ -635,11 +636,13 @@ describe('IexecPoco1', () => {
                 it(`Should fail when ${orderName} order mismatches ${assetName} restriction (EOA, SC)`, async () => {
                     const message = revertMessages[orderName][assetName];
                     // EOA
+                    // @ts-ignore
                     orders[orderName][assetName + 'restrict'] = randomAddress; // e.g. orders.app.datasetrestrict = 0xEOA
                     await expect(iexecPoco.matchOrders(...orders.toArray())).to.be.revertedWith(
                         message,
                     );
                     // SC
+                    // @ts-ignore
                     orders[orderName][assetName + 'restrict'] = randomContract.address; // e.g. orders.app.datasetrestrict = 0xSC
                     await expect(iexecPoco.matchOrders(...orders.toArray())).to.be.revertedWith(
                         message,
