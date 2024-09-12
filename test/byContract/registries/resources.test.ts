@@ -214,10 +214,21 @@ describe('Ressources', () => {
         });
 
         it('Should allow the owner to configure the workerpool', async () => {
-            await workerpool
-                .connect(scheduler)
-                .changePolicy(35, 5, { from: scheduler.address })
-                .then((tx) => tx.wait());
+            const previousWorkerStakeRatioPolicy = await workerpool.m_workerStakeRatioPolicy();
+            const previousSchedulerRewardRatioPolicy =
+                await workerpool.m_schedulerRewardRatioPolicy();
+            await expect(
+                await workerpool
+                    .connect(scheduler)
+                    .changePolicy(35, 5, { from: scheduler.address }),
+            )
+                .to.emit(workerpool, 'PolicyUpdate')
+                .withArgs(
+                    previousWorkerStakeRatioPolicy,
+                    35,
+                    previousSchedulerRewardRatioPolicy,
+                    5,
+                );
             expect(await workerpool.m_workerStakeRatioPolicy()).to.equal(35);
             expect(await workerpool.m_schedulerRewardRatioPolicy()).to.equal(5);
         });
