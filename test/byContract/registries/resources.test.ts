@@ -82,7 +82,9 @@ describe('Ressources', () => {
                 appProvider.address,
                 ...createAppArgs,
             );
-            await appRegistry.createApp(appProvider.address, ...createAppArgs);
+            await appRegistry
+                .createApp(appProvider.address, ...createAppArgs)
+                .then((tx) => tx.wait());
             app = App__factory.connect(appAddress, appProvider);
         });
 
@@ -107,7 +109,7 @@ describe('Ressources', () => {
             ).defaultResolver();
             const reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
 
-            await app.setName(ensRegistry.address, newENSName);
+            await app.setName(ensRegistry.address, newENSName).then((tx) => tx.wait());
 
             const nameHash = ethers.utils.namehash(`${app.address.substring(2)}.addr.reverse`);
             expect(await reverseResolver.name(nameHash)).to.equal(newENSName);
@@ -139,7 +141,9 @@ describe('Ressources', () => {
                 datasetProvider.address,
                 ...createDatasetArgs,
             );
-            await datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs);
+            await datasetRegistry
+                .createDataset(datasetProvider.address, ...createDatasetArgs)
+                .then((tx) => tx.wait());
             dataset = Dataset__factory.connect(datasetAddress, datasetProvider);
         });
 
@@ -167,7 +171,9 @@ describe('Ressources', () => {
                 scheduler.address,
                 ...createWorkerpoolArgs,
             );
-            await workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs);
+            await workerpoolRegistry
+                .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
+                .then((tx) => tx.wait());
             workerpool = Workerpool__factory.connect(workerpoolAddress, scheduler);
         });
 
@@ -181,7 +187,9 @@ describe('Ressources', () => {
         });
 
         it('Should allow the owner to configure the workerpool', async () => {
-            await workerpool.changePolicy(35, 5, { from: scheduler.address });
+            await workerpool
+                .changePolicy(35, 5, { from: scheduler.address })
+                .then((tx) => tx.wait());
             expect(await workerpool.m_workerStakeRatioPolicy()).to.equal(35);
             expect(await workerpool.m_schedulerRewardRatioPolicy()).to.equal(5);
         });
