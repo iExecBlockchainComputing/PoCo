@@ -149,7 +149,7 @@ describe('Registries', () => {
             );
         });
 
-        it('Should set the ENS name for registries', async () => {
+        it('Should set name for the ENS reverse registration of registries', async () => {
             const appRegistryEnsName = 'myAppRegistry.eth';
             const datasetRegistryEnsName = 'myDatasetRegistry.eth';
             const workerpoolRegistryEnsName = 'myWorkerpoolRegistry.eth';
