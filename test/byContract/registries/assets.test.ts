@@ -275,7 +275,7 @@ describe('Assets', () => {
                 expect(await workerpool.m_schedulerRewardRatioPolicy()).to.equal(5);
             });
 
-            it('Should reject configuration from non-owner', async () => {
+            it('Should not update policy configuration when sender is not the owner', async () => {
                 await expect(
                     workerpool.changePolicy(0, 0, { from: anyone.address }),
                 ).to.be.revertedWith('caller is not the owner');
