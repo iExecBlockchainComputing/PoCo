@@ -240,7 +240,7 @@ describe('Resources', () => {
         });
 
         describe('changePolicy', () => {
-            it('Should allow the owner to configure the workerpool', async () => {
+            it('Should update workerpool policy configuration', async () => {
                 const previousWorkerStakeRatioPolicy = await workerpool.m_workerStakeRatioPolicy();
                 const previousSchedulerRewardRatioPolicy =
                     await workerpool.m_schedulerRewardRatioPolicy();
