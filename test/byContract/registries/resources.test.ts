@@ -96,7 +96,7 @@ describe('Resources', () => {
         });
 
         describe('creation and initialization', () => {
-            it('Should create an app and verify its details', async () => {
+            it('Should read initialized app details', async () => {
                 expect(await app.registry()).to.equal(appRegistry.address);
                 expect(await app.owner()).to.equal(appProvider.address);
                 expect(await app.m_appName()).to.equal(createAppArgs[0]);
@@ -152,7 +152,7 @@ describe('Resources', () => {
         });
 
         describe('creation and initialization', () => {
-            it('Should create a dataset and verify its details', async () => {
+            it('Should read initialized dataset details', async () => {
                 expect(await dataset.registry()).to.equal(datasetRegistry.address);
                 expect(await dataset.owner()).to.equal(datasetProvider.address);
                 expect(await dataset.m_datasetName()).to.equal(createDatasetArgs[0]);
@@ -202,7 +202,7 @@ describe('Resources', () => {
         });
 
         describe('creation and initialization', () => {
-            it('Should create a workerpool and verify its details', async () => {
+            it('Should read initialized workerpool details', async () => {
                 expect(await workerpool.registry()).to.equal(workerpoolRegistry.address);
                 expect(await workerpool.owner()).to.equal(scheduler.address);
                 expect(await workerpool.m_workerpoolDescription()).to.equal(
