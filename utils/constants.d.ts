@@ -6,3 +6,5 @@ export declare const NULL: {
     BYTES32: string;
     SIGNATURE: string;
 };
+
+export declare const MULTIADDR_BYTES: string;
