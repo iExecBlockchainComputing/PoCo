@@ -81,7 +81,7 @@ describe('Resources', () => {
             `App`,
             'DOCKER',
             MULTIADDR_BYTES,
-            ethers.utils.id(`Content of my app`),
+            ethers.utils.id(`My app checksum`),
             '0x1234',
         ] as [string, string, BytesLike, BytesLike, BytesLike];
         beforeEach(async () => {
@@ -138,7 +138,7 @@ describe('Resources', () => {
         const createDatasetArgs = [
             `Dataset`,
             MULTIADDR_BYTES,
-            ethers.utils.id(`Content of my dataset`),
+            ethers.utils.id(`My dataset checksum`),
         ] as [string, BytesLike, BytesLike];
         beforeEach(async () => {
             const datasetAddress = await datasetRegistry.callStatic.createDataset(
