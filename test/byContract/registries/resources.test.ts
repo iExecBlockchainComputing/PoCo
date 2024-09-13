@@ -27,8 +27,8 @@ import {
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../../typechain';
+import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
-const constants = require('../../../utils/constants');
 
 describe('Ressources', () => {
     let proxyAddress: string;
@@ -72,7 +72,7 @@ describe('Ressources', () => {
         const createAppArgs = [
             `App`,
             'DOCKER',
-            constants.MULTIADDR_BYTES,
+            MULTIADDR_BYTES,
             ethers.utils.id(`Content of my app`),
             '0x1234',
         ] as [string, string, BytesLike, BytesLike, BytesLike];
@@ -140,7 +140,7 @@ describe('Ressources', () => {
         let createDatasetTx: ContractTransaction;
         const createDatasetArgs = [
             `Dataset`,
-            constants.MULTIADDR_BYTES,
+            MULTIADDR_BYTES,
             ethers.utils.id(`Content of my dataset`),
         ] as [string, BytesLike, BytesLike];
 
