@@ -125,7 +125,7 @@ describe('Resources', () => {
                 );
             });
 
-            it('Should revert when a non-owner tries to set the ENS name', async () => {
+            it('Should not set name when send is not the owner', async () => {
                 const newENSName = 'unauthorized.eth';
                 await expect(app.setName(ensRegistry.address, newENSName)).to.be.revertedWith(
                     'caller is not the owner',
@@ -179,7 +179,7 @@ describe('Resources', () => {
                 );
             });
 
-            it('Should revert when a non-owner tries to set the ENS name', async () => {
+            it('Should not set name when send is not the owner', async () => {
                 const newENSName = 'unauthorized.eth';
                 await expect(dataset.setName(ensRegistry.address, newENSName)).to.be.revertedWith(
                     'caller is not the owner',
@@ -231,7 +231,7 @@ describe('Resources', () => {
                 );
             });
 
-            it('Should revert when a non-owner tries to set the ENS name', async () => {
+            it('Should not set name when send is not the owner', async () => {
                 const newENSName = 'unauthorized.eth';
                 await expect(
                     workerpool.setName(ensRegistry.address, newENSName),
