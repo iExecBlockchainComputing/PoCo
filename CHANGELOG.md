@@ -1,12 +1,13 @@
 # Changelog
 
 ## vNEXT
+- Clean some TODOs and harmonize unit tests. (#123)
 - Add `set-callback-gas.ts` script. (#121)
 - Accept any signature format in `SignatureVerifier.v8` when the account is a smart contract. (#120)
 - Update UML class diagrams. (#112)
 - Generate Solidity documentation. (#111)
 - Migrate unit test files to Typescript & Hardhat:
-    - Registries (#122)
+    - Registries (#122, #124)
     - IexecPoco2
         - finalize (#79, #117, #119)
         - reveal (#114, #118)

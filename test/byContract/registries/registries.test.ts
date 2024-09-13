@@ -6,6 +6,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import hre, { deployments, ethers, expect } from 'hardhat';
+import CONFIG from '../../../config/config.json';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     AppRegistry,
@@ -26,10 +27,10 @@ import {
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../../typechain';
+import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
-const constants = require('../../../utils/constants');
+import { BN2Address } from '../../../utils/tools';
 const randomAddress = () => ethers.Wallet.createRandom().address;
-const CONFIG = require('../../../config/config.json');
 
 describe('Registries', () => {
     let proxyAddress: string;
@@ -278,7 +279,7 @@ describe('Registries', () => {
         const createAppArgs = [
             `App`,
             'DOCKER',
-            constants.MULTIADDR_BYTES,
+            MULTIADDR_BYTES,
             ethers.utils.id(`Content of my app`),
             '0x1234',
         ] as [string, string, BytesLike, BytesLike, BytesLike];
@@ -304,7 +305,7 @@ describe('Registries', () => {
             );
         });
 
-        it('Should create the app', async () => {
+        it('Should create the app and check token details', async () => {
             const initialAppBalance = await appRegistry.balanceOf(appProvider.address);
             expect(initialAppBalance).to.equal(0);
 
@@ -312,7 +313,7 @@ describe('Registries', () => {
                 appProvider.address,
                 ...createAppArgs,
             );
-            await expect(await appRegistry.createApp(appProvider.address, ...createAppArgs))
+            await expect(appRegistry.createApp(appProvider.address, ...createAppArgs))
                 .to.emit(appRegistry, 'Transfer')
                 .withArgs(
                     AddressZero,
@@ -323,6 +324,15 @@ describe('Registries', () => {
                 initialAppBalance.add(1),
             );
             expect(await appRegistry.ownerOf(predictedAddress)).to.equal(appProvider.address);
+
+            const tokenAtIndex = await appRegistry.tokenOfOwnerByIndex(appProvider.address, 0);
+            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
+                ethers.utils.getAddress(predictedAddress),
+            );
+
+            const tokenURI = await appRegistry.tokenURI(predictedAddress);
+            const baseURI = await appRegistry.baseURI();
+            expect(tokenURI).to.equal(baseURI + ethers.BigNumber.from(predictedAddress).toString());
         });
 
         it('Should check that a new app is well registered', async () => {
@@ -374,7 +384,7 @@ describe('Registries', () => {
     describe('Dataset Registry', () => {
         const createDatasetArgs = [
             `Dataset`,
-            constants.MULTIADDR_BYTES,
+            MULTIADDR_BYTES,
             ethers.utils.id(`Content of my dataset`),
         ] as [string, BytesLike, BytesLike];
         it('Should predict the correct address for future dataset creation', async () => {
@@ -399,7 +409,7 @@ describe('Registries', () => {
             ).to.equal(predictedAddress);
         });
 
-        it('Should create the dataset', async () => {
+        it('Should create the dataset and check token details', async () => {
             const initialDatasetBalance = await datasetRegistry.balanceOf(datasetProvider.address);
             expect(initialDatasetBalance).to.equal(0);
 
@@ -422,6 +432,18 @@ describe('Registries', () => {
             expect(await datasetRegistry.ownerOf(predictedAddress)).to.equal(
                 datasetProvider.address,
             );
+
+            const tokenAtIndex = await datasetRegistry.tokenOfOwnerByIndex(
+                datasetProvider.address,
+                0,
+            );
+            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
+                ethers.utils.getAddress(predictedAddress),
+            );
+
+            const tokenURI = await datasetRegistry.tokenURI(predictedAddress);
+            const baseURI = await datasetRegistry.baseURI();
+            expect(tokenURI).to.equal(baseURI + ethers.BigNumber.from(predictedAddress).toString());
         });
 
         it('Should check that a new dataset is well registered', async () => {
@@ -479,7 +501,7 @@ describe('Registries', () => {
             expect(predictedAddress).to.equal(expectedAddress);
         });
 
-        it('Should create the workerpool', async () => {
+        it('Should create the workerpool and check token details', async () => {
             const initialWorkerpoolBalance = await workerpoolRegistry.balanceOf(scheduler.address);
             expect(initialWorkerpoolBalance).to.equal(0);
 
@@ -503,6 +525,15 @@ describe('Registries', () => {
                 initialWorkerpoolBalance.add(1),
             );
             expect(await workerpoolRegistry.ownerOf(predictedAddress)).to.equal(scheduler.address);
+
+            const tokenAtIndex = await workerpoolRegistry.tokenOfOwnerByIndex(scheduler.address, 0);
+            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
+                ethers.utils.getAddress(predictedAddress),
+            );
+
+            const tokenURI = await workerpoolRegistry.tokenURI(predictedAddress);
+            const baseURI = await workerpoolRegistry.baseURI();
+            expect(tokenURI).to.equal(baseURI + ethers.BigNumber.from(predictedAddress).toString());
         });
 
         it('Should check that a new workerpool is well registered', async () => {

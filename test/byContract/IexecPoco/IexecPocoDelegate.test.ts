@@ -26,7 +26,6 @@ import {
     Workerpool__factory,
 } from '../../../typechain';
 import {
-    Orders,
     OrdersActors,
     OrdersAssets,
     buildDomain,
@@ -141,9 +140,9 @@ describe('IexecPocoDelegate', function () {
         };
     });
 
-    describe('Match Orders', function () {
+    describe('Match orders', function () {
         it('Should sponsor match orders ', async function () {
-            const { orders, appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
+            const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
@@ -151,6 +150,7 @@ describe('IexecPocoDelegate', function () {
                 prices: ordersPrices,
                 callback: ethers.Wallet.createRandom().address,
             });
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             // Set volumes for each order
             appOrder.volume = 2; // smallest unconsumed volume among all orders
             datasetOrder.volume = 3;
@@ -186,22 +186,16 @@ describe('IexecPocoDelegate', function () {
             const datasetOrderHash = hashOrder(domain, datasetOrder);
             const workerpoolOrderHash = hashOrder(domain, workerpoolOrder);
             const requestOrderHash = hashOrder(domain, requestOrder);
-            const matchOrdersArgs = [
-                appOrder,
-                datasetOrder,
-                workerpoolOrder,
-                requestOrder,
-            ] as Orders;
             expect(
                 await iexecPocoInstance
                     .connect(sponsor)
-                    .callStatic.sponsorMatchOrders(...matchOrdersArgs),
+                    .callStatic.sponsorMatchOrders(...orders.toArray()),
             ).to.equal(dealId);
             expect(
-                await iexecPocoInstance.callStatic.computeDealVolume(...matchOrdersArgs),
+                await iexecPocoInstance.callStatic.computeDealVolume(...orders.toArray()),
             ).to.equal(expectedVolume);
             // Send tx
-            await expect(iexecPocoInstance.connect(sponsor).sponsorMatchOrders(...matchOrdersArgs))
+            await expect(iexecPocoInstance.connect(sponsor).sponsorMatchOrders(...orders.toArray()))
                 .to.emit(iexecPocoInstance, 'OrdersMatched')
                 .withArgs(
                     dealId,

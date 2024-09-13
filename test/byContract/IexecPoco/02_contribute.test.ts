@@ -88,28 +88,28 @@ describe('IexecPoco2#contribute', () => {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
-        ({ orders: defaultOrders } = buildOrders({
+        defaultOrders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
             volume,
             trust: 0,
             tag: standardDealTag,
-        }));
+        });
     }
 
     describe('Contribute', () => {
         it('Should contribute TEE task with multiple workers and broker', async () => {
             await iexecWrapper.setTeeBroker(sms.address);
             const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
-                buildOrders({
+                ...buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
                     trust: 3,
                     tag: teeDealTag,
-                }).orders,
+                }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
@@ -206,14 +206,14 @@ describe('IexecPoco2#contribute', () => {
 
         it('Should contribute TEE task with one worker', async () => {
             const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
-                buildOrders({
+                ...buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
                     trust: 0,
                     tag: teeDealTag,
-                }).orders,
+                }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
@@ -243,8 +243,9 @@ describe('IexecPoco2#contribute', () => {
         });
 
         it('Should contribute standard task', async () => {
-            const { dealId, taskIndex, taskId } =
-                await iexecWrapper.signAndMatchOrders(defaultOrders);
+            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
+                ...defaultOrders.toArray(),
+            );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
@@ -273,7 +274,7 @@ describe('IexecPoco2#contribute', () => {
         });
 
         it('Should not contribute when task not active', async () => {
-            const { taskId } = await iexecWrapper.signAndMatchOrders(defaultOrders);
+            const { taskId } = await iexecWrapper.signAndMatchOrders(...defaultOrders.toArray());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,
@@ -297,8 +298,9 @@ describe('IexecPoco2#contribute', () => {
         });
 
         it('Should not contribute after deadline', async () => {
-            const { dealId, taskIndex, taskId } =
-                await iexecWrapper.signAndMatchOrders(defaultOrders);
+            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
+                ...defaultOrders.toArray(),
+            );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
             const task = await iexecPoco.viewTask(taskId);
@@ -329,14 +331,14 @@ describe('IexecPoco2#contribute', () => {
 
         it('Should not contribute twice', async () => {
             const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
-                buildOrders({
+                ...buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
                     trust: 3, // so consensus is not yet reached on first contribution
                     tag: standardDealTag,
-                }).orders,
+                }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
@@ -387,14 +389,14 @@ describe('IexecPoco2#contribute', () => {
 
         it('Should not contribute when enclave challenge for TEE task is missing', async () => {
             const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
-                buildOrders({
+                ...buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
                     trust: 0,
                     tag: teeDealTag,
-                }).orders,
+                }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -422,8 +424,9 @@ describe('IexecPoco2#contribute', () => {
         });
 
         it('Should not contribute when scheduler signature is invalid', async () => {
-            const { dealId, taskIndex, taskId } =
-                await iexecWrapper.signAndMatchOrders(defaultOrders);
+            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
+                ...defaultOrders.toArray(),
+            );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
@@ -451,14 +454,14 @@ describe('IexecPoco2#contribute', () => {
 
         it('Should not contribute when enclave signature is invalid', async () => {
             const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
-                buildOrders({
+                ...buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
                     trust: 0,
                     tag: teeDealTag,
-                }).orders,
+                }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -491,8 +494,9 @@ describe('IexecPoco2#contribute', () => {
         });
 
         it('Should not contribute when no deposit', async () => {
-            const { dealId, taskIndex, taskId } =
-                await iexecWrapper.signAndMatchOrders(defaultOrders);
+            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
+                ...defaultOrders.toArray(),
+            );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
