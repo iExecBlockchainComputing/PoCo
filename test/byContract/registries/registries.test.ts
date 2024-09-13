@@ -149,7 +149,7 @@ describe('Registries', () => {
             );
         });
 
-        it('Should set the ENS name for registries', async () => {
+        it('Should set name for the ENS reverse registration of registries', async () => {
             const appRegistryEnsName = 'myAppRegistry.eth';
             const datasetRegistryEnsName = 'myDatasetRegistry.eth';
             const workerpoolRegistryEnsName = 'myWorkerpoolRegistry.eth';
@@ -280,7 +280,7 @@ describe('Registries', () => {
             `App`,
             'DOCKER',
             MULTIADDR_BYTES,
-            ethers.utils.id(`Content of my app`),
+            ethers.utils.id(`My app checksum`),
             '0x1234',
         ] as [string, string, BytesLike, BytesLike, BytesLike];
         it('Should predict the correct address for future app creation', async () => {
@@ -385,7 +385,7 @@ describe('Registries', () => {
         const createDatasetArgs = [
             `Dataset`,
             MULTIADDR_BYTES,
-            ethers.utils.id(`Content of my dataset`),
+            ethers.utils.id(`My dataset checksum`),
         ] as [string, BytesLike, BytesLike];
         it('Should predict the correct address for future dataset creation', async () => {
             const code = await datasetRegistry.proxyCode();
