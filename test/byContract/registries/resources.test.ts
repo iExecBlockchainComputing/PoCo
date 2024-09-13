@@ -77,13 +77,20 @@ describe('Resources', () => {
     }
 
     describe('App', () => {
-        const createAppArgs = [
-            `App`,
-            'DOCKER',
-            MULTIADDR_BYTES,
-            ethers.utils.id(`My app checksum`),
-            '0x1234',
-        ] as [string, string, BytesLike, BytesLike, BytesLike];
+        const createAppParams = {
+            name: 'My app',
+            type: 'DOCKER',
+            multiaddr: MULTIADDR_BYTES,
+            checksum: ethers.utils.id('My app checksum'),
+            mreclave: '0x1234',
+        };
+        const createAppArgs = Object.values(createAppParams) as [
+            string,
+            string,
+            BytesLike,
+            BytesLike,
+            BytesLike,
+        ];
         beforeEach(async () => {
             const appAddress = await appRegistry.callStatic.createApp(
                 appProvider.address,
@@ -99,11 +106,11 @@ describe('Resources', () => {
             it('Should read initialized app details', async () => {
                 expect(await app.registry()).to.equal(appRegistry.address);
                 expect(await app.owner()).to.equal(appProvider.address);
-                expect(await app.m_appName()).to.equal(createAppArgs[0]);
-                expect(await app.m_appType()).to.equal(createAppArgs[1]);
-                expect(await app.m_appMultiaddr()).to.equal(createAppArgs[2]);
-                expect(await app.m_appChecksum()).to.equal(createAppArgs[3]);
-                expect(await app.m_appMREnclave()).to.equal(createAppArgs[4]);
+                expect(await app.m_appName()).to.equal(createAppParams.name);
+                expect(await app.m_appType()).to.equal(createAppParams.type);
+                expect(await app.m_appMultiaddr()).to.equal(createAppParams.multiaddr);
+                expect(await app.m_appChecksum()).to.equal(createAppParams.checksum);
+                expect(await app.m_appMREnclave()).to.equal(createAppParams.mreclave);
             });
 
             it('Should not reinitialize created app', async () => {
@@ -135,11 +142,16 @@ describe('Resources', () => {
     });
 
     describe('Dataset', () => {
-        const createDatasetArgs = [
-            `Dataset`,
-            MULTIADDR_BYTES,
-            ethers.utils.id(`My dataset checksum`),
-        ] as [string, BytesLike, BytesLike];
+        const createDatasetParams = {
+            name: 'My dataset',
+            multiaddr: MULTIADDR_BYTES,
+            checksum: ethers.utils.id('My dataset checksum'),
+        };
+        const createDatasetArgs = Object.values(createDatasetParams) as [
+            string,
+            BytesLike,
+            BytesLike,
+        ];
         beforeEach(async () => {
             const datasetAddress = await datasetRegistry.callStatic.createDataset(
                 datasetProvider.address,
@@ -155,9 +167,9 @@ describe('Resources', () => {
             it('Should read initialized dataset details', async () => {
                 expect(await dataset.registry()).to.equal(datasetRegistry.address);
                 expect(await dataset.owner()).to.equal(datasetProvider.address);
-                expect(await dataset.m_datasetName()).to.equal(createDatasetArgs[0]);
-                expect(await dataset.m_datasetMultiaddr()).to.equal(createDatasetArgs[1]);
-                expect(await dataset.m_datasetChecksum()).to.equal(createDatasetArgs[2]);
+                expect(await dataset.m_datasetName()).to.equal(createDatasetParams.name);
+                expect(await dataset.m_datasetMultiaddr()).to.equal(createDatasetParams.multiaddr);
+                expect(await dataset.m_datasetChecksum()).to.equal(createDatasetParams.checksum);
             });
 
             it('Should not reinitialize created dataset', async () => {
@@ -189,7 +201,10 @@ describe('Resources', () => {
     });
 
     describe('Workerpool', () => {
-        const createWorkerpoolArgs = [`Workerpool description`] as [string];
+        const createWorkerpoolParams = {
+            description: 'Workerpool description',
+        };
+        const createWorkerpoolArgs = Object.values(createWorkerpoolParams) as [string];
         beforeEach(async () => {
             const workerpoolAddress = await workerpoolRegistry.callStatic.createWorkerpool(
                 scheduler.address,
@@ -206,7 +221,7 @@ describe('Resources', () => {
                 expect(await workerpool.registry()).to.equal(workerpoolRegistry.address);
                 expect(await workerpool.owner()).to.equal(scheduler.address);
                 expect(await workerpool.m_workerpoolDescription()).to.equal(
-                    createWorkerpoolArgs[0],
+                    createWorkerpoolParams.description,
                 );
                 expect(await workerpool.m_workerStakeRatioPolicy()).to.equal(30);
                 expect(await workerpool.m_schedulerRewardRatioPolicy()).to.equal(1);
