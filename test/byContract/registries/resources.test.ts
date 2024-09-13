@@ -19,6 +19,7 @@ import {
     ENSRegistry__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    PublicResolver,
     PublicResolver__factory,
     ReverseRegistrar__factory,
     Workerpool,
@@ -35,6 +36,7 @@ describe('Resources', () => {
     let [appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let ensRegistry: ENSRegistry;
+    let reverseResolver: PublicResolver;
     let appRegistry: AppRegistry;
     let datasetRegistry: DatasetRegistry;
     let workerpoolRegistry: WorkerpoolRegistry;
@@ -51,7 +53,6 @@ describe('Resources', () => {
     async function initFixture() {
         ({ appProvider, datasetProvider, scheduler, anyone } = await getIexecAccounts());
         const ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
-        ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
 
@@ -64,6 +65,15 @@ describe('Resources', () => {
             await iexecPoco.workerpoolregistry(),
             anyone,
         );
+
+        ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
+        const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
+        const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
+        const reverseResolverAddress = await ReverseRegistrar__factory.connect(
+            reverseRegistrarAddress,
+            anyone,
+        ).defaultResolver();
+        reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
     }
 
     describe('App', () => {
@@ -106,24 +116,13 @@ describe('Resources', () => {
         describe('setName', () => {
             it('Should set name for the ENS reverse registration of the app', async () => {
                 const newENSName = 'myApp.eth';
-                const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
-                const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
-                const reverseResolverAddress = await ReverseRegistrar__factory.connect(
-                    reverseRegistrarAddress,
-                    anyone,
-                ).defaultResolver();
-                const reverseResolver = PublicResolver__factory.connect(
-                    reverseResolverAddress,
-                    anyone,
-                );
-
                 await app
                     .connect(appProvider)
                     .setName(ensRegistry.address, newENSName)
                     .then((tx) => tx.wait());
-
-                const nameHash = ethers.utils.namehash(`${app.address.substring(2)}.addr.reverse`);
-                expect(await reverseResolver.name(nameHash)).to.equal(newENSName);
+                expect(await reverseResolver.name(computeNameHash(app.address))).to.equal(
+                    newENSName,
+                );
             });
 
             it('Should revert when a non-owner tries to set the ENS name', async () => {
@@ -171,26 +170,13 @@ describe('Resources', () => {
         describe('setName', () => {
             it('Should set name for the ENS reverse registration of the dataset', async () => {
                 const newENSName = 'myDataset.eth';
-                const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
-                const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
-                const reverseResolverAddress = await ReverseRegistrar__factory.connect(
-                    reverseRegistrarAddress,
-                    anyone,
-                ).defaultResolver();
-                const reverseResolver = PublicResolver__factory.connect(
-                    reverseResolverAddress,
-                    anyone,
-                );
-
                 await dataset
                     .connect(datasetProvider)
                     .setName(ensRegistry.address, newENSName)
                     .then((tx) => tx.wait());
-
-                const nameHash = ethers.utils.namehash(
-                    `${dataset.address.substring(2)}.addr.reverse`,
+                expect(await reverseResolver.name(computeNameHash(dataset.address))).to.equal(
+                    newENSName,
                 );
-                expect(await reverseResolver.name(nameHash)).to.equal(newENSName);
             });
 
             it('Should revert when a non-owner tries to set the ENS name', async () => {
@@ -236,26 +222,13 @@ describe('Resources', () => {
         describe('setName', () => {
             it('Should set name for the ENS reverse registration of the workerpool', async () => {
                 const newENSName = 'myWorkerpool.eth';
-                const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
-                const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
-                const reverseResolverAddress = await ReverseRegistrar__factory.connect(
-                    reverseRegistrarAddress,
-                    anyone,
-                ).defaultResolver();
-                const reverseResolver = PublicResolver__factory.connect(
-                    reverseResolverAddress,
-                    anyone,
-                );
-
                 await workerpool
                     .connect(scheduler)
                     .setName(ensRegistry.address, newENSName)
                     .then((tx) => tx.wait());
-
-                const nameHash = ethers.utils.namehash(
-                    `${workerpool.address.substring(2)}.addr.reverse`,
+                expect(await reverseResolver.name(computeNameHash(workerpool.address))).to.equal(
+                    newENSName,
                 );
-                expect(await reverseResolver.name(nameHash)).to.equal(newENSName);
             });
 
             it('Should revert when a non-owner tries to set the ENS name', async () => {
@@ -302,4 +275,7 @@ describe('Resources', () => {
             });
         });
     });
+
+    const computeNameHash = (address: string) =>
+        ethers.utils.namehash(`${address.substring(2)}.addr.reverse`);
 });
