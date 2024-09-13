@@ -30,7 +30,7 @@ import {
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 
-describe('Ressources', () => {
+describe('Resources', () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
     let [appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
