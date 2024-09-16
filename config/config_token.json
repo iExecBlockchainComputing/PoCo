@@ -26,6 +26,11 @@
       "workClockTimeRef": 36000
     }
   ],
+  "registriesBaseUri": {
+		"app": "https://nfts-metadata.iex.ec/app",
+		"dataset": "https://nfts-metadata.iex.ec/dataset",
+		"workerpool": "https://nfts-metadata.iex.ec/workerpool"
+	},
   "chains": {
     "default": {
       "_comment": "asset should be Token or Native",
@@ -42,10 +47,5 @@
         "salt": "0xbe1a000000000000000000000000000000000000000000000000000000000000"
       }
     }
-  },
-  "registriesBaseUri": {
-		"app": "https://nfts-metadata.iex.ec/app",
-		"dataset": "https://nfts-metadata.iex.ec/dataset",
-		"workerpool": "https://nfts-metadata.iex.ec/workerpool"
-	}
+  }
 }
