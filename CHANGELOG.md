@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-- Fix configs native and token. (#128, #129)
+- Fix configs native and token. (#129)
 - Bump dependencies: (#127)
     - `@openzeppelin/hardhat-upgrades`, `hardhat-dependency-compiler`, `web3`, 
         `prettier`, `zx`, and others [minor/patch version bump]
