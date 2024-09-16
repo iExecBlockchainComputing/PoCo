@@ -1,6 +1,10 @@
 # Changelog
 
 ## vNEXT
+- Bump dependencies: (#127)
+    - `@openzeppelin/hardhat-upgrades`, `hardhat-dependency-compiler`, `web3`, 
+        `prettier`, `zx`, and others [minor/patch version bump]
+    - `prettier-plugin-organize-imports@4`
 - Clean some TODOs and harmonize unit tests. (#123)
 - Add `set-callback-gas.ts` script. (#121)
 - Accept any signature format in `SignatureVerifier.v8` when the account is a smart contract. (#120)
