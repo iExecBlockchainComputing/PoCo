@@ -37,9 +37,10 @@ export class FactoryDeployerHelper {
             : this.genericFactory.predictAddress(bytecode, this.salt));
         const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
         if (!previouslyDeployed) {
-            await (call
-                ? this.genericFactory.createContractAndCall(bytecode, this.salt, call)
-                : this.genericFactory.createContract(bytecode, this.salt)
+            await (
+                call
+                    ? this.genericFactory.createContractAndCall(bytecode, this.salt, call)
+                    : this.genericFactory.createContract(bytecode, this.salt)
             ).then((tx) => tx.wait());
         }
         const contractName = getBaseNameFromContractFactory(contractFactory);
