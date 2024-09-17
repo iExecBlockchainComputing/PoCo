@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Upgrade Solidity Compiler to `v0.8.27`. (#130)
 - Fix configs native and token. (#129)
 - Bump dependencies: (#127)
     - `@openzeppelin/hardhat-upgrades`, `hardhat-dependency-compiler`, `web3`, 
