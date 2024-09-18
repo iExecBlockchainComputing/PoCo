@@ -24,7 +24,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
      ***************************************************************************/
     function manageAppOrder(
         IexecLibOrders_v5.AppOrderOperation calldata _apporderoperation
-    ) public override {
+    ) external override {
         address owner = IERC5313(_apporderoperation.order.app).owner();
         require(
             owner == _msgSender() ||
@@ -48,7 +48,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
 
     function manageDatasetOrder(
         IexecLibOrders_v5.DatasetOrderOperation calldata _datasetorderoperation
-    ) public override {
+    ) external override {
         address owner = IERC5313(_datasetorderoperation.order.dataset).owner();
         require(
             owner == _msgSender() ||
@@ -72,7 +72,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
 
     function manageWorkerpoolOrder(
         IexecLibOrders_v5.WorkerpoolOrderOperation calldata _workerpoolorderoperation
-    ) public override {
+    ) external override {
         address owner = IERC5313(_workerpoolorderoperation.order.workerpool).owner();
         require(
             owner == _msgSender() ||
@@ -98,7 +98,7 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
 
     function manageRequestOrder(
         IexecLibOrders_v5.RequestOrderOperation calldata _requestorderoperation
-    ) public override {
+    ) external override {
         address owner = _requestorderoperation.order.requester;
         require(
             owner == _msgSender() ||
