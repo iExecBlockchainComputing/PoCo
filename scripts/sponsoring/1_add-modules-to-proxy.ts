@@ -53,8 +53,9 @@ import {
         IexecPocoAccessorsDelegate__factory.createInterface(),
         iexecPocoAccessorsDelegateAddress,
     );
-    // Salt but must be the same for schedule & execute
-    const operationSalt = '0x0be814a62c44af32241a2c964e5680d1b25c783473c6e7875cbc8071770d7ff0'; // Random
+    // The salt must be the same for a given schedule & execute operation set
+    // Please increment salt in case of operation ID collision
+    const operationSalt = '0x0000000000000000000000000000000000000000000000000000000000000001';
     const updates = [
         iexecOrderManagementProxyUpdate,
         iexecPoco1ProxyUpdate,
