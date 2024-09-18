@@ -37,7 +37,7 @@ import {
         erc1538ProxyAddress,
         ethers.provider,
     ).owner();
-    const iexecOrderManagementUpdate = encodeModuleProxyUpdate(
+    const iexecOrderManagementProxyUpdate = encodeModuleProxyUpdate(
         IexecOrderManagementDelegate__factory.createInterface(),
         iexecOrderManagementAddress,
     );
@@ -56,7 +56,7 @@ import {
     // Salt but must be the same for schedule & execute
     const operationSalt = '0x0be814a62c44af32241a2c964e5680d1b25c783473c6e7875cbc8071770d7ff0'; // Random
     const updates = [
-        iexecOrderManagementUpdate,
+        iexecOrderManagementProxyUpdate,
         iexecPoco1ProxyUpdate,
         iexecPoco2ProxyUpdate,
         iexecPocoAccessorsProxyUpdate,
