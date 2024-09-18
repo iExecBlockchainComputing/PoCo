@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-- Update function visibilities to `external` in`IexecPoco` modules. (#131)
+- Update function visibilities to `external` in`IexecPoco` and `IexecOrderManagement` modules. (#131)
 - Fix configs native and token. (#129)
 - Bump dependencies: (#127)
     - `@openzeppelin/hardhat-upgrades`, `hardhat-dependency-compiler`, `web3`, 
