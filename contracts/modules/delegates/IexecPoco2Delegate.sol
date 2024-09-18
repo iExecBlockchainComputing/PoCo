@@ -101,7 +101,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         address _enclaveChallenge,
         bytes calldata _enclaveSign,
         bytes calldata _authorizationSign
-    ) public override {
+    ) external override {
         IexecLibCore_v5.Task storage task = m_tasks[_taskid];
         IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
         IexecLibCore_v5.Deal memory deal = m_deals[task.dealid];
@@ -177,7 +177,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         address _enclaveChallenge,
         bytes calldata _enclaveSign,
         bytes calldata _authorizationSign
-    ) public override {
+    ) external override {
         IexecLibCore_v5.Task storage task = m_tasks[_taskid];
         IexecLibCore_v5.Contribution storage contribution = m_contributions[_taskid][_msgSender()];
         IexecLibCore_v5.Deal memory deal = m_deals[task.dealid];

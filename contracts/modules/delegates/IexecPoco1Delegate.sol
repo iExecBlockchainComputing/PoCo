@@ -68,7 +68,6 @@ contract IexecPoco1Delegate is
     /***************************************************************************
      *                           ODB order matching                            *
      ***************************************************************************/
-    // TODO: should be external
     /**
      * Match orders. The requester gets debited.
      *
@@ -82,7 +81,7 @@ contract IexecPoco1Delegate is
         IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
-    ) public override returns (bytes32) {
+    ) external override returns (bytes32) {
         return
             _matchOrders(
                 _apporder,
