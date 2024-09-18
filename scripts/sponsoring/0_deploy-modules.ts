@@ -2,6 +2,7 @@ import { deployments, ethers } from 'hardhat';
 import CONFIG from '../../config/config.json';
 import {
     GenericFactory__factory,
+    IexecOrderManagementDelegate__factory,
     IexecPoco1Delegate__factory,
     IexecPoco2Delegate__factory,
     IexecPocoAccessorsDelegate__factory,
@@ -17,6 +18,13 @@ const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.
     const salt = deploymentOptions.salt;
 
     const modules = [
+        {
+            name: 'IexecOrderManagementDelegate',
+            bytecode: IexecOrderManagementDelegate__factory.linkBytecode({
+                ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
+                    deploymentOptions.IexecLibOrders_v5,
+            }),
+        },
         {
             name: 'IexecPoco1Delegate',
             bytecode: IexecPoco1Delegate__factory.linkBytecode({

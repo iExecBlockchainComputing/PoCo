@@ -1,6 +1,7 @@
 # Changelog
 
 ## vNEXT
+- Include `IexecOrderManagement` module in Poco sponsoring upgrade. (#132)
 - Update function visibilities to `external` in `IexecPoco` and `IexecOrderManagement` modules. (#131)
 - Fix configs native and token. (#129)
 - Bump dependencies: (#127)
