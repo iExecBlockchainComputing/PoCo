@@ -400,6 +400,32 @@ function hash(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperat
 
 _Every module must inherit from this contract._
 
+## IexecOrderManagementDelegate
+
+### manageAppOrder
+
+```solidity
+function manageAppOrder(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) external
+```
+
+### manageDatasetOrder
+
+```solidity
+function manageDatasetOrder(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) external
+```
+
+### manageWorkerpoolOrder
+
+```solidity
+function manageWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) external
+```
+
+### manageRequestOrder
+
+```solidity
+function manageRequestOrder(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) external
+```
+
 ## IexecEscrow
 
 ### Transfer
@@ -430,32 +456,6 @@ event Reward(address owner, uint256 amount, bytes32 ref)
 
 ```solidity
 event Seize(address owner, uint256 amount, bytes32 ref)
-```
-
-## IexecOrderManagementDelegate
-
-### manageAppOrder
-
-```solidity
-function manageAppOrder(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) public
-```
-
-### manageDatasetOrder
-
-```solidity
-function manageDatasetOrder(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) public
-```
-
-### manageWorkerpoolOrder
-
-```solidity
-function manageWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) public
-```
-
-### manageRequestOrder
-
-```solidity
-function manageRequestOrder(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) public
 ```
 
 ## Matching
@@ -496,7 +496,7 @@ function verifyPresignatureOrSignature(address _identity, bytes32 _hash, bytes _
 ### matchOrders
 
 ```solidity
-function matchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) public returns (bytes32)
+function matchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) external returns (bytes32)
 ```
 
 Match orders. The requester gets debited.
@@ -549,13 +549,13 @@ function initialize(bytes32 _dealid, uint256 idx) public returns (bytes32)
 ### contribute
 
 ```solidity
-function contribute(bytes32 _taskid, bytes32 _resultHash, bytes32 _resultSeal, address _enclaveChallenge, bytes _enclaveSign, bytes _authorizationSign) public
+function contribute(bytes32 _taskid, bytes32 _resultHash, bytes32 _resultSeal, address _enclaveChallenge, bytes _enclaveSign, bytes _authorizationSign) external
 ```
 
 ### contributeAndFinalize
 
 ```solidity
-function contributeAndFinalize(bytes32 _taskid, bytes32 _resultDigest, bytes _results, bytes _resultsCallback, address _enclaveChallenge, bytes _enclaveSign, bytes _authorizationSign) public
+function contributeAndFinalize(bytes32 _taskid, bytes32 _resultDigest, bytes _results, bytes _resultsCallback, address _enclaveChallenge, bytes _enclaveSign, bytes _authorizationSign) external
 ```
 
 ### reveal
@@ -654,6 +654,8 @@ For existing deals, use the deal accessors instead.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | [0] | uint256 | The computed deal volume. |
+
+## IexecPocoCommonDelegate
 
 ## IexecPocoBoostAccessorsDelegate
 
@@ -763,8 +765,6 @@ Claim task to get a refund if task is not completed after deadline.
 | ---- | ---- | ----------- |
 | dealId | bytes32 | The ID of the deal. |
 | index | uint256 | The index of the task. |
-
-## IexecPocoCommonDelegate
 
 ## DelegateBase
 
