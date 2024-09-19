@@ -62,11 +62,11 @@ export async function getIexecAccounts(): Promise<IexecAccounts> {
         appProvider: signers[4],
         datasetProvider: signers[5],
         scheduler: signers[6],
-        worker: signers[7], // same as worker1
-        worker1: signers[7],
-        worker2: signers[8],
-        worker3: signers[9],
-        worker4: signers[10],
+        worker: await ethers.getImpersonatedSigner('0xe2F165727a148fBEb3bA249be2e910E2C7151Efa'), // same as worker1
+        worker1: await ethers.getImpersonatedSigner('0xe2F165727a148fBEb3bA249be2e910E2C7151Efa'),
+        worker2: await ethers.getImpersonatedSigner('0x2A2D62CD5Fa00A97ddF2b141002FC0F6c58319e4'),
+        worker3: await ethers.getImpersonatedSigner('0x9386f7619b3B47831a3fb3a27651919a56962239'),
+        worker4: await ethers.getImpersonatedSigner('0xC7D696000140955f96760210b097c342587161AE'),
         enclave: signers[11],
         sms: signers[12],
         anyone: signers[13],

@@ -104,7 +104,7 @@ export class IexecWrapper {
                 this.accounts.anyone,
             ).workerpool_stake_ratio()
         ).toNumber();
-        return ((workerpoolPrice * stakeRatio) / 100) * volume;
+        return Math.floor((workerpoolPrice * stakeRatio) / 100) * volume;
     }
 
     /**
@@ -230,6 +230,9 @@ export class IexecWrapper {
             Number(datasetOrder.datasetprice) +
             Number(workerpoolOrder.workerpoolprice);
         const dealPrice = taskPrice * volume;
+        this.accounts.sponsor = await ethers.getImpersonatedSigner(
+            '0x6e20C38C8a4c7B377A445013B02F1488cF07FEe7',
+        );
         const dealPayer = withSponsor ? this.accounts.sponsor : this.accounts.requester;
         await this.depositInIexecAccount(dealPayer, dealPrice);
         await this.computeSchedulerDealStake(Number(workerpoolOrder.workerpoolprice), volume).then(
