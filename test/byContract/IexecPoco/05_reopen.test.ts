@@ -204,7 +204,6 @@ describe('IexecPoco2#reopen', async () => {
             .reveal(taskId, resultDigest)
             .then((tx) => tx.wait());
         const task = await iexecPoco.viewTask(taskId);
-        console.log('🚀 ~ it ~ task:', task.status);
         // Time travel beyond reveal deadline but before final deadline.
         await setNextBlockTimestamp(task.revealDeadline).then(() => mine());
         expect(task.status).to.equal(TaskStatusEnum.REVEALING); // require 1
