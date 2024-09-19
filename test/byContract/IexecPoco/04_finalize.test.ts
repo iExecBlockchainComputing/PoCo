@@ -5,6 +5,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { loadFixture, setStorageAt, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
+import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
@@ -25,9 +26,9 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const hexResults = ethers.utils.hexlify(results);
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
-const appPrice = 1;
-const datasetPrice = 2;
-const workerpoolPrice = 3;
+const appPrice = 1000;
+const datasetPrice = 1_000_000;
+const workerpoolPrice = 1_000_000_000;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
 const emptyEnclaveAddress = AddressZero;
 const emptyEnclaveSignature = '0x';
@@ -54,7 +55,7 @@ describe('IexecPoco2#finalize', async () => {
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
-        proxyAddress = '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f'; //await loadHardhatFixtureDeployment();
+        proxyAddress = await loadHardhatFixtureDeployment();
         // Initialize test environment
         await loadFixture(initFixture);
     });
@@ -89,7 +90,7 @@ describe('IexecPoco2#finalize', async () => {
             workerpool: workerpoolPrice,
         };
     }
-    it.only('Should finalize task of deal payed by sponsor (with callback)', async () => {
+    it('Should finalize task of deal payed by sponsor (with callback)', async () => {
         const oracleConsumerInstance = await new TestClient__factory()
             .connect(anyone)
             .deploy()
@@ -129,9 +130,9 @@ describe('IexecPoco2#finalize', async () => {
         // Each winning worker should win 1 workerScore point.
         // Losing worker should loose at least 33% of its workerScore (here
         // it will loose 1 point since score is an integer).
-        // for (const worker of workers) {
-        //     await setWorkerScoreInStorage(worker.signer.address, 1);
-        // }
+        for (const worker of workers) {
+            await setWorkerScoreInStorage(worker.signer.address, 1);
+        }
         for (const worker of workers) {
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
@@ -172,7 +173,7 @@ describe('IexecPoco2#finalize', async () => {
             workersFrozenBefore[workerAddress] = await iexecPoco
                 .frozenOf(workerAddress)
                 .then((frozen) => frozen.toNumber());
-            expect(await iexecPoco.viewScore(workerAddress)).to.be.equal(0);
+            expect(await iexecPoco.viewScore(workerAddress)).to.be.equal(1);
         }
         const kittyFrozenBefore = await iexecPoco.frozenOf(kittyAddress);
         const taskBefore = await iexecPoco.viewTask(taskId);
@@ -183,7 +184,7 @@ describe('IexecPoco2#finalize', async () => {
         await finalizeTx.wait();
         await expect(finalizeTx)
             .to.emit(iexecPoco, 'Seize')
-            //.withArgs(sponsor.address, taskPrice, taskId)
+            .withArgs(sponsor.address, taskPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
             .withArgs(iexecPoco.address, appProvider.address, appPrice)
             .to.emit(iexecPoco, 'Reward')
@@ -204,9 +205,9 @@ describe('IexecPoco2#finalize', async () => {
                 .to.emit(iexecPoco, 'Unlock')
                 .withArgs(worker.address, workerTaskStake)
                 .to.emit(iexecPoco, 'Transfer')
-                //.withArgs(iexecPoco.address, worker.address, workerReward)
+                .withArgs(iexecPoco.address, worker.address, workerReward)
                 .to.emit(iexecPoco, 'Reward')
-                //.withArgs(worker.address, workerReward, taskId)
+                .withArgs(worker.address, workerReward, taskId)
                 .to.emit(iexecPoco, 'AccurateContribution')
                 .withArgs(worker.address, taskId);
         }
@@ -221,9 +222,9 @@ describe('IexecPoco2#finalize', async () => {
             workerTaskStake; // losing worker stake
         await expect(finalizeTx)
             .to.emit(iexecPoco, 'Transfer')
-            //.withArgs(iexecPoco.address, scheduler.address, schedulerReward)
+            .withArgs(iexecPoco.address, scheduler.address, schedulerReward)
             .to.emit(iexecPoco, 'Reward')
-            //.withArgs(scheduler.address, schedulerReward, taskId)
+            .withArgs(scheduler.address, schedulerReward, taskId)
             .to.emit(iexecPoco, 'TaskFinalize')
             .withArgs(taskId, hexResults)
             .to.emit(oracleConsumerInstance, 'GotResult')
@@ -232,7 +233,6 @@ describe('IexecPoco2#finalize', async () => {
         expect(task.status).equal(TaskStatusEnum.COMPLETED);
         expect(task.results).equal(hexResults);
         expect(task.resultsCallback).equal(resultsCallback);
-        return;
         await expect(finalizeTx).to.changeTokenBalances(
             iexecPoco,
             [
@@ -282,7 +282,7 @@ describe('IexecPoco2#finalize', async () => {
             );
         }
         for (const worker of winningWorkers) {
-            expect(await iexecPoco.viewScore(worker.address)).to.be.equal(1);
+            expect(await iexecPoco.viewScore(worker.address)).to.be.equal(2);
         }
         expect(await iexecPoco.viewScore(losingWorker.address)).to.be.equal(0);
         expect(await iexecPoco.frozenOf(kittyAddress)).to.be.equal(kittyFrozenBefore);
