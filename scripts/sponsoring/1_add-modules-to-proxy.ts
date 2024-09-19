@@ -4,6 +4,7 @@ import { time } from '@nomicfoundation/hardhat-network-helpers';
 import hre, { ethers } from 'hardhat';
 import CONFIG from '../../config/config.json';
 import {
+    IexecOrderManagementDelegate__factory,
     IexecPoco1Delegate__factory,
     IexecPoco2Delegate__factory,
     IexecPocoAccessorsDelegate__factory,
@@ -22,6 +23,8 @@ import {
     const deploymentOptions = CONFIG.chains[chainId].v5;
     console.log('Link functions to proxy:');
     const erc1538ProxyAddress = deploymentOptions.ERC1538Proxy;
+    const iexecOrderManagementAddress = (await hre.deployments.get('IexecOrderManagementDelegate'))
+        .address;
     const iexecPoco1DelegateAddress = (await hre.deployments.get('IexecPoco1Delegate')).address;
     const iexecPoco2DelegateAddress = (await hre.deployments.get('IexecPoco2Delegate')).address;
     const iexecPocoAccessorsDelegateAddress = (
@@ -34,6 +37,10 @@ import {
         erc1538ProxyAddress,
         ethers.provider,
     ).owner();
+    const iexecOrderManagementProxyUpdate = encodeModuleProxyUpdate(
+        IexecOrderManagementDelegate__factory.createInterface(),
+        iexecOrderManagementAddress,
+    );
     const iexecPoco1ProxyUpdate = encodeModuleProxyUpdate(
         IexecPoco1Delegate__factory.createInterface(),
         iexecPoco1DelegateAddress,
@@ -46,9 +53,15 @@ import {
         IexecPocoAccessorsDelegate__factory.createInterface(),
         iexecPocoAccessorsDelegateAddress,
     );
-    // Salt but must be the same for schedule & execute
-    const operationSalt = '0x0be814a62c44af32241a2c964e5680d1b25c783473c6e7875cbc8071770d7ff0'; // Random
-    const updates = [iexecPoco1ProxyUpdate, iexecPoco2ProxyUpdate, iexecPocoAccessorsProxyUpdate];
+    // The salt must be the same for a given schedule & execute operation set
+    // Please increment salt in case of operation ID collision
+    const operationSalt = '0x0000000000000000000000000000000000000000000000000000000000000001';
+    const updates = [
+        iexecOrderManagementProxyUpdate,
+        iexecPoco1ProxyUpdate,
+        iexecPoco2ProxyUpdate,
+        iexecPocoAccessorsProxyUpdate,
+    ];
     const updateProxyArgs = [
         Array(updates.length).fill(erc1538ProxyAddress),
         Array(updates.length).fill(0),
