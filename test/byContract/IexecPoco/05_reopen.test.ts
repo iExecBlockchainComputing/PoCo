@@ -99,9 +99,10 @@ describe('IexecPoco2#reopen', async () => {
         expect(taskBefore.winnerCounter).to.equal(3);
         // Time travel beyond reveal deadline but before final deadline.
         await setNextBlockTimestamp(taskBefore.revealDeadline).then(() => mine());
+        const latestBlockTimestamp = await time.latest();
         expect(taskBefore.status).to.equal(TaskStatusEnum.REVEALING); // require 1
-        expect(await time.latest()).to.be.lessThan(taskBefore.finalDeadline); // require 2
-        expect(await time.latest()).to.be.greaterThanOrEqual(taskBefore.revealDeadline); // require 3.1
+        expect(latestBlockTimestamp).to.be.lessThan(taskBefore.finalDeadline); // require 2
+        expect(latestBlockTimestamp).to.be.greaterThanOrEqual(taskBefore.revealDeadline); // require 3.1
         expect(taskBefore.revealCounter).to.equal(0); // require 3.2
         // Reopen
         await expect(iexecPocoAsScheduler.reopen(taskId))
@@ -135,9 +136,10 @@ describe('IexecPoco2#reopen', async () => {
         const task = await iexecPoco.viewTask(taskId);
         // Time travel beyond reveal deadline but before final deadline.
         await setNextBlockTimestamp(task.revealDeadline).then(() => mine());
+        const latestBlockTimestamp = await time.latest();
         expect(task.status).to.equal(TaskStatusEnum.REVEALING); // require 1
-        expect(await time.latest()).to.be.lessThan(task.finalDeadline); // require 2
-        expect(await time.latest()).to.be.greaterThanOrEqual(task.revealDeadline); // require 3.1
+        expect(latestBlockTimestamp).to.be.lessThan(task.finalDeadline); // require 2
+        expect(latestBlockTimestamp).to.be.greaterThanOrEqual(task.revealDeadline); // require 3.1
         expect(task.revealCounter).to.equal(0); // require 3.2
         await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
     });
@@ -153,7 +155,7 @@ describe('IexecPoco2#reopen', async () => {
         await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
     });
 
-    it('Should not reopen task when is after revealing', async () => {
+    it('Should not reopen task when status is after revealing', async () => {
         await matchOrdersAndInitializeTask(1);
         const { results, resultDigest } = buildUtf8ResultAndDigest('result');
         await contribute(worker, resultDigest);
@@ -163,9 +165,10 @@ describe('IexecPoco2#reopen', async () => {
         const task = await iexecPoco.viewTask(taskId);
         // Time travel beyond reveal deadline but before final deadline.
         await setNextBlockTimestamp(task.revealDeadline).then(() => mine());
+        const latestBlockTimestamp = await time.latest();
         expect(task.status).to.be.greaterThan(TaskStatusEnum.REVEALING); // require 1 <--
-        expect(await time.latest()).to.be.lessThan(task.finalDeadline); // require 2
-        expect(await time.latest()).to.be.greaterThanOrEqual(task.revealDeadline); // require 3.1
+        expect(latestBlockTimestamp).to.be.lessThan(task.finalDeadline); // require 2
+        expect(latestBlockTimestamp).to.be.greaterThanOrEqual(task.revealDeadline); // require 3.1
         await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
     });
 
@@ -175,9 +178,10 @@ describe('IexecPoco2#reopen', async () => {
         const task = await iexecPoco.viewTask(taskId);
         // Time travel beyond final deadline.
         await setNextBlockTimestamp(task.finalDeadline).then(() => mine(2));
+        const latestBlockTimestamp = await time.latest();
         expect(task.status).to.equal(TaskStatusEnum.REVEALING); // require 1
-        expect(await time.latest()).to.be.greaterThan(task.finalDeadline); // require 2 <--
-        expect(await time.latest()).to.be.greaterThan(task.revealDeadline); // require 3.1
+        expect(latestBlockTimestamp).to.be.greaterThan(task.finalDeadline); // require 2 <--
+        expect(latestBlockTimestamp).to.be.greaterThan(task.revealDeadline); // require 3.1
         expect(task.revealCounter).to.equal(0); // require 3.2
         await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
     });
@@ -187,9 +191,10 @@ describe('IexecPoco2#reopen', async () => {
         await contribute(worker, resultDigest);
         const task = await iexecPoco.viewTask(taskId);
         // No time travel.
+        const latestBlockTimestamp = await time.latest();
         expect(task.status).to.equal(TaskStatusEnum.REVEALING); // require 1
-        expect(await time.latest()).to.be.lessThan(task.finalDeadline); // require 2
-        expect(await time.latest()).to.be.lessThan(task.revealDeadline); // require 3.1 <--
+        expect(latestBlockTimestamp).to.be.lessThan(task.finalDeadline); // require 2
+        expect(latestBlockTimestamp).to.be.lessThan(task.revealDeadline); // require 3.1 <--
         expect(task.revealCounter).to.equal(0); // require 3.2
         await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
     });
@@ -206,9 +211,10 @@ describe('IexecPoco2#reopen', async () => {
         const task = await iexecPoco.viewTask(taskId);
         // Time travel beyond reveal deadline but before final deadline.
         await setNextBlockTimestamp(task.revealDeadline).then(() => mine());
+        const latestBlockTimestamp = await time.latest();
         expect(task.status).to.equal(TaskStatusEnum.REVEALING); // require 1
-        expect(await time.latest()).to.be.lessThan(task.finalDeadline); // require 2
-        expect(await time.latest()).to.be.greaterThanOrEqual(task.revealDeadline); // require 3.1
+        expect(latestBlockTimestamp).to.be.lessThan(task.finalDeadline); // require 2
+        expect(latestBlockTimestamp).to.be.greaterThanOrEqual(task.revealDeadline); // require 3.1
         expect(task.revealCounter).to.be.greaterThan(0); // require 3.2 <--
         await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
     });
