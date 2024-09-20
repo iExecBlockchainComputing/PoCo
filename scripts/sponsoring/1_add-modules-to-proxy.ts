@@ -18,9 +18,11 @@ import {
     printFunctions,
 } from '../upgrades/upgrade-helper';
 
-(async () => {
-    await addModulesToProxy();
-})();
+if (process.env.SKIP_MAIN != 'true') {
+    (async () => {
+        await addModulesToProxy();
+    })();
+}
 
 export async function addModulesToProxy() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
@@ -103,4 +105,5 @@ export async function addModulesToProxy() {
             x.wait();
         });
     await printFunctions(erc1538ProxyAddress);
+    return erc1538ProxyAddress;
 }

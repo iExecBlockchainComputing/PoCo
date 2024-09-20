@@ -9,9 +9,11 @@ import {
 } from '../../typechain';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
 
-(async () => {
-    await deployModules();
-})();
+if (process.env.SKIP_MAIN != 'true') {
+    (async () => {
+        await deployModules();
+    })();
+}
 
 export async function deployModules() {
     console.log('Deploying modules..');

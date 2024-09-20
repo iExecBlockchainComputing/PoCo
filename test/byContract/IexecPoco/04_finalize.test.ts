@@ -76,7 +76,7 @@ describe('IexecPoco2#finalize', async () => {
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        //await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
+        await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsScheduler = iexecPoco.connect(scheduler);
         ordersAssets = {
