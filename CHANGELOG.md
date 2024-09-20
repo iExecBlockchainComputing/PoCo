@@ -5,7 +5,7 @@
 - Update function visibilities to `external` in `IexecPoco` and `IexecOrderManagement` modules. (#131)
 - Fix configs native and token. (#129)
 - Bump dependencies: (#127)
-    - `@openzeppelin/hardhat-upgrades`, `hardhat-dependency-compiler`, `web3`, 
+    - `@openzeppelin/hardhat-upgrades`, `hardhat-dependency-compiler`, `web3`,
         `prettier`, `zx`, and others [minor/patch version bump]
     - `prettier-plugin-organize-imports@4`
 - Clean some TODOs and harmonize unit tests. (#123)
@@ -17,6 +17,7 @@
     - Resources (#125, #126)
     - Registries (#122, #124)
     - IexecPoco2
+        - reopen (#133)
         - finalize (#79, #117, #119)
         - reveal (#114, #118)
         - contribute (#108, #109, #110)
