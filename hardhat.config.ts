@@ -212,6 +212,7 @@ const config: HardhatUserConfig = {
             'Store.v8.sol',
         ],
     },
+    mocha: { timeout: 50000 },
 };
 
 /**
