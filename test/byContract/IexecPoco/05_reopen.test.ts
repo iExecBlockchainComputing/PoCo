@@ -45,7 +45,7 @@ describe('IexecPoco2#reopen', async () => {
     let [dealId, taskId]: string[] = [];
     let taskIndex: number;
 
-    beforeEach('Deploy, match orders, and contribute', async () => {
+    beforeEach('Deploy', async () => {
         // Deploy all contracts
         proxyAddress = await loadHardhatFixtureDeployment();
         // Initialize test environment
