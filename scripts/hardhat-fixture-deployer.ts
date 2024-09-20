@@ -22,9 +22,13 @@ async function resetNetworkAndDeployAllContracts() {
         await deployEns();
         proxyAddress = (await deployments.get('ERC1538Proxy')).address;
     } else {
-        // Upgrade Poco
-        await deployModules();
-        proxyAddress = await addModulesToProxy();
+        if (process.env.SKIP_MAIN == 'true') {
+            // Upgrade Poco
+            await deployModules();
+            proxyAddress = await addModulesToProxy();
+        } else {
+            proxyAddress = '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f';
+        }
         // Send RLCs to default accounts
         const srlcRichSigner = await ethers.getImpersonatedSigner(proxyAddress);
         const otherAccountInitAmount =
