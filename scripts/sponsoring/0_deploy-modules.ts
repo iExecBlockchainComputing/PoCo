@@ -9,7 +9,13 @@ import {
 } from '../../typechain';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
 
-(async () => {
+if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
+    (async () => {
+        await deployModules();
+    })();
+}
+
+export async function deployModules() {
     console.log('Deploying modules..');
     const [owner] = await ethers.getSigners();
     const chainId = (await ethers.provider.getNetwork()).chainId;
@@ -54,4 +60,4 @@ const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.
             address: moduleAddress,
         });
     }
-})();
+}

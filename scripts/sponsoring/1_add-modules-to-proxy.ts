@@ -18,7 +18,13 @@ import {
     printFunctions,
 } from '../upgrades/upgrade-helper';
 
-(async () => {
+if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
+    (async () => {
+        await addModulesToProxy();
+    })();
+}
+
+export async function addModulesToProxy() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = CONFIG.chains[chainId].v5;
     console.log('Link functions to proxy:');
@@ -99,4 +105,5 @@ import {
             x.wait();
         });
     await printFunctions(erc1538ProxyAddress);
-})();
+    return erc1538ProxyAddress;
+}
