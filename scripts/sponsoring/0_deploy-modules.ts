@@ -17,8 +17,8 @@ if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
 
 export async function deployModules() {
     console.log('Deploying modules..');
-    const [owner] = await ethers.getSigners();
-    console.log(`Deployer: ${owner.address}`);
+    const [deployer] = await ethers.getSigners();
+    console.log(`Deployer: ${deployer.address}`);
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = CONFIG.chains[chainId].v5;
 
@@ -45,7 +45,7 @@ export async function deployModules() {
             contract: new IexecPocoAccessorsDelegate__factory(libraries),
         },
     ];
-    const genericFactoryInstance = GenericFactory__factory.connect(genericFactoryAddress, owner);
+    const genericFactoryInstance = GenericFactory__factory.connect(genericFactoryAddress, deployer);
     for await (const module of modules) {
         let moduleBytecode = module.contract.getDeployTransaction().data;
         if (!moduleBytecode) {

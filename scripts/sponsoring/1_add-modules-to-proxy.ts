@@ -84,8 +84,7 @@ export async function addModulesToProxy() {
         0,
     );
     console.log(`Expected Timelock proposer: ${timelockAdminAddress}`);
-    const signers = await ethers.getSigners();
-    const proposer = signers[0];
+    const [proposer] = await ethers.getSigners();
     console.log(`Actual Timelock proposer: ${proposer.address}`);
     if (proposer.address != timelockAdminAddress) {
         console.error('Bad proposer');
@@ -94,28 +93,37 @@ export async function addModulesToProxy() {
     const timelockAdminSigner =
         //await ethers.getImpersonatedSigner(timelockAdminAddress);
         proposer;
-    await timelockInstance
-        .connect(timelockAdminSigner)
-        .scheduleBatch(...updateProxyArgs, delay)
-        .then((tx) => {
-            logTxData(tx);
-            tx.wait();
-        });
-    console.log('Upgrade is proposed, stopping now.');
-    process.exit(1);
 
+    await scheduleUpgrade();
+    console.log('Upgrade is proposed, stopping now.');
+    process.exit(0);
     await time.increase(delay);
     console.log('Time traveling..');
-    await printBlockTime();
-    await printFunctions(erc1538ProxyAddress);
-    console.log('Executing proxy update..');
-    await timelockInstance
-        .connect(timelockAdminSigner)
-        .executeBatch(...updateProxyArgs)
-        .then((x) => {
-            logTxData(x);
-            x.wait();
-        });
-    await printFunctions(erc1538ProxyAddress);
+    await executeUpgrade();
+
     return erc1538ProxyAddress;
+
+    async function scheduleUpgrade() {
+        await timelockInstance
+            .connect(timelockAdminSigner)
+            .scheduleBatch(...updateProxyArgs, delay)
+            .then((tx) => {
+                logTxData(tx);
+                tx.wait();
+            });
+    }
+
+    async function executeUpgrade() {
+        await printBlockTime();
+        await printFunctions(erc1538ProxyAddress);
+        console.log('Executing proxy update..');
+        await timelockInstance
+            .connect(timelockAdminSigner)
+            .executeBatch(...updateProxyArgs)
+            .then((x) => {
+                logTxData(x);
+                x.wait();
+            });
+        await printFunctions(erc1538ProxyAddress);
+    }
 }

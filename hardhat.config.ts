@@ -44,7 +44,7 @@ const v8Settings = {
      * At this time, the iExec Bellecour blockchain does not support new OPCODES
      * brought by the Shanghai fork, hence the target must be lowered.
      */
-    evmVersion: 'paris',
+    evmVersion: 'berlin',
 };
 
 /**
@@ -87,6 +87,9 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
+            // accounts: [
+            //     process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            // ],
             ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
             ...(isLocalFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
@@ -139,9 +142,11 @@ const config: HardhatUserConfig = {
         bellecour: {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
-            accounts: {
-                mnemonic: process.env.PROD_MNEMONIC || '',
-            },
+            accounts: [
+                process.env.PROD_PRIVATE_KEY ||
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+            ],
+            hardfork: 'berlin', // No EIP-1559 before London fork
             gasPrice: 0,
             gas: 6700000,
         },
