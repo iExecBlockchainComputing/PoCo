@@ -83,8 +83,17 @@ export async function addModulesToProxy() {
         await timelockInstance.PROPOSER_ROLE(),
         0,
     );
-    console.log(`Timelock proposer: ${timelockAdminAddress}`);
-    const timelockAdminSigner = await ethers.getImpersonatedSigner(timelockAdminAddress);
+    console.log(`Expected Timelock proposer: ${timelockAdminAddress}`);
+    const signers = await ethers.getSigners();
+    const proposer = signers[0];
+    console.log(`Actual Timelock proposer: ${proposer.address}`);
+    if (proposer.address != timelockAdminAddress) {
+        console.error('Bad proposer');
+        process.exit(1);
+    }
+    const timelockAdminSigner =
+        //await ethers.getImpersonatedSigner(timelockAdminAddress);
+        proposer;
     await timelockInstance
         .connect(timelockAdminSigner)
         .scheduleBatch(...updateProxyArgs, delay)
@@ -92,6 +101,9 @@ export async function addModulesToProxy() {
             logTxData(tx);
             tx.wait();
         });
+    console.log('Upgrade is proposed, stopping now.');
+    process.exit(1);
+
     await time.increase(delay);
     console.log('Time traveling..');
     await printBlockTime();

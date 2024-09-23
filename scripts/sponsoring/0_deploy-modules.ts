@@ -18,6 +18,7 @@ if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
 export async function deployModules() {
     console.log('Deploying modules..');
     const [owner] = await ethers.getSigners();
+    console.log(`Deployer: ${owner.address}`);
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = CONFIG.chains[chainId].v5;
 
