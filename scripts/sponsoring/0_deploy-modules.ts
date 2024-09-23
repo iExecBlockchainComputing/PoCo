@@ -22,42 +22,41 @@ export async function deployModules() {
     const deploymentOptions = CONFIG.chains[chainId].v5;
 
     const salt = deploymentOptions.salt;
-
+    const libraries = {
+        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
+            deploymentOptions.IexecLibOrders_v5,
+    };
     const modules = [
         {
             name: 'IexecOrderManagementDelegate',
-            bytecode: IexecOrderManagementDelegate__factory.linkBytecode({
-                ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
-                    deploymentOptions.IexecLibOrders_v5,
-            }),
+            contract: new IexecOrderManagementDelegate__factory(libraries),
         },
         {
             name: 'IexecPoco1Delegate',
-            bytecode: IexecPoco1Delegate__factory.linkBytecode({
-                ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
-                    deploymentOptions.IexecLibOrders_v5,
-            }),
+            contract: new IexecPoco1Delegate__factory(libraries),
         },
         {
             name: 'IexecPoco2Delegate',
-            bytecode: IexecPoco2Delegate__factory.bytecode,
+            contract: new IexecPoco2Delegate__factory(),
         },
         {
             name: 'IexecPocoAccessorsDelegate',
-            bytecode: IexecPocoAccessorsDelegate__factory.linkBytecode({
-                ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
-                    deploymentOptions.IexecLibOrders_v5,
-            }),
+            contract: new IexecPocoAccessorsDelegate__factory(libraries),
         },
     ];
     const genericFactoryInstance = GenericFactory__factory.connect(genericFactoryAddress, owner);
     for await (const module of modules) {
-        const moduleAddress = await genericFactoryInstance.predictAddress(module.bytecode, salt);
-        await genericFactoryInstance.createContract(module.bytecode, salt).then((tx) => tx.wait());
+        let moduleBytecode = module.contract.getDeployTransaction().data;
+        if (!moduleBytecode) {
+            throw new Error('Failed to prepare bytecode');
+        }
+        const moduleAddress = await genericFactoryInstance.predictAddress(moduleBytecode, salt);
+        await genericFactoryInstance.createContract(moduleBytecode, salt).then((tx) => tx.wait());
         console.log(`${module.name}: ${moduleAddress}`);
         await deployments.save(module.name, {
-            abi: [],
+            abi: (module.contract as any).constructor.abi,
             address: moduleAddress,
+            bytecode: moduleBytecode.toString(),
         });
     }
 }
