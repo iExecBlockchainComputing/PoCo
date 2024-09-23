@@ -18,7 +18,7 @@ import {
     printFunctions,
 } from '../upgrades/upgrade-helper';
 
-if (process.env.SKIP_MAIN != 'true') {
+if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
     (async () => {
         await addModulesToProxy();
     })();

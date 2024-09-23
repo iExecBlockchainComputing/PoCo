@@ -23,5 +23,5 @@ OR
 
 0. Run test(s) directly (without launching node and deploying/upgrading Poco manually)
 ```
-SKIP_MAIN=true LOCAL_FORK=true npx hardhat test test/byContract/IexecPoco/04_finalize.test.ts
+LOCAL_FORK=true HANDLE_SPONSORING_UPGRADE_INTERNALLY=true npx hardhat test test/byContract/IexecPoco/04_finalize.test.ts
 ```

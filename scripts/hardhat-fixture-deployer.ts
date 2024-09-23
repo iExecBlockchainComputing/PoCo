@@ -22,7 +22,7 @@ async function resetNetworkAndDeployAllContracts() {
         await deployEns();
         proxyAddress = (await deployments.get('ERC1538Proxy')).address;
     } else {
-        if (process.env.SKIP_MAIN == 'true') {
+        if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY == 'true') {
             // Upgrade Poco
             await deployModules();
             proxyAddress = await addModulesToProxy();

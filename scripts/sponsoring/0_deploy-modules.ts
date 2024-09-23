@@ -9,7 +9,7 @@ import {
 } from '../../typechain';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
 
-if (process.env.SKIP_MAIN != 'true') {
+if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
     (async () => {
         await deployModules();
     })();
