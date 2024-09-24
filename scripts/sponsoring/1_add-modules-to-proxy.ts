@@ -38,10 +38,6 @@ export async function addModulesToProxy() {
     const iexecPocoAccessorsDelegateAddress = (
         await hre.deployments.get('IexecPocoAccessorsDelegate')
     ).address;
-    console.log('iexecOrderManagementAddress', iexecOrderManagementAddress);
-    console.log('iexecPoco1DelegateAddress', iexecPoco1DelegateAddress);
-    console.log('iexecPoco2DelegateAddress', iexecPoco2DelegateAddress);
-    console.log('iexecPocoAccessorsDelegateAddress', iexecPocoAccessorsDelegateAddress);
     await printFunctions(erc1538ProxyAddress);
 
     console.log('Functions about to be added to proxy:');
