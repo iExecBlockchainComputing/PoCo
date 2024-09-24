@@ -18,6 +18,8 @@ import {
     printFunctions,
 } from '../upgrades/upgrade-helper';
 
+const txHash = '0x59c94a0206187ff9cfe36bf380dfa012f25b51189e321ed70650827230ab8bd7';
+
 if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
     (async () => {
         await addModulesToProxy();
@@ -36,6 +38,10 @@ export async function addModulesToProxy() {
     const iexecPocoAccessorsDelegateAddress = (
         await hre.deployments.get('IexecPocoAccessorsDelegate')
     ).address;
+    console.log('iexecOrderManagementAddress', iexecOrderManagementAddress);
+    console.log('iexecPoco1DelegateAddress', iexecPoco1DelegateAddress);
+    console.log('iexecPoco2DelegateAddress', iexecPoco2DelegateAddress);
+    console.log('iexecPocoAccessorsDelegateAddress', iexecPocoAccessorsDelegateAddress);
     await printFunctions(erc1538ProxyAddress);
 
     console.log('Functions about to be added to proxy:');
@@ -75,31 +81,64 @@ export async function addModulesToProxy() {
         ethers.constants.HashZero,
         operationSalt,
     ] as [string[], BigNumber[], BytesLike[], BytesLike, BytesLike];
-    console.log('Scheduling proxy update..');
     await printBlockTime();
     const timelockInstance = TimelockController__factory.connect(timelockAddress, ethers.provider);
+    const iface = new ethers.utils.Interface([
+        'event CallScheduled(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data, bytes32 predecessor, uint256 delay)',
+    ]);
     const delay = await timelockInstance.getMinDelay();
     const timelockAdminAddress = await timelockInstance.getRoleMember(
         await timelockInstance.PROPOSER_ROLE(),
         0,
     );
     console.log(`Expected Timelock proposer: ${timelockAdminAddress}`);
-    const [proposer] = await ethers.getSigners();
-    console.log(`Actual Timelock proposer: ${proposer.address}`);
-    if (proposer.address != timelockAdminAddress) {
-        console.error('Bad proposer');
-        process.exit(1);
-    }
-    const timelockAdminSigner =
-        //await ethers.getImpersonatedSigner(timelockAdminAddress);
-        proposer;
+    // const [proposer] = await ethers.getSigners();
+    // console.log(`Actual Timelock proposer: ${proposer.address}`);
+    // if (proposer.address != timelockAdminAddress) {
+    //     console.error('Bad proposer');
+    //     process.exit(1);
+    // }
+    const timelockAdminSigner = await ethers.getImpersonatedSigner(timelockAdminAddress);
+    // proposer; #used when we have the pvk
 
-    await scheduleUpgrade();
-    console.log('Upgrade is proposed, stopping now.');
-    process.exit(0);
-    await time.increase(delay);
-    console.log('Time traveling..');
-    await executeUpgrade();
+    // await scheduleUpgrade();
+    // console.log('Upgrade is proposed, stopping now.');
+    // process.exit(0);
+
+    // Fetch transaction receipt
+    const txReceipt = await ethers.provider.getTransactionReceipt(txHash);
+    const blockNumber = txReceipt.blockNumber;
+    const block = await ethers.provider.getBlock(blockNumber);
+    const blockTimestamp = block.timestamp;
+
+    console.log(`Transaction was included in block: ${blockNumber}`);
+    console.log(`Block timestamp: ${blockTimestamp} (in seconds since Unix epoch)`);
+
+    for (const log of txReceipt.logs) {
+        try {
+            const parsedLog = iface.parseLog(log);
+            if (parsedLog) {
+                const delay = parsedLog.args.delay;
+                console.log(`Delay found: ${delay} seconds`);
+
+                // Calculate how much time to increase
+                const currentBlockTimestamp = (await ethers.provider.getBlock('latest')).timestamp;
+                console.log(`Current block timestamp: ${currentBlockTimestamp} seconds `);
+                const elapsedTime = currentBlockTimestamp - blockTimestamp;
+                console.log(`Elapsed time since transaction: ${elapsedTime} seconds`);
+                const timeToTravel = delay.sub(BigNumber.from(Math.round(elapsedTime)));
+
+                console.log(`Time to travel: ${timeToTravel} seconds`);
+                await time.increase(timeToTravel);
+                console.log('Time traveling..');
+                await executeUpgrade();
+                return erc1538ProxyAddress;
+            }
+        } catch (error) {
+            console.error('Error parsing log:', error);
+            return erc1538ProxyAddress;
+        }
+    }
 
     return erc1538ProxyAddress;
 
