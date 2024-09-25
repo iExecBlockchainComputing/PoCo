@@ -43,14 +43,6 @@ IexecPoco2Delegate: 0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27 // https://blocks
 IexecPocoAccessorsDelegate: 0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261 // https://blockscout-bellecour.iex.ec/tx/0xcc90f94b6ddb809720f94271b7b58bef9b24c4fe6e92a72f1271c5f83912081f
 ```
 
-| Contract                     | Address                                    | Blockscout v5                                                                                                             | Blockscout v6                                                                                                      |
-| ---------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| IexecOrderManagementDelegate | 0xDF63F026779E31AcD1DB4626b39Ea5148f7B9AA4 | [verified](https://blockscout-bellecour.iex.ec/address/0xDF63F026779E31AcD1DB4626b39Ea5148f7B9AA4/contracts#address-tabs) | [verified](https://blockscout-v6.bellecour.iex.ec/address/0xDF63F026779E31AcD1DB4626b39Ea5148f7B9AA4?tab=contract) |
-| IexecPoco1Delegate           | 0x1eE1cceF893DF6c4D3FC4eCaF315F09183f3048c | [verified](https://blockscout-bellecour.iex.ec/address/0x1eE1cceF893DF6c4D3FC4eCaF315F09183f3048ccontracts#address-tabs)  | [not verified yet](https://blockscout-v6.bellecour.iex.ec/address/0x1eE1cceF893DF6c4D3FC4eCaF315F09183f3048c)      |
-| IexecPoco2Delegate           | 0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27 | [verified](https://blockscout-bellecour.iex.ec/address/0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27contracts#address-tabs)  | [not verified yet](https://blockscout-v6.bellecour.iex.ec/address/0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27)      |
-| IexecPocoAccessorsDelegate   | 0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261 | [verified](https://blockscout-bellecour.iex.ec/address/0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261contracts#address-tabs)  | [verified](https://blockscout-v6.bellecour.iex.ec/address/0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261?tab=contract) |
-
-
 1. Schedule upgrade
 
 ```
