@@ -1,6 +1,6 @@
-# Add sponsoring functions to proxy
+# PoCo v5.5 upgrade status 
 
-## Currently pointing modules that will be modified
+## Legacy modules linked to proxy before this v5.5 upgrade
 
 | Contract                                                                                                                                                   | Address                                                                                                                              |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -9,16 +9,7 @@
 | [IexecPocoAccessorsDelegate](https://github.com/iExecBlockchainComputing/PoCo/blob/v5.4.3/contracts/modules/delegates/IexecAccessorsABILegacyDelegate.sol) | [0xAa567D6C87C465A5a15b8efAe4778acD33e6Cd66](https://blockscout-bellecour.iex.ec/address/0xAa567D6C87C465A5a15b8efAe4778acD33e6Cd66) |
 
 
-## Newly deployed modules
-
-```
-Deploying modules..
-Deployer: 0x0B3a38b0A47aB0c5E8b208A703de366751Df5916
-IexecOrderManagementDelegate: 0xDF63F026779E31AcD1DB4626b39Ea5148f7B9AA4
-IexecPoco1Delegate: 0x1eE1cceF893DF6c4D3FC4eCaF315F09183f3048c
-IexecPoco2Delegate: 0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27
-IexecPocoAccessorsDelegate: 0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261
-```
+## New modules deployed for v5.5 upgrade
 
 | Contract                     | Address                                                                                                                                                     | Deployment                                                                                                                                                                      |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -28,7 +19,7 @@ IexecPocoAccessorsDelegate: 0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261
 | IexecPocoAccessorsDelegate   | [0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261](https://blockscout-bellecour.iex.ec/address/0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261/contracts#address-tabs) | [0xcc90f94b6ddb809720f94271b7b58bef9b24c4fe6e92a72f1271c5f83912081f](https://blockscout-bellecour.iex.ec/tx/0xcc90f94b6ddb809720f94271b7b58bef9b24c4fe6e92a72f1271c5f83912081f) |
 
 
-## Scheduled upgrade
+## Linking of these new modules to proxy is scheduled on TimelockControler
 
 ```
 Block#30158507: Mon Sep 23 2024 17:31:40 GMT+0200 (Central European Summer Time) (timestamp:1727105500)
@@ -36,8 +27,8 @@ Timelock proposer: 0x0B3a38b0A47aB0c5E8b208A703de366751Df5916
 ```
 - Tx: https://blockscout-bellecour.iex.ec/tx/0x59c94a0206187ff9cfe36bf380dfa012f25b51189e321ed70650827230ab8bd7
 
-
-## Functions about to be added to and / or modified on proxy:
+Now 7-days are required before executing linking of new modules.
+- Functions from `IexecOrderManagementDelegate`, `IexecPoco1Delegate`, `IexecPoco2Delegate` & `IexecPocoAccessorsDelegate` modules that will be added to proxy (or modified on proxy):
 ```
 - manageAppOrder(((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes));
 - manageDatasetOrder(((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes));
