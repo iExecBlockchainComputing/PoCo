@@ -4,9 +4,9 @@
 
 | Contract                                                                                                                                                              | Address                                                                                                                              |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| [IexecOrderManagementDelegate](https://github.com/iExecBlockchainComputing/PoCo/blob/v5/contracts/modules/delegates/IexecOrderManagementDelegate.sol)                 | [0xc7d6c9cAf4cdA7B1EC24bd83873A822eE7Da2966](https://blockscout-bellecour.iex.ec/address/0xc7d6c9cAf4cdA7B1EC24bd83873A822eE7Da2966) |
+| [IexecOrderManagementDelegate](https://github.com/iExecBlockchainComputing/PoCo/blob/v5.4.3/contracts/modules/delegates/IexecOrderManagementDelegate.sol)             | [0xc7d6c9cAf4cdA7B1EC24bd83873A822eE7Da2966](https://blockscout-bellecour.iex.ec/address/0xc7d6c9cAf4cdA7B1EC24bd83873A822eE7Da2966) |
 | [IexecPocoDelegate](https://github.com/iExecBlockchainComputing/PoCo/blob/153974edcde0c9bd98dab3db77a42e27f07117b2/contracts/modules/delegates/IexecPocoDelegate.sol) | [0xE20a3d2B778B9e924c68dD74beB6723620eBaD0c](https://blockscout-bellecour.iex.ec/address/0xE20a3d2B778B9e924c68dD74beB6723620eBaD0c) |
-| [IexecPocoAccessorsDelegate](https://github.com/iExecBlockchainComputing/PoCo/blob/v5/contracts/modules/delegates/IexecAccessorsABILegacyDelegate.sol)                | [0xAa567D6C87C465A5a15b8efAe4778acD33e6Cd66](https://blockscout-bellecour.iex.ec/address/0xAa567D6C87C465A5a15b8efAe4778acD33e6Cd66) |
+| [IexecPocoAccessorsDelegate](https://github.com/iExecBlockchainComputing/PoCo/blob/v5.4.3/contracts/modules/delegates/IexecAccessorsABILegacyDelegate.sol)            | [0xAa567D6C87C465A5a15b8efAe4778acD33e6Cd66](https://blockscout-bellecour.iex.ec/address/0xAa567D6C87C465A5a15b8efAe4778acD33e6Cd66) |
 
 
 ## Newly deployed modules
