@@ -17,7 +17,7 @@
     - Resources (#125, #126)
     - Registries (#122, #124)
     - IexecPoco2
-        - reopen (#133)
+        - reopen (#133, #135)
         - finalize (#79, #117, #119)
         - reveal (#114, #118)
         - contribute (#108, #109, #110)
