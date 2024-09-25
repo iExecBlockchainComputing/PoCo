@@ -37,7 +37,7 @@ Timelock proposer: 0x0B3a38b0A47aB0c5E8b208A703de366751Df5916
 - Tx: https://blockscout-bellecour.iex.ec/tx/0x59c94a0206187ff9cfe36bf380dfa012f25b51189e321ed70650827230ab8bd7
 
 
-## Functions about to be added and / or modified to proxy:
+## Functions about to be added to and / or modified on proxy:
 ```
 - manageAppOrder(((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes));
 - manageDatasetOrder(((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes));
