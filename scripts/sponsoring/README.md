@@ -50,7 +50,6 @@ IexecPocoAccessorsDelegate: 0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261 // https:
 | IexecPoco2Delegate           | 0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27 | [verified](https://blockscout-bellecour.iex.ec/address/0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27contracts#address-tabs)  | [not verified yet](https://blockscout-v6.bellecour.iex.ec/address/0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27)      |
 | IexecPocoAccessorsDelegate   | 0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261 | [verified](https://blockscout-bellecour.iex.ec/address/0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261contracts#address-tabs)  | [verified](https://blockscout-v6.bellecour.iex.ec/address/0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261?tab=contract) |
 
-[Caption Text]
 
 1. Schedule upgrade
 
