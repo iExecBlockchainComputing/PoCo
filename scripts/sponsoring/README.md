@@ -43,6 +43,35 @@ IexecPoco2Delegate: 0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27 // https://blocks
 IexecPocoAccessorsDelegate: 0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261 // https://blockscout-bellecour.iex.ec/tx/0xcc90f94b6ddb809720f94271b7b58bef9b24c4fe6e92a72f1271c5f83912081f
 ```
 
+0b. Verify contracts
+
+- Blockscout v5
+```
+BLOCKSCOUT_VERSION=v5 npx hardhat run ./scripts/sponsoring/verify.ts --network bellecour
+```
+
+- Blockscout v6
+
+Contracts have been verified using `etherscan-verify` plugin of `hardhat-deploy` (v0.12.4):
+```
+npx hardhat --network bellecour etherscan-verify
+```
+and embedded `hardhat-verify` plugin of `hardhat` (v2.22.12):
+```
+npx hardhat run ./scripts/sponsoring/verify.ts --network bellecour
+```
+by previously modifiying the `.json` file produced by:
+```
+await deployments.deploy('<XxxxDelegate>Delegate', {
+    from: deployer.address,
+    libraries: {
+        IexecLibOrders_v5: deploymentOptions.IexecLibOrders_v5
+    }
+}
+```
+
+
+
 1. Schedule upgrade
 
 ```

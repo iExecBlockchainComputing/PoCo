@@ -14,6 +14,10 @@ import chainConfig from './config/config.json';
 
 const isNativeChainType = chainConfig.chains.default.asset == 'Native';
 const isLocalFork = process.env.LOCAL_FORK == 'true';
+const bellecourBlockscoutUrl =
+    process.env.BLOCKSCOUT_VERSION == 'v5'
+        ? 'https://blockscout.bellecour.iex.ec'
+        : 'https://blockscout-v6.bellecour.iex.ec'; // Use Blockscout v6 by default
 const settings = {
     optimizer: {
         enabled: true,
@@ -149,6 +153,12 @@ const config: HardhatUserConfig = {
             hardfork: 'berlin', // No EIP-1559 before London fork
             gasPrice: 0,
             gas: 6700000,
+            verify: {
+                etherscan: {
+                    apiUrl: bellecourBlockscoutUrl,
+                    apiKey: '<>',
+                },
+            },
         },
     },
     etherscan: {
@@ -170,8 +180,8 @@ const config: HardhatUserConfig = {
                 network: 'bellecour',
                 chainId: 134,
                 urls: {
-                    apiURL: 'https://blockscout.bellecour.iex.ec/api',
-                    browserURL: 'https://blockscout.bellecour.iex.ec/',
+                    apiURL: `${bellecourBlockscoutUrl}/api`,
+                    browserURL: bellecourBlockscoutUrl,
                 },
             },
         ],
