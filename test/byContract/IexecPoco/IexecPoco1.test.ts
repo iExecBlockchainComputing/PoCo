@@ -221,7 +221,8 @@ describe('IexecPoco1', () => {
             // Assume appProvider presigned the appOrderHash
             await iexecPoco
                 .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN));
+                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
+                .then((tx) => tx.wait());
 
             expect(await iexecPocoContract.verifyPresignature(appProvider.address, appOrderHash)).to
                 .be.true;
@@ -236,11 +237,11 @@ describe('IexecPoco1', () => {
         it('Should fail to verify presignature with an incorrect account', async () => {
             await iexecPoco
                 .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN));
+                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
+                .then((tx) => tx.wait());
 
-            expect(
-                await iexecPocoContract.verifyPresignature(datasetProvider.address, appOrderHash),
-            ).to.be.false;
+            expect(await iexecPocoContract.verifyPresignature(anyone.address, appOrderHash)).to.be
+                .false;
         });
 
         it('Should fail to verify presignature for an unknown messageHash', async () => {
@@ -254,7 +255,8 @@ describe('IexecPoco1', () => {
         it('Should fail to verify presignature when account is address(0)', async () => {
             await iexecPoco
                 .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN));
+                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
+                .then((tx) => tx.wait());
 
             expect(
                 await iexecPocoContract.verifyPresignature(
@@ -270,7 +272,8 @@ describe('IexecPoco1', () => {
             // Assume appProvider presigned the appOrderHash
             await iexecPoco
                 .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN));
+                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
+                .then((tx) => tx.wait());
 
             expect(
                 await iexecPocoContract.verifyPresignatureOrSignature(
@@ -294,7 +297,8 @@ describe('IexecPoco1', () => {
         it(`Should fail to verifyPresignatureOrSignature with an incorrect account for presignature`, async () => {
             await iexecPoco
                 .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN));
+                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
+                .then((tx) => tx.wait());
 
             expect(
                 await iexecPocoContract.verifyPresignatureOrSignature(
@@ -320,7 +324,8 @@ describe('IexecPoco1', () => {
         it(`Should fail to verifyPresignatureOrSignature when account is address(0)`, async () => {
             await iexecPoco
                 .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN));
+                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
+                .then((tx) => tx.wait());
 
             expect(
                 await iexecPocoContract.verifyPresignatureOrSignature(
