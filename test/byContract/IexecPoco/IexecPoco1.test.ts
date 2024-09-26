@@ -216,124 +216,84 @@ describe('IexecPoco1', () => {
         });
     });
 
-    describe('verifyPresignature', () => {
-        it('Should verify the correct presignature', async () => {
-            // Assume appProvider presigned the appOrderHash
-            await iexecPoco
-                .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
-                .then((tx) => tx.wait());
+    describe('Verify presignature and presignatureOrSignature', () => {
+        ['verifyPresignature', 'verifyPresignatureOrSignature'].forEach((verifyFunction) => {
+            it(`Should ${verifyFunction} when the presignature is valid`, async () => {
+                await iexecPoco
+                    .connect(appProvider)
+                    .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
+                    .then((tx) => tx.wait());
 
-            expect(await iexecPocoContract.verifyPresignature(appProvider.address, appOrderHash)).to
-                .be.true;
-        });
-
-        it('Should fail to verify presignature when not presigned', async () => {
-            // App provider hasn't presigned the order yet
-            expect(await iexecPocoContract.verifyPresignature(appProvider.address, appOrderHash)).to
-                .be.false;
-        });
-
-        it('Should fail to verify presignature with an incorrect account', async () => {
-            await iexecPoco
-                .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
-                .then((tx) => tx.wait());
-
-            expect(await iexecPocoContract.verifyPresignature(anyone.address, appOrderHash)).to.be
-                .false;
-        });
-
-        it('Should fail to verify presignature for an unknown messageHash', async () => {
-            const unknownMessageHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('unknown'));
-
-            expect(
-                await iexecPocoContract.verifyPresignature(appProvider.address, unknownMessageHash),
-            ).to.be.false;
-        });
-
-        it('Should fail to verify presignature when account is address(0)', async () => {
-            await iexecPoco
-                .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
-                .then((tx) => tx.wait());
-
-            expect(
-                await iexecPocoContract.verifyPresignature(
-                    ethers.constants.AddressZero,
-                    appOrderHash,
-                ),
-            ).to.be.false;
-        });
-    });
-
-    describe('Verify presignature or signature', () => {
-        it('Should verifyPresignatureOrSignature when the presignature is valid', async () => {
-            // Assume appProvider presigned the appOrderHash
-            await iexecPoco
-                .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
-                .then((tx) => tx.wait());
-
-            expect(
-                await iexecPocoContract.verifyPresignatureOrSignature(
+                const args = [
                     appProvider.address,
                     appOrderHash,
-                    '0x',
-                ),
-            ).to.be.true; // No signature needed for presigned
-        });
+                    ...(verifyFunction === 'verifyPresignature' ? [] : ['0x']),
+                ];
 
-        it(`Should fail to verifyPresignatureOrSignature when not presigned and invalid signature`, async () => {
-            expect(
-                await iexecPocoContract.verifyPresignatureOrSignature(
+                expect(await iexecPocoContract[verifyFunction](...args)).to.be.true;
+            });
+
+            it(`Should fail to ${verifyFunction} when not presigned and invalid signature`, async () => {
+                const args = [
                     appProvider.address,
                     appOrderHash,
-                    ethers.Wallet.createRandom().signMessage(someMessage),
-                ),
-            ).to.be.false;
-        });
+                    ...(verifyFunction === 'verifyPresignature'
+                        ? []
+                        : [ethers.Wallet.createRandom().signMessage(someMessage)]),
+                ];
 
-        it(`Should fail to verifyPresignatureOrSignature with an incorrect account for presignature`, async () => {
-            await iexecPoco
-                .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
-                .then((tx) => tx.wait());
+                expect(await iexecPocoContract[verifyFunction](...args)).to.be.false;
+            });
 
-            expect(
-                await iexecPocoContract.verifyPresignatureOrSignature(
-                    datasetProvider.address,
+            it(`Should fail to ${verifyFunction} with an incorrect account for presignature`, async () => {
+                await iexecPoco
+                    .connect(appProvider)
+                    .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
+                    .then((tx) => tx.wait());
+
+                const args = [
+                    anyone.address,
                     appOrderHash,
-                    ethers.Wallet.createRandom().signMessage(someMessage),
-                ),
-            ).to.be.false;
-        });
+                    ...(verifyFunction === 'verifyPresignature'
+                        ? []
+                        : [ethers.Wallet.createRandom().signMessage(someMessage)]),
+                ];
 
-        it(`Should fail to verifyPresignatureOrSignature for an unknown messageHash`, async () => {
-            const unknownMessageHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes('unknown'));
+                expect(await iexecPocoContract[verifyFunction](...args)).to.be.false;
+            });
 
-            expect(
-                await iexecPocoContract.verifyPresignatureOrSignature(
+            it(`Should fail to ${verifyFunction} for an unknown messageHash`, async () => {
+                const unknownMessageHash = ethers.utils.keccak256(
+                    ethers.utils.toUtf8Bytes('unknown'),
+                );
+
+                const args = [
                     appProvider.address,
                     unknownMessageHash,
-                    ethers.Wallet.createRandom().signMessage(unknownMessageHash),
-                ),
-            ).to.be.false;
-        });
+                    ...(verifyFunction === 'verifyPresignature'
+                        ? []
+                        : [ethers.Wallet.createRandom().signMessage(unknownMessageHash)]),
+                ];
 
-        it(`Should fail to verifyPresignatureOrSignature when account is address(0)`, async () => {
-            await iexecPoco
-                .connect(appProvider)
-                .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
-                .then((tx) => tx.wait());
+                expect(await iexecPocoContract[verifyFunction](...args)).to.be.false;
+            });
 
-            expect(
-                await iexecPocoContract.verifyPresignatureOrSignature(
+            it(`Should fail to ${verifyFunction} when account is address(0)`, async () => {
+                await iexecPoco
+                    .connect(appProvider)
+                    .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
+                    .then((tx) => tx.wait());
+
+                const args = [
                     ethers.constants.AddressZero,
                     appOrderHash,
-                    ethers.Wallet.createRandom().signMessage(someMessage),
-                ),
-            ).to.be.false;
+                    ...(verifyFunction === 'verifyPresignature'
+                        ? []
+                        : [ethers.Wallet.createRandom().signMessage(someMessage)]),
+                ];
+
+                expect(await iexecPocoContract[verifyFunction](...args)).to.be.false;
+            });
         });
     });
 
