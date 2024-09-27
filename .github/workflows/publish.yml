@@ -17,9 +17,7 @@ jobs:
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
-      - name: Check version match
-        uses: nick-y-ito/gha-npm-version-match@v1
-      - name: Publish to NPM
+      - uses: nick-y-ito/gha-npm-version-match@v1
       - run: npm ci
       - run: npm build
       #- run: npm publish --provenance --access public
