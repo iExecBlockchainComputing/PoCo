@@ -3,11 +3,11 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+-[a-zA-Z]*.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-[a-zA-Z]*.[0-9]+' # v0.0.0-alpha.0
 jobs:
   build:
     runs-on: ubuntu-latest
-    # TODO: Run if main or release/ branch
+    # TODO: Run only if main or release/ branch
     # if: [...]
     permissions:
       contents: read
@@ -19,6 +19,7 @@ jobs:
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
+      # Next line will fail if git tag and npm package version does not match
       - uses: nick-y-ito/gha-npm-version-match@v1
       - run: npm ci
       - run: npm run build
