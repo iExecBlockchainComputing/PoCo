@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main'  || startsWith(github.ref_name, 'release/')
+    if: startsWith(github.ref, 'release') == true
     permissions:
       contents: read
       id-token: write
