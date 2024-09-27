@@ -81,14 +81,6 @@ describe('IexecPoco1', () => {
     let [randomAddress, randomSignature]: string[] = [];
     let randomContract: OwnableMock;
     let erc1271MockContract: ERC1271Mock;
-    let iexecPocoSignManageOrder: () => Promise<ContractTransaction>;
-    let providerAddress: string;
-    let order:
-        | IexecLibOrders_v5.AppOrderStruct
-        | IexecLibOrders_v5.DatasetOrderStruct
-        | IexecLibOrders_v5.WorkerpoolOrderStruct
-        | IexecLibOrders_v5.RequestOrderStruct;
-    let orderHash: string;
     let orderManagement: {
         [key: string]: {
             iexecPocoSignManageOrder: () => Promise<ContractTransaction>;
