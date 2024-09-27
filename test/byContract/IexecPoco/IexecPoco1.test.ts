@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AddressZero, HashZero } from '@ethersproject/constants';
-import { Contract } from '@ethersproject/contracts';
+import { Contract, ContractTransaction } from '@ethersproject/contracts';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
@@ -13,6 +13,7 @@ import {
     IERC721__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    IexecLibOrders_v5,
     IexecPocoAccessors__factory,
     OwnableMock,
     OwnableMock__factory,
@@ -25,11 +26,17 @@ import {
     OrdersAssets,
     OrdersPrices,
     buildOrders,
+    createOrderOperation,
     hashOrder,
     signOrder,
     signOrders,
 } from '../../../utils/createOrders';
-import { getDealId, getIexecAccounts, setNextBlockTimestamp } from '../../../utils/poco-tools';
+import {
+    OrderOperationEnum,
+    getDealId,
+    getIexecAccounts,
+    setNextBlockTimestamp,
+} from '../../../utils/poco-tools';
 import { compactSignature } from '../../../utils/tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 
@@ -74,6 +81,17 @@ describe('IexecPoco1', () => {
     let [randomAddress, randomSignature]: string[] = [];
     let randomContract: OwnableMock;
     let erc1271MockContract: ERC1271Mock;
+    let orderManagement: {
+        [key: string]: {
+            iexecPocoSignManageOrder: () => Promise<ContractTransaction>;
+            providerAddress: string;
+            order:
+                | IexecLibOrders_v5.AppOrderStruct
+                | IexecLibOrders_v5.DatasetOrderStruct
+                | IexecLibOrders_v5.WorkerpoolOrderStruct
+                | IexecLibOrders_v5.RequestOrderStruct;
+        };
+    };
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
@@ -206,9 +224,125 @@ describe('IexecPoco1', () => {
             });
         });
     });
-    // TODO
-    describe('Verify presignature', () => {});
-    describe('Verify presignature or signature', () => {});
+
+    describe('Verify presignature', () => {
+        ['app', 'dataset', 'workerpool', 'requester'].forEach((asset) => {
+            before(() => {
+                orderManagement = {
+                    app: {
+                        providerAddress: appProvider.address,
+                        order: orders.app,
+                        iexecPocoSignManageOrder: () =>
+                            iexecPoco
+                                .connect(appProvider)
+                                .manageAppOrder(
+                                    createOrderOperation(orders.app, OrderOperationEnum.SIGN),
+                                ),
+                    },
+                    dataset: {
+                        providerAddress: datasetProvider.address,
+                        order: orders.dataset,
+                        iexecPocoSignManageOrder: () =>
+                            iexecPoco
+                                .connect(datasetProvider)
+                                .manageDatasetOrder(
+                                    createOrderOperation(orders.dataset, OrderOperationEnum.SIGN),
+                                ),
+                    },
+                    workerpool: {
+                        providerAddress: scheduler.address,
+                        order: orders.workerpool,
+                        iexecPocoSignManageOrder: () =>
+                            iexecPoco
+                                .connect(scheduler)
+                                .manageWorkerpoolOrder(
+                                    createOrderOperation(
+                                        orders.workerpool,
+                                        OrderOperationEnum.SIGN,
+                                    ),
+                                ),
+                    },
+                    requester: {
+                        providerAddress: requester.address,
+                        order: orders.requester,
+                        iexecPocoSignManageOrder: () =>
+                            iexecPoco
+                                .connect(requester)
+                                .manageRequestOrder(
+                                    createOrderOperation(orders.requester, OrderOperationEnum.SIGN),
+                                ),
+                    },
+                };
+            });
+
+            ['verifyPresignature', 'verifyPresignatureOrSignature'].forEach(
+                (verifyPresignatureFunction) => {
+                    it(`Should ${verifyPresignatureFunction} when the presignature is valid for ${asset}`, async () => {
+                        const { providerAddress, order, iexecPocoSignManageOrder } =
+                            orderManagement[asset];
+                        const orderHash = iexecWrapper.hashOrder(order);
+                        await iexecPocoSignManageOrder().then((tx) => tx.wait());
+
+                        const args = [
+                            providerAddress,
+                            orderHash,
+                            ...(verifyPresignatureFunction === 'verifyPresignature' ? [] : ['0x']),
+                        ];
+                        expect(await iexecPocoContract[verifyPresignatureFunction](...args)).to.be
+                            .true;
+                    });
+
+                    it(`Should fail to ${verifyPresignatureFunction} when not presigned and invalid signature for ${asset}`, async () => {
+                        const { providerAddress, order } = orderManagement[asset];
+                        const orderHash = iexecWrapper.hashOrder(order);
+
+                        const args = [
+                            providerAddress,
+                            orderHash,
+                            ...(verifyPresignatureFunction === 'verifyPresignature'
+                                ? []
+                                : [ethers.Wallet.createRandom().signMessage('Some message')]),
+                        ];
+                        expect(await iexecPocoContract[verifyPresignatureFunction](...args)).to.be
+                            .false;
+                    });
+
+                    it(`Should fail to ${verifyPresignatureFunction} with an incorrect account for presignature for ${asset}`, async () => {
+                        const { order, iexecPocoSignManageOrder } = orderManagement[asset];
+                        const orderHash = iexecWrapper.hashOrder(order);
+                        await iexecPocoSignManageOrder().then((tx) => tx.wait());
+
+                        const args = [
+                            anyone.address,
+                            orderHash,
+                            ...(verifyPresignatureFunction === 'verifyPresignature'
+                                ? []
+                                : [ethers.Wallet.createRandom().signMessage('Some message')]),
+                        ];
+                        expect(await iexecPocoContract[verifyPresignatureFunction](...args)).to.be
+                            .false;
+                    });
+
+                    it(`Should fail to ${verifyPresignatureFunction} for an unknown messageHash for ${asset}`, async () => {
+                        const { providerAddress } = orderManagement[asset];
+                        const unknownMessageHash = ethers.utils.keccak256(
+                            ethers.utils.toUtf8Bytes('unknown'),
+                        );
+
+                        const args = [
+                            providerAddress,
+                            unknownMessageHash,
+                            ...(verifyPresignatureFunction === 'verifyPresignature'
+                                ? []
+                                : [ethers.Wallet.createRandom().signMessage(unknownMessageHash)]),
+                        ];
+                        expect(await iexecPocoContract[verifyPresignatureFunction](...args)).to.be
+                            .false;
+                    });
+                },
+            );
+        });
+    });
 
     describe('Match orders', () => {
         it('Should match orders with: all assets, beneficiary, BoT, callback, replication', async () => {

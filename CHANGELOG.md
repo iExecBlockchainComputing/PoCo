@@ -21,7 +21,7 @@
         - finalize (#79, #117, #119)
         - reveal (#114, #118)
         - contribute (#108, #109, #110)
-    - IexecPoco1 (#107, #113, #115, #116)
+    - IexecPoco1 (#107, #113, #115, #116, #136)
     - Add `.test` suffix to unit test files (#106)
     - ENSIntegration (#105)
     - IexecOrderManagement (#101, #102, #103, #104)
