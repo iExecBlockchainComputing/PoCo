@@ -13,6 +13,7 @@ import {
     IERC721__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    IexecLibOrders_v5,
     IexecPocoAccessors__factory,
     OwnableMock,
     OwnableMock__factory,
@@ -77,18 +78,26 @@ describe('IexecPoco1', () => {
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
     let orders: IexecOrders;
-    let [appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash]: string[] = [];
     let [randomAddress, randomSignature]: string[] = [];
     let randomContract: OwnableMock;
     let erc1271MockContract: ERC1271Mock;
     let iexecPocoManageOrderTx: () => Promise<ContractTransaction>;
     let providerAddress: string;
+    let order:
+        | IexecLibOrders_v5.AppOrderStruct
+        | IexecLibOrders_v5.DatasetOrderStruct
+        | IexecLibOrders_v5.WorkerpoolOrderStruct
+        | IexecLibOrders_v5.RequestOrderStruct;
     let orderHash: string;
     let orderManagement: {
         [key: string]: {
             iexecPocoManageOrderTx: () => Promise<ContractTransaction>;
             providerAddress: string;
-            orderHash: string;
+            order:
+                | IexecLibOrders_v5.AppOrderStruct
+                | IexecLibOrders_v5.DatasetOrderStruct
+                | IexecLibOrders_v5.WorkerpoolOrderStruct
+                | IexecLibOrders_v5.RequestOrderStruct;
         };
     };
 
@@ -132,12 +141,10 @@ describe('IexecPoco1', () => {
             tag: teeDealTag,
             volume: volume,
         });
-        ({ appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash } =
-            iexecWrapper.hashOrders(orders));
         orderManagement = {
             app: {
                 providerAddress: appProvider.address,
-                orderHash: appOrderHash,
+                order: orders.app,
                 iexecPocoManageOrderTx: () =>
                     iexecPoco
                         .connect(appProvider)
@@ -145,7 +152,7 @@ describe('IexecPoco1', () => {
             },
             dataset: {
                 providerAddress: datasetProvider.address,
-                orderHash: datasetOrderHash,
+                order: orders.dataset,
                 iexecPocoManageOrderTx: () =>
                     iexecPoco
                         .connect(datasetProvider)
@@ -155,7 +162,7 @@ describe('IexecPoco1', () => {
             },
             workerpool: {
                 providerAddress: scheduler.address,
-                orderHash: workerpoolOrderHash,
+                order: orders.workerpool,
                 iexecPocoManageOrderTx: () =>
                     iexecPoco
                         .connect(scheduler)
@@ -165,7 +172,7 @@ describe('IexecPoco1', () => {
             },
             requester: {
                 providerAddress: requester.address,
-                orderHash: requestOrderHash,
+                order: orders.requester,
                 iexecPocoManageOrderTx: () =>
                     iexecPoco
                         .connect(requester)
@@ -272,7 +279,8 @@ describe('IexecPoco1', () => {
                 (verifyPreSignatureFunction) => {
                     beforeEach(() => {
                         providerAddress = orderManagement[asset].providerAddress;
-                        orderHash = orderManagement[asset].orderHash;
+                        order = orderManagement[asset].order;
+                        orderHash = iexecWrapper.hashOrder(order);
                         iexecPocoManageOrderTx = orderManagement[asset].iexecPocoManageOrderTx;
                     });
 
