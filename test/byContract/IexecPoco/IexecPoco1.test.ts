@@ -237,7 +237,7 @@ describe('IexecPoco1', () => {
         ['app', 'dataset', 'workerpool', 'requester'].forEach((asset) => {
             ['verifyPresignature', 'verifyPresignatureOrSignature'].forEach(
                 (verifyPreSignatureFunction) => {
-                    beforeEach(() => {
+                    before(() => {
                         orderManagement = {
                             app: {
                                 providerAddress: appProvider.address,
@@ -292,6 +292,9 @@ describe('IexecPoco1', () => {
                                         ),
                             },
                         };
+                    });
+
+                    beforeEach(() => {
                         providerAddress = orderManagement[asset].providerAddress;
                         order = orderManagement[asset].order;
                         orderHash = iexecWrapper.hashOrder(order);
