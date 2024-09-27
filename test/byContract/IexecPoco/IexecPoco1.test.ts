@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AddressZero, HashZero } from '@ethersproject/constants';
-import { Contract } from '@ethersproject/contracts';
+import { Contract, ContractTransaction } from '@ethersproject/contracts';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
@@ -13,7 +13,6 @@ import {
     IERC721__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
-    IexecLibOrders_v5,
     IexecPocoAccessors__factory,
     OwnableMock,
     OwnableMock__factory,
@@ -82,14 +81,12 @@ describe('IexecPoco1', () => {
     let [randomAddress, randomSignature]: string[] = [];
     let randomContract: OwnableMock;
     let erc1271MockContract: ERC1271Mock;
+    let iexecPocoManageOrderTx: () => Promise<ContractTransaction>;
+    let providerAddress: string;
+    let orderHash: string;
     let orderManagement: {
         [key: string]: {
-            iexecPocoManageOrder: (orderArgs: any) => Promise<any>;
-            iexecPocoManageOrderArgs:
-                | IexecLibOrders_v5.AppOrderOperationStruct
-                | IexecLibOrders_v5.DatasetOrderOperationStruct
-                | IexecLibOrders_v5.WorkerpoolOrderOperationStruct
-                | IexecLibOrders_v5.RequestOrderOperationStruct;
+            iexecPocoManageOrderTx: () => Promise<ContractTransaction>;
             providerAddress: string;
             orderHash: string;
         };
@@ -141,39 +138,40 @@ describe('IexecPoco1', () => {
             app: {
                 providerAddress: appProvider.address,
                 orderHash: appOrderHash,
-                iexecPocoManageOrder: (orderArgs) =>
-                    iexecPoco.connect(appProvider).manageAppOrder(orderArgs),
-                iexecPocoManageOrderArgs: createOrderOperation(orders.app, OrderOperationEnum.SIGN),
+                iexecPocoManageOrderTx: () =>
+                    iexecPoco
+                        .connect(appProvider)
+                        .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN)),
             },
             dataset: {
                 providerAddress: datasetProvider.address,
                 orderHash: datasetOrderHash,
-                iexecPocoManageOrder: (orderArgs) =>
-                    iexecPoco.connect(datasetProvider).manageDatasetOrder(orderArgs),
-                iexecPocoManageOrderArgs: createOrderOperation(
-                    orders.dataset,
-                    OrderOperationEnum.SIGN,
-                ),
+                iexecPocoManageOrderTx: () =>
+                    iexecPoco
+                        .connect(datasetProvider)
+                        .manageDatasetOrder(
+                            createOrderOperation(orders.dataset, OrderOperationEnum.SIGN),
+                        ),
             },
             workerpool: {
                 providerAddress: scheduler.address,
                 orderHash: workerpoolOrderHash,
-                iexecPocoManageOrder: (orderArgs) =>
-                    iexecPoco.connect(scheduler).manageWorkerpoolOrder(orderArgs),
-                iexecPocoManageOrderArgs: createOrderOperation(
-                    orders.workerpool,
-                    OrderOperationEnum.SIGN,
-                ),
+                iexecPocoManageOrderTx: () =>
+                    iexecPoco
+                        .connect(scheduler)
+                        .manageWorkerpoolOrder(
+                            createOrderOperation(orders.workerpool, OrderOperationEnum.SIGN),
+                        ),
             },
             requester: {
                 providerAddress: requester.address,
                 orderHash: requestOrderHash,
-                iexecPocoManageOrder: (orderArgs) =>
-                    iexecPoco.connect(requester).manageRequestOrder(orderArgs),
-                iexecPocoManageOrderArgs: createOrderOperation(
-                    orders.requester,
-                    OrderOperationEnum.SIGN,
-                ),
+                iexecPocoManageOrderTx: () =>
+                    iexecPoco
+                        .connect(requester)
+                        .manageRequestOrder(
+                            createOrderOperation(orders.requester, OrderOperationEnum.SIGN),
+                        ),
             },
         };
         const randomWallet = ethers.Wallet.createRandom();
@@ -272,14 +270,18 @@ describe('IexecPoco1', () => {
         ['app', 'dataset', 'workerpool', 'requester'].forEach((asset) => {
             ['verifyPresignature', 'verifyPresignatureOrSignature'].forEach(
                 (verifyPreSignatureFunction) => {
+                    beforeEach(() => {
+                        providerAddress = orderManagement[asset].providerAddress;
+                        orderHash = orderManagement[asset].orderHash;
+                        iexecPocoManageOrderTx = orderManagement[asset].iexecPocoManageOrderTx;
+                    });
+
                     it(`Should ${verifyPreSignatureFunction} when the presignature is valid for ${asset}`, async () => {
-                        await orderManagement[asset]
-                            .iexecPocoManageOrder(orderManagement[asset].iexecPocoManageOrderArgs)
-                            .then((tx) => tx.wait());
+                        await iexecPocoManageOrderTx().then((tx) => tx.wait());
 
                         const args = [
-                            orderManagement[asset].providerAddress,
-                            orderManagement[asset].orderHash,
+                            providerAddress,
+                            orderHash,
                             ...(verifyPreSignatureFunction === 'verifyPresignature' ? [] : ['0x']),
                         ];
 
@@ -289,8 +291,8 @@ describe('IexecPoco1', () => {
 
                     it(`Should fail to ${verifyPreSignatureFunction} when not presigned and invalid signature for ${asset}`, async () => {
                         const args = [
-                            orderManagement[asset].providerAddress,
-                            orderManagement[asset].orderHash,
+                            providerAddress,
+                            orderHash,
                             ...(verifyPreSignatureFunction === 'verifyPresignature'
                                 ? []
                                 : [ethers.Wallet.createRandom().signMessage('Some message')]),
@@ -301,13 +303,11 @@ describe('IexecPoco1', () => {
                     });
 
                     it(`Should fail to ${verifyPreSignatureFunction} with an incorrect account for presignature for ${asset}`, async () => {
-                        await orderManagement[asset]
-                            .iexecPocoManageOrder(orderManagement[asset].iexecPocoManageOrderArgs)
-                            .then((tx) => tx.wait());
+                        await iexecPocoManageOrderTx().then((tx) => tx.wait());
 
                         const args = [
                             anyone.address,
-                            orderManagement[asset].orderHash,
+                            orderHash,
                             ...(verifyPreSignatureFunction === 'verifyPresignature'
                                 ? []
                                 : [ethers.Wallet.createRandom().signMessage('Some message')]),
@@ -323,7 +323,7 @@ describe('IexecPoco1', () => {
                         );
 
                         const args = [
-                            orderManagement[asset].providerAddress,
+                            providerAddress,
                             unknownMessageHash,
                             ...(verifyPreSignatureFunction === 'verifyPresignature'
                                 ? []
@@ -335,13 +335,11 @@ describe('IexecPoco1', () => {
                     });
 
                     it(`Should fail to ${verifyPreSignatureFunction} when account is address(0) for ${asset}`, async () => {
-                        await orderManagement[asset]
-                            .iexecPocoManageOrder(orderManagement[asset].iexecPocoManageOrderArgs)
-                            .then((tx) => tx.wait());
+                        await iexecPocoManageOrderTx().then((tx) => tx.wait());
 
                         const args = [
                             AddressZero,
-                            orderManagement[asset].orderHash,
+                            orderHash,
                             ...(verifyPreSignatureFunction === 'verifyPresignature'
                                 ? []
                                 : [ethers.Wallet.createRandom().signMessage('Some message')]),
