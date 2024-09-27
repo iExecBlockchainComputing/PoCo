@@ -141,46 +141,6 @@ describe('IexecPoco1', () => {
             tag: teeDealTag,
             volume: volume,
         });
-        orderManagement = {
-            app: {
-                providerAddress: appProvider.address,
-                order: orders.app,
-                iexecPocoManageOrderTx: () =>
-                    iexecPoco
-                        .connect(appProvider)
-                        .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN)),
-            },
-            dataset: {
-                providerAddress: datasetProvider.address,
-                order: orders.dataset,
-                iexecPocoManageOrderTx: () =>
-                    iexecPoco
-                        .connect(datasetProvider)
-                        .manageDatasetOrder(
-                            createOrderOperation(orders.dataset, OrderOperationEnum.SIGN),
-                        ),
-            },
-            workerpool: {
-                providerAddress: scheduler.address,
-                order: orders.workerpool,
-                iexecPocoManageOrderTx: () =>
-                    iexecPoco
-                        .connect(scheduler)
-                        .manageWorkerpoolOrder(
-                            createOrderOperation(orders.workerpool, OrderOperationEnum.SIGN),
-                        ),
-            },
-            requester: {
-                providerAddress: requester.address,
-                order: orders.requester,
-                iexecPocoManageOrderTx: () =>
-                    iexecPoco
-                        .connect(requester)
-                        .manageRequestOrder(
-                            createOrderOperation(orders.requester, OrderOperationEnum.SIGN),
-                        ),
-            },
-        };
         const randomWallet = ethers.Wallet.createRandom();
         randomAddress = randomWallet.address;
         randomSignature = await randomWallet.signMessage('random');
@@ -278,6 +238,60 @@ describe('IexecPoco1', () => {
             ['verifyPresignature', 'verifyPresignatureOrSignature'].forEach(
                 (verifyPreSignatureFunction) => {
                     beforeEach(() => {
+                        orderManagement = {
+                            app: {
+                                providerAddress: appProvider.address,
+                                order: orders.app,
+                                iexecPocoManageOrderTx: () =>
+                                    iexecPoco
+                                        .connect(appProvider)
+                                        .manageAppOrder(
+                                            createOrderOperation(
+                                                orders.app,
+                                                OrderOperationEnum.SIGN,
+                                            ),
+                                        ),
+                            },
+                            dataset: {
+                                providerAddress: datasetProvider.address,
+                                order: orders.dataset,
+                                iexecPocoManageOrderTx: () =>
+                                    iexecPoco
+                                        .connect(datasetProvider)
+                                        .manageDatasetOrder(
+                                            createOrderOperation(
+                                                orders.dataset,
+                                                OrderOperationEnum.SIGN,
+                                            ),
+                                        ),
+                            },
+                            workerpool: {
+                                providerAddress: scheduler.address,
+                                order: orders.workerpool,
+                                iexecPocoManageOrderTx: () =>
+                                    iexecPoco
+                                        .connect(scheduler)
+                                        .manageWorkerpoolOrder(
+                                            createOrderOperation(
+                                                orders.workerpool,
+                                                OrderOperationEnum.SIGN,
+                                            ),
+                                        ),
+                            },
+                            requester: {
+                                providerAddress: requester.address,
+                                order: orders.requester,
+                                iexecPocoManageOrderTx: () =>
+                                    iexecPoco
+                                        .connect(requester)
+                                        .manageRequestOrder(
+                                            createOrderOperation(
+                                                orders.requester,
+                                                OrderOperationEnum.SIGN,
+                                            ),
+                                        ),
+                            },
+                        };
                         providerAddress = orderManagement[asset].providerAddress;
                         order = orderManagement[asset].order;
                         orderHash = iexecWrapper.hashOrder(order);
