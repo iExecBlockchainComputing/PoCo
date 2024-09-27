@@ -81,7 +81,7 @@ describe('IexecPoco1', () => {
     let [randomAddress, randomSignature]: string[] = [];
     let randomContract: OwnableMock;
     let erc1271MockContract: ERC1271Mock;
-    let iexecPocoManageOrderTx: () => Promise<ContractTransaction>;
+    let iexecPocoSignManageOrder: () => Promise<ContractTransaction>;
     let providerAddress: string;
     let order:
         | IexecLibOrders_v5.AppOrderStruct
@@ -91,7 +91,7 @@ describe('IexecPoco1', () => {
     let orderHash: string;
     let orderManagement: {
         [key: string]: {
-            iexecPocoManageOrderTx: () => Promise<ContractTransaction>;
+            iexecPocoSignManageOrder: () => Promise<ContractTransaction>;
             providerAddress: string;
             order:
                 | IexecLibOrders_v5.AppOrderStruct
@@ -242,7 +242,7 @@ describe('IexecPoco1', () => {
                             app: {
                                 providerAddress: appProvider.address,
                                 order: orders.app,
-                                iexecPocoManageOrderTx: () =>
+                                iexecPocoSignManageOrder: () =>
                                     iexecPoco
                                         .connect(appProvider)
                                         .manageAppOrder(
@@ -255,7 +255,7 @@ describe('IexecPoco1', () => {
                             dataset: {
                                 providerAddress: datasetProvider.address,
                                 order: orders.dataset,
-                                iexecPocoManageOrderTx: () =>
+                                iexecPocoSignManageOrder: () =>
                                     iexecPoco
                                         .connect(datasetProvider)
                                         .manageDatasetOrder(
@@ -268,7 +268,7 @@ describe('IexecPoco1', () => {
                             workerpool: {
                                 providerAddress: scheduler.address,
                                 order: orders.workerpool,
-                                iexecPocoManageOrderTx: () =>
+                                iexecPocoSignManageOrder: () =>
                                     iexecPoco
                                         .connect(scheduler)
                                         .manageWorkerpoolOrder(
@@ -281,7 +281,7 @@ describe('IexecPoco1', () => {
                             requester: {
                                 providerAddress: requester.address,
                                 order: orders.requester,
-                                iexecPocoManageOrderTx: () =>
+                                iexecPocoSignManageOrder: () =>
                                     iexecPoco
                                         .connect(requester)
                                         .manageRequestOrder(
@@ -298,11 +298,11 @@ describe('IexecPoco1', () => {
                         providerAddress = orderManagement[asset].providerAddress;
                         order = orderManagement[asset].order;
                         orderHash = iexecWrapper.hashOrder(order);
-                        iexecPocoManageOrderTx = orderManagement[asset].iexecPocoManageOrderTx;
+                        iexecPocoSignManageOrder = orderManagement[asset].iexecPocoSignManageOrder;
                     });
 
                     it(`Should ${verifyPreSignatureFunction} when the presignature is valid for ${asset}`, async () => {
-                        await iexecPocoManageOrderTx().then((tx) => tx.wait());
+                        await iexecPocoSignManageOrder().then((tx) => tx.wait());
 
                         const args = [
                             providerAddress,
@@ -328,7 +328,7 @@ describe('IexecPoco1', () => {
                     });
 
                     it(`Should fail to ${verifyPreSignatureFunction} with an incorrect account for presignature for ${asset}`, async () => {
-                        await iexecPocoManageOrderTx().then((tx) => tx.wait());
+                        await iexecPocoSignManageOrder().then((tx) => tx.wait());
 
                         const args = [
                             anyone.address,
@@ -360,7 +360,7 @@ describe('IexecPoco1', () => {
                     });
 
                     it(`Should fail to ${verifyPreSignatureFunction} when account is address(0) for ${asset}`, async () => {
-                        await iexecPocoManageOrderTx().then((tx) => tx.wait());
+                        await iexecPocoSignManageOrder().then((tx) => tx.wait());
 
                         const args = [
                             AddressZero,
