@@ -13,6 +13,7 @@ import {
     IERC721__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    IexecLibOrders_v5,
     IexecPocoAccessors__factory,
     OwnableMock,
     OwnableMock__factory,
@@ -77,10 +78,22 @@ describe('IexecPoco1', () => {
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
     let orders: IexecOrders;
-    let appOrderHash: string;
+    let [appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash]: string[] = [];
     let [randomAddress, randomSignature]: string[] = [];
     let randomContract: OwnableMock;
     let erc1271MockContract: ERC1271Mock;
+    let orderManagement: {
+        [key: string]: {
+            iexecPocoManageOrder: (orderArgs: any) => Promise<any>;
+            iexecPocoManageOrderArgs:
+                | IexecLibOrders_v5.AppOrderOperationStruct
+                | IexecLibOrders_v5.DatasetOrderOperationStruct
+                | IexecLibOrders_v5.WorkerpoolOrderOperationStruct
+                | IexecLibOrders_v5.RequestOrderOperationStruct;
+            providerAddress: string;
+            orderHash: string;
+        };
+    };
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
@@ -122,8 +135,47 @@ describe('IexecPoco1', () => {
             tag: teeDealTag,
             volume: volume,
         });
-        appOrderHash = iexecWrapper.hashOrder(orders.app);
-
+        ({ appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash } =
+            iexecWrapper.hashOrders(orders));
+        orderManagement = {
+            app: {
+                providerAddress: appProvider.address,
+                orderHash: appOrderHash,
+                iexecPocoManageOrder: (orderArgs) =>
+                    iexecPoco.connect(appProvider).manageAppOrder(orderArgs),
+                iexecPocoManageOrderArgs: createOrderOperation(orders.app, OrderOperationEnum.SIGN),
+            },
+            dataset: {
+                providerAddress: datasetProvider.address,
+                orderHash: datasetOrderHash,
+                iexecPocoManageOrder: (orderArgs) =>
+                    iexecPoco.connect(datasetProvider).manageDatasetOrder(orderArgs),
+                iexecPocoManageOrderArgs: createOrderOperation(
+                    orders.dataset,
+                    OrderOperationEnum.SIGN,
+                ),
+            },
+            workerpool: {
+                providerAddress: scheduler.address,
+                orderHash: workerpoolOrderHash,
+                iexecPocoManageOrder: (orderArgs) =>
+                    iexecPoco.connect(scheduler).manageWorkerpoolOrder(orderArgs),
+                iexecPocoManageOrderArgs: createOrderOperation(
+                    orders.workerpool,
+                    OrderOperationEnum.SIGN,
+                ),
+            },
+            requester: {
+                providerAddress: requester.address,
+                orderHash: requestOrderHash,
+                iexecPocoManageOrder: (orderArgs) =>
+                    iexecPoco.connect(requester).manageRequestOrder(orderArgs),
+                iexecPocoManageOrderArgs: createOrderOperation(
+                    orders.requester,
+                    OrderOperationEnum.SIGN,
+                ),
+            },
+        };
         const randomWallet = ethers.Wallet.createRandom();
         randomAddress = randomWallet.address;
         randomSignature = await randomWallet.signMessage('random');
@@ -216,91 +268,91 @@ describe('IexecPoco1', () => {
         });
     });
 
-    describe('Verify presignature', () => {
-        ['verifyPresignature', 'verifyPresignatureOrSignature'].forEach(
-            (verifyPreSignatureFunction) => {
-                it(`Should ${verifyPreSignatureFunction} when the presignature is valid`, async () => {
-                    await iexecPoco
-                        .connect(appProvider)
-                        .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
-                        .then((tx) => tx.wait());
+    describe.only('Verify presignature', () => {
+        ['app', 'dataset', 'workerpool', 'requester'].forEach((asset) => {
+            ['verifyPresignature', 'verifyPresignatureOrSignature'].forEach(
+                (verifyPreSignatureFunction) => {
+                    it(`Should ${verifyPreSignatureFunction} when the presignature is valid for ${asset}`, async () => {
+                        await orderManagement[asset]
+                            .iexecPocoManageOrder(orderManagement[asset].iexecPocoManageOrderArgs)
+                            .then((tx) => tx.wait());
 
-                    const args = [
-                        appProvider.address,
-                        appOrderHash,
-                        ...(verifyPreSignatureFunction === 'verifyPresignature' ? [] : ['0x']),
-                    ];
+                        const args = [
+                            orderManagement[asset].providerAddress,
+                            orderManagement[asset].orderHash,
+                            ...(verifyPreSignatureFunction === 'verifyPresignature' ? [] : ['0x']),
+                        ];
 
-                    expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be.true;
-                });
+                        expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be
+                            .true;
+                    });
 
-                it(`Should fail to ${verifyPreSignatureFunction} when not presigned and invalid signature`, async () => {
-                    const args = [
-                        appProvider.address,
-                        appOrderHash,
-                        ...(verifyPreSignatureFunction === 'verifyPresignature'
-                            ? []
-                            : [ethers.Wallet.createRandom().signMessage(someMessage)]),
-                    ];
+                    it(`Should fail to ${verifyPreSignatureFunction} when not presigned and invalid signature for ${asset}`, async () => {
+                        const args = [
+                            orderManagement[asset].providerAddress,
+                            orderManagement[asset].orderHash,
+                            ...(verifyPreSignatureFunction === 'verifyPresignature'
+                                ? []
+                                : [ethers.Wallet.createRandom().signMessage('Some message')]),
+                        ];
 
-                    expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be
-                        .false;
-                });
+                        expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be
+                            .false;
+                    });
 
-                it(`Should fail to ${verifyPreSignatureFunction} with an incorrect account for presignature`, async () => {
-                    await iexecPoco
-                        .connect(appProvider)
-                        .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
-                        .then((tx) => tx.wait());
+                    it(`Should fail to ${verifyPreSignatureFunction} with an incorrect account for presignature for ${asset}`, async () => {
+                        await orderManagement[asset]
+                            .iexecPocoManageOrder(orderManagement[asset].iexecPocoManageOrderArgs)
+                            .then((tx) => tx.wait());
 
-                    const args = [
-                        anyone.address,
-                        appOrderHash,
-                        ...(verifyPreSignatureFunction === 'verifyPresignature'
-                            ? []
-                            : [ethers.Wallet.createRandom().signMessage(someMessage)]),
-                    ];
+                        const args = [
+                            anyone.address,
+                            orderManagement[asset].orderHash,
+                            ...(verifyPreSignatureFunction === 'verifyPresignature'
+                                ? []
+                                : [ethers.Wallet.createRandom().signMessage('Some message')]),
+                        ];
 
-                    expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be
-                        .false;
-                });
+                        expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be
+                            .false;
+                    });
 
-                it(`Should fail to ${verifyPreSignatureFunction} for an unknown messageHash`, async () => {
-                    const unknownMessageHash = ethers.utils.keccak256(
-                        ethers.utils.toUtf8Bytes('unknown'),
-                    );
+                    it(`Should fail to ${verifyPreSignatureFunction} for an unknown messageHash for ${asset}`, async () => {
+                        const unknownMessageHash = ethers.utils.keccak256(
+                            ethers.utils.toUtf8Bytes('unknown'),
+                        );
 
-                    const args = [
-                        appProvider.address,
-                        unknownMessageHash,
-                        ...(verifyPreSignatureFunction === 'verifyPresignature'
-                            ? []
-                            : [ethers.Wallet.createRandom().signMessage(unknownMessageHash)]),
-                    ];
+                        const args = [
+                            orderManagement[asset].providerAddress,
+                            unknownMessageHash,
+                            ...(verifyPreSignatureFunction === 'verifyPresignature'
+                                ? []
+                                : [ethers.Wallet.createRandom().signMessage(unknownMessageHash)]),
+                        ];
 
-                    expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be
-                        .false;
-                });
+                        expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be
+                            .false;
+                    });
 
-                it(`Should fail to ${verifyPreSignatureFunction} when account is address(0)`, async () => {
-                    await iexecPoco
-                        .connect(appProvider)
-                        .manageAppOrder(createOrderOperation(orders.app, OrderOperationEnum.SIGN))
-                        .then((tx) => tx.wait());
+                    it(`Should fail to ${verifyPreSignatureFunction} when account is address(0) for ${asset}`, async () => {
+                        await orderManagement[asset]
+                            .iexecPocoManageOrder(orderManagement[asset].iexecPocoManageOrderArgs)
+                            .then((tx) => tx.wait());
 
-                    const args = [
-                        ethers.constants.AddressZero,
-                        appOrderHash,
-                        ...(verifyPreSignatureFunction === 'verifyPresignature'
-                            ? []
-                            : [ethers.Wallet.createRandom().signMessage(someMessage)]),
-                    ];
+                        const args = [
+                            AddressZero,
+                            orderManagement[asset].orderHash,
+                            ...(verifyPreSignatureFunction === 'verifyPresignature'
+                                ? []
+                                : [ethers.Wallet.createRandom().signMessage('Some message')]),
+                        ];
 
-                    expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be
-                        .false;
-                });
-            },
-        );
+                        expect(await iexecPocoContract[verifyPreSignatureFunction](...args)).to.be
+                            .false;
+                    });
+                },
+            );
+        });
     });
 
     describe('Match orders', () => {
