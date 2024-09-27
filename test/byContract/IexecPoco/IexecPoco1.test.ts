@@ -295,10 +295,9 @@ describe('IexecPoco1', () => {
                     });
 
                     beforeEach(() => {
-                        providerAddress = orderManagement[asset].providerAddress;
-                        order = orderManagement[asset].order;
+                        ({ providerAddress, order, iexecPocoSignManageOrder } =
+                            orderManagement[asset]);
                         orderHash = iexecWrapper.hashOrder(order);
-                        iexecPocoSignManageOrder = orderManagement[asset].iexecPocoSignManageOrder;
                     });
 
                     it(`Should ${verifyPreSignatureFunction} when the presignature is valid for ${asset}`, async () => {
