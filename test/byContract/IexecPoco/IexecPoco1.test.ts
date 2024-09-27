@@ -268,7 +268,7 @@ describe('IexecPoco1', () => {
         });
     });
 
-    describe.only('Verify presignature', () => {
+    describe('Verify presignature', () => {
         ['app', 'dataset', 'workerpool', 'requester'].forEach((asset) => {
             ['verifyPresignature', 'verifyPresignatureOrSignature'].forEach(
                 (verifyPreSignatureFunction) => {
