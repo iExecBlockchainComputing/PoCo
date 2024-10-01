@@ -1,5 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
+import { time } from '@nomicfoundation/hardhat-network-helpers';
 import hre, { ethers } from 'hardhat';
 import CONFIG from '../../config/config.json';
 import {
@@ -83,22 +84,20 @@ export async function addModulesToProxy() {
         0,
     );
     console.log(`Expected Timelock proposer: ${timelockAdminAddress}`);
+    /*
+    // Enable this in production
     const [proposer] = await ethers.getSigners();
     console.log(`Actual Timelock proposer: ${proposer.address}`);
     if (proposer.address != timelockAdminAddress) {
         console.error('Bad proposer');
         process.exit(1);
     }
-    const timelockAdminSigner =
-        //await ethers.getImpersonatedSigner(timelockAdminAddress);
-        proposer;
-    /*
-    await scheduleUpgrade();
-    console.log('Upgrade is proposed, stopping now.');
-    process.exit(0);
-    await time.increase(delay);
-    console.log('Time traveling..');
     */
+    const timelockAdminSigner = await ethers.getImpersonatedSigner(timelockAdminAddress);
+    //const timelockAdminSigner = proposer; // Enable this in production
+    await scheduleUpgrade();
+    await time.increase(delay); // Disable this in production
+    console.log('Time traveling..');
     await executeUpgrade();
 
     return erc1538ProxyAddress;
