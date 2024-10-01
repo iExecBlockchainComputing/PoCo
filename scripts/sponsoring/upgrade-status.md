@@ -26,6 +26,7 @@ Block#30158507: Mon Sep 23 2024 17:31:40 GMT+0200 (Central European Summer Time)
 Timelock proposer: 0x0B3a38b0A47aB0c5E8b208A703de366751Df5916
 ```
 - Tx: https://blockscout-bellecour.iex.ec/tx/0x59c94a0206187ff9cfe36bf380dfa012f25b51189e321ed70650827230ab8bd7
+- The ERC1538Proxy currently supports 96 functions.
 
 Now 7-days are required before executing linking of new modules.
 - Functions from `IexecOrderManagementDelegate`, `IexecPoco1Delegate`, `IexecPoco2Delegate` & `IexecPocoAccessorsDelegate` modules that will be added to proxy (or modified on proxy):
@@ -64,4 +65,18 @@ Now 7-days are required before executing linking of new modules.
 - transferOwnership(address);
 - viewDeal(bytes32);
 - viewTask(bytes32);
+```
+
+## Linking of these new modules to proxy is executed on TimelockControler
+
+```
+Block#30158507: Mon Sep 23 2024 17:31:40 GMT+0200 (Central European Summer Time) (timestamp:1727105500)
+Timelock proposer: 0x0B3a38b0A47aB0c5E8b208A703de366751Df5916
+```
+- Tx: 0x71b904f526a9be218d35748f57d74ef6da20d12c88f94cfa1ec5ae2de187cb98
+
+```
+[...]
+ERC1538Proxy supports 98 functions:
+[...]
 ```

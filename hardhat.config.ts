@@ -91,9 +91,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            // accounts: [
-            //     process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
-            // ],
             ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
             ...(isLocalFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
