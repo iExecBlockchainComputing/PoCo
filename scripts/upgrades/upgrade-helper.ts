@@ -37,7 +37,7 @@ async function printFunctions(erc1538ProxyAddress: string) {
 }
 
 function logTxData(x: ContractTransaction) {
-    console.log(`{ data: '${x.data}' }`);
+    console.log(x);
 }
 
 export { encodeModuleProxyUpdate, printBlockTime, printFunctions, logTxData };

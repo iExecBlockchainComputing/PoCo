@@ -1,6 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
-import { time } from '@nomicfoundation/hardhat-network-helpers';
 import hre, { ethers } from 'hardhat';
 import CONFIG from '../../config/config.json';
 import {
@@ -93,12 +92,13 @@ export async function addModulesToProxy() {
     const timelockAdminSigner =
         //await ethers.getImpersonatedSigner(timelockAdminAddress);
         proposer;
-
+    /*
     await scheduleUpgrade();
     console.log('Upgrade is proposed, stopping now.');
     process.exit(0);
     await time.increase(delay);
     console.log('Time traveling..');
+    */
     await executeUpgrade();
 
     return erc1538ProxyAddress;
@@ -109,7 +109,7 @@ export async function addModulesToProxy() {
             .scheduleBatch(...updateProxyArgs, delay)
             .then((tx) => {
                 logTxData(tx);
-                tx.wait();
+                return tx.wait();
             });
     }
 
@@ -122,7 +122,7 @@ export async function addModulesToProxy() {
             .executeBatch(...updateProxyArgs)
             .then((x) => {
                 logTxData(x);
-                x.wait();
+                return x.wait();
             });
         await printFunctions(erc1538ProxyAddress);
     }
