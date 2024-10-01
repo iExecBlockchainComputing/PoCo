@@ -222,6 +222,7 @@ Upgrade is proposed, stopping now.
 
 1. Execute upgrade
 
+From [1c5d486](https://github.com/iExecBlockchainComputing/PoCo/blob/1c5d486a90e14b8f1e5df96d90926861f103d6ea/scripts/sponsoring/1_add-modules-to-proxy.ts) commit:
 ```
 npx hardhat run scripts/sponsoring/1_add-modules-to-proxy.ts --network bellecour
 ```
