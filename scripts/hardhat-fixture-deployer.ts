@@ -6,7 +6,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
 import { IexecInterfaceNative__factory } from '../typechain';
 import { getIexecAccounts } from '../utils/poco-tools';
-import { addModulesToProxy } from './sponsoring/1_add-modules-to-proxy';
 const { resetNetworkToInitialState } = require('./common-test-snapshot');
 const deploy = require('../deploy/0_deploy');
 const deployEns = require('../deploy/1_deploy-ens');
@@ -21,13 +20,7 @@ async function resetNetworkAndDeployAllContracts() {
         await deployEns();
         proxyAddress = (await deployments.get('ERC1538Proxy')).address;
     } else {
-        if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY == 'true') {
-            // Upgrade Poco
-            //await deployModules();
-            proxyAddress = await addModulesToProxy();
-        } else {
-            proxyAddress = '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f';
-        }
+        proxyAddress = '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f';
         // Send RLCs to default accounts
         const srlcRichSigner = await ethers.getImpersonatedSigner(proxyAddress);
         const otherAccountInitAmount =
