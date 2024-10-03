@@ -1,0 +1,40 @@
+on:
+  push:
+    branches:
+      - feature/*
+      - bugfix/*
+      - develop
+      - release/*
+      - hotfix/*
+      - main
+      - v5
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Init
+        run: npm ci
+      - name: Run coverage
+        run: npm run coverage
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: iExecBlockchainComputing/PoCo
+      - name: Run static analysis with slither
+        uses: crytic/slither-action@v0.4.0
+        id: slither
+        with:
+          target: "contracts/tools/testing/slither/"
+          solc-version: '0.8.21'
+          slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
+          node-version: "20"
+          fail-on: none # TODO set this to high or other
+          sarif: results.sarif
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.slither.outputs.sarif }}

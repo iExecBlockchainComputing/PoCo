@@ -1,169 +1,89 @@
-node("master") {
-	stage("Choose Label") {
-		LABEL = "jenkins-agent-machine-1"
-	}
+// TODO[optionnal]: Use scripted pipeline
+pipeline {
+    environment {
+        nodeJsImage = 'node:18'
+    }
+    agent any
+    stages {
+        stage('Init') {
+            agent {
+                docker {
+                    reuseNode true
+                    image nodeJsImage
+                }
+            }
+            steps {
+                script {
+                    sh 'npm ci --production=false --no-progress'
+                    sh 'npm run build'
+                    sh 'npm run test-storage-layout'
+                    // Verify basic deployment. Might be removed at some point.
+                    sh 'npm run deploy'
+                }
+            }
+        }
+        stage('Hardhat tests') {
+            agent {
+                docker {
+                    reuseNode true
+                    image nodeJsImage
+                }
+            }
+            steps {
+                script {
+                    test()
+                }
+            }
+        }
+
+        /**
+         * Usage example:
+         * docker run --rm --entrypoint /bin/bash -v $(pwd):/share \
+         *  -e SOLC='<solc-version>' trailofbits/eth-security-toolbox -c \
+         *  'cd /share && solc-select install $SOLC && \
+         *  slither --solc-solcs-select $SOLC <contract-path>'
+         */
+        stage('Slither') {
+            agent {
+                docker {
+                    reuseNode true
+                    // At this time, trailofbits/eth-security-toolbox packages
+                    // an old slither version, hence we use another Docker image
+                    // (which is less user-friendly. Example: node not included)
+                    // See https://github.com/crytic/slither/issues/2207#issuecomment-1787222979
+                    // As discribed in the issue, version 0.8.3 is not compatible
+                    image 'ghcr.io/crytic/slither:0.10.0'
+                    args "-e SOLC='0.8.21' --entrypoint="
+                }
+            }
+            steps {
+                script {
+                    try {
+                        sh 'solc-select install $SOLC && slither --solc-solcs-select $SOLC contracts/tools/testing/slither/'
+                    } catch (err) {
+                        sh "echo ${STAGE_NAME} stage is unstable"
+                    }
+                }
+            }
+        }
+    }
 }
 
-pipeline {
+def test() {
+    try {
+        sh 'npm run coverage'
+    } catch (Exception e) {
+        echo 'Exception occurred: ' + e.toString()
+        runEachTestWithDedicatedLogFile()
+    } finally {
+        archiveArtifacts artifacts: 'coverage/**'
+    }
+}
 
-	environment {
-		registry = "nexus.intra.iex.ec"
-		tokenDockerImage = ""
-		nativeDockerImage = ""
-		buildWhenTagContains = "v"
-	}
-
-	agent {
-		node {
-			label "${LABEL}"
-		}
-	}
-
-	stages {
-
-		stage("Truffle tests - Public") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run autotest fast"
-					} finally {
-						archiveArtifacts artifacts: "logs/**"
-					}
-				}
-			}
-		}
-
-		stage("Truffle tests - KYC") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			environment {
-				KYC = 'true'
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run autotest fast"
-					} finally {
-						archiveArtifacts artifacts: "logs/**"
-					}
-				}
-			}
-		}
-
-		/*
-		Disable coverage 
-
-		stage("Solidity coverage - Public") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run coverage"
-					} finally {
-						archiveArtifacts artifacts: "coverage/**"
-					}
-				}
-			}
-		}
-
-		stage("Solidity coverage - KYC") {
-			agent {
-				docker {
-					image "node:14"
-					label "${LABEL}"
-				}
-			}
-			environment {
-				KYC = 'true'
-			}
-			steps {
-				script {
-					try {
-						sh "npm ci --production=false --no-progress"
-						sh "npm run coverage"
-					} finally {
-						archiveArtifacts artifacts: "coverage/**"
-					}
-				}
-			}
-		}
-
-		*/
-
-		stage("Log tag") {
-			when { expression { env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains) } }
-			steps{
-				sh "echo ${BRANCH_NAME}"
-				sh "echo ${TAG_NAME}"
-			}
-		}
-
-		stage("Native 5s image ") {
-			when {
-				expression {
-					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
-				}
-			}
-			steps {
-				script {
-					nethermindNative5secImage = docker.build(
-						registry + "/poco-chain:native-${TAG_NAME}-5s",
-						"--file testchains/nethermind.dockerfile" \
-						+ " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
-						+ " --build-arg CHAIN_TYPE=native" \
-						+ " --build-arg CHAIN_BLOCK_TIME=5" \
-						+ " --build-arg CHAIN_FORCE_SEALING=true" \
-						+ " --no-cache .")
-				}
-				script {
-					docker.withRegistry("https://" + registry, "nexus") {
-						nethermindNative5secImage.push()
-					}
-				}
-			}
-		}
-
-		stage("Token 5s image") {
-			when {
-				expression {
-					env.TAG_NAME != null && env.TAG_NAME.toString().contains(buildWhenTagContains)
-				}
-			}
-			steps {
-				script {
-					nethermindNative5secImage = docker.build(
-						registry + "/poco-chain:token-${TAG_NAME}-5s",
-						"--file testchains/nethermind.dockerfile" \
-						+ " --build-arg \"MNEMONIC=actual surround disorder swim upgrade devote digital misery truly verb slide final\"" \
-						+ " --build-arg CHAIN_TYPE=token" \
-						+ " --build-arg CHAIN_BLOCK_TIME=5" \
-						+ " --build-arg CHAIN_FORCE_SEALING=true" \
-						+ " --no-cache .")
-				}
-				script {
-					docker.withRegistry("https://" + registry, "nexus") {
-						nethermindNative5secImage.push()
-					}
-				}
-			}
-		}
-	}
+def runEachTestWithDedicatedLogFile() {
+    try {
+        sh './test.sh'
+    } finally {
+        archiveArtifacts artifacts: 'logs/**'
+    }
 }

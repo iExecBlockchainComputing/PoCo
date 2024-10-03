@@ -1,240 +1,389 @@
+// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-/******************************************************************************
- * Copyright 2020 IEXEC BLOCKCHAIN TECH                                       *
- *                                                                            *
- * Licensed under the Apache License, Version 2.0 (the "License");            *
- * you may not use this file except in compliance with the License.           *
- * You may obtain a copy of the License at                                    *
- *                                                                            *
- *     http://www.apache.org/licenses/LICENSE-2.0                             *
- *                                                                            *
- * Unless required by applicable law or agreed to in writing, software        *
- * distributed under the License is distributed on an "AS IS" BASIS,          *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
- * See the License for the specific language governing permissions and        *
- * limitations under the License.                                             *
- ******************************************************************************/
+pragma solidity ^0.8.0;
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
+import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 
-import "./IexecERC20Core.sol";
-import "./SignatureVerifier.sol";
-import "../DelegateBase.sol";
-import "../interfaces/IexecPoco1.sol";
+import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
+import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
+import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
+import {DelegateBase} from "../DelegateBase.v8.sol";
+import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
+import {IexecEscrow} from "./IexecEscrow.v8.sol";
+import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
+import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
-
-struct Matching
-{
-	bytes   apporderStruct;
-	bytes32 apporderHash;
-	address appOwner;
-	bytes   datasetorderStruct;
-	bytes32 datasetorderHash;
-	address datasetOwner;
-	bytes   workerpoolorderStruct;
-	bytes32 workerpoolorderHash;
-	address workerpoolOwner;
-	bytes   requestorderStruct;
-	bytes32 requestorderHash;
-	bool    hasDataset;
+struct Matching {
+    bytes32 apporderHash;
+    address appOwner;
+    bytes32 datasetorderHash;
+    address datasetOwner;
+    bytes32 workerpoolorderHash;
+    address workerpoolOwner;
+    bytes32 requestorderHash;
+    bool hasDataset;
 }
 
-contract IexecPoco1Delegate is IexecPoco1, DelegateBase, IexecERC20Core, SignatureVerifier
+contract IexecPoco1Delegate is
+    IexecPoco1,
+    DelegateBase,
+    IexecEscrow,
+    SignatureVerifier,
+    IexecPocoCommonDelegate
 {
-	using SafeMathExtended  for uint256;
-	using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
-	using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
-	using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
-	using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
+    using Math for uint256;
+    using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
+    using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
+    using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
+    using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
-	/***************************************************************************
-	 *                           ODB order signature                           *
-	 ***************************************************************************/
-	function verifySignature(address _identity, bytes32 _hash, bytes calldata _signature)
-	external view override returns (bool)
-	{
-		return _checkSignature(_identity, _hash, _signature);
-	}
+    /***************************************************************************
+     *                           ODB order signature                           *
+     ***************************************************************************/
+    function verifySignature(
+        address _identity,
+        bytes32 _hash,
+        bytes calldata _signature
+    ) external view override returns (bool) {
+        return _verifySignature(_identity, _hash, _signature);
+    }
 
-	function verifyPresignature(address _identity, bytes32 _hash)
-	external view override returns (bool)
-	{
-		return _checkPresignature(_identity, _hash);
-	}
+    function verifyPresignature(
+        address _identity,
+        bytes32 _hash
+    ) external view override returns (bool) {
+        return _verifyPresignature(_identity, _hash);
+    }
 
-	function verifyPresignatureOrSignature(address _identity, bytes32 _hash, bytes calldata _signature)
-	external view override returns (bool)
-	{
-		return _checkPresignatureOrSignature(_identity, _hash, _signature);
-	}
+    function verifyPresignatureOrSignature(
+        address _identity,
+        bytes32 _hash,
+        bytes calldata _signature
+    ) external view override returns (bool) {
+        return _verifySignatureOrPresignature(_identity, _hash, _signature);
+    }
 
-	/***************************************************************************
-	 *                           ODB order matching                            *
-	 ***************************************************************************/
-	// should be external
-	function matchOrders(
-		IexecLibOrders_v5.AppOrder        memory _apporder,
-		IexecLibOrders_v5.DatasetOrder    memory _datasetorder,
-		IexecLibOrders_v5.WorkerpoolOrder memory _workerpoolorder,
-		IexecLibOrders_v5.RequestOrder    memory _requestorder)
-	public override returns (bytes32)
-	{
-		/**
-		 * Check orders compatibility
-		 */
+    /***************************************************************************
+     *                           ODB order matching                            *
+     ***************************************************************************/
+    /**
+     * Match orders. The requester gets debited.
+     *
+     * @param _apporder The app order.
+     * @param _datasetorder The dataset order.
+     * @param _workerpoolorder The workerpool order.
+     * @param _requestorder The requester order.
+     */
+    function matchOrders(
+        IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
+        IexecLibOrders_v5.RequestOrder calldata _requestorder
+    ) external override returns (bytes32) {
+        return
+            _matchOrders(
+                _apporder,
+                _datasetorder,
+                _workerpoolorder,
+                _requestorder,
+                _requestorder.requester
+            );
+    }
 
-		// computation environment & allowed enough funds
-		bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
-		require(_requestorder.category           == _workerpoolorder.category,        'iExecV5-matchOrders-0x00');
-		require(_requestorder.category            < m_categories.length,              'iExecV5-matchOrders-0x01');
-		require(_requestorder.trust              <= _workerpoolorder.trust,           'iExecV5-matchOrders-0x02');
-		require(_requestorder.appmaxprice        >= _apporder.appprice,               'iExecV5-matchOrders-0x03');
-		require(_requestorder.datasetmaxprice    >= _datasetorder.datasetprice,       'iExecV5-matchOrders-0x04');
-		require(_requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice, 'iExecV5-matchOrders-0x05');
-		require(tag & ~_workerpoolorder.tag      == 0x0,                              'iExecV5-matchOrders-0x06');
-		require((tag ^ _apporder.tag)[31] & 0x01 == 0x0,                              'iExecV5-matchOrders-0x07');
+    /**
+     * Sponsor match orders for a requester.
+     * Unlike the standard `matchOrders(..)` hook where the requester pays for
+     * the deal, this current hook makes it possible for any `msg.sender` to pay for
+     * a third party requester.
+     *
+     * @notice Be aware that anyone seeing a valid request order on the network
+     * (via an off-chain public marketplace, via a `sponsorMatchOrders(..)`
+     * pending transaction in the mempool or by any other means) might decide
+     * to call the standard `matchOrders(..)` hook which will result in the
+     * requester being debited instead. Therefore, such a front run would result
+     * in a loss of some of the requester funds deposited in the iExec account
+     * (a loss value equivalent to the price of the deal).
+     *
+     * @param _apporder The app order.
+     * @param _datasetorder The dataset order.
+     * @param _workerpoolorder The workerpool order.
+     * @param _requestorder The requester order.
+     */
+    function sponsorMatchOrders(
+        IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
+        IexecLibOrders_v5.RequestOrder calldata _requestorder
+    ) external override returns (bytes32) {
+        address sponsor = msg.sender;
+        bytes32 dealId = _matchOrders(
+            _apporder,
+            _datasetorder,
+            _workerpoolorder,
+            _requestorder,
+            sponsor
+        );
+        emit DealSponsored(dealId, sponsor);
+        return dealId;
+    }
 
-		// Check matching and restrictions
-		require(_requestorder.app     == _apporder.app,                                                                                                                   'iExecV5-matchOrders-0x10');
-		require(_requestorder.dataset == _datasetorder.dataset,                                                                                                           'iExecV5-matchOrders-0x11');
-		require(_requestorder.workerpool           == address(0) || _checkIdentity(_requestorder.workerpool,           _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x12'); // requestorder.workerpool is a restriction
-		require(_apporder.datasetrestrict          == address(0) || _checkIdentity(_apporder.datasetrestrict,          _datasetorder.dataset,       GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x13');
-		require(_apporder.workerpoolrestrict       == address(0) || _checkIdentity(_apporder.workerpoolrestrict,       _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x14');
-		require(_apporder.requesterrestrict        == address(0) || _checkIdentity(_apporder.requesterrestrict,        _requestorder.requester,     GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x15');
-		require(_datasetorder.apprestrict          == address(0) || _checkIdentity(_datasetorder.apprestrict,          _apporder.app,               GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x16');
-		require(_datasetorder.workerpoolrestrict   == address(0) || _checkIdentity(_datasetorder.workerpoolrestrict,   _workerpoolorder.workerpool, GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x17');
-		require(_datasetorder.requesterrestrict    == address(0) || _checkIdentity(_datasetorder.requesterrestrict,    _requestorder.requester,     GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x18');
-		require(_workerpoolorder.apprestrict       == address(0) || _checkIdentity(_workerpoolorder.apprestrict,       _apporder.app,               GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x19');
-		require(_workerpoolorder.datasetrestrict   == address(0) || _checkIdentity(_workerpoolorder.datasetrestrict,   _datasetorder.dataset,       GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x1a');
-		require(_workerpoolorder.requesterrestrict == address(0) || _checkIdentity(_workerpoolorder.requesterrestrict, _requestorder.requester,     GROUPMEMBER_PURPOSE), 'iExecV5-matchOrders-0x1b');
+    /**
+     * Match orders and specify a sponsor in charge of paying for the deal.
+     *
+     * @param _apporder The app order.
+     * @param _datasetorder The dataset order.
+     * @param _workerpoolorder The workerpool order.
+     * @param _requestorder The requester order.
+     * @param _sponsor The sponsor in charge of paying the deal.
+     */
+    function _matchOrders(
+        IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
+        IexecLibOrders_v5.RequestOrder calldata _requestorder,
+        address _sponsor
+    ) private returns (bytes32) {
+        /**
+         * Check orders compatibility
+         */
 
-		/**
-		 * Check orders authenticity
-		 */
-		Matching memory ids;
-		ids.hasDataset = _datasetorder.dataset != address(0);
+        // computation environment & allowed enough funds
+        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+        require(_requestorder.category == _workerpoolorder.category, "iExecV5-matchOrders-0x00");
+        require(_requestorder.category < m_categories.length, "iExecV5-matchOrders-0x01");
+        require(_requestorder.trust <= _workerpoolorder.trust, "iExecV5-matchOrders-0x02");
+        require(_requestorder.appmaxprice >= _apporder.appprice, "iExecV5-matchOrders-0x03");
+        require(
+            _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
+            "iExecV5-matchOrders-0x04"
+        );
+        require(
+            _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
+            "iExecV5-matchOrders-0x05"
+        );
+        require(tag & ~_workerpoolorder.tag == 0x0, "iExecV5-matchOrders-0x06");
+        require((tag ^ _apporder.tag)[31] & 0x01 == 0x0, "iExecV5-matchOrders-0x07");
 
-		// app
-		ids.apporderStruct = _toEthTypedStruct(_apporder.hash(), EIP712DOMAIN_SEPARATOR);
-		ids.apporderHash   = keccak256(ids.apporderStruct);
-		ids.appOwner       = App(_apporder.app).owner();
+        // Check matching and restrictions
+        require(_requestorder.app == _apporder.app, "iExecV5-matchOrders-0x10");
+        require(_requestorder.dataset == _datasetorder.dataset, "iExecV5-matchOrders-0x11");
+        require(
+            _isAccountAuthorizedByRestriction(
+                _requestorder.workerpool,
+                _workerpoolorder.workerpool
+            ),
+            "iExecV5-matchOrders-0x12"
+        ); // requestorder.workerpool is a restriction
+        require(
+            _isAccountAuthorizedByRestriction(_apporder.datasetrestrict, _datasetorder.dataset),
+            "iExecV5-matchOrders-0x13"
+        );
+        require(
+            _isAccountAuthorizedByRestriction(
+                _apporder.workerpoolrestrict,
+                _workerpoolorder.workerpool
+            ),
+            "iExecV5-matchOrders-0x14"
+        );
+        require(
+            _isAccountAuthorizedByRestriction(_apporder.requesterrestrict, _requestorder.requester),
+            "iExecV5-matchOrders-0x15"
+        );
+        require(
+            _isAccountAuthorizedByRestriction(_datasetorder.apprestrict, _apporder.app),
+            "iExecV5-matchOrders-0x16"
+        );
+        require(
+            _isAccountAuthorizedByRestriction(
+                _datasetorder.workerpoolrestrict,
+                _workerpoolorder.workerpool
+            ),
+            "iExecV5-matchOrders-0x17"
+        );
+        require(
+            _isAccountAuthorizedByRestriction(
+                _datasetorder.requesterrestrict,
+                _requestorder.requester
+            ),
+            "iExecV5-matchOrders-0x18"
+        );
+        require(
+            _isAccountAuthorizedByRestriction(_workerpoolorder.apprestrict, _apporder.app),
+            "iExecV5-matchOrders-0x19"
+        );
+        require(
+            _isAccountAuthorizedByRestriction(
+                _workerpoolorder.datasetrestrict,
+                _datasetorder.dataset
+            ),
+            "iExecV5-matchOrders-0x1a"
+        );
+        require(
+            _isAccountAuthorizedByRestriction(
+                _workerpoolorder.requesterrestrict,
+                _requestorder.requester
+            ),
+            "iExecV5-matchOrders-0x1b"
+        );
 
-		require(m_appregistry.isRegistered(_apporder.app),                                       'iExecV5-matchOrders-0x20');
-		require(_checkPresignatureOrSignature(ids.appOwner, ids.apporderStruct, _apporder.sign), 'iExecV5-matchOrders-0x21');
-		require(_isAuthorized(ids.appOwner),                                                     'iExecV5-matchOrders-0x22');
+        /**
+         * Check orders authenticity
+         */
+        //slither-disable-next-line uninitialized-local
+        Matching memory ids;
+        ids.hasDataset = _datasetorder.dataset != address(0);
 
-		// dataset
-		if (ids.hasDataset) // only check if dataset is enabled
-		{
-			ids.datasetorderStruct = _toEthTypedStruct(_datasetorder.hash(), EIP712DOMAIN_SEPARATOR);
-			ids.datasetorderHash   = keccak256(ids.datasetorderStruct);
-			ids.datasetOwner       = Dataset(_datasetorder.dataset).owner();
+        // app
+        ids.apporderHash = _toTypedDataHash(_apporder.hash());
+        ids.appOwner = IERC5313(_apporder.app).owner();
 
-			require(m_datasetregistry.isRegistered(_datasetorder.dataset),                                       'iExecV5-matchOrders-0x30');
-			require(_checkPresignatureOrSignature(ids.datasetOwner, ids.datasetorderStruct, _datasetorder.sign), 'iExecV5-matchOrders-0x31');
-			require(_isAuthorized(ids.datasetOwner),                                                             'iExecV5-matchOrders-0x32');
-		}
+        require(m_appregistry.isRegistered(_apporder.app), "iExecV5-matchOrders-0x20");
+        require(
+            _verifySignatureOrPresignature(ids.appOwner, ids.apporderHash, _apporder.sign),
+            "iExecV5-matchOrders-0x21"
+        );
 
-		// workerpool
-		ids.workerpoolorderStruct = _toEthTypedStruct(_workerpoolorder.hash(), EIP712DOMAIN_SEPARATOR);
-		ids.workerpoolorderHash   = keccak256(ids.workerpoolorderStruct);
-		ids.workerpoolOwner       = Workerpool(_workerpoolorder.workerpool).owner();
+        // dataset
+        if (ids.hasDataset) {
+            // only check if dataset is enabled
+            ids.datasetorderHash = _toTypedDataHash(_datasetorder.hash());
+            ids.datasetOwner = IERC5313(_datasetorder.dataset).owner();
 
-		require(m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),                                       'iExecV5-matchOrders-0x40');
-		require(_checkPresignatureOrSignature(ids.workerpoolOwner, ids.workerpoolorderStruct, _workerpoolorder.sign), 'iExecV5-matchOrders-0x41');
-		require(_isAuthorized(ids.workerpoolOwner),                                                                   'iExecV5-matchOrders-0x42');
+            require(
+                m_datasetregistry.isRegistered(_datasetorder.dataset),
+                "iExecV5-matchOrders-0x30"
+            );
+            require(
+                _verifySignatureOrPresignature(
+                    ids.datasetOwner,
+                    ids.datasetorderHash,
+                    _datasetorder.sign
+                ),
+                "iExecV5-matchOrders-0x31"
+            );
+        }
 
-		// request
-		ids.requestorderStruct = _toEthTypedStruct(_requestorder.hash(), EIP712DOMAIN_SEPARATOR);
-		ids.requestorderHash   = keccak256(ids.requestorderStruct);
-		require(_checkPresignatureOrSignature(_requestorder.requester, ids.requestorderStruct, _requestorder.sign), 'iExecV5-matchOrders-0x50');
-		require(_isAuthorized(_requestorder.requester),                                                             'iExecV5-matchOrders-0x51');
+        // workerpool
+        ids.workerpoolorderHash = _toTypedDataHash(_workerpoolorder.hash());
+        ids.workerpoolOwner = IERC5313(_workerpoolorder.workerpool).owner();
 
-		/**
-		 * Check availability
-		 */
-		uint256 volume;
-		volume =                             _apporder.volume.sub       (m_consumed[ids.apporderHash       ]);
-		volume = ids.hasDataset ? volume.min(_datasetorder.volume.sub   (m_consumed[ids.datasetorderHash   ])) : volume;
-		volume =                  volume.min(_workerpoolorder.volume.sub(m_consumed[ids.workerpoolorderHash]));
-		volume =                  volume.min(_requestorder.volume.sub   (m_consumed[ids.requestorderHash   ]));
-		require(volume > 0, 'iExecV5-matchOrders-0x60');
+        require(
+            m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),
+            "iExecV5-matchOrders-0x40"
+        );
+        require(
+            _verifySignatureOrPresignature(
+                ids.workerpoolOwner,
+                ids.workerpoolorderHash,
+                _workerpoolorder.sign
+            ),
+            "iExecV5-matchOrders-0x41"
+        );
 
-		/**
-		 * Record
-		 */
-		bytes32 dealid = keccak256(abi.encodePacked(
-			ids.requestorderHash,            // requestHash
-			m_consumed[ids.requestorderHash] // idx of first subtask
-		));
+        // request
+        ids.requestorderHash = _toTypedDataHash(_requestorder.hash());
+        require(
+            _verifySignatureOrPresignature(
+                _requestorder.requester,
+                ids.requestorderHash,
+                _requestorder.sign
+            ),
+            "iExecV5-matchOrders-0x50"
+        );
 
-		IexecLibCore_v5.Deal storage deal = m_deals[dealid];
-		deal.app.pointer          = _apporder.app;
-		deal.app.owner            = ids.appOwner;
-		deal.app.price            = _apporder.appprice;
-		deal.dataset.owner        = ids.datasetOwner;
-		deal.dataset.pointer      = _datasetorder.dataset;
-		deal.dataset.price        = ids.hasDataset ? _datasetorder.datasetprice : 0;
-		deal.workerpool.pointer   = _workerpoolorder.workerpool;
-		deal.workerpool.owner     = ids.workerpoolOwner;
-		deal.workerpool.price     = _workerpoolorder.workerpoolprice;
-		deal.trust                = _requestorder.trust.max(1);
-		deal.category             = _requestorder.category;
-		deal.tag                  = tag;
-		deal.requester            = _requestorder.requester;
-		deal.beneficiary          = _requestorder.beneficiary;
-		deal.callback             = _requestorder.callback;
-		deal.params               = _requestorder.params;
-		deal.startTime            = now;
-		deal.botFirst             = m_consumed[ids.requestorderHash];
-		deal.botSize              = volume;
-		deal.workerStake          = _workerpoolorder.workerpoolprice.percentage(Workerpool(_workerpoolorder.workerpool).m_workerStakeRatioPolicy());
-		deal.schedulerRewardRatio = Workerpool(_workerpoolorder.workerpool).m_schedulerRewardRatioPolicy();
+        /**
+         * Check availability
+         */
+        uint256 volume = _computeDealVolume(
+            _apporder.volume,
+            ids.apporderHash,
+            ids.hasDataset,
+            _datasetorder.volume,
+            ids.datasetorderHash,
+            _workerpoolorder.volume,
+            ids.workerpoolorderHash,
+            _requestorder.volume,
+            ids.requestorderHash
+        );
+        require(volume > 0, "iExecV5-matchOrders-0x60");
 
-		/**
-		 * Update consumed
-		 */
-		m_consumed[ids.apporderHash       ] = m_consumed[ids.apporderHash       ].add(                 volume    );
-		m_consumed[ids.datasetorderHash   ] = m_consumed[ids.datasetorderHash   ].add(ids.hasDataset ? volume : 0);
-		m_consumed[ids.workerpoolorderHash] = m_consumed[ids.workerpoolorderHash].add(                 volume    );
-		m_consumed[ids.requestorderHash   ] = m_consumed[ids.requestorderHash   ].add(                 volume    );
+        /**
+         * Record
+         */
+        bytes32 dealid = keccak256(
+            abi.encodePacked(
+                ids.requestorderHash, // requestHash
+                m_consumed[ids.requestorderHash] // idx of first subtask
+            )
+        );
 
-		/**
-		 * Lock
-		 */
-		lock(
-			deal.requester,
-			deal.app.price
-			.add(deal.dataset.price)
-			.add(deal.workerpool.price)
-			.mul(volume)
-		);
-		lock(
-			deal.workerpool.owner,
-			deal.workerpool.price
-			.percentage(WORKERPOOL_STAKE_RATIO) // ORDER IS IMPORTANT HERE!
-			.mul(volume)                        // ORDER IS IMPORTANT HERE!
-		);
+        IexecLibCore_v5.Deal storage deal = m_deals[dealid];
+        deal.app.pointer = _apporder.app;
+        deal.app.owner = ids.appOwner;
+        deal.app.price = _apporder.appprice;
+        deal.dataset.owner = ids.datasetOwner;
+        deal.dataset.pointer = _datasetorder.dataset;
+        deal.dataset.price = ids.hasDataset ? _datasetorder.datasetprice : 0;
+        deal.workerpool.pointer = _workerpoolorder.workerpool;
+        deal.workerpool.owner = ids.workerpoolOwner;
+        deal.workerpool.price = _workerpoolorder.workerpoolprice;
+        deal.trust = _requestorder.trust.max(1);
+        deal.category = _requestorder.category;
+        deal.tag = tag;
+        deal.requester = _requestorder.requester;
+        deal.beneficiary = _requestorder.beneficiary;
+        deal.callback = _requestorder.callback;
+        deal.params = _requestorder.params;
+        deal.startTime = block.timestamp;
+        deal.botFirst = m_consumed[ids.requestorderHash];
+        deal.botSize = volume;
+        deal.workerStake =
+            (_workerpoolorder.workerpoolprice *
+                IWorkerpool(_workerpoolorder.workerpool).m_workerStakeRatioPolicy()) /
+            100;
+        deal.schedulerRewardRatio = IWorkerpool(_workerpoolorder.workerpool)
+            .m_schedulerRewardRatioPolicy();
+        deal.sponsor = _sponsor;
 
-		/**
-		 * Advertize deal
-		 */
-		emit SchedulerNotice(deal.workerpool.pointer, dealid);
+        /**
+         * Update consumed
+         */
+        m_consumed[ids.apporderHash] = m_consumed[ids.apporderHash] + volume;
+        m_consumed[ids.datasetorderHash] =
+            m_consumed[ids.datasetorderHash] +
+            (ids.hasDataset ? volume : 0);
+        m_consumed[ids.workerpoolorderHash] = m_consumed[ids.workerpoolorderHash] + volume;
+        m_consumed[ids.requestorderHash] = m_consumed[ids.requestorderHash] + volume;
 
-		/**
-		 * Advertize consumption
-		 */
-		emit OrdersMatched(
-			dealid
-		,	ids.apporderHash
-		,	ids.datasetorderHash
-		,	ids.workerpoolorderHash
-		,	ids.requestorderHash
-		,	volume
-		);
+        /**
+         * Lock
+         */
+        lock(_sponsor, (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume);
+        //slither-disable-next-line divide-before-multiply
+        lock(
+            deal.workerpool.owner,
+            ((deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
+        );
 
-		return dealid;
-	}
+        /**
+         * Advertize deal
+         */
+        emit SchedulerNotice(deal.workerpool.pointer, dealid);
+
+        /**
+         * Advertize consumption
+         */
+        emit OrdersMatched(
+            dealid,
+            ids.apporderHash,
+            ids.datasetorderHash,
+            ids.workerpoolorderHash,
+            ids.requestorderHash,
+            volume
+        );
+
+        return dealid;
+    }
 }

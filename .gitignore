@@ -4,3 +4,18 @@ node_modules
 coverage
 coverage.json
 logs
+
+.env
+typechain
+typechain-types
+
+# Hardhat files
+cache
+artifacts
+
+# Deployed addresses saved with deploy/ scripts
+build/*.json
+
+contracts/hardhat-dependency-compiler/
+deployments/*hardhat*
+deployments/dev-*
