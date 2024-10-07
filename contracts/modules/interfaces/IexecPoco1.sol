@@ -21,6 +21,7 @@ interface IexecPoco1 {
         uint256 volume
     );
     event SchedulerNotice(address indexed workerpool, bytes32 dealid);
+    event DealSponsored(bytes32 dealId, address sponsor);
 
     function verifySignature(address, bytes32, bytes calldata) external view returns (bool);
 
@@ -33,6 +34,13 @@ interface IexecPoco1 {
     ) external view returns (bool);
 
     function matchOrders(
+        IexecLibOrders_v5.AppOrder calldata,
+        IexecLibOrders_v5.DatasetOrder calldata,
+        IexecLibOrders_v5.WorkerpoolOrder calldata,
+        IexecLibOrders_v5.RequestOrder calldata
+    ) external returns (bytes32);
+
+    function sponsorMatchOrders(
         IexecLibOrders_v5.AppOrder calldata,
         IexecLibOrders_v5.DatasetOrder calldata,
         IexecLibOrders_v5.WorkerpoolOrder calldata,

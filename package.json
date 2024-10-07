@@ -35,7 +35,13 @@
     "url": "https://github.com/iExecBlockchainComputing/PoCo-dev.git/issues"
   },
   "files": [
-    "/contracts"
+    "/contracts",
+    "!/contracts/tools/testing/**/*",
+    "/artifacts/contracts",
+    "!/artifacts/contracts/**/*.dbg.json",
+    "!/artifacts/contracts/tools/testing/**/*",
+    "/deployments",
+    "/build"
   ],
   "dependencies": {
     "@iexec/interface": "3.0.35-8",
