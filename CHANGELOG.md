@@ -1,6 +1,15 @@
 # Changelog
 
-## vNEXT
+## v5.5.0
+
+### What's new?
+- Added the ability to sponsor a deal for a requester via the new `sponsorMatchOrders(..)` function.
+    - contracts implementation ✍️
+    - deployment on iExec Bellecour network 🚀
+- Initialized « boost » mode to improve deal throughput
+    - contracts implementation ✍️
+
+### More details
 - Include `IexecOrderManagement` module in Poco sponsoring upgrade. (#132)
 - Update function visibilities to `external` in `IexecPoco` and `IexecOrderManagement` modules. (#131)
 - Fix configs native and token. (#129)
@@ -63,35 +72,47 @@
     - PoCo1 contracts (#52)
     - Order Management contract (#83)
 - Remove enterprise mode. (#51, #56)
-
-## v5.5.0 - PoCo Boost
-- Migrate to Hardhat:
-    - Init Hardhat project.
-    - Migrate unit tests with `@nomiclabs/hardhat-truffle5`.
-    - Fetch `@iexec/solidity@0.1.1` from default public registry.
-    - Migrate tests coverage with [solidity-coverage](https://github.com/sc-forks/solidity-coverage) of `@nomicfoundation/hardhat-toolbox`.
-- Update documentation:
-    - Generate class diagrams from solidity contracts.
-    - Add task and contribution state diagrams.
-    - Add boost workflow sequence diagram. Update nominal workflow sequence diagram.
-    - Update TEE workflow sequence diagram.
-    - Update actors diagram.
-    - Rename UMLs.md file to standard README.md.
-    - Add inline solidity documentation.
-    - Update class diagrams.
-    - Create folder docs that contains all documentation material.
-- Add `Store` contract compatible with solidity `^0.8.0`.
-- Add Boost module.
-    - Add interfaces.
-- Upgrade `hashStruct` function to use `ethers`.
-- Deploy Nominal and Boost modules with Hardhat.
-- Publish coverage report on CI/CD. Refactor Jenkinsfile.
-- Init Boost deal structure.
-- Upgrade `eth_signTypedData` function to use `ethers`. Remove now useless `eth-sig-util`.
-- Run automatically before commit a prettier on `.ts` and `.sol` staged files.
-- Clean files related to docker build of a test blockchain.
-- Migrate `IexecPocoBoost` linking to hardhat deploy script.
-- Update prettier rules and reformat.
+- Add PoCo Boost modules to a timelock controlled proxy.
+- Add IexecEscrow.v8 tests and developer notices.
+- Add tests around callback feature verifying interests of actors are guaranteed.
+- Reformat JS files.
+- Create a hardhat network close to the iExec Bellecour blockchain.
+- Merge settings and v8Settings using object spread.
+- Remove useless files.
+- Add Slither config. Run single contract Slither analysis on CI.
+- Make Poco Boost ITs runnable with "native" mode.
+- Migrate puml2links.sh to zx.
+- Update copyright and license notices.
+- Introduce zx for task scripting.
+- Compile latest contracts with 0.8.21.
+- Use a single 0.8.19 solidity version to compile latest contracts.
+- Fix prettier solidity plugin resolution.
+- Remove patched test helpers.
+- Clean poco-chain files.
+- Bump dependencies.
+- Check balance in transfer operation.
+- Reformat tests.
+- Reformat contracts.
+- Add mocha to use test explorer.
+- Refactor tests.
+- Add dedicated Poco Boost accessors.
+- Implement `claimBoost`:
+    - Refund requester.
+    - Seize workerpool and reward kitty.
+- Implement `pushResultBoost`:
+    - Verify task exists.
+    - Push result before deadline.
+    - Require enclave challenge when TEE bit of tag set.
+    - Verify signatures
+        - scheduler
+        - enclave
+        - tee broker
+    - Reward worker.
+    - Reward app provider.
+    - Reward dataset provider.
+    - Unlock scheduler stake.
+    - Reward scheduler.
+    - Handle callback.
 - Implement `matchOrdersBoost`:
     - Verify compatibility of orders
         - trust
@@ -120,47 +141,33 @@
         - Store in variable if read multiple times.
         - Group `hasDataset` block.
     - Remove useless variable.
-- Implement `pushResultBoost`:
-    - Verify task exists.
-    - Push result before deadline.
-    - Require enclave challenge when TEE bit of tag set.
-    - Verify signatures
-        - scheduler
-        - enclave
-        - tee broker
-    - Reward worker.
-    - Reward app provider.
-    - Reward dataset provider.
-    - Unlock scheduler stake.
-    - Reward scheduler.
-    - Handle callback.
-- Implement `claimBoost`:
-    - Refund requester.
-    - Seize workerpool and reward kitty.
-- Add dedicated Poco Boost accessors.
-- Refactor tests.
-- Add mocha to use test explorer.
-- Reformat contracts.
-- Reformat tests.
-- Check balance in transfer operation.
-- Bump dependencies.
-- Clean poco-chain files.
-- Remove patched test helpers.
-- Fix prettier solidity plugin resolution.
-- Use a single 0.8.19 solidity version to compile latest contracts.
-- Compile latest contracts with 0.8.21.
-- Introduce zx for task scripting.
-- Update copyright and license notices.
-- Migrate puml2links.sh to zx.
-- Make Poco Boost ITs runnable with "native" mode.
-- Add Slither config. Run single contract Slither analysis on CI.
-- Remove useless files.
-- Merge settings and v8Settings using object spread.
-- Create a hardhat network close to the iExec Bellecour blockchain.
-- Reformat JS files.
-- Add tests around callback feature verifying interests of actors are guaranteed.
-- Add IexecEscrow.v8 tests and developer notices.
-- Add PoCo Boost modules to a timelock controlled proxy.
+- Update prettier rules and reformat.
+- Migrate `IexecPocoBoost` linking to hardhat deploy script.
+- Clean files related to docker build of a test blockchain.
+- Run automatically before commit a prettier on `.ts` and `.sol` staged files.
+- Upgrade `eth_signTypedData` function to use `ethers`. Remove now useless `eth-sig-util`.
+- Init Boost deal structure.
+- Publish coverage report on CI/CD. Refactor Jenkinsfile.
+- Deploy Nominal and Boost modules with Hardhat.
+- Upgrade `hashStruct` function to use `ethers`.
+- Add Boost module.
+    - Add interfaces.
+- Add `Store` contract compatible with solidity `^0.8.0`.
+- Update documentation:
+    - Generate class diagrams from solidity contracts.
+    - Add task and contribution state diagrams.
+    - Add boost workflow sequence diagram. Update nominal workflow sequence diagram.
+    - Update TEE workflow sequence diagram.
+    - Update actors diagram.
+    - Rename UMLs.md file to standard README.md.
+    - Add inline solidity documentation.
+    - Update class diagrams.
+    - Create folder docs that contains all documentation material.
+- Migrate to Hardhat:
+    - Init Hardhat project.
+    - Migrate unit tests with `@nomiclabs/hardhat-truffle5`.
+    - Fetch `@iexec/solidity@0.1.1` from default public registry.
+    - Migrate tests coverage with [solidity-coverage](https://github.com/sc-forks/solidity-coverage) of `@nomicfoundation/hardhat-toolbox`.
 
 ## v5.4.2
 - Use latest Nethermind base image `nethermindeth/nethermind:iexec`

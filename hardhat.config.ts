@@ -14,6 +14,10 @@ import chainConfig from './config/config.json';
 
 const isNativeChainType = chainConfig.chains.default.asset == 'Native';
 const isLocalFork = process.env.LOCAL_FORK == 'true';
+const bellecourBlockscoutUrl =
+    process.env.BLOCKSCOUT_VERSION == 'v5'
+        ? 'https://blockscout.bellecour.iex.ec'
+        : 'https://blockscout-v6.bellecour.iex.ec'; // Use Blockscout v6 by default
 const settings = {
     optimizer: {
         enabled: true,
@@ -44,7 +48,7 @@ const v8Settings = {
      * At this time, the iExec Bellecour blockchain does not support new OPCODES
      * brought by the Shanghai fork, hence the target must be lowered.
      */
-    evmVersion: 'paris',
+    evmVersion: 'berlin',
 };
 
 /**
@@ -139,11 +143,19 @@ const config: HardhatUserConfig = {
         bellecour: {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
-            accounts: {
-                mnemonic: process.env.PROD_MNEMONIC || '',
-            },
+            accounts: [
+                process.env.PROD_PRIVATE_KEY ||
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+            ],
+            hardfork: 'berlin', // No EIP-1559 before London fork
             gasPrice: 0,
             gas: 6700000,
+            verify: {
+                etherscan: {
+                    apiUrl: bellecourBlockscoutUrl,
+                    apiKey: '<>',
+                },
+            },
         },
     },
     etherscan: {
@@ -165,8 +177,8 @@ const config: HardhatUserConfig = {
                 network: 'bellecour',
                 chainId: 134,
                 urls: {
-                    apiURL: 'https://blockscout.bellecour.iex.ec/api',
-                    browserURL: 'https://blockscout.bellecour.iex.ec/',
+                    apiURL: `${bellecourBlockscoutUrl}/api`,
+                    browserURL: bellecourBlockscoutUrl,
                 },
             },
         ],
@@ -212,6 +224,7 @@ const config: HardhatUserConfig = {
             'Store.v8.sol',
         ],
     },
+    mocha: { timeout: 50000 },
 };
 
 /**
