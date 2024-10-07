@@ -1,5 +1,11 @@
 # Changelog
 
+## vNEXT
+- Migrate unit test files to Typescript & Hardhat:
+    - IexecPoco2
+        - reopen (#135)
+    - IexecPoco1 (#136, #137)
+
 ## v5.5.0
 
 ### What's new?
@@ -26,11 +32,11 @@
     - Resources (#125, #126)
     - Registries (#122, #124)
     - IexecPoco2
-        - reopen (#133, #135)
+        - reopen (#133)
         - finalize (#79, #117, #119)
         - reveal (#114, #118)
         - contribute (#108, #109, #110)
-    - IexecPoco1 (#107, #113, #115, #116, #136, #137)
+    - IexecPoco1 (#107, #113, #115, #116)
     - Add `.test` suffix to unit test files (#106)
     - ENSIntegration (#105)
     - IexecOrderManagement (#101, #102, #103, #104)
