@@ -2,6 +2,7 @@
 
 ## vNEXT
 - Migrate unit test files to Typescript & Hardhat:
+    - IexecRelay (#140)
     - IexecPoco1 (#136, #137)
     - IexecPoco2
         - reopen (#135)
