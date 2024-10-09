@@ -20,7 +20,7 @@ const standardAmount = AmountWithDecimals(BigNumber.from(100));
 describe('IexecEscrowToken', () => {
     let proxyAddress: string;
     let [iexecPoco, , iexecPocoAsAccountA, iexecPocoAsAdmin]: IexecInterfaceToken[] = [];
-    let [iexecAdmin, accountA, accountB, anyone]: SignerWithAddress[] = [];
+    let [iexecAdmin, accountA, accountB, accountC, anyone]: SignerWithAddress[] = [];
     let [rlcInstance, rlcInstanceAsAccountA]: RLC[] = [];
 
     beforeEach('Deploy', async () => {
@@ -30,7 +30,13 @@ describe('IexecEscrowToken', () => {
 
     async function initFixture() {
         const accounts = await getIexecAccounts();
-        ({ iexecAdmin, anyone: accountA, requester: accountB, anyone } = accounts);
+        ({
+            iexecAdmin,
+            anyone: accountA,
+            requester: accountB,
+            sponsor: accountC,
+            anyone,
+        } = accounts);
 
         iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
         iexecPocoAsAccountA = iexecPoco.connect(accountA);
@@ -163,7 +169,7 @@ describe('IexecEscrowToken', () => {
         it('Should deposit tokens for multiple accounts', async () => {
             const depositForArrayParams = {
                 amounts: [standardAmount, standardAmount.mul(2)],
-                targets: [iexecAdmin.address, accountB.address],
+                targets: [accountB.address, accountC.address],
             };
             const depositForArrayArgs = Object.values(depositForArrayParams) as [
                 BigNumber[],
@@ -205,7 +211,7 @@ describe('IexecEscrowToken', () => {
         it('Should not depositForArray with mismatched array lengths', async () => {
             const depositForArrayParams = {
                 amounts: [standardAmount.mul(2), standardAmount, standardAmount.div(2)],
-                targets: [iexecAdmin.address, accountB.address],
+                targets: [accountB.address, accountC.address],
             };
             const depositForArrayArgs = Object.values(depositForArrayParams) as [
                 BigNumber[],
@@ -304,7 +310,7 @@ describe('IexecEscrowToken', () => {
             await expect(iexecPocoAsAccountA.withdrawTo(...withdrawToArgs))
                 .to.changeTokenBalances(
                     rlcInstance,
-                    [iexecPoco, accountB],
+                    [iexecPoco, withdrawToParams.target],
                     [-withdrawToParams.amount, withdrawToParams.amount],
                 )
                 .to.emit(rlcInstance, 'Transfer')
@@ -433,7 +439,7 @@ describe('IexecEscrowToken', () => {
             await expect(iexecPocoAsAccountA.receiveApproval(...receiveApprovalArgs))
                 .to.changeTokenBalances(
                     rlcInstance,
-                    [accountB, iexecPoco],
+                    [receiveApprovalParams.sender, iexecPoco],
                     [-receiveApprovalParams.amount, receiveApprovalParams.amount],
                 )
                 .to.emit(rlcInstance, 'Transfer')
