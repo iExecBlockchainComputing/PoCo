@@ -47,7 +47,7 @@ describe('IexecEscrowToken', () => {
         rlcInstanceAsAccountA = rlcInstance.connect(accountA);
         await rlcInstance
             .connect(iexecAdmin)
-            .transfer(accountA.address, AmountWithDecimals(BigNumber.from(10_000)))
+            .transfer(accountA.address, standardAmount.mul(10))
             .then((tx) => tx.wait());
     }
 
@@ -231,7 +231,6 @@ describe('IexecEscrowToken', () => {
             await rlcInstanceAsAccountA
                 .approve(iexecPoco.address, depositTotalAmount)
                 .then((tx) => tx.wait());
-            const targets = [iexecAdmin.address, accountB.address];
             await expect(
                 iexecPocoAsAccountA.depositForArray(...depositForArrayArgs),
             ).to.be.revertedWith('invalid-array-length');
