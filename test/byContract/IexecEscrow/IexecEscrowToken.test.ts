@@ -87,6 +87,9 @@ describe('IexecEscrowTokenDelegate', () => {
                     [accountA, iexecPoco],
                     [-depositParams.amount, depositParams.amount],
                 )
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(accountA.address, iexecPoco, depositParams.amount)
+                .to.changeTokenBalances(iexecPoco, [accountA], [depositParams.amount])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, accountA.address, depositParams.amount);
         });
@@ -94,6 +97,9 @@ describe('IexecEscrowTokenDelegate', () => {
             expect(await iexecPocoAsAccountA.callStatic.deposit(0)).to.be.true;
             await expect(iexecPocoAsAccountA.deposit(0))
                 .to.changeTokenBalances(rlcInstance, [accountA, iexecPoco], [-0, 0])
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(accountA.address, iexecPoco, 0)
+                .to.changeTokenBalances(iexecPoco, [accountA], [0])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, accountA.address, 0);
         });
@@ -142,6 +148,13 @@ describe('IexecEscrowTokenDelegate', () => {
                     [accountA, iexecPoco],
                     [-depositForParams.amount, depositForParams.amount],
                 )
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(accountA.address, iexecPoco, depositForParams.amount)
+                .to.changeTokenBalances(
+                    iexecPoco,
+                    [depositForParams.target],
+                    [depositParams.amount],
+                )
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, depositForParams.target, depositForParams.amount);
         });
@@ -183,6 +196,13 @@ describe('IexecEscrowTokenDelegate', () => {
                     rlcInstance,
                     [accountA, iexecPoco],
                     [-depositTotalAmount, depositTotalAmount],
+                )
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(accountA.address, iexecPoco, depositTotalAmount)
+                .to.changeTokenBalances(
+                    iexecPoco,
+                    [...depositForArrayParams.targets],
+                    [...depositForArrayParams.amounts],
                 )
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(
@@ -250,6 +270,9 @@ describe('IexecEscrowTokenDelegate', () => {
                     [iexecPoco, accountA],
                     [-withdrawParams.amount, withdrawParams.amount],
                 )
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(iexecPoco, accountA.address, withdrawParams.amount)
+                .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawParams.amount])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(accountA.address, AddressZero, withdrawParams.amount);
         });
@@ -257,6 +280,9 @@ describe('IexecEscrowTokenDelegate', () => {
             expect(await iexecPocoAsAccountA.callStatic.withdraw(0)).to.be.true;
             await expect(iexecPocoAsAccountA.withdraw(0))
                 .to.changeTokenBalances(rlcInstance, [iexecPoco, accountA], [-0, 0])
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(iexecPoco, accountA.address, 0)
+                .to.changeTokenBalances(iexecPoco, [accountA], [-0])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(accountA.address, AddressZero, 0);
         });
@@ -297,6 +323,9 @@ describe('IexecEscrowTokenDelegate', () => {
                     [iexecPoco, accountB],
                     [-withdrawToParams.amount, withdrawToParams.amount],
                 )
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(iexecPoco, withdrawToParams.target, withdrawToParams.amount)
+                .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawParams.amount])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(accountA.address, AddressZero, withdrawToParams.amount);
         });
@@ -309,11 +338,10 @@ describe('IexecEscrowTokenDelegate', () => {
 
             expect(await iexecPocoAsAccountA.callStatic.withdrawTo(...withdrawToArgs)).to.be.true;
             await expect(iexecPocoAsAccountA.withdrawTo(...withdrawToArgs))
-                .to.changeTokenBalances(
-                    rlcInstance,
-                    [iexecPoco, accountB],
-                    [-withdrawToParams.amount, withdrawToParams.amount],
-                )
+                .to.changeTokenBalances(rlcInstance, [iexecPoco, accountB], [-0, 0])
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(iexecPoco, withdrawToParams.target, 0)
+                .to.changeTokenBalances(iexecPoco, [accountA], [-0])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(accountA.address, AddressZero, 0);
         });
@@ -400,6 +428,9 @@ describe('IexecEscrowTokenDelegate', () => {
                     [accountA, iexecPoco],
                     [-receiveApprovalParams.amount, receiveApprovalParams.amount],
                 )
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(accountA.address, iexecPoco, receiveApprovalParams.amount)
+                .to.changeTokenBalances(iexecPoco, [accountA], [receiveApprovalParams.amount])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, receiveApprovalParams.sender, receiveApprovalParams.amount);
         });
@@ -432,6 +463,13 @@ describe('IexecEscrowTokenDelegate', () => {
                     rlcInstance,
                     [accountB, iexecPoco],
                     [-receiveApprovalParams.amount, receiveApprovalParams.amount],
+                )
+                .to.emit(rlcInstance, 'Transfer')
+                .withArgs(receiveApprovalParams.sender, iexecPoco, receiveApprovalParams.amount)
+                .to.changeTokenBalances(
+                    iexecPoco,
+                    [receiveApprovalParams.sender],
+                    [receiveApprovalParams.amount],
                 )
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, receiveApprovalParams.sender, receiveApprovalParams.amount);
