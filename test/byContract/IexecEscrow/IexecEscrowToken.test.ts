@@ -25,7 +25,7 @@ const withdrawParams = {
 };
 const withdrawArgs = Object.values(withdrawParams) as [BigNumber];
 
-describe('IexecEscrowTokenDelegate', () => {
+describe('IexecEscrowToken', () => {
     let proxyAddress: string;
     let [iexecPoco, , iexecPocoAsAccountA, iexecPocoAsAdmin]: IexecInterfaceToken[] = [];
     let [iexecAdmin, accountA, accountB, anyone]: SignerWithAddress[] = [];
@@ -43,7 +43,7 @@ describe('IexecEscrowTokenDelegate', () => {
         iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
         iexecPocoAsAccountA = iexecPoco.connect(accountA);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
-        rlcInstance = await RLC__factory.connect(await iexecPoco.token(), anyone);
+        rlcInstance = RLC__factory.connect(await iexecPoco.token(), anyone);
         rlcInstanceAsAccountA = rlcInstance.connect(accountA);
         await rlcInstance
             .connect(iexecAdmin)
