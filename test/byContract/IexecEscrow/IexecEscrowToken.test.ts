@@ -248,7 +248,7 @@ describe('IexecEscrowToken', () => {
                 .withArgs(accountA.address, AddressZero, amount)
                 .to.changeTokenBalances(rlcInstance, [iexecPoco, accountA], [-amount, amount])
                 .to.emit(rlcInstance, 'Transfer')
-                .withArgs(iexecPoco, accountA.address, amount);
+                .withArgs(iexecPoco.address, accountA.address, amount);
         });
         it('Should withdraw zero token', async () => {
             expect(await iexecPocoAsAccountA.callStatic.withdraw(0)).to.be.true;
@@ -258,7 +258,7 @@ describe('IexecEscrowToken', () => {
                 .withArgs(accountA.address, AddressZero, 0)
                 .to.changeTokenBalances(rlcInstance, [iexecPoco, accountA], [-0, 0])
                 .to.emit(rlcInstance, 'Transfer')
-                .withArgs(iexecPoco, accountA.address, 0);
+                .withArgs(iexecPoco.address, accountA.address, 0);
         });
         it('Should not withdraw native tokens with empty balance', async () => {
             await expect(iexecPocoAsAccountA.withdraw(amount)).to.be.revertedWithoutReason();
@@ -293,7 +293,7 @@ describe('IexecEscrowToken', () => {
                     [-withdrawToParams.amount, withdrawToParams.amount],
                 )
                 .to.emit(rlcInstance, 'Transfer')
-                .withArgs(iexecPoco, withdrawToParams.target, withdrawToParams.amount);
+                .withArgs(iexecPoco.address, withdrawToParams.target, withdrawToParams.amount);
         });
         it('Should withdraw To with zero token', async () => {
             const withdrawToParams = {
@@ -309,7 +309,7 @@ describe('IexecEscrowToken', () => {
                 .withArgs(accountA.address, AddressZero, 0)
                 .to.changeTokenBalances(rlcInstance, [iexecPoco, accountB], [-0, 0])
                 .to.emit(rlcInstance, 'Transfer')
-                .withArgs(iexecPoco, withdrawToParams.target, 0);
+                .withArgs(iexecPoco.address, withdrawToParams.target, 0);
         });
         it('Should not withdraw To tokens with empty balance', async () => {
             await expect(
