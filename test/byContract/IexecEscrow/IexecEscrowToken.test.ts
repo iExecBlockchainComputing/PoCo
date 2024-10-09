@@ -15,7 +15,7 @@ import {
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 
-const standardAmount = AmountWithDecimals(BigNumber.from(100));
+const amount = ethers.utils.parseUnits(BigNumber.from(100).toString(), 9);
 
 describe('IexecEscrowToken', () => {
     let proxyAddress: string;
@@ -45,7 +45,7 @@ describe('IexecEscrowToken', () => {
         rlcInstanceAsAccountA = rlcInstance.connect(accountA);
         await rlcInstance
             .connect(iexecAdmin)
-            .transfer(accountA.address, standardAmount.mul(10)) //enough to cover tests.
+            .transfer(accountA.address, amount.mul(10)) //enough to cover tests.
             .then((tx) => tx.wait());
     }
 
@@ -54,7 +54,7 @@ describe('IexecEscrowToken', () => {
             await expect(
                 accountA.sendTransaction({
                     to: iexecPoco.address,
-                    value: standardAmount,
+                    value: amount,
                 }),
             ).to.be.revertedWith('fallback-disabled');
         });
@@ -65,7 +65,7 @@ describe('IexecEscrowToken', () => {
             await expect(
                 accountA.sendTransaction({
                     to: iexecPoco.address,
-                    value: standardAmount,
+                    value: amount,
                     data: randomData,
                 }),
             ).to.be.revertedWith('fallback-disabled');
@@ -74,22 +74,16 @@ describe('IexecEscrowToken', () => {
 
     describe('Deposit', () => {
         it('Should deposit tokens', async () => {
-            await rlcInstanceAsAccountA
-                .approve(iexecPoco.address, standardAmount)
-                .then((tx) => tx.wait());
+            await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
 
-            expect(await iexecPocoAsAccountA.callStatic.deposit(standardAmount)).to.be.true;
-            await expect(iexecPocoAsAccountA.deposit(standardAmount))
-                .to.changeTokenBalances(
-                    rlcInstance,
-                    [accountA, iexecPoco],
-                    [-standardAmount, standardAmount],
-                )
+            expect(await iexecPocoAsAccountA.callStatic.deposit(amount)).to.be.true;
+            await expect(iexecPocoAsAccountA.deposit(amount))
+                .to.changeTokenBalances(rlcInstance, [accountA, iexecPoco], [-amount, amount])
                 .to.emit(rlcInstance, 'Transfer')
-                .withArgs(accountA.address, iexecPoco, standardAmount)
-                .to.changeTokenBalances(iexecPoco, [accountA], [standardAmount])
+                .withArgs(accountA.address, iexecPoco, amount)
+                .to.changeTokenBalances(iexecPoco, [accountA], [amount])
                 .to.emit(iexecPoco, 'Transfer')
-                .withArgs(AddressZero, accountA.address, standardAmount);
+                .withArgs(AddressZero, accountA.address, amount);
         });
         it('Should deposit 0 token', async () => {
             expect(await iexecPocoAsAccountA.callStatic.deposit(0)).to.be.true;
@@ -105,35 +99,33 @@ describe('IexecEscrowToken', () => {
             const addressZeroSigner = await ethers.getImpersonatedSigner(AddressZero);
             await rlcInstance
                 .connect(iexecAdmin)
-                .transfer(addressZeroSigner.address, standardAmount)
+                .transfer(addressZeroSigner.address, amount)
                 .then((tx) => tx.wait());
             // send some gas token
             iexecAdmin
                 .sendTransaction({
                     to: addressZeroSigner.address,
-                    value: AmountWithDecimals(BigNumber.from(100_000)),
+                    value: ethers.utils.parseUnits(BigNumber.from(100_000).toString(), 9),
                 })
                 .then((tx) => tx.wait());
 
             await rlcInstance
                 .connect(addressZeroSigner)
-                .approve(iexecPoco.address, standardAmount)
+                .approve(iexecPoco.address, amount)
                 .then((tx) => tx.wait());
 
-            await expect(
-                iexecPoco.connect(addressZeroSigner).deposit(standardAmount),
-            ).to.be.revertedWith('ERC20: mint to the zero address');
+            await expect(iexecPoco.connect(addressZeroSigner).deposit(amount)).to.be.revertedWith(
+                'ERC20: mint to the zero address',
+            );
         });
     });
 
     describe('Deposit for', () => {
         it('Should deposit tokens for another account', async () => {
-            await rlcInstanceAsAccountA
-                .approve(iexecPoco.address, standardAmount)
-                .then((tx) => tx.wait());
+            await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
 
             const depositForParams = {
-                amount: standardAmount,
+                amount: amount,
                 target: accountB.address,
             };
             const depositForArgs = Object.values(depositForParams) as [BigNumber, string];
@@ -156,19 +148,17 @@ describe('IexecEscrowToken', () => {
                 .withArgs(AddressZero, depositForParams.target, depositForParams.amount);
         });
         it('Should not deposit tokens for zero address', async () => {
-            await rlcInstanceAsAccountA
-                .approve(iexecPoco.address, standardAmount)
-                .then((tx) => tx.wait());
-            await expect(
-                iexecPocoAsAccountA.depositFor(standardAmount, AddressZero),
-            ).to.be.revertedWith('ERC20: mint to the zero address');
+            await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
+            await expect(iexecPocoAsAccountA.depositFor(amount, AddressZero)).to.be.revertedWith(
+                'ERC20: mint to the zero address',
+            );
         });
     });
 
     describe('Deposit for array', () => {
         it('Should deposit tokens for multiple accounts', async () => {
             const depositForArrayParams = {
-                amounts: [standardAmount, standardAmount.mul(2)],
+                amounts: [amount, amount.mul(2)],
                 targets: [accountB.address, accountC.address],
             };
             const depositForArrayArgs = Object.values(depositForArrayParams) as [
@@ -210,7 +200,7 @@ describe('IexecEscrowToken', () => {
         });
         it('Should not depositForArray with mismatched array lengths', async () => {
             const depositForArrayParams = {
-                amounts: [standardAmount.mul(2), standardAmount, standardAmount.div(2)],
+                amounts: [amount.mul(2), amount, amount.div(2)],
                 targets: [accountB.address, accountC.address],
             };
             const depositForArrayArgs = Object.values(depositForArrayParams) as [
@@ -228,7 +218,7 @@ describe('IexecEscrowToken', () => {
         });
         it('Should not depositForArray with address zero in target', async () => {
             const depositForArrayParams = {
-                amounts: [standardAmount, standardAmount.mul(2)],
+                amounts: [amount, amount.mul(2)],
                 targets: [AddressZero, accountB.address],
             };
             const depositForArrayArgs = Object.values(depositForArrayParams) as [
@@ -248,23 +238,17 @@ describe('IexecEscrowToken', () => {
 
     describe('Withdraw', () => {
         it('Should withdraw tokens', async () => {
-            await rlcInstanceAsAccountA
-                .approve(iexecPoco.address, standardAmount)
-                .then((tx) => tx.wait());
-            await iexecPocoAsAccountA.deposit(standardAmount).then((tx) => tx.wait());
+            await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
+            await iexecPocoAsAccountA.deposit(amount).then((tx) => tx.wait());
 
-            expect(await iexecPocoAsAccountA.callStatic.withdraw(standardAmount)).to.be.true;
-            await expect(iexecPocoAsAccountA.withdraw(standardAmount))
-                .to.changeTokenBalances(
-                    rlcInstance,
-                    [iexecPoco, accountA],
-                    [-standardAmount, standardAmount],
-                )
+            expect(await iexecPocoAsAccountA.callStatic.withdraw(amount)).to.be.true;
+            await expect(iexecPocoAsAccountA.withdraw(amount))
+                .to.changeTokenBalances(rlcInstance, [iexecPoco, accountA], [-amount, amount])
                 .to.emit(rlcInstance, 'Transfer')
-                .withArgs(iexecPoco, accountA.address, standardAmount)
-                .to.changeTokenBalances(iexecPoco, [accountA], [-standardAmount])
+                .withArgs(iexecPoco, accountA.address, amount)
+                .to.changeTokenBalances(iexecPoco, [accountA], [-amount])
                 .to.emit(iexecPoco, 'Transfer')
-                .withArgs(accountA.address, AddressZero, standardAmount);
+                .withArgs(accountA.address, AddressZero, amount);
         });
         it('Should withdraw zero token', async () => {
             expect(await iexecPocoAsAccountA.callStatic.withdraw(0)).to.be.true;
@@ -277,31 +261,23 @@ describe('IexecEscrowToken', () => {
                 .withArgs(accountA.address, AddressZero, 0);
         });
         it('Should not withdraw native tokens with empty balance', async () => {
-            await expect(
-                iexecPocoAsAccountA.withdraw(standardAmount),
-            ).to.be.revertedWithoutReason();
+            await expect(iexecPocoAsAccountA.withdraw(amount)).to.be.revertedWithoutReason();
         });
         it('Should not withdraw tokens with insufficient balance', async () => {
-            await rlcInstanceAsAccountA
-                .approve(iexecPoco.address, standardAmount)
-                .then((tx) => tx.wait());
-            await iexecPocoAsAccountA.deposit(standardAmount).then((tx) => tx.wait());
+            await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
+            await iexecPocoAsAccountA.deposit(amount).then((tx) => tx.wait());
 
-            await expect(
-                iexecPocoAsAccountA.withdraw(standardAmount.mul(2)),
-            ).to.be.revertedWithoutReason();
+            await expect(iexecPocoAsAccountA.withdraw(amount.mul(2))).to.be.revertedWithoutReason();
         });
     });
 
     describe('Withdraw to', () => {
         it('Should withdraw another address', async () => {
-            await rlcInstanceAsAccountA
-                .approve(iexecPoco.address, standardAmount)
-                .then((tx) => tx.wait());
-            await iexecPocoAsAccountA.deposit(standardAmount).then((tx) => tx.wait());
+            await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
+            await iexecPocoAsAccountA.deposit(amount).then((tx) => tx.wait());
 
             const withdrawToParams = {
-                amount: standardAmount,
+                amount: amount,
                 target: accountB.address,
             };
             const withdrawToArgs = Object.values(withdrawToParams) as [BigNumber, string];
@@ -315,7 +291,7 @@ describe('IexecEscrowToken', () => {
                 )
                 .to.emit(rlcInstance, 'Transfer')
                 .withArgs(iexecPoco, withdrawToParams.target, withdrawToParams.amount)
-                .to.changeTokenBalances(iexecPoco, [accountA], [-standardAmount])
+                .to.changeTokenBalances(iexecPoco, [accountA], [-amount])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(accountA.address, AddressZero, withdrawToParams.amount);
         });
@@ -337,27 +313,25 @@ describe('IexecEscrowToken', () => {
         });
         it('Should not withdraw To tokens with empty balance', async () => {
             await expect(
-                iexecPocoAsAccountA.withdrawTo(standardAmount, accountB.address),
+                iexecPocoAsAccountA.withdrawTo(amount, accountB.address),
             ).to.be.revertedWithoutReason();
         });
         it('Should not withdraw To tokens with insufficient balance', async () => {
-            await rlcInstanceAsAccountA
-                .approve(iexecPoco.address, standardAmount)
-                .then((tx) => tx.wait());
-            await iexecPocoAsAccountA.deposit(standardAmount).then((tx) => tx.wait());
+            await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
+            await iexecPocoAsAccountA.deposit(amount).then((tx) => tx.wait());
 
             await expect(
-                iexecPocoAsAccountA.withdrawTo(standardAmount.mul(2), accountB.address),
+                iexecPocoAsAccountA.withdrawTo(amount.mul(2), accountB.address),
             ).to.be.revertedWithoutReason();
         });
     });
 
     describe('Recover', () => {
         it('Should recover from balance deviation', async () => {
-            await rlcInstance.connect(iexecAdmin).transfer(proxyAddress, standardAmount); // Simulate deviation
+            await rlcInstance.connect(iexecAdmin).transfer(proxyAddress, amount); // Simulate deviation
 
             const initTotalSupply = await iexecPoco.totalSupply();
-            const expectedDelta = standardAmount;
+            const expectedDelta = amount;
 
             await expect(iexecPocoAsAdmin.recover())
                 .to.emit(iexecPoco, 'Transfer')
@@ -382,13 +356,11 @@ describe('IexecEscrowToken', () => {
 
     describe('receiveApproval', () => {
         it('Should receiveApproval', async () => {
-            await rlcInstanceAsAccountA
-                .approve(iexecPoco.address, standardAmount)
-                .then((tx) => tx.wait());
+            await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
 
             const receiveApprovalParams = {
                 sender: accountA.address,
-                amount: standardAmount,
+                amount: amount,
                 token: rlcInstance.address,
                 extraData: '0x',
             };
@@ -415,16 +387,16 @@ describe('IexecEscrowToken', () => {
         it('Should receiveApproval for another sender', async () => {
             await rlcInstance
                 .connect(iexecAdmin)
-                .transfer(accountB.address, standardAmount)
+                .transfer(accountB.address, amount)
                 .then((tx) => tx.wait());
             await rlcInstance
                 .connect(accountB)
-                .approve(iexecPoco.address, standardAmount)
+                .approve(iexecPoco.address, amount)
                 .then((tx) => tx.wait());
 
             const receiveApprovalParams = {
                 sender: accountB.address,
-                amount: standardAmount,
+                amount: amount,
                 token: rlcInstance.address,
                 extraData: '0x',
             };
@@ -456,7 +428,7 @@ describe('IexecEscrowToken', () => {
             await expect(
                 iexecPocoAsAccountA.receiveApproval(
                     accountA.address,
-                    standardAmount,
+                    amount,
                     ethers.Wallet.createRandom().address,
                     '0x',
                 ),
@@ -465,9 +437,6 @@ describe('IexecEscrowToken', () => {
     });
 });
 
-function AmountWithDecimals(amount: BigNumber) {
-    return ethers.utils.parseUnits(amount.toString(), 9);
-}
 function getTotalAmount(amounts: BigNumber[]) {
     return amounts.reduce((a, b) => a.add(b), BigNumber.from(0));
 }
