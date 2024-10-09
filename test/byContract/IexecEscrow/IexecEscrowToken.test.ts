@@ -141,7 +141,11 @@ describe('IexecEscrowToken', () => {
                 )
                 .to.emit(rlcInstance, 'Transfer')
                 .withArgs(accountA.address, iexecPoco, depositForParams.amount)
-                .to.changeTokenBalances(iexecPoco, [depositForParams.target], [standardAmount])
+                .to.changeTokenBalances(
+                    iexecPoco,
+                    [depositForParams.target],
+                    [depositForParams.amount],
+                )
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, depositForParams.target, depositForParams.amount);
         });
@@ -149,15 +153,9 @@ describe('IexecEscrowToken', () => {
             await rlcInstanceAsAccountA
                 .approve(iexecPoco.address, standardAmount)
                 .then((tx) => tx.wait());
-
-            const depositForParams = {
-                amount: standardAmount,
-                target: AddressZero,
-            };
-            const depositForArgs = Object.values(depositForParams) as [BigNumber, string];
-            await expect(iexecPocoAsAccountA.depositFor(...depositForArgs)).to.be.revertedWith(
-                'ERC20: mint to the zero address',
-            );
+            await expect(
+                iexecPocoAsAccountA.depositFor(standardAmount, AddressZero),
+            ).to.be.revertedWith('ERC20: mint to the zero address');
         });
     });
 
@@ -332,14 +330,8 @@ describe('IexecEscrowToken', () => {
                 .withArgs(accountA.address, AddressZero, 0);
         });
         it('Should not withdraw To tokens with empty balance', async () => {
-            const withdrawToParams = {
-                amount: standardAmount,
-                target: accountB.address,
-            };
-            const withdrawToArgs = Object.values(withdrawToParams) as [BigNumber, string];
-
             await expect(
-                iexecPocoAsAccountA.withdrawTo(...withdrawToArgs),
+                iexecPocoAsAccountA.withdrawTo(standardAmount, accountB.address),
             ).to.be.revertedWithoutReason();
         });
         it('Should not withdraw To tokens with insufficient balance', async () => {
@@ -348,14 +340,8 @@ describe('IexecEscrowToken', () => {
                 .then((tx) => tx.wait());
             await iexecPocoAsAccountA.deposit(standardAmount).then((tx) => tx.wait());
 
-            const withdrawToParams = {
-                amount: standardAmount.mul(2),
-                target: accountB.address,
-            };
-            const withdrawToArgs = Object.values(withdrawToParams) as [BigNumber, string];
-
             await expect(
-                iexecPocoAsAccountA.withdrawTo(...withdrawToArgs),
+                iexecPocoAsAccountA.withdrawTo(standardAmount.mul(2), accountB.address),
             ).to.be.revertedWithoutReason();
         });
     });
