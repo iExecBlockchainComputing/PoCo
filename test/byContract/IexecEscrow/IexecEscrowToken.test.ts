@@ -96,26 +96,26 @@ describe('IexecEscrowToken', () => {
                 .withArgs(AddressZero, accountA.address, 0);
         });
         it('Should not deposit tokens when caller is address 0', async () => {
-            const AddressZeroSigner = await ethers.getImpersonatedSigner(AddressZero);
+            const addressZeroSigner = await ethers.getImpersonatedSigner(AddressZero);
             await rlcInstance
                 .connect(iexecAdmin)
-                .transfer(AddressZeroSigner.address, standardAmount)
+                .transfer(addressZeroSigner.address, standardAmount)
                 .then((tx) => tx.wait());
             // send some gas token
             iexecAdmin
                 .sendTransaction({
-                    to: AddressZeroSigner.address,
+                    to: addressZeroSigner.address,
                     value: AmountWithDecimals(BigNumber.from(100_000)),
                 })
                 .then((tx) => tx.wait());
 
             await rlcInstance
-                .connect(AddressZeroSigner)
+                .connect(addressZeroSigner)
                 .approve(iexecPoco.address, standardAmount)
                 .then((tx) => tx.wait());
 
             await expect(
-                iexecPoco.connect(AddressZeroSigner).deposit(standardAmount),
+                iexecPoco.connect(addressZeroSigner).deposit(standardAmount),
             ).to.be.revertedWith('ERC20: mint to the zero address');
         });
     });
