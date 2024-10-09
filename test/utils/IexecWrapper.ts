@@ -104,7 +104,7 @@ export class IexecWrapper {
                 this.accounts.anyone,
             ).workerpool_stake_ratio()
         ).toNumber();
-        return ((workerpoolPrice * stakeRatio) / 100) * volume;
+        return Math.floor((workerpoolPrice * stakeRatio) / 100) * volume;
     }
 
     /**
