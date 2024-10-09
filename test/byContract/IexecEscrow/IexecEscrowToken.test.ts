@@ -350,15 +350,16 @@ describe('IexecEscrowToken', () => {
             const expectedDelta = amount;
 
             await expect(iexecPocoAsAdmin.recover())
+                .to.changeTokenBalances(iexecPoco, [iexecAdmin], [expectedDelta])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, iexecAdmin.address, expectedDelta);
-
             expect(await iexecPoco.totalSupply()).to.equal(initTotalSupply.add(expectedDelta));
         });
         it('Should recover 0 token when balance matches total supply', async () => {
             const initialSupply = await iexecPoco.totalSupply();
 
             await expect(iexecPocoAsAdmin.recover())
+                .to.changeTokenBalances(iexecPoco, [iexecAdmin], [0])
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, iexecAdmin.address, 0);
             expect(await iexecPoco.totalSupply()).to.equal(initialSupply);
