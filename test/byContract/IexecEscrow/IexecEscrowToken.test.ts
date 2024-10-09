@@ -198,7 +198,7 @@ describe('IexecEscrowToken', () => {
                     depositForArrayParams.amounts[1],
                 );
         });
-        it('Should not depositForArray with mismatched array lengths', async () => {
+        it('Should not deposit tokens for multiple accounts with mismatched array lengths', async () => {
             const depositForArrayParams = {
                 amounts: [amount.mul(2), amount, amount.div(2)],
                 targets: [accountB.address, accountC.address],
@@ -216,7 +216,7 @@ describe('IexecEscrowToken', () => {
                 iexecPocoAsAccountA.depositForArray(...depositForArrayArgs),
             ).to.be.revertedWith('invalid-array-length');
         });
-        it('Should not depositForArray with address zero in target', async () => {
+        it('Should not deposit tokens for multiple accounts with address zero in target', async () => {
             const depositForArrayParams = {
                 amounts: [amount, amount.mul(2)],
                 targets: [AddressZero, accountB.address],
@@ -267,12 +267,12 @@ describe('IexecEscrowToken', () => {
             await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
             await iexecPocoAsAccountA.deposit(amount).then((tx) => tx.wait());
 
-            await expect(iexecPocoAsAccountA.withdraw(amount.mul(2))).to.be.revertedWithoutReason();
+            await expect(iexecPocoAsAccountA.withdraw(amount.add(1))).to.be.revertedWithoutReason();
         });
     });
 
     describe('Withdraw to', () => {
-        it('Should withdraw another address', async () => {
+        it('Should withdraw to another address', async () => {
             await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
             await iexecPocoAsAccountA.deposit(amount).then((tx) => tx.wait());
 
@@ -295,7 +295,7 @@ describe('IexecEscrowToken', () => {
                 .to.emit(rlcInstance, 'Transfer')
                 .withArgs(iexecPoco.address, withdrawToParams.target, withdrawToParams.amount);
         });
-        it('Should withdraw To with zero token', async () => {
+        it('Should withdraw to another address with zero token', async () => {
             const withdrawToParams = {
                 amount: 0,
                 target: accountB.address,
@@ -311,17 +311,17 @@ describe('IexecEscrowToken', () => {
                 .to.emit(rlcInstance, 'Transfer')
                 .withArgs(iexecPoco.address, withdrawToParams.target, 0);
         });
-        it('Should not withdraw To tokens with empty balance', async () => {
+        it('Should not withdraw to another address with empty balance', async () => {
             await expect(
                 iexecPocoAsAccountA.withdrawTo(amount, accountB.address),
             ).to.be.revertedWithoutReason();
         });
-        it('Should not withdraw To tokens with insufficient balance', async () => {
+        it('Should not withdraw to another address with insufficient balance', async () => {
             await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
             await iexecPocoAsAccountA.deposit(amount).then((tx) => tx.wait());
 
             await expect(
-                iexecPocoAsAccountA.withdrawTo(amount.mul(2), accountB.address),
+                iexecPocoAsAccountA.withdrawTo(amount.add(1), accountB.address),
             ).to.be.revertedWithoutReason();
         });
     });
@@ -347,7 +347,7 @@ describe('IexecEscrowToken', () => {
                 .withArgs(AddressZero, iexecAdmin.address, 0);
             expect(await iexecPoco.totalSupply()).to.equal(initialSupply);
         });
-        it('Should not allow non-owner to recover', async () => {
+        it('Should not recover token when caller is not the owner', async () => {
             await expect(iexecPocoAsAccountA.recover()).to.be.revertedWith(
                 'Ownable: caller is not the owner',
             );
