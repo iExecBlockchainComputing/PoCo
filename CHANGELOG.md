@@ -6,6 +6,7 @@
     - IexecRelay (#140)
     - IexecPoco1 (#136, #137)
     - IexecPoco2
+        - kitty (#142)
         - reopen (#135)
 
 ## v5.5.0

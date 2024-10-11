@@ -266,7 +266,7 @@ describe('IexecPoco2#finalize', async () => {
                 0, // worker2 is a losing worker
                 workerTaskStake + workerReward, // worker3 is a winning worker
                 workerTaskStake + workerReward, // worker4 is a winning worker
-                0, // TODO: Update test with non-empty kitty
+                0, // See `Should finalize task with scheduler kitty part reward` below for kitty tests
             ],
         );
         expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(requesterFrozenBefore);
@@ -354,6 +354,150 @@ describe('IexecPoco2#finalize', async () => {
         expect(await iexecPoco.frozenOf(sponsor.address)).to.be.equal(sponsorFrozenBefore);
         const task = await iexecPoco.viewTask(taskId);
         expect(task.resultsCallback).to.equal('0x'); // deal without callback
+    });
+
+    describe('IexecPoco2#finalize-with-scheduler-kitty-part-reward', async () => {
+        [
+            {
+                testInfo:
+                    'scheduler gets 10% of the kitty when these 10% are greater than MIN_KITTY', // (MIN_KITTY=1RLC)
+                workerpoolPriceToFillKitty: 33_333_333_367,
+                expectedKittyBeforeFinalize: 10_000_000_010, // ~10 RLC
+                expectedSchedulerKittyPartReward: 1_000_000_001, // ~1.01 RLC (expectedKittyBeforeFinalize x 10%)
+            },
+            {
+                testInfo: 'scheduler gets at least MIN_KITTY if available',
+                workerpoolPriceToFillKitty: 3_333_333_334,
+                expectedKittyBeforeFinalize: 1_000_000_000, // 1 RLC
+                expectedSchedulerKittyPartReward: 1_000_000_000,
+            },
+            {
+                testInfo: 'scheduler gets all kitty when the kitty is lower than MIN_KITTY',
+                workerpoolPriceToFillKitty: 3_333_333_330,
+                expectedKittyBeforeFinalize: 999_999_999, // ~0.99 RLC
+                expectedSchedulerKittyPartReward: 999_999_999,
+            },
+        ].forEach((testArgs) => {
+            const {
+                testInfo,
+                workerpoolPriceToFillKitty,
+                expectedKittyBeforeFinalize,
+                expectedSchedulerKittyPartReward,
+            } = testArgs;
+            it(`Should finalize task with scheduler kitty part reward where ${testInfo}`, async () => {
+                // Fill kitty
+                const kittyAddress = await iexecPoco.kitty_address();
+                const kittyFillingDealVolume = 1;
+                const kittyFillingSchedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
+                    workerpoolPriceToFillKitty,
+                    kittyFillingDealVolume,
+                );
+                const kittyFillingSchedulerTaskStake =
+                    kittyFillingSchedulerDealStake / kittyFillingDealVolume;
+                const kittyFillingDeal = await iexecWrapper.signAndMatchOrders(
+                    ...buildOrders({
+                        assets: ordersAssets,
+                        requester: requester.address,
+                        prices: {
+                            app: 0,
+                            dataset: 0,
+                            workerpool: workerpoolPriceToFillKitty, // 30% will go to kitty
+                        },
+                        volume: kittyFillingDealVolume,
+                        salt: ethers.utils.id(new Date().toISOString()),
+                    }).toArray(),
+                );
+                await iexecPoco
+                    .initialize(kittyFillingDeal.dealId, kittyFillingDeal.taskIndex)
+                    .then((tx) => tx.wait());
+                const kittyFrozenBeforeClaim = (await iexecPoco.frozenOf(kittyAddress)).toNumber();
+                await time.setNextBlockTimestamp(
+                    (await iexecPoco.viewTask(kittyFillingDeal.taskId)).finalDeadline,
+                );
+                await expect(iexecPoco.claim(kittyFillingDeal.taskId))
+                    .to.emit(iexecPoco, 'Transfer')
+                    .withArgs(iexecPoco.address, kittyAddress, kittyFillingSchedulerTaskStake)
+                    .to.emit(iexecPoco, 'Reward')
+                    .withArgs(kittyAddress, kittyFillingSchedulerTaskStake, kittyFillingDeal.taskId)
+                    .to.emit(iexecPoco, 'Transfer')
+                    .withArgs(kittyAddress, iexecPoco.address, kittyFillingSchedulerTaskStake)
+                    .to.emit(iexecPoco, 'Lock')
+                    .withArgs(kittyAddress, kittyFillingSchedulerTaskStake)
+                    .to.changeTokenBalances(
+                        iexecPoco,
+                        [iexecPoco, kittyAddress],
+                        [
+                            -workerpoolPriceToFillKitty, // deal payer is refunded
+                            0,
+                        ],
+                    );
+                const kittyFrozenAfterClaim = (await iexecPoco.frozenOf(kittyAddress)).toNumber();
+                expect(kittyFrozenAfterClaim).to.equal(
+                    kittyFrozenBeforeClaim + kittyFillingSchedulerTaskStake,
+                );
+                expect(kittyFrozenAfterClaim).equal(expectedKittyBeforeFinalize);
+                // Run flow until finalize to get scheduler kitty part reward
+                const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+                    ...buildOrders({
+                        assets: ordersAssets,
+                        requester: requester.address,
+                        prices: {
+                            app: 0,
+                            dataset: 0,
+                            workerpool: 0,
+                        },
+                        volume: 1,
+                        salt: ethers.utils.id(new Date().toISOString()),
+                    }).toArray(),
+                );
+                await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+                const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+                    taskId,
+                    resultDigest,
+                    worker1,
+                );
+                await iexecPoco
+                    .connect(worker1)
+                    .contribute(
+                        taskId,
+                        resultHash,
+                        resultSeal,
+                        emptyEnclaveAddress,
+                        emptyEnclaveSignature,
+                        await buildAndSignContributionAuthorizationMessage(
+                            worker1.address,
+                            taskId,
+                            AddressZero,
+                            scheduler,
+                        ),
+                    )
+                    .then((tx) => tx.wait());
+                await iexecPoco
+                    .connect(worker1)
+                    .reveal(taskId, resultDigest)
+                    .then((tx) => tx.wait());
+                await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
+                    .to.emit(iexecPoco, 'TaskFinalize')
+                    .to.emit(iexecPoco, 'Seize')
+                    .withArgs(kittyAddress, expectedSchedulerKittyPartReward, taskId)
+                    .to.emit(iexecPoco, 'Transfer')
+                    .withArgs(
+                        iexecPoco.address,
+                        scheduler.address,
+                        expectedSchedulerKittyPartReward,
+                    )
+                    .to.emit(iexecPoco, 'Reward')
+                    .withArgs(scheduler.address, expectedSchedulerKittyPartReward, taskId)
+                    .to.changeTokenBalances(
+                        iexecPoco,
+                        [iexecPoco, scheduler, kittyAddress],
+                        [-expectedSchedulerKittyPartReward, expectedSchedulerKittyPartReward, 0],
+                    );
+                expect(await iexecPoco.frozenOf(kittyAddress)).to.equal(
+                    kittyFrozenAfterClaim - expectedSchedulerKittyPartReward,
+                );
+            });
+        });
     });
 
     it('Should finalize task after reveal deadline with at least one reveal', async () => {
