@@ -97,7 +97,7 @@ describe('IexecEscrowToken', () => {
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, accountA.address, 0);
         });
-        it('Should not deposit tokens when not approved', async () => {
+        it('Should not deposit tokens when spending is not approved', async () => {
             await expect(iexecPocoAsAccountA.deposit(amount)).to.be.revertedWithoutReason();
         });
         it('Should not deposit tokens when caller is address 0', async () => {
@@ -156,7 +156,7 @@ describe('IexecEscrowToken', () => {
                 initialTotalSupply.add(depositForParams.amount),
             );
         });
-        it('Should not deposit tokens for another account when not approved', async () => {
+        it('Should not deposit tokens for another account when spending is not approved', async () => {
             await expect(
                 iexecPocoAsAccountA.depositFor(amount, accountB.address),
             ).to.be.revertedWithoutReason();
