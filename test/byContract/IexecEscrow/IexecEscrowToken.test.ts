@@ -97,6 +97,9 @@ describe('IexecEscrowToken', () => {
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, accountA.address, 0);
         });
+        it('Should not deposit tokens when not approved', async () => {
+            await expect(iexecPocoAsAccountA.deposit(amount)).to.be.revertedWithoutReason();
+        });
         it('Should not deposit tokens when caller is address 0', async () => {
             const addressZeroSigner = await ethers.getImpersonatedSigner(AddressZero);
             await rlcInstance
@@ -152,6 +155,11 @@ describe('IexecEscrowToken', () => {
             expect(await iexecPoco.totalSupply()).to.equal(
                 initialTotalSupply.add(depositForParams.amount),
             );
+        });
+        it('Should not deposit tokens for another account when not approved', async () => {
+            await expect(
+                iexecPocoAsAccountA.depositFor(amount, accountB.address),
+            ).to.be.revertedWithoutReason();
         });
         it('Should not deposit tokens for zero address', async () => {
             await rlcInstanceAsAccountA.approve(iexecPoco.address, amount).then((tx) => tx.wait());
