@@ -405,6 +405,54 @@ describe('IexecPoco2#finalize', async () => {
         );
     });
 
+    it('Should finalize task when callback address is non-EIP1154 contract', async () => {
+        const orders = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+            callback: appAddress, // Non-EIP1154 contract
+        });
+
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            callbackResultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, callbackResultDigest)
+            .then((tx) => tx.wait());
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback)).to.emit(
+            iexecPoco,
+            'TaskFinalize',
+        );
+    });
+
     describe('IexecPoco2#finalize-with-scheduler-kitty-part-reward', async () => {
         [
             {
@@ -605,52 +653,6 @@ describe('IexecPoco2#finalize', async () => {
             iexecPoco,
             'TaskFinalize',
         );
-    });
-
-    it('Should finalize task when callback address is non-EIP1154 contract', async () => {
-        const orders = buildOrders({
-            assets: ordersAssets,
-            requester: requester.address,
-            prices: ordersPrices,
-            callback: appAddress, // Non-EIP1154 contract
-        });
-
-        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
-            ...orders.toArray(),
-        );
-        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
-        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
-            taskId,
-            callbackResultDigest,
-            worker1,
-        );
-        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
-            worker1.address,
-            taskId,
-            emptyEnclaveAddress,
-            scheduler,
-        );
-        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
-        await iexecPoco
-            .connect(worker1)
-            .contribute(
-                taskId,
-                resultHash,
-                resultSeal,
-                emptyEnclaveAddress,
-                emptyEnclaveSignature,
-                schedulerSignature,
-            )
-            .then((tx) => tx.wait());
-        await iexecPoco
-            .connect(worker1)
-            .reveal(taskId, callbackResultDigest)
-            .then((tx) => tx.wait());
-        await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback))
-            .to.emit(iexecPoco, 'TaskFinalize')
     });
 
     it('Should not finalize when caller is not scheduler', async () => {
