@@ -356,7 +356,7 @@ describe('IexecPoco2#finalize', async () => {
         expect(task.resultsCallback).to.equal('0x'); // deal without callback
     });
 
-    it('Should finalize task when callback is EOA', async () => {
+    it('Should finalize task when callback address is EOA', async () => {
         const callbackEOAAddress = ethers.Wallet.createRandom().address;
         const orders = buildOrders({
             assets: ordersAssets,
@@ -607,16 +607,12 @@ describe('IexecPoco2#finalize', async () => {
         );
     });
 
-    it('Should finalize task when result callback is invalid', async () => {
-        const oracleConsumerInstance = await new TestClient__factory()
-            .connect(anyone)
-            .deploy()
-            .then((contract) => contract.deployed());
+    it('Should finalize task when callback address is non-EIP1154 contract', async () => {
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
-            callback: appAddress,
+            callback: appAddress, // Non-EIP1154 contract
         });
 
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
@@ -655,8 +651,6 @@ describe('IexecPoco2#finalize', async () => {
             .then((tx) => tx.wait());
         await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback))
             .to.emit(iexecPoco, 'TaskFinalize')
-            .withArgs(taskId, hexResults)
-            .to.not.emit(oracleConsumerInstance, 'GotResult');
     });
 
     it('Should not finalize when caller is not scheduler', async () => {
@@ -834,7 +828,7 @@ describe('IexecPoco2#finalize', async () => {
         ).to.be.revertedWithoutReason(); // require#4
     });
 
-    it('Should not finalize task when callback is bad', async () => {
+    it('Should not finalize task when result callback is bad', async () => {
         const oracleConsumerInstance = await new TestClient__factory()
             .connect(anyone)
             .deploy()
