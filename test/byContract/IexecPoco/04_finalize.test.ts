@@ -880,10 +880,16 @@ describe('IexecPoco2#finalize', async () => {
             .connect(worker1)
             .reveal(taskId, callbackResultDigest)
             .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).to.equal(TaskStatusEnum.REVEALING);
+        expect(task.revealCounter).to.equal(1);
+        // caller is scheduler, task status is revealing, before final deadline,
+        // reveal counter is reached
+        // but resultsCallback is bad
         const { resultsCallback } = buildResultCallbackAndDigest(567);
         await expect(
             iexecPocoAsScheduler.finalize(taskId, results, resultsCallback),
-        ).to.be.revertedWithoutReason();
+        ).to.be.revertedWithoutReason(); // require#4 (part 2)
     });
 
     async function setWorkerScoreInStorage(worker: string, score: number) {
