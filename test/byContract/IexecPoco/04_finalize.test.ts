@@ -779,8 +779,6 @@ describe('IexecPoco2#finalize', async () => {
             .connect(worker1)
             .reveal(taskId, callbackResultDigest)
             .then((tx) => tx.wait());
-        const task = await iexecPoco.viewTask(taskId);
-        await time.setNextBlockTimestamp(task.revealDeadline);
         const { resultsCallback } = buildResultCallbackAndDigest(567);
         await expect(
             iexecPocoAsScheduler.finalize(taskId, results, resultsCallback),
@@ -833,8 +831,6 @@ describe('IexecPoco2#finalize', async () => {
             .connect(worker1)
             .reveal(taskId, callbackResultDigest)
             .then((tx) => tx.wait());
-        const task = await iexecPoco.viewTask(taskId);
-        await time.setNextBlockTimestamp(task.revealDeadline);
         await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback))
             .to.emit(iexecPoco, 'TaskFinalize')
             .withArgs(taskId, hexResults)
@@ -884,8 +880,6 @@ describe('IexecPoco2#finalize', async () => {
             .connect(worker1)
             .reveal(taskId, callbackResultDigest)
             .then((tx) => tx.wait());
-        const task = await iexecPoco.viewTask(taskId);
-        await time.setNextBlockTimestamp(task.revealDeadline);
         await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback)).to.emit(
             iexecPoco,
             'TaskFinalize',
