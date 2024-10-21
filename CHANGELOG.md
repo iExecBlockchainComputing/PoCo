@@ -2,6 +2,7 @@
 
 ## vNEXT
 - Migrate unit test files to Typescript & Hardhat:
+    - ERC1154 (#145)
     - IexecEscrowToken (#141, #143)
     - IexecRelay (#140)
     - IexecPoco1 (#136, #137)
