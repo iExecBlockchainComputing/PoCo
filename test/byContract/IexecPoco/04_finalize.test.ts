@@ -733,6 +733,165 @@ describe('IexecPoco2#finalize', async () => {
         ).to.be.revertedWithoutReason(); // require#4
     });
 
+    it('Should not finalize task when callback is bad', async () => {
+        const oracleConsumerInstance = await new TestClient__factory()
+            .connect(anyone)
+            .deploy()
+            .then((contract) => contract.deployed());
+        const orders = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+            callback: oracleConsumerInstance.address,
+        });
+
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            callbackResultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, callbackResultDigest)
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        await time.setNextBlockTimestamp(task.revealDeadline);
+        const { resultsCallback } = buildResultCallbackAndDigest(567);
+        await expect(
+            iexecPocoAsScheduler.finalize(taskId, results, resultsCallback),
+        ).to.be.revertedWithoutReason();
+    });
+
+    it('Should finalize task when result callback is invalid', async () => {
+        const oracleConsumerInstance = await new TestClient__factory()
+            .connect(anyone)
+            .deploy()
+            .then((contract) => contract.deployed());
+        const orders = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+            callback: appAddress,
+        });
+
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            callbackResultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, callbackResultDigest)
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        await time.setNextBlockTimestamp(task.revealDeadline);
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback))
+            .to.emit(iexecPoco, 'TaskFinalize')
+            .withArgs(taskId, hexResults)
+            .to.not.emit(oracleConsumerInstance, 'GotResult');
+    });
+
+    it('Should finalize task when callback is EOA', async () => {
+        const callbackEOAAddress = ethers.Wallet.createRandom().address;
+        const orders = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+            callback: callbackEOAAddress,
+        });
+
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            callbackResultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, callbackResultDigest)
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        await time.setNextBlockTimestamp(task.revealDeadline);
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback)).to.emit(
+            iexecPoco,
+            'TaskFinalize',
+        );
+    });
+
     async function setWorkerScoreInStorage(worker: string, score: number) {
         const workerScoreSlot = ethers.utils.hexStripZeros(
             ethers.utils.keccak256(
