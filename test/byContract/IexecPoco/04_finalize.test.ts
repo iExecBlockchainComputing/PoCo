@@ -9,6 +9,7 @@ import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-d
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    OwnableMock__factory,
     TestClient__factory,
 } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -406,11 +407,15 @@ describe('IexecPoco2#finalize', async () => {
     });
 
     it('Should finalize task when callback address is non-EIP1154 contract', async () => {
+        const nonEip1154RandomContract = await new OwnableMock__factory()
+            .connect(anyone)
+            .deploy()
+            .then((contract) => contract.deployed());
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
-            callback: appAddress, // Non-EIP1154 contract
+            callback: nonEip1154RandomContract.address,
         });
 
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
