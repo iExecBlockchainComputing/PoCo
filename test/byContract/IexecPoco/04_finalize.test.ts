@@ -356,6 +356,103 @@ describe('IexecPoco2#finalize', async () => {
         expect(task.resultsCallback).to.equal('0x'); // deal without callback
     });
 
+    it('Should finalize task when callback address is EOA', async () => {
+        const callbackEOAAddress = ethers.Wallet.createRandom().address;
+        const orders = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+            callback: callbackEOAAddress,
+        });
+
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            callbackResultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, callbackResultDigest)
+            .then((tx) => tx.wait());
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback)).to.emit(
+            iexecPoco,
+            'TaskFinalize',
+        );
+    });
+
+    it('Should finalize task when callback address is non-EIP1154 contract', async () => {
+        const orders = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+            callback: appAddress, // Non-EIP1154 contract
+        });
+
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            callbackResultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, callbackResultDigest)
+            .then((tx) => tx.wait());
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback)).to.emit(
+            iexecPoco,
+            'TaskFinalize',
+        );
+    });
+
     describe('IexecPoco2#finalize-with-scheduler-kitty-part-reward', async () => {
         [
             {
@@ -731,6 +828,64 @@ describe('IexecPoco2#finalize', async () => {
         await expect(
             iexecPocoAsScheduler.finalize(taskId, results, '0x01'),
         ).to.be.revertedWithoutReason(); // require#4
+    });
+
+    it('Should not finalize task when result callback is bad', async () => {
+        const oracleConsumerInstance = await new TestClient__factory()
+            .connect(anyone)
+            .deploy()
+            .then((contract) => contract.deployed());
+        const orders = buildOrders({
+            assets: ordersAssets,
+            requester: requester.address,
+            prices: ordersPrices,
+            callback: oracleConsumerInstance.address,
+        });
+
+        const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
+        await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+        const workerTaskStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            callbackResultDigest,
+            worker1,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            worker1.address,
+            taskId,
+            emptyEnclaveAddress,
+            scheduler,
+        );
+        await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+        await iexecPoco
+            .connect(worker1)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                emptyEnclaveAddress,
+                emptyEnclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        await iexecPoco
+            .connect(worker1)
+            .reveal(taskId, callbackResultDigest)
+            .then((tx) => tx.wait());
+        const task = await iexecPoco.viewTask(taskId);
+        expect(task.status).to.equal(TaskStatusEnum.REVEALING);
+        expect(task.revealCounter).to.equal(1);
+        // caller is scheduler, task status is revealing, before final deadline,
+        // reveal counter is reached
+        // but resultsCallback is bad
+        const { resultsCallback } = buildResultCallbackAndDigest(567);
+        await expect(
+            iexecPocoAsScheduler.finalize(taskId, results, resultsCallback),
+        ).to.be.revertedWithoutReason(); // require#4 (part 2)
     });
 
     async function setWorkerScoreInStorage(worker: string, score: number) {
