@@ -22,6 +22,7 @@ import {
     IexecMaintenance,
     IexecMaintenance__factory,
     IexecOrderManagement__factory,
+    IexecPoco2__factory,
     IexecPocoAccessors__factory,
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate,
@@ -1387,7 +1388,28 @@ describe('IexecPocoBoost', function () {
             const initialAppOwnerBalance = 0;
             const initialDatasetOwnerBalance = 0;
             const initialSchedulerBalance = 0;
-            const initialKitty = 0; // MIN_KITTY * 10 + 10, // TODO: Update with positive kitty (ex: 10_000_000_010)
+            const initialKitty = 10_000_000_010; // MIN_KITTY * 10 + 10,
+            // Fill kitty
+            const kittyFillingDeal = await iexecWrapper.signAndSponsorMatchOrders(
+                ...buildOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    prices: {
+                        app: 0,
+                        dataset: 0,
+                        workerpool: 33_333_333_367, // 30% will go to kitty
+                    },
+                }).toArray(),
+            );
+            await time.setNextBlockTimestamp(
+                (await iexecAccessor.viewDeal(kittyFillingDeal.dealId)).startTime.toNumber() +
+                    10 * CATEGORY_TIME,
+            );
+            await IexecPoco2__factory.connect(proxyAddress, anyone)
+                .initializeAndClaimArray([kittyFillingDeal.dealId], [kittyFillingDeal.taskIndex])
+                .then((tx) => tx.wait());
+            expect(await iexecAccessor.frozenOf(kittyAddress)).to.equal(initialKitty);
+            // Previous deal for filling kitty is completed, now preparing main deal
             const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, volume);
             const schedulerTaskStake = schedulerDealStake / volume;
             // Setup: MIN_REWARD < reward < available
@@ -1496,8 +1518,8 @@ describe('IexecPocoBoost', function () {
                 .withArgs(iexecPocoBoostInstance.address, scheduler.address, schedulerTaskStake)
                 .to.emit(iexecPocoBoostInstance, 'Unlock')
                 .withArgs(scheduler.address, schedulerTaskStake)
-                // .to.emit(iexecPocoBoostInstance, 'Seize') // TODO: Re-enable kitty check
-                // .withArgs(kittyAddress, expectedSchedulerKittyRewardForTask1, taskId)
+                .to.emit(iexecPocoBoostInstance, 'Seize')
+                .withArgs(kittyAddress, expectedSchedulerKittyRewardForTask1, taskId)
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
                 .withArgs(
                     iexecPocoBoostInstance.address,
