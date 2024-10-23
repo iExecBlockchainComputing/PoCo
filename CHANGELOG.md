@@ -1,6 +1,10 @@
 # Changelog
 
 ## vNEXT
+
+- Remove `smock` from unit tests:
+    - IexecPocoDelegate (#149)
+    - IexecPocoBoost (#148)
 - Migrate unit test files to Typescript & Hardhat:
     - ERC1154 (#145, #146)
     - IexecEscrowToken (#141, #143)
