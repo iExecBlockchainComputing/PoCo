@@ -6,7 +6,11 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import {
+    IexecInterfaceNative,
+    IexecInterfaceNative__factory,
+    TestClient__factory,
+} from '../../../typechain';
 import { OrdersAssets, buildOrders } from '../../../utils/createOrders';
 import {
     TaskStatusEnum,
@@ -134,7 +138,15 @@ describe('IexecAccessors', async () => {
             };
         });
         it('Should get result of task', async function () {
-            const orders = buildOrders({ assets: ordersAssets, requester: requester.address });
+            const oracleConsumerInstance = await new TestClient__factory()
+                .connect(anyone)
+                .deploy()
+                .then((contract) => contract.deployed());
+            const orders = buildOrders({
+                assets: ordersAssets,
+                requester: requester.address,
+                callback: oracleConsumerInstance.address,
+            });
             const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
                 ...orders.toArray(),
             );
