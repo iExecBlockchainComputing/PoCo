@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { HashZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers, expect } from 'hardhat';
@@ -32,6 +33,7 @@ describe('IexecAccessors', async () => {
         const accounts = await getIexecAccounts();
         ({ requester, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
+        ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPocoAsAnyone = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
     }
 
@@ -66,21 +68,21 @@ describe('IexecAccessors', async () => {
         const finalDeadlineRatio = (await iexecPocoAsAnyone.final_deadline_ratio()).toNumber();
 
         const task = await iexecPocoAsAnyone.viewTask(taskId);
-        expect(task.status).to.equal(TaskStatusEnum.UNSET);
+        expect(task.status).to.equal(TaskStatusEnum.ACTIVE);
         expect(task.dealid).to.equal(dealId);
         expect(task.idx).to.equal(taskIndex);
         expect(task.timeref).to.equal(timeRef);
         expect(task.contributionDeadline).to.equal(startTime + timeRef * contributionDeadlineRatio);
         expect(task.revealDeadline).to.equal(0);
         expect(task.finalDeadline).to.equal(startTime + timeRef * finalDeadlineRatio);
-        expect(task.consensusValue).to.be.empty('string');
+        expect(task.consensusValue).to.equal(HashZero);
         expect(task.revealCounter).to.equal(0);
         expect(task.winnerCounter).to.equal(0);
-        expect(task.contributors[0]).to.be.empty('string');
-        expect(task.resultDigest).to.be.empty('string');
-        expect(task.results).to.be.empty('string');
+        expect(task.contributors.length).to.equal(0);
+        expect(task.resultDigest).to.equal(HashZero);
+        expect(task.results).to.equal('0x');
         expect(task.resultsTimestamp).to.equal(0);
-        expect(task.resultsCallback).to.be.empty('string');
+        expect(task.resultsCallback).to.equal('0x');
     });
 
     it('countCategory', async function () {
