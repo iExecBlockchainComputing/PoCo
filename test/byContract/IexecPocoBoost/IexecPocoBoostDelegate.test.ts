@@ -88,7 +88,6 @@ describe('IexecPocoBoost', function () {
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
-        admin,
         requester,
         sponsor,
         beneficiary,
@@ -113,7 +112,6 @@ describe('IexecPocoBoost', function () {
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({
-            iexecAdmin: admin,
             requester,
             sponsor,
             beneficiary,
@@ -129,7 +127,10 @@ describe('IexecPocoBoost', function () {
         domain = iexecWrapper.getDomain();
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, anyone);
-        iexecMaintenanceAsAdmin = IexecMaintenance__factory.connect(proxyAddress, admin);
+        iexecMaintenanceAsAdmin = IexecMaintenance__factory.connect(
+            proxyAddress,
+            accounts.iexecAdmin,
+        );
         iexecAccessor = IexecAccessors__factory.connect(proxyAddress, ethers.provider);
         ordersActors = {
             appOwner: appProvider,
