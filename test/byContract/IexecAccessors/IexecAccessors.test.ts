@@ -185,12 +185,11 @@ describe('IexecAccessors', async () => {
 
             const { dealId } = await iexecWrapper.signAndMatchOrders(...orders.toArray());
 
-            const taskIndexes = [0, 1, 2];
             const tasks: string[] = [];
             tasks.push(getTaskId(dealId, 0));
-            for (let i = 1; i < taskIndexes.length; i++) {
-                await iexecPocoAsAnyone.initialize(dealId, taskIndexes[i]).then((tx) => tx.wait());
-                tasks.push(getTaskId(dealId, i));
+            for (let taskIndex = 1; taskIndex < volume; taskIndex++) {
+                await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
+                tasks.push(getTaskId(dealId, taskIndex));
             }
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 tasks[2],
