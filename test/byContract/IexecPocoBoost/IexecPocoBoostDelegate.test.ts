@@ -390,7 +390,7 @@ describe('IexecPocoBoost', function () {
                 ).callStatic.computeDealVolume(...orders.toArray()),
             ).to.equal(expectedVolume);
             await expect(
-                await iexecPocoBoostInstance
+                iexecPocoBoostInstance
                     .connect(sponsor)
                     .sponsorMatchOrdersBoost(...orders.toArray()),
             )
