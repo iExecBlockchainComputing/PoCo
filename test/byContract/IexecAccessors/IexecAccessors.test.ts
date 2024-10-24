@@ -11,6 +11,7 @@ import { OrdersAssets, buildOrders } from '../../../utils/createOrders';
 import {
     TaskStatusEnum,
     buildAndSignContributionAuthorizationMessage,
+    buildResultCallbackAndDigest,
     buildResultHashAndResultSeal,
     buildUtf8ResultAndDigest,
     getIexecAccounts,
@@ -119,6 +120,7 @@ describe('IexecAccessors', async () => {
         let [requester, scheduler, worker1]: SignerWithAddress[] = [];
         let ordersAssets: OrdersAssets;
         const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+        const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
         beforeEach(async () => {
             let accounts = await getIexecAccounts();
@@ -144,7 +146,7 @@ describe('IexecAccessors', async () => {
                 .then((deal) => deal.workerStake.toNumber());
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
-                resultDigest,
+                callbackResultDigest,
                 worker1,
             );
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
@@ -161,15 +163,17 @@ describe('IexecAccessors', async () => {
 
             await iexecPocoAsAnyone
                 .connect(worker1)
-                .reveal(taskId, resultDigest)
+                .reveal(taskId, callbackResultDigest)
                 .then((tx) => tx.wait());
             await iexecPocoAsAnyone
                 .connect(scheduler)
-                .finalize(taskId, results, '0x')
+                .finalize(taskId, results, resultsCallback)
                 .then((tx) => tx.wait());
             const task = await iexecPocoAsAnyone.viewTask(taskId);
             await expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
-            await expect(await iexecPocoAsAnyone.callStatic.resultFor(taskId)).to.equal('0x');
+            await expect(await iexecPocoAsAnyone.callStatic.resultFor(taskId)).to.equal(
+                resultsCallback,
+            );
         });
         it('Should not get result when task is not completed', async function () {
             const volume = 3;
