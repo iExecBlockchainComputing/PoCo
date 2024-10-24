@@ -31,6 +31,7 @@ describe('IexecAccessors', async () => {
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({ requester, anyone } = accounts);
+        iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         iexecPocoAsAnyone = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
     }
 
