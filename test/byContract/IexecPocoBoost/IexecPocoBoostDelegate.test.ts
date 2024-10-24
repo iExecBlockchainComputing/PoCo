@@ -77,33 +77,33 @@ const workerpoolPrice = 1_000_000_000;
 const someSignature = '0xabcd'; // contract signatures could have arbitrary formats
 const randomEOAAddress = '0xc0ffee254729296a45a3885639AC7E10F9d54979';
 
-describe('IexecPocoBoost', function () {
-    let proxyAddress: string;
-    let iexecPocoBoostInstance: IexecPocoBoostDelegate;
-    let iexecMaintenanceAsAdmin: IexecMaintenance;
-    let iexecAccessor: IexecAccessors;
-    let oracleConsumerInstance: TestClient;
-    let gasWasterClientInstance: GasWasterClient;
-    let someContractInstance: OwnableMock;
-    let iexecWrapper: IexecWrapper;
-    let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
-    let [
-        requester,
-        sponsor,
-        beneficiary,
-        appProvider,
-        datasetProvider,
-        scheduler,
-        worker,
-        enclave,
-        anyone,
-        teeBroker,
-    ]: SignerWithAddress[] = [];
-    let ordersActors: OrdersActors;
-    let ordersAssets: OrdersAssets;
-    let ordersPrices: OrdersPrices;
-    let domain: TypedDataDomain;
+let proxyAddress: string;
+let iexecPocoBoostInstance: IexecPocoBoostDelegate;
+let iexecMaintenanceAsAdmin: IexecMaintenance;
+let iexecAccessor: IexecAccessors;
+let oracleConsumerInstance: TestClient;
+let gasWasterClientInstance: GasWasterClient;
+let someContractInstance: OwnableMock;
+let iexecWrapper: IexecWrapper;
+let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
+let [
+    requester,
+    sponsor,
+    beneficiary,
+    appProvider,
+    datasetProvider,
+    scheduler,
+    worker,
+    enclave,
+    anyone,
+    teeBroker,
+]: SignerWithAddress[] = [];
+let ordersActors: OrdersActors;
+let ordersAssets: OrdersAssets;
+let ordersPrices: OrdersPrices;
+let domain: TypedDataDomain;
 
+describe('IexecPocoBoost', function () {
     beforeEach('Deploy', async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
         await loadFixture(initFixture);
@@ -2598,55 +2598,19 @@ describe('IexecPocoBoost', function () {
             anyone,
         ).viewDealBoost(dealId);
     }
-
-    /**
-     * Create a fake ERC734 identity contract instance.
-     * @returns A fake ERC734 identity contract instance.
-     */
-    // TODO: Rename
-    async function createFakeErc734IdentityInstance() {
-        return new ERC734Mock__factory()
-            .connect(anyone)
-            .deploy()
-            .then((contract) => contract.deployed());
-    }
-
-    /**
-     * Create a fake ERC1271 contract.
-     * @returns A fake ERC1271 contract instance.
-     */
-    // TODO: Rename
-    async function createFakeERC1271() {
-        return new ERC1271Mock__factory()
-            .connect(anyone)
-            .deploy()
-            .then((contract) => contract.deployed());
-    }
-
-    async function expectOrderConsumed(
-        iexecPocoInstance: IexecPocoBoostDelegate, // TODO: Remove
-        orderHash: string,
-        expectedConsumedVolume: number | undefined,
-    ) {
-        expect(await iexecAccessor.viewConsumed(orderHash)).to.equal(expectedConsumedVolume || 0);
-    }
-
-    async function expectBalance(
-        iexecPocoInstance: IexecPocoBoostDelegate, // TODO: Remove
-        account: string,
-        expectedBalanceValue: number,
-    ) {
-        expect(await iexecAccessor.balanceOf(account)).to.equal(expectedBalanceValue);
-    }
-
-    async function expectFrozen(
-        iexecPocoInstance: IexecPocoBoostDelegate, // TODO: Remove
-        account: string,
-        expectedFrozenValue: number,
-    ) {
-        expect(await iexecAccessor.frozenOf(account)).to.equal(expectedFrozenValue);
-    }
 });
+
+/**
+ * Create a fake ERC734 identity contract instance.
+ * @returns A fake ERC734 identity contract instance.
+ */
+// TODO: Rename
+async function createFakeErc734IdentityInstance() {
+    return new ERC734Mock__factory()
+        .connect(anyone)
+        .deploy()
+        .then((contract) => contract.deployed());
+}
 
 /**
  * If the ERC734 identity contract is asked if a given candidate is in a group, then
@@ -2661,6 +2625,18 @@ async function whenIdentityContractCalledForCandidateInGroupThenReturnTrue(
     await erc734IdentityContractInstance
         .setKeyHasPurpose(addressToBytes32(candidate), groupMemberPurpose)
         .then((tx) => tx.wait());
+}
+
+/**
+ * Create a fake ERC1271 contract.
+ * @returns A fake ERC1271 contract instance.
+ */
+// TODO: Rename
+async function createFakeERC1271() {
+    return new ERC1271Mock__factory()
+        .connect(anyone)
+        .deploy()
+        .then((contract) => contract.deployed());
 }
 
 /**
@@ -2683,4 +2659,28 @@ function addressToBytes32(address: string): string {
  */
 function computeSchedulerDealStake(workerpoolPrice: number, volume: number) {
     return ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume;
+}
+
+async function expectOrderConsumed(
+    iexecPocoInstance: IexecPocoBoostDelegate, // TODO: Remove
+    orderHash: string,
+    expectedConsumedVolume: number | undefined,
+) {
+    expect(await iexecAccessor.viewConsumed(orderHash)).to.equal(expectedConsumedVolume || 0);
+}
+
+async function expectBalance(
+    iexecPocoInstance: IexecPocoBoostDelegate, // TODO: Remove
+    account: string,
+    expectedBalanceValue: number,
+) {
+    expect(await iexecAccessor.balanceOf(account)).to.equal(expectedBalanceValue);
+}
+
+async function expectFrozen(
+    iexecPocoInstance: IexecPocoBoostDelegate, // TODO: Remove
+    account: string,
+    expectedFrozenValue: number,
+) {
+    expect(await iexecAccessor.frozenOf(account)).to.equal(expectedFrozenValue);
 }
