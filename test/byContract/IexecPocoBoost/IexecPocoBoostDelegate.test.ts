@@ -1198,7 +1198,6 @@ describe('IexecPocoBoost', function () {
             await IERC721__factory.connect(await iexecAccessor.datasetregistry(), datasetProvider)
                 .transferFrom(datasetProvider.address, erc1271Instance.address, datasetAddress)
                 .then((tx) => tx.wait());
-
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
