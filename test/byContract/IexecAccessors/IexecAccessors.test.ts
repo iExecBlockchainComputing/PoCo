@@ -123,9 +123,9 @@ describe('IexecAccessors', async () => {
         const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
         beforeEach(async () => {
-            let accounts = await getIexecAccounts();
+            const accounts = await getIexecAccounts();
             iexecWrapper = new IexecWrapper(proxyAddress, accounts);
-            ({ requester, worker1, scheduler } = accounts);
+            ({ requester, scheduler, worker1 } = accounts);
             ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
             ordersAssets = {
                 app: appAddress,
