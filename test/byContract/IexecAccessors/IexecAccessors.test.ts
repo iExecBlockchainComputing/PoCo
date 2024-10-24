@@ -113,7 +113,7 @@ describe('IexecAccessors', async () => {
         );
     });
 
-    describe('Task Result Tests', () => {
+    describe('resultFor', () => {
         let iexecWrapper: IexecWrapper;
         let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
         let [requester, scheduler, worker1]: SignerWithAddress[] = [];
