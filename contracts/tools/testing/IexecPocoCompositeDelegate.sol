@@ -6,6 +6,8 @@ pragma solidity ^0.8.0;
 import {IexecPocoAccessorsDelegate} from "../../modules/delegates/IexecPocoAccessorsDelegate.sol";
 import {IexecPoco1Delegate} from "../../modules/delegates/IexecPoco1Delegate.sol";
 
+// TODO remove
+
 /**
  * @notice This contract is dedicated to unit testing.
  */

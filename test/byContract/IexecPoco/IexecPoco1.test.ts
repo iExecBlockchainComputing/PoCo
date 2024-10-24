@@ -14,6 +14,7 @@ import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
+    IexecPocoAccessors,
     IexecPocoAccessors__factory,
     OwnableMock,
     OwnableMock__factory,
@@ -62,6 +63,9 @@ describe('IexecPoco1', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
     let iexecPocoAsSponsor: IexecPoco1; // Sponsor function not available yet in IexecInterfaceNative.
+    // TODO use iexecPoco when IexecInterfaceNative is up-to-date
+    // and contains the function `computeDealVolume`.
+    let iexecPocoAccessors: IexecPocoAccessors;
     let iexecPocoContract: Contract;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
@@ -109,6 +113,7 @@ describe('IexecPoco1', () => {
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
         iexecPocoAsSponsor = IexecPoco1__factory.connect(proxyAddress, sponsor);
+        iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, anyone);
         iexecPocoContract = iexecPoco as Contract;
         ordersActors = {
             appOwner: appProvider,
@@ -389,9 +394,7 @@ describe('IexecPoco1', () => {
                 iexecWrapper.hashOrders(fullConfigOrders);
             const dealId = getDealId(iexecWrapper.getDomain(), fullConfigOrders.requester);
             expect(
-                await IexecPocoAccessors__factory.connect(proxyAddress, anyone).computeDealVolume(
-                    ...fullConfigOrders.toArray(),
-                ),
+                await iexecPocoAccessors.computeDealVolume(...fullConfigOrders.toArray()),
             ).to.equal(botVolume);
 
             expect(await iexecPoco.callStatic.matchOrders(...fullConfigOrders.toArray())).to.equal(
@@ -992,13 +995,22 @@ describe('IexecPoco1', () => {
 
     describe('Sponsor match orders', () => {
         it('Should sponsor match orders', async () => {
+            const domain = iexecWrapper.getDomain();
+            const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
+            // override volumes and set different value for each order
+            // to make sure the smallest volume is considered.
+            const expectedVolume = 2;
+            appOrder.volume = 2; // smallest unconsumed volume among all orders
+            datasetOrder.volume = 3;
+            workerpoolOrder.volume = 4;
+            requestOrder.volume = 5;
             // Compute prices, stakes, rewards, ...
             const dealPrice =
                 (appPrice + datasetPrice + workerpoolPrice) * // task price
-                volume;
+                expectedVolume;
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
                 workerpoolPrice,
-                volume,
+                expectedVolume,
             );
             // Deposit required amounts.
             await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
@@ -1006,8 +1018,14 @@ describe('IexecPoco1', () => {
             // Save frozen balances before match.
             const sponsorFrozenBefore = (await iexecPoco.frozenOf(sponsor.address)).toNumber();
             // Sign and match orders.
-            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
+            await signOrders(domain, orders, ordersActors);
+            const dealId = getDealId(domain, orders.requester);
+            expect(
+                await iexecPocoAsSponsor.callStatic.sponsorMatchOrders(...orders.toArray()),
+            ).to.equal(dealId);
+            expect(
+                await iexecPocoAccessors.callStatic.computeDealVolume(...orders.toArray()),
+            ).to.equal(expectedVolume);
             const tx = iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray());
             // Check balances and frozen.
             await expect(tx).to.changeTokenBalances(
@@ -1020,7 +1038,18 @@ describe('IexecPoco1', () => {
                 sponsorFrozenBefore + dealPrice,
             );
             // Check events.
-            await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
+            await expect(tx)
+                .to.emit(iexecPoco, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    hashOrder(domain, appOrder),
+                    hashOrder(domain, datasetOrder),
+                    hashOrder(domain, workerpoolOrder),
+                    hashOrder(domain, requestOrder),
+                    expectedVolume,
+                )
+                .to.emit(iexecPoco, 'DealSponsored')
+                .withArgs(dealId, sponsor.address);
             // Check deal
             const deal = await iexecPoco.viewDeal(dealId);
             expect(deal.sponsor).to.equal(sponsor.address);
@@ -1048,7 +1077,7 @@ describe('IexecPoco1', () => {
 
     /**
      * Helper function to deposit requester and scheduler stakes with
-     * default prices for tests that do not rely on price changes.
+     * default prices for tests that do not rely on custom prices.
      */
     async function depositForRequesterAndSchedulerWithDefaultPrices(volume: number) {
         const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
