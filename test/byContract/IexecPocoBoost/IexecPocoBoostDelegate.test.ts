@@ -2124,12 +2124,6 @@ describe('IexecPocoBoost', function () {
                 volume: expectedVolume,
             });
             await signOrders(domain, orders, ordersActors);
-            const initialIexecPocoBalance = await balanceOf(proxyAddress);
-            const initialRequesterBalance = await balanceOf(requester.address);
-            const initialRequesterFrozen = await frozenOf(requester.address);
-            const initialSchedulerBalance = await balanceOf(scheduler.address);
-            const initialSchedulerFrozen = await frozenOf(scheduler.address);
-            const initialKittyFrozen = await frozenOf(kittyAddress);
             const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, expectedVolume);
             const schedulerTaskStake = schedulerDealStake / expectedVolume;
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
@@ -2139,35 +2133,34 @@ describe('IexecPocoBoost', function () {
             await iexecPocoBoostInstance
                 .matchOrdersBoost(...orders.toArray())
                 .then((tx) => tx.wait());
+            const initialRequesterFrozen = await frozenOf(requester.address);
+            const initialSchedulerFrozen = await frozenOf(scheduler.address);
+            const initialKittyFrozen = await frozenOf(kittyAddress);
             await time.setNextBlockTimestamp(startTime + 7 * CATEGORY_TIME); // claim on deadline
             for (let index = 0; index < tasksToClaim; index++) {
-                await iexecPocoBoostInstance.connect(worker).claimBoost(dealId, index);
+                const claimBoostTx = await iexecPocoBoostInstance
+                    .connect(worker)
+                    .claimBoost(dealId, index);
                 const claimedTasks = index + 1;
-                const remainingTasksToClaim = expectedVolume - claimedTasks;
                 // Verifications after claiming "claimedTasks" tasks.
-                // Check poco boost balance
-                await expectBalance(
-                    iexecPocoBoostInstance.address,
-                    initialIexecPocoBalance +
-                        taskPrice * remainingTasksToClaim + // requester has still remainingTasksToClaim task locked
-                        schedulerDealStake, // stake of remaining tasks to claim + seized stake of claimed tasks moved to kitty
-                );
-                // Check requester balance and frozen.
-                await expectBalance(
-                    requester.address,
-                    initialRequesterBalance + taskPrice * claimedTasks,
+                // Check balances and frozens
+                await expect(claimBoostTx).to.changeTokenBalances(
+                    iexecAccessor,
+                    [iexecPocoBoostInstance.address, requester.address, scheduler.address],
+                    [
+                        -taskPrice, // PoCo proxy
+                        taskPrice, // requester
+                        0, // scheduler
+                    ],
                 );
                 await expectFrozen(
                     requester.address,
-                    initialRequesterFrozen + taskPrice * remainingTasksToClaim,
+                    initialRequesterFrozen - taskPrice * claimedTasks,
                 );
-                // Check scheduler balance and frozen
-                await expectBalance(scheduler.address, initialSchedulerBalance);
                 await expectFrozen(
                     scheduler.address,
-                    initialSchedulerFrozen + schedulerTaskStake * remainingTasksToClaim,
+                    initialSchedulerFrozen - schedulerTaskStake * claimedTasks,
                 );
-                // Check kitty frozen
                 await expectFrozen(
                     kittyAddress,
                     initialKittyFrozen + schedulerTaskStake * claimedTasks,
