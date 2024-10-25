@@ -27,11 +27,15 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
  * Test state view functions.
  */
 
+const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
+
 let proxyAddress: string;
 let iexecPocoAsAnyone: IexecInterfaceNative;
 let iexecWrapper: IexecWrapper;
 let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
-let [requester, anyone]: SignerWithAddress[] = [];
+let [requester, scheduler, worker1, anyone]: SignerWithAddress[] = [];
+let ordersAssets: OrdersAssets;
 
 describe('IexecAccessors', async () => {
     beforeEach('Deploy', async () => {
@@ -47,6 +51,11 @@ describe('IexecAccessors', async () => {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPocoAsAnyone = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        ordersAssets = {
+            app: appAddress,
+            dataset: datasetAddress,
+            workerpool: workerpoolAddress,
+        };
     }
 
     it('name', async function () {
@@ -168,25 +177,6 @@ describe('IexecAccessors', async () => {
     });
 
     describe('resultFor', () => {
-        let iexecWrapper: IexecWrapper;
-        let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
-        let [requester, scheduler, worker1]: SignerWithAddress[] = [];
-        let ordersAssets: OrdersAssets;
-        const { results, resultDigest } = buildUtf8ResultAndDigest('result');
-        const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
-
-        beforeEach(async () => {
-            const accounts = await getIexecAccounts();
-            iexecWrapper = new IexecWrapper(proxyAddress, accounts);
-            ({ requester, scheduler, worker1 } = accounts);
-            ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-            ordersAssets = {
-                app: appAddress,
-                dataset: datasetAddress,
-                workerpool: workerpoolAddress,
-            };
-        });
-
         it('Should get result of task', async function () {
             const oracleConsumerInstance = await new TestClient__factory()
                 .connect(anyone)
@@ -236,42 +226,6 @@ describe('IexecAccessors', async () => {
             await verifyTaskStatusAndResult(activeTaskId, TaskStatusEnum.ACTIVE);
             await verifyTaskStatusAndResult(revealingTaskId, TaskStatusEnum.REVEALING);
         });
-
-        // Helper function to initialize and contribute to a task
-        const initializeTask = async (dealId: string, taskIndex: number) => {
-            await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
-            return getTaskId(dealId, taskIndex);
-        };
-
-        const contributeTask = async (dealId: string, taskIndex: number, resultDigest: string) => {
-            const taskId = getTaskId(dealId, taskIndex);
-            const workerTaskStake = await iexecPocoAsAnyone
-                .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
-            const { resultHash, resultSeal } = buildResultHashAndResultSeal(
-                taskId,
-                resultDigest,
-                worker1,
-            );
-            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
-                worker1.address,
-                taskId,
-                AddressZero,
-                scheduler,
-            );
-            await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
-            await iexecPocoAsAnyone
-                .connect(worker1)
-                .contribute(taskId, resultHash, resultSeal, AddressZero, '0x', schedulerSignature)
-                .then((tx) => tx.wait());
-            return taskId;
-        };
-
-        const verifyTaskStatusAndResult = async (taskId: string, expectedStatus: number) => {
-            const task = await iexecPocoAsAnyone.viewTask(taskId);
-            expect(task.status).to.equal(expectedStatus);
-            await expect(iexecPocoAsAnyone.resultFor(taskId)).to.be.revertedWith('task-pending');
-        };
     });
 });
 
@@ -309,3 +263,35 @@ async function createTask() {
     await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
     return { dealId, taskId, taskIndex, startTime, timeRef };
 }
+
+// Helper function to initialize and contribute to a task
+const initializeTask = async (dealId: string, taskIndex: number) => {
+    await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
+    return getTaskId(dealId, taskIndex);
+};
+
+const contributeTask = async (dealId: string, taskIndex: number, resultDigest: string) => {
+    const taskId = getTaskId(dealId, taskIndex);
+    const workerTaskStake = await iexecPocoAsAnyone
+        .viewDeal(dealId)
+        .then((deal) => deal.workerStake.toNumber());
+    const { resultHash, resultSeal } = buildResultHashAndResultSeal(taskId, resultDigest, worker1);
+    const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+        worker1.address,
+        taskId,
+        AddressZero,
+        scheduler,
+    );
+    await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
+    await iexecPocoAsAnyone
+        .connect(worker1)
+        .contribute(taskId, resultHash, resultSeal, AddressZero, '0x', schedulerSignature)
+        .then((tx) => tx.wait());
+    return taskId;
+};
+
+const verifyTaskStatusAndResult = async (taskId: string, expectedStatus: number) => {
+    const task = await iexecPocoAsAnyone.viewTask(taskId);
+    await expect(task.status).to.equal(expectedStatus);
+    await expect(iexecPocoAsAnyone.resultFor(taskId)).to.be.revertedWith('task-pending');
+};
