@@ -152,8 +152,8 @@ describe('IexecAccessors', async () => {
                 ...orders.toArray(),
             );
 
-            await initializeTask(dealId, taskIndex).then(
-                async () => await contributeTask(dealId, taskIndex, callbackResultDigest),
+            await initializeTask(dealId, taskIndex).then(() =>
+                contributeTask(dealId, taskIndex, callbackResultDigest),
             );
             await iexecPocoAsAnyone
                 .connect(worker1)
@@ -181,8 +181,8 @@ describe('IexecAccessors', async () => {
 
             const unsetTaskId = getTaskId(dealId, 0);
             const activeTaskId = await initializeTask(dealId, 1);
-            const revealingTaskId = await initializeTask(dealId, 2).then(
-                async () => await contributeTask(dealId, 2, resultDigest),
+            const revealingTaskId = await initializeTask(dealId, 2).then(() =>
+                contributeTask(dealId, 2, resultDigest),
             );
 
             await verifyTaskStatusAndResult(unsetTaskId, TaskStatusEnum.UNSET);
