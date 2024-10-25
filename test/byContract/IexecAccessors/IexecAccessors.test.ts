@@ -213,10 +213,8 @@ describe('IexecAccessors', async () => {
                 .finalize(taskId, results, resultsCallback)
                 .then((tx) => tx.wait());
             const task = await iexecPocoAsAnyone.viewTask(taskId);
-            await expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
-            await expect(await iexecPocoAsAnyone.callStatic.resultFor(taskId)).to.equal(
-                resultsCallback,
-            );
+            expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
+            expect(await iexecPocoAsAnyone.callStatic.resultFor(taskId)).to.equal(resultsCallback);
         });
         it('Should not get result when task is not completed', async function () {
             const volume = 3;
@@ -271,7 +269,7 @@ describe('IexecAccessors', async () => {
 
         const verifyTaskStatusAndResult = async (taskId: string, expectedStatus: number) => {
             const task = await iexecPocoAsAnyone.viewTask(taskId);
-            await expect(task.status).to.equal(expectedStatus);
+            expect(task.status).to.equal(expectedStatus);
             await expect(iexecPocoAsAnyone.resultFor(taskId)).to.be.revertedWith('task-pending');
         };
     });
