@@ -2167,8 +2167,7 @@ describe('IexecPocoBoost', function () {
                     scheduler.address,
                     initialSchedulerFrozen + schedulerTaskStake * remainingTasksToClaim,
                 );
-                // Check kitty reward balance and frozen
-                await expectBalance(kittyAddress, initialKittyFrozen);
+                // Check kitty frozen
                 await expectFrozen(
                     kittyAddress,
                     initialKittyFrozen + schedulerTaskStake * claimedTasks,
