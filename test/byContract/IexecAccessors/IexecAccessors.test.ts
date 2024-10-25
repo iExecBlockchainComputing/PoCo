@@ -11,7 +11,7 @@ import {
     IexecInterfaceNative__factory,
     TestClient__factory,
 } from '../../../typechain';
-import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
+import { OrdersAssets, buildOrders } from '../../../utils/createOrders';
 import {
     TaskStatusEnum,
     buildAndSignContributionAuthorizationMessage,
@@ -36,6 +36,7 @@ let iexecWrapper: IexecWrapper;
 let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
 let [requester, scheduler, worker1, anyone]: SignerWithAddress[] = [];
 let ordersAssets: OrdersAssets;
+let callbackAddress: string;
 
 describe('IexecAccessors', async () => {
     beforeEach('Deploy', async () => {
@@ -47,7 +48,7 @@ describe('IexecAccessors', async () => {
 
     async function initFixture() {
         const accounts = await getIexecAccounts();
-        ({ requester, anyone } = accounts);
+        ({ requester, scheduler, worker1, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPocoAsAnyone = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
@@ -56,6 +57,11 @@ describe('IexecAccessors', async () => {
             dataset: datasetAddress,
             workerpool: workerpoolAddress,
         };
+        callbackAddress = await new TestClient__factory()
+            .connect(anyone)
+            .deploy()
+            .then((contract) => contract.deployed())
+            .then((contract) => contract.address);
     }
 
     it('name', async function () {
@@ -82,7 +88,9 @@ describe('IexecAccessors', async () => {
     });
 
     it('viewTask', async function () {
-        const { dealId, taskId, taskIndex, startTime, timeRef } = await createTask();
+        const { dealId, taskId, taskIndex, startTime, timeRef } = await createDeal();
+        await initializeTask(dealId, taskIndex);
+
         const contributionDeadlineRatio = (
             await iexecPocoAsAnyone.contribution_deadline_ratio()
         ).toNumber();
@@ -178,21 +186,10 @@ describe('IexecAccessors', async () => {
 
     describe('resultFor', () => {
         it('Should get result of task', async function () {
-            const oracleConsumerInstance = await new TestClient__factory()
-                .connect(anyone)
-                .deploy()
-                .then((contract) => contract.deployed());
-            const orders = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-                callback: oracleConsumerInstance.address,
-            });
-            const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
-                ...orders.toArray(),
-            );
+            const { dealId, taskId, taskIndex } = await createDeal();
 
             await initializeTask(dealId, taskIndex).then(() =>
-                contributeTask(dealId, taskIndex, callbackResultDigest),
+                contributeToTask(dealId, taskIndex, callbackResultDigest),
             );
             await iexecPocoAsAnyone
                 .connect(worker1)
@@ -206,20 +203,14 @@ describe('IexecAccessors', async () => {
             expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
             expect(await iexecPocoAsAnyone.callStatic.resultFor(taskId)).to.equal(resultsCallback);
         });
-        it('Should not get result when task is not completed', async function () {
-            const volume = 3;
-            const orders = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-                volume,
-            });
 
-            const { dealId } = await iexecWrapper.signAndMatchOrders(...orders.toArray());
+        it('Should not get result when task is not completed', async function () {
+            const { dealId } = await createDeal(3);
 
             const unsetTaskId = getTaskId(dealId, 0);
             const activeTaskId = await initializeTask(dealId, 1);
             const revealingTaskId = await initializeTask(dealId, 2).then(() =>
-                contributeTask(dealId, 2, resultDigest),
+                contributeToTask(dealId, 2, resultDigest),
             );
 
             await verifyTaskStatusAndResult(unsetTaskId, TaskStatusEnum.UNSET);
@@ -230,47 +221,37 @@ describe('IexecAccessors', async () => {
 });
 
 /**
- * Build orders, create a deal, and initialize task.
+ * Helper function to create a deal with a specific volume.
  */
-async function createTask() {
-    const appPrice = 1000;
-    const datasetPrice = 1_000_000;
-    const workerpoolPrice = 1_000_000_000;
-    const callback = ethers.Wallet.createRandom().address;
-    const ordersAssets: OrdersAssets = {
-        app: appAddress,
-        dataset: datasetAddress,
-        workerpool: workerpoolAddress,
-    };
-    const ordersPrices: OrdersPrices = {
-        app: appPrice,
-        dataset: datasetPrice,
-        workerpool: workerpoolPrice,
-    };
+async function createDeal(volume: number = 1) {
     const orders = buildOrders({
         assets: ordersAssets,
-        prices: ordersPrices,
         requester: requester.address,
-        callback: callback,
+        volume,
+        callback: callbackAddress,
     });
     const { dealId, taskId, taskIndex, startTime } = await iexecWrapper.signAndMatchOrders(
         ...orders.toArray(),
     );
-    const deal = await iexecPocoAsAnyone.viewDeal(dealId);
+    const dealCategory = (await iexecPocoAsAnyone.viewDeal(dealId)).category;
     const timeRef = (
-        await iexecPocoAsAnyone.viewCategory(deal.category)
+        await iexecPocoAsAnyone.viewCategory(dealCategory)
     ).workClockTimeRef.toNumber();
-    await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
     return { dealId, taskId, taskIndex, startTime, timeRef };
 }
 
-// Helper function to initialize and contribute to a task
-const initializeTask = async (dealId: string, taskIndex: number) => {
+/**
+ * Helper function to initialize a task.
+ */
+async function initializeTask(dealId: string, taskIndex: number) {
     await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
     return getTaskId(dealId, taskIndex);
-};
+}
 
-const contributeTask = async (dealId: string, taskIndex: number, resultDigest: string) => {
+/**
+ * Helper function to contribute to a task.
+ */
+async function contributeToTask(dealId: string, taskIndex: number, resultDigest: string) {
     const taskId = getTaskId(dealId, taskIndex);
     const workerTaskStake = await iexecPocoAsAnyone
         .viewDeal(dealId)
@@ -288,10 +269,10 @@ const contributeTask = async (dealId: string, taskIndex: number, resultDigest: s
         .contribute(taskId, resultHash, resultSeal, AddressZero, '0x', schedulerSignature)
         .then((tx) => tx.wait());
     return taskId;
-};
+}
 
 const verifyTaskStatusAndResult = async (taskId: string, expectedStatus: number) => {
     const task = await iexecPocoAsAnyone.viewTask(taskId);
-    await expect(task.status).to.equal(expectedStatus);
+    expect(task.status).to.equal(expectedStatus);
     await expect(iexecPocoAsAnyone.resultFor(taskId)).to.be.revertedWith('task-pending');
 };
