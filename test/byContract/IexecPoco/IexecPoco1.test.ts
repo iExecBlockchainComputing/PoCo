@@ -113,7 +113,7 @@ describe('IexecPoco1', () => {
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
         iexecPocoAsSponsor = IexecPoco1__factory.connect(proxyAddress, sponsor);
-        iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, anyone);
+        iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);
         iexecPocoContract = iexecPoco as Contract;
         ordersActors = {
             appOwner: appProvider,
