@@ -157,7 +157,7 @@ describe('IexecAccessors', async () => {
 });
 
 /**
- * Build orders, create a deal, and initialize to create a task.
+ * Build orders, create a deal, and initialize task.
  */
 async function createTask() {
     const appPrice = 1000;
