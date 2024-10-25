@@ -31,7 +31,7 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
 let proxyAddress: string;
-let iexecPocoAsAnyone: IexecInterfaceNative;
+let iexecPoco: IexecInterfaceNative;
 let iexecWrapper: IexecWrapper;
 let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
 let [requester, scheduler, worker1, anyone]: SignerWithAddress[] = [];
@@ -51,7 +51,7 @@ describe('IexecAccessors', async () => {
         ({ requester, scheduler, worker1, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPocoAsAnyone = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -65,26 +65,24 @@ describe('IexecAccessors', async () => {
     }
 
     it('name', async function () {
-        expect(await iexecPocoAsAnyone.name()).to.equal('Staked RLC');
+        expect(await iexecPoco.name()).to.equal('Staked RLC');
     });
 
     it('symbol', async function () {
-        expect(await iexecPocoAsAnyone.symbol()).to.equal('SRLC');
+        expect(await iexecPoco.symbol()).to.equal('SRLC');
     });
 
     it('decimals', async function () {
-        expect(await iexecPocoAsAnyone.decimals()).to.equal(9n);
+        expect(await iexecPoco.decimals()).to.equal(9n);
     });
 
     it('totalSupply', async function () {
-        expect(await iexecPocoAsAnyone.totalSupply()).to.equal(0n);
+        expect(await iexecPoco.totalSupply()).to.equal(0n);
     });
 
     // TODO test the case where token() == 0x0 in native mode.
     it('token', async function () {
-        expect(await iexecPocoAsAnyone.token()).to.equal(
-            '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-        );
+        expect(await iexecPoco.token()).to.equal('0x5FbDB2315678afecb367f032d93F642f64180aa3');
     });
 
     it('viewTask', async function () {
@@ -92,11 +90,11 @@ describe('IexecAccessors', async () => {
         await initializeTask(dealId, taskIndex);
 
         const contributionDeadlineRatio = (
-            await iexecPocoAsAnyone.contribution_deadline_ratio()
+            await iexecPoco.contribution_deadline_ratio()
         ).toNumber();
-        const finalDeadlineRatio = (await iexecPocoAsAnyone.final_deadline_ratio()).toNumber();
+        const finalDeadlineRatio = (await iexecPoco.final_deadline_ratio()).toNumber();
 
-        const task = await iexecPocoAsAnyone.viewTask(taskId);
+        const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.ACTIVE);
         expect(task.dealid).to.equal(dealId);
         expect(task.idx).to.equal(taskIndex);
@@ -115,71 +113,71 @@ describe('IexecAccessors', async () => {
     });
 
     it('countCategory', async function () {
-        expect(await iexecPocoAsAnyone.countCategory()).to.equal(5);
+        expect(await iexecPoco.countCategory()).to.equal(5);
     });
 
     it('appRegistry', async function () {
-        expect(await iexecPocoAsAnyone.appregistry()).to.equal(
+        expect(await iexecPoco.appregistry()).to.equal(
             (await deployments.get('AppRegistry')).address,
         );
     });
 
     it('datasetRegistry', async function () {
-        expect(await iexecPocoAsAnyone.datasetregistry()).to.equal(
+        expect(await iexecPoco.datasetregistry()).to.equal(
             (await deployments.get('DatasetRegistry')).address,
         );
     });
 
     it('workerpoolRegistry', async function () {
-        expect(await iexecPocoAsAnyone.workerpoolregistry()).to.equal(
+        expect(await iexecPoco.workerpoolregistry()).to.equal(
             (await deployments.get('WorkerpoolRegistry')).address,
         );
     });
 
     it('teeBroker', async function () {
-        expect(await iexecPocoAsAnyone.teebroker()).to.equal(ethers.constants.AddressZero);
+        expect(await iexecPoco.teebroker()).to.equal(ethers.constants.AddressZero);
     });
 
     it('callbackGas', async function () {
-        expect(await iexecPocoAsAnyone.callbackgas()).to.equal(100_000n);
+        expect(await iexecPoco.callbackgas()).to.equal(100_000n);
     });
 
     it('contributionDeadlineRatio', async function () {
-        expect(await iexecPocoAsAnyone.contribution_deadline_ratio()).to.equal(7);
+        expect(await iexecPoco.contribution_deadline_ratio()).to.equal(7);
     });
 
     it('revealDeadlineRatio', async function () {
-        expect(await iexecPocoAsAnyone.reveal_deadline_ratio()).to.equal(2n);
+        expect(await iexecPoco.reveal_deadline_ratio()).to.equal(2n);
     });
 
     it('finalDeadlineRatio', async function () {
-        expect(await iexecPocoAsAnyone.final_deadline_ratio()).to.equal(10n);
+        expect(await iexecPoco.final_deadline_ratio()).to.equal(10n);
     });
 
     it('workerpoolStakeRatio', async function () {
-        expect(await iexecPocoAsAnyone.workerpool_stake_ratio()).to.equal(30n);
+        expect(await iexecPoco.workerpool_stake_ratio()).to.equal(30n);
     });
 
     it('kittyRatio', async function () {
-        expect(await iexecPocoAsAnyone.kitty_ratio()).to.equal(10n);
+        expect(await iexecPoco.kitty_ratio()).to.equal(10n);
     });
 
     it('kittyMin', async function () {
-        expect(await iexecPocoAsAnyone.kitty_min()).to.equal(1_000_000_000n);
+        expect(await iexecPoco.kitty_min()).to.equal(1_000_000_000n);
     });
 
     it('kittyAddress', async function () {
-        expect(await iexecPocoAsAnyone.kitty_address()).to.equal(
+        expect(await iexecPoco.kitty_address()).to.equal(
             '0x99c2268479b93fDe36232351229815DF80837e23',
         );
     });
 
     it('groupMemberPurpose', async function () {
-        expect(await iexecPocoAsAnyone.groupmember_purpose()).to.equal(4n);
+        expect(await iexecPoco.groupmember_purpose()).to.equal(4n);
     });
 
     it('eip712domainSeparator', async function () {
-        expect(await iexecPocoAsAnyone.eip712domain_separator()).to.equal(
+        expect(await iexecPoco.eip712domain_separator()).to.equal(
             '0xfc2178d8b8300e657cb9f8b5a4d1957174cf1392e294f3575b82a9cea1da1c4b',
         );
     });
@@ -191,17 +189,17 @@ describe('IexecAccessors', async () => {
             await initializeTask(dealId, taskIndex).then(() =>
                 contributeToTask(dealId, taskIndex, callbackResultDigest),
             );
-            await iexecPocoAsAnyone
+            await iexecPoco
                 .connect(worker1)
                 .reveal(taskId, callbackResultDigest)
                 .then((tx) => tx.wait());
-            await iexecPocoAsAnyone
+            await iexecPoco
                 .connect(scheduler)
                 .finalize(taskId, results, resultsCallback)
                 .then((tx) => tx.wait());
-            const task = await iexecPocoAsAnyone.viewTask(taskId);
+            const task = await iexecPoco.viewTask(taskId);
             expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
-            expect(await iexecPocoAsAnyone.callStatic.resultFor(taskId)).to.equal(resultsCallback);
+            expect(await iexecPoco.callStatic.resultFor(taskId)).to.equal(resultsCallback);
         });
 
         it('Should not get result when task is not completed', async function () {
@@ -233,10 +231,8 @@ async function createDeal(volume: number = 1) {
     const { dealId, taskId, taskIndex, startTime } = await iexecWrapper.signAndMatchOrders(
         ...orders.toArray(),
     );
-    const dealCategory = (await iexecPocoAsAnyone.viewDeal(dealId)).category;
-    const timeRef = (
-        await iexecPocoAsAnyone.viewCategory(dealCategory)
-    ).workClockTimeRef.toNumber();
+    const dealCategory = (await iexecPoco.viewDeal(dealId)).category;
+    const timeRef = (await iexecPoco.viewCategory(dealCategory)).workClockTimeRef.toNumber();
     return { dealId, taskId, taskIndex, startTime, timeRef };
 }
 
@@ -244,7 +240,7 @@ async function createDeal(volume: number = 1) {
  * Helper function to initialize a task.
  */
 async function initializeTask(dealId: string, taskIndex: number) {
-    await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
+    await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
     return getTaskId(dealId, taskIndex);
 }
 
@@ -253,7 +249,7 @@ async function initializeTask(dealId: string, taskIndex: number) {
  */
 async function contributeToTask(dealId: string, taskIndex: number, resultDigest: string) {
     const taskId = getTaskId(dealId, taskIndex);
-    const workerTaskStake = await iexecPocoAsAnyone
+    const workerTaskStake = await iexecPoco
         .viewDeal(dealId)
         .then((deal) => deal.workerStake.toNumber());
     const { resultHash, resultSeal } = buildResultHashAndResultSeal(taskId, resultDigest, worker1);
@@ -264,15 +260,15 @@ async function contributeToTask(dealId: string, taskIndex: number, resultDigest:
         scheduler,
     );
     await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
-    await iexecPocoAsAnyone
+    await iexecPoco
         .connect(worker1)
         .contribute(taskId, resultHash, resultSeal, AddressZero, '0x', schedulerSignature)
         .then((tx) => tx.wait());
     return taskId;
 }
 
-const verifyTaskStatusAndResult = async (taskId: string, expectedStatus: number) => {
-    const task = await iexecPocoAsAnyone.viewTask(taskId);
+async function verifyTaskStatusAndResult(taskId: string, expectedStatus: number) {
+    const task = await iexecPoco.viewTask(taskId);
     expect(task.status).to.equal(expectedStatus);
-    await expect(iexecPocoAsAnyone.resultFor(taskId)).to.be.revertedWith('task-pending');
-};
+    await expect(iexecPoco.resultFor(taskId)).to.be.revertedWith('task-pending');
+}
