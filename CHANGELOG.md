@@ -4,7 +4,7 @@
 
 - Remove `smock` from unit tests:
     - IexecPocoDelegate (#149, #151)
-    - IexecPocoBoost (#148, #150)
+    - IexecPocoBoost (#148, #150, #153)
 - Migrate unit test files to Typescript & Hardhat:
     - ERC1154 (#145, #146, #147, #152)
     - IexecEscrowToken (#141, #143)
