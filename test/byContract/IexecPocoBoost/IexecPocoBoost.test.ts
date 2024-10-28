@@ -813,7 +813,8 @@ describe('IexecPocoBoost', function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             appOrder.volume = 8;
             datasetOrder.volume = 8;
-            requestOrder.volume = 8;
+            const requestOrderVolume = 8;
+            requestOrder.volume = requestOrderVolume;
             // Partially consume orders in a first batch
             workerpoolOrder.volume = 3; // 3 now and 5 later
             await signOrders(domain, orders, ordersActors);
@@ -872,7 +873,7 @@ describe('IexecPocoBoost', function () {
             expect(deal2.botFirst).to.be.equal(3); // next index after last task of deal1:{0, 1, 2}
             expect(deal2.botSize).to.be.equal(5);
             // Verify request is fully consumed
-            await expectOrderConsumed(requestOrderHash, 8);
+            await expectOrderConsumed(requestOrderHash, requestOrderVolume);
         });
 
         it('Should fail when trust is greater than 1', async function () {
