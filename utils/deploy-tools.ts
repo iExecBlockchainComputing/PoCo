@@ -6,7 +6,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments } from 'hardhat';
 
 /**
- * Deploy a contract.
+ * Deploy a contract and save its deployment.
  * @param contractFactory The contract to deploy
  * @param deployer The signer to deploy the contract
  * @param constructorArgs Arguments passed to the contract constructor at deployment
