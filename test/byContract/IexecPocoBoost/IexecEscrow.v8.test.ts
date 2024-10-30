@@ -25,29 +25,10 @@ const ref = constants.HashZero;
 let proxyAddress: string;
 let iexecPoco: IexecInterfaceNative;
 let iexecEscrow: IexecEscrowTestContract;
-let [iexecAdmin, anyone]: SignerWithAddress[] = [];
-let user: SignerWithAddress;
+let [iexecAdmin, anyone, user]: SignerWithAddress[] = [];
 
 describe('IexecEscrow.v8', function () {
     beforeEach('Deploy', async () => {
-        // // Get wallets.
-        // [deployer, user] = await ethers.getSigners();
-        // // Deploy the contract to be tested as a mock.
-        // iexecEscrow = (await smock
-        //     .mock<IexecEscrowTestContract__factory>('IexecEscrowTestContract')
-        //     .then((instance) => instance.deploy())
-        //     .then((contract) => contract.deployed())) as MockContract<IexecEscrowTestContract>;
-        // // Set initial state of contract.
-        // await iexecEscrow.setVariables({
-        //     [BALANCES]: {
-        //         [iexecEscrow.address]: initialEscrowBalance,
-        //         [user.address]: initialUserBalance,
-        //     },
-        //     [FROZENS]: {
-        //         [user.address]: initialUserFrozen,
-        //     },
-        // });
-
         // Deploy all contracts
         proxyAddress = await loadHardhatFixtureDeployment();
         // Initialize test environment
@@ -57,8 +38,8 @@ describe('IexecEscrow.v8', function () {
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({ iexecAdmin, anyone } = accounts);
-        const iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         user = anyone;
+        const iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
         // Deploy test contract and link it to the proxy
         // to make internal escrow functions accessible.
