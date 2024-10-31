@@ -5,7 +5,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import fs from 'fs';
 import hre, { ethers } from 'hardhat';
 import path from 'path';
-import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
@@ -40,8 +39,8 @@ import {
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
-import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 import { Category } from '../utils/poco-tools';
+import { linkContractToProxy } from '../utils/proxy-tools';
 const CONFIG = require('../config/config.json');
 
 /**
@@ -231,34 +230,9 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
               });
 }
 
-/**
- * Link a contract to an ERC1538 proxy.
- * @param proxy contract to ERC1538 proxy.
- * @param contractAddress The contract address to link to the proxy.
- * @param contractFactory The contract factory to link to the proxy.
- */
-async function linkContractToProxy(
-    proxy: ERC1538Update,
-    contractAddress: string,
-    contractFactory: any,
-) {
-    const contractName = getBaseNameFromContractFactory(contractFactory);
-    await proxy
-        .updateContract(
-            contractAddress,
-            // TODO: Use contractFactory.interface.functions when moving to ethers@v6
-            // https://github.com/ethers-io/ethers.js/issues/1069
-            getFunctionSignatures(contractFactory.constructor.abi),
-            'Linking ' + contractName,
-        )
-        .then((tx) => tx.wait())
-        .catch(() => {
-            throw new Error(`Failed to link ${contractName}`);
-        });
-}
-
 // TODO [optional]: Use hardhat-deploy to save addresses automatically
 // https://github.com/wighawag/hardhat-deploy/tree/master#hardhat-deploy-in-a-nutshell
+// TODO remove this.
 /**
  * Save addresses of deployed contracts (since hardhat does not do it for us).
  * @param contractName contract name to deploy
