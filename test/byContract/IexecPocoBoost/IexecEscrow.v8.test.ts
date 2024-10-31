@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { HashZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { constants } from 'ethers';
@@ -10,7 +11,6 @@ import { getIexecAccounts } from '../../../utils/poco-tools';
 
 const userBalance = 1000;
 const amount = 3;
-const ref = constants.HashZero; // TODO remove this and use HashZero
 
 let iexecEscrow: IexecEscrowTestContract;
 let user: SignerWithAddress;
@@ -98,7 +98,7 @@ describe('IexecEscrow.v8', function () {
             // Fund iexecEscrow so it can reward the user.
             await iexecEscrow.setBalance(iexecEscrow.address, amount).then((tx) => tx.wait());
 
-            await expect(iexecEscrow.reward_(user.address, amount, ref))
+            await expect(iexecEscrow.reward_(user.address, amount, HashZero))
                 .to.changeTokenBalances(
                     iexecEscrow,
                     [iexecEscrow.address, user.address],
@@ -107,17 +107,17 @@ describe('IexecEscrow.v8', function () {
                 .to.emit(iexecEscrow, 'Transfer')
                 .withArgs(iexecEscrow.address, user.address, amount)
                 .to.emit(iexecEscrow, 'Reward')
-                .withArgs(user.address, amount, ref);
+                .withArgs(user.address, amount, HashZero);
         });
 
         it('Should not reward empty address', async function () {
             await expect(
-                iexecEscrow.reward_(constants.AddressZero, amount, ref),
+                iexecEscrow.reward_(constants.AddressZero, amount, HashZero),
             ).to.be.revertedWith('IexecEscrow: Transfer to empty address');
         });
 
         it('Should not reward when insufficient balance', async function () {
-            await expect(iexecEscrow.reward_(user.address, amount, ref)).to.be.revertedWith(
+            await expect(iexecEscrow.reward_(user.address, amount, HashZero)).to.be.revertedWith(
                 'IexecEscrow: Transfer amount exceeds balance',
             );
         });
@@ -129,23 +129,23 @@ describe('IexecEscrow.v8', function () {
             await iexecEscrow.lock_(user.address, userBalance).then((tx) => tx.wait());
 
             const frozenBefore = (await iexecEscrow.frozenOf(user.address)).toNumber();
-            await expect(iexecEscrow.seize_(user.address, amount, ref))
+            await expect(iexecEscrow.seize_(user.address, amount, HashZero))
                 .to.changeTokenBalances(iexecEscrow, [iexecEscrow.address, user.address], [0, 0])
                 .to.emit(iexecEscrow, 'Seize')
-                .withArgs(user.address, amount, ref);
+                .withArgs(user.address, amount, HashZero);
             expect(await iexecEscrow.frozenOf(user.address)).to.equal(frozenBefore - amount);
         });
 
         it('Should not seize funds for empty address', async function () {
             await expect(
-                iexecEscrow.seize_(constants.AddressZero, amount, ref),
+                iexecEscrow.seize_(constants.AddressZero, amount, HashZero),
             ).to.be.revertedWithPanic(0x11);
         });
 
         it('Should not seize funds when insufficient balance', async function () {
-            await expect(iexecEscrow.seize_(user.address, amount, ref)).to.be.revertedWithPanic(
-                0x11,
-            );
+            await expect(
+                iexecEscrow.seize_(user.address, amount, HashZero),
+            ).to.be.revertedWithPanic(0x11);
         });
     });
 });
