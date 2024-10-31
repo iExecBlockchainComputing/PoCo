@@ -4,68 +4,48 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { constants } from 'ethers';
-import { ethers, expect } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
-import {
-    ERC1538Update__factory,
-    IexecEscrowTestContract,
-    IexecEscrowTestContract__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
-} from '../../../typechain';
-import { deploy } from '../../../utils/deploy-tools';
+import { expect } from 'hardhat';
+import { IexecEscrowTestContract, IexecEscrowTestContract__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
-import { linkContractToProxy } from '../../../utils/proxy-tools';
-import { IexecWrapper } from '../../utils/IexecWrapper';
 
 const userBalance = 1000;
 const amount = 3;
-const ref = constants.HashZero;
+const ref = constants.HashZero; // TODO remove this and use HashZero
 
-let proxyAddress: string;
-let iexecPoco: IexecInterfaceNative;
 let iexecEscrow: IexecEscrowTestContract;
-let [iexecAdmin, anyone, user]: SignerWithAddress[] = [];
+let user: SignerWithAddress;
 
 describe('IexecEscrow.v8', function () {
     beforeEach('Deploy', async () => {
-        // Deploy all contracts
-        proxyAddress = await loadHardhatFixtureDeployment();
         // Initialize test environment
         await loadFixture(initFixture);
     });
 
     async function initFixture() {
-        const accounts = await getIexecAccounts();
-        ({ iexecAdmin, anyone } = accounts);
-        user = anyone;
-        const iexecWrapper = new IexecWrapper(proxyAddress, accounts);
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
-        // Deploy test contract and link it to the proxy
-        // to make internal escrow functions accessible.
-        await deploy(new IexecEscrowTestContract__factory(), anyone, [], { quiet: true }).then(
-            (contract) =>
-                linkContractToProxy(
-                    ERC1538Update__factory.connect(proxyAddress, iexecAdmin),
-                    contract.address,
-                    new IexecEscrowTestContract__factory(),
-                ),
-        );
-        iexecEscrow = IexecEscrowTestContract__factory.connect(proxyAddress, user);
-        // Deposit some funds in user's account.
-        await iexecWrapper.depositInIexecAccount(user, userBalance);
+        user = (await getIexecAccounts()).anyone;
+        // Deploy test contract to make internal escrow functions accessible.
+        iexecEscrow = await new IexecEscrowTestContract__factory()
+            .connect(user) // Anyone works.
+            .deploy()
+            .then((contract) => contract.deployed());
+        // Deposit some funds in the user's account.
+        await iexecEscrow.setBalance(user.address, userBalance).then((tx) => tx.wait());
     }
 
     describe('Lock', function () {
         it('Should lock funds', async function () {
-            const frozenBefore = (await iexecPoco.frozenOf(user.address)).toNumber();
+            const frozenBefore = (await iexecEscrow.frozenOf(user.address)).toNumber();
             await expect(iexecEscrow.lock_(user.address, amount))
-                .to.changeTokenBalances(iexecPoco, [proxyAddress, user.address], [amount, -amount])
+                .to.changeTokenBalances(
+                    iexecEscrow,
+                    [iexecEscrow.address, user.address],
+                    [amount, -amount],
+                )
                 .to.emit(iexecEscrow, 'Transfer')
-                .withArgs(user.address, proxyAddress, amount)
+                .withArgs(user.address, iexecEscrow.address, amount)
                 .to.emit(iexecEscrow, 'Lock')
                 .withArgs(user.address, amount);
-            expect(await iexecPoco.frozenOf(user.address)).to.equal(frozenBefore + amount);
+            expect(await iexecEscrow.frozenOf(user.address)).to.equal(frozenBefore + amount);
         });
 
         it('Should not lock funds for empty address', async function () {
@@ -86,14 +66,18 @@ describe('IexecEscrow.v8', function () {
             // Lock some user funds to be able to unlock.
             await iexecEscrow.lock_(user.address, userBalance).then((tx) => tx.wait());
 
-            const frozenBefore = (await iexecPoco.frozenOf(user.address)).toNumber();
+            const frozenBefore = (await iexecEscrow.frozenOf(user.address)).toNumber();
             await expect(iexecEscrow.unlock_(user.address, amount))
-                .to.changeTokenBalances(iexecPoco, [proxyAddress, user.address], [-amount, amount])
+                .to.changeTokenBalances(
+                    iexecEscrow,
+                    [iexecEscrow.address, user.address],
+                    [-amount, amount],
+                )
                 .to.emit(iexecEscrow, 'Transfer')
-                .withArgs(proxyAddress, user.address, amount)
+                .withArgs(iexecEscrow.address, user.address, amount)
                 .to.emit(iexecEscrow, 'Unlock')
                 .withArgs(user.address, amount);
-            expect(await iexecPoco.frozenOf(user.address)).to.equal(frozenBefore - amount);
+            expect(await iexecEscrow.frozenOf(user.address)).to.equal(frozenBefore - amount);
         });
 
         it('Should not unlock funds for empty address', async function () {
@@ -111,16 +95,17 @@ describe('IexecEscrow.v8', function () {
 
     describe('Reward', function () {
         it('Should reward', async function () {
-            // Fund iexecPoco so it can reward the user.
-            await iexecPoco
-                .connect(user)
-                .transfer(proxyAddress, amount)
-                .then((tx) => tx.wait());
+            // Fund iexecEscrow so it can reward the user.
+            await iexecEscrow.setBalance(iexecEscrow.address, amount).then((tx) => tx.wait());
 
             await expect(iexecEscrow.reward_(user.address, amount, ref))
-                .to.changeTokenBalances(iexecPoco, [proxyAddress, user.address], [-amount, amount])
+                .to.changeTokenBalances(
+                    iexecEscrow,
+                    [iexecEscrow.address, user.address],
+                    [-amount, amount],
+                )
                 .to.emit(iexecEscrow, 'Transfer')
-                .withArgs(proxyAddress, user.address, amount)
+                .withArgs(iexecEscrow.address, user.address, amount)
                 .to.emit(iexecEscrow, 'Reward')
                 .withArgs(user.address, amount, ref);
         });
@@ -143,12 +128,12 @@ describe('IexecEscrow.v8', function () {
             // Lock some user funds to be able to seize.
             await iexecEscrow.lock_(user.address, userBalance).then((tx) => tx.wait());
 
-            const frozenBefore = (await iexecPoco.frozenOf(user.address)).toNumber();
+            const frozenBefore = (await iexecEscrow.frozenOf(user.address)).toNumber();
             await expect(iexecEscrow.seize_(user.address, amount, ref))
-                .to.changeTokenBalances(iexecPoco, [proxyAddress, user.address], [0, 0])
+                .to.changeTokenBalances(iexecEscrow, [iexecEscrow.address, user.address], [0, 0])
                 .to.emit(iexecEscrow, 'Seize')
                 .withArgs(user.address, amount, ref);
-            expect(await iexecPoco.frozenOf(user.address)).to.equal(frozenBefore - amount);
+            expect(await iexecEscrow.frozenOf(user.address)).to.equal(frozenBefore - amount);
         });
 
         it('Should not seize funds for empty address', async function () {
