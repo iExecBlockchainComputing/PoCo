@@ -3,12 +3,13 @@
 
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { TypedDataDomain } from 'ethers';
-import hre, { ethers, expect } from 'hardhat';
+import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
-import { IexecAccessors, IexecAccessors__factory, IexecPocoAccessors__factory } from '../typechain';
-import { IexecPoco1 } from '../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol';
-import { IexecPoco1__factory } from '../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
+import {
+    IexecInterfaceNative,
+    IexecInterfaceNative__factory,
+    IexecPocoAccessors__factory,
+} from '../typechain';
 import {
     OrdersActors,
     OrdersAssets,
@@ -16,41 +17,58 @@ import {
     buildOrders,
     signOrders,
 } from '../utils/createOrders';
-import { getDealId, getIexecAccounts } from '../utils/poco-tools';
+import {
+    PocoMode,
+    TaskStatusEnum,
+    buildResultCallbackAndDigest,
+    buildUtf8ResultAndDigest,
+    getDealId,
+    getIexecAccounts,
+} from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 
+//  +---------+-------------+-------------+-------------+----------+-----+----------------+
+//  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |      Type      |
+//  +---------+-------------+-------------+-------------+----------+-----+----------------+
+//  |   [1]   |     ✔       |     ✔       |     ✔       |    ✔     |  ✔  |   Standard     |
+//  |   [2]   |     x       |     ✔       |     ✔       |    ✔     |  ✔  |   Standard     |
+//  |   [3]   |     ✔       |     x       |     ✔       |    ✔     |  ✔  |  Standard,TEE  |
+//  |   [4]   |     x       |     x       |     ✔       |    ✔     |  ✔  |  Standard,TEE  |
+//  |   [5]   |     x       |     x       |     x       |    x     |  x  |  Standard,TEE  |
+//  +---------+-------------+-------------+----------+-----+-------------+----------------+
+
+const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const taskIndex = 0;
-const volume = taskIndex + 1;
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
+const callbackAddress = ethers.Wallet.createRandom().address;
+const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
-/*
- * TODO make this a real integration test (match, contribute, ..., finalize).
- */
+let proxyAddress: string;
+let iexecPoco: IexecInterfaceNative;
+let iexecWrapper: IexecWrapper;
+let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
+let [
+    requester,
+    sponsor,
+    beneficiary,
+    appProvider,
+    datasetProvider,
+    scheduler,
+    anyone,
+    worker1,
+    worker2,
+    worker3,
+    worker4,
+    worker5,
+]: SignerWithAddress[] = [];
+let ordersActors: OrdersActors;
+let ordersAssets: OrdersAssets;
+let ordersPrices: OrdersPrices;
 
-describe('IexecPoco (IT)', function () {
-    let domain: TypedDataDomain;
-    let proxyAddress: string;
-    let iexecAccessor: IexecAccessors;
-    let iexecPoco: IexecPoco1;
-    let iexecWrapper: IexecWrapper;
-    let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
-    let [
-        iexecAdmin,
-        requester,
-        sponsor,
-        beneficiary,
-        appProvider,
-        datasetProvider,
-        scheduler,
-        anyone,
-    ]: SignerWithAddress[] = [];
-    let ordersActors: OrdersActors;
-    let ordersAssets: OrdersAssets;
-    let ordersPrices: OrdersPrices;
-
+describe('Integration tests', function () {
     beforeEach('Deploy', async () => {
         // Deploy all contracts
         proxyAddress = await loadHardhatFixtureDeployment();
@@ -61,7 +79,6 @@ describe('IexecPoco (IT)', function () {
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({
-            iexecAdmin,
             requester,
             sponsor,
             beneficiary,
@@ -69,23 +86,20 @@ describe('IexecPoco (IT)', function () {
             datasetProvider,
             scheduler,
             anyone,
+            worker1,
+            worker2,
+            worker3,
+            worker4,
+            worker5,
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
-        iexecPoco = IexecPoco1__factory.connect(proxyAddress, iexecAdmin);
-        iexecAccessor = IexecAccessors__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
             workerpoolOwner: scheduler,
             requester: requester,
-        };
-        domain = {
-            name: 'iExecODB',
-            version: '5.0.0',
-            chainId: hre.network.config.chainId,
-            verifyingContract: proxyAddress,
         };
         ordersAssets = {
             app: appAddress,
@@ -99,7 +113,109 @@ describe('IexecPoco (IT)', function () {
         };
     }
 
-    describe('MatchOrders', function () {
+    it('[1] Sponsorship, beneficiary, callback, BoT, replication', async function () {
+        const volume = 5;
+        // Create deal.
+        const orders = buildOrders({
+            assets: ordersAssets,
+            prices: ordersPrices,
+            requester: requester.address,
+            tag: standardDealTag,
+            beneficiary: beneficiary.address,
+            callback: callbackAddress,
+            volume,
+            trust: 1, // TODO use 5 workers.
+        });
+        const { dealId, dealPrice, schedulerStakePerDeal } =
+            await iexecWrapper.signAndSponsorMatchOrders(...orders.toArray());
+        const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+        const schedulerStakePerTask = schedulerStakePerDeal / volume;
+        const workerRewardPerTask = await iexecWrapper.computeWorkerRewardPerTask(
+            dealId,
+            PocoMode.CLASSIC,
+        );
+        const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
+        // Check initial balances.
+        await checkBalancesAndFrozens({
+            proxyBalance: dealPrice + schedulerStakePerDeal,
+            accounts: [
+                { signer: sponsor, balance: 0, frozen: dealPrice },
+                { signer: requester, balance: 0, frozen: 0 },
+                { signer: scheduler, balance: 0, frozen: schedulerStakePerDeal },
+                { signer: appProvider, balance: 0, frozen: 0 },
+                { signer: datasetProvider, balance: 0, frozen: 0 },
+                { signer: worker1, balance: 0, frozen: 0 },
+            ],
+        });
+        // Finalize each task and check balance changes.
+        for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
+            const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
+            const { workerStakePerTask } = await iexecWrapper.contributeToTask(
+                dealId,
+                taskIndex,
+                callbackResultDigest,
+                worker1,
+            );
+            await iexecPoco
+                .connect(worker1)
+                .reveal(taskId, callbackResultDigest)
+                .then((tx) => tx.wait());
+            await iexecPoco
+                .connect(scheduler)
+                .finalize(taskId, results, resultsCallback)
+                .then((tx) => tx.wait());
+            expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
+            // Multiply amount by the number of finalized tasks to correctly compute
+            // stake and reward amounts.
+            const timesTasks = (amount: number) => amount * (taskIndex + 1);
+            // For each task, balances change such as:
+            //   - Sponsor
+            //      - frozen: frozenBefore - taskPrice
+            //   - Requester: no changes
+            //   - Scheduler
+            //      - balance: balanceBefore + taskStake + taskReward
+            //      - frozen: frozenBefore - taskStake
+            //   - App
+            //      - balance: balance before + appPrice
+            //   - Dataset
+            //      - balance: balance before + datasetPrice
+            //   - Worker:
+            //      - balance: balance before + taskStake + taskReward
+            //      - frozen: frozen before - taskStake
+            await checkBalancesAndFrozens({
+                proxyBalance:
+                    dealPrice +
+                    schedulerStakePerDeal -
+                    timesTasks(taskPrice + schedulerStakePerTask),
+                accounts: [
+                    { signer: sponsor, balance: 0, frozen: dealPrice - timesTasks(taskPrice) },
+                    { signer: requester, balance: 0, frozen: 0 },
+                    {
+                        signer: scheduler,
+                        balance: timesTasks(schedulerStakePerTask + schedulerRewardPerTask),
+                        frozen: schedulerStakePerDeal - timesTasks(schedulerStakePerTask),
+                    },
+                    { signer: appProvider, balance: timesTasks(appPrice), frozen: 0 },
+                    { signer: datasetProvider, balance: timesTasks(datasetPrice), frozen: 0 },
+                    {
+                        signer: worker1,
+                        balance: timesTasks(workerStakePerTask + workerRewardPerTask),
+                        frozen: 0,
+                    },
+                ],
+            });
+        }
+    });
+
+    it('[2] No sponsorship, beneficiary, callback, BoT, replication', async function () {});
+
+    it('[3] Sponsorship, beneficiary, callback, BoT, no replication', async function () {});
+
+    it('[4] No sponsorship, beneficiary, callback, BoT, no replication', async function () {});
+
+    it('[5] No sponsorship, no beneficiary, no callback, no BoT, no replication', async function () {});
+
+    describe.skip('MatchOrders', function () {
         it('Should sponsor match orders (TEE)', async function () {
             const callbackAddress = ethers.Wallet.createRandom().address;
             const orders = buildOrders({
@@ -166,3 +282,18 @@ describe('IexecPoco (IT)', function () {
         });
     });
 });
+
+async function checkBalancesAndFrozens(args: {
+    proxyBalance: number;
+    accounts: { signer: SignerWithAddress; balance: number; frozen: number }[];
+}) {
+    expect(await iexecPoco.balanceOf(proxyAddress)).to.equal(args.proxyBalance);
+    for (const account of args.accounts) {
+        const message = `Failed with account at index ${args.accounts.indexOf(account)}`;
+        expect(await iexecPoco.balanceOf(account.signer.address)).to.equal(
+            account.balance,
+            message,
+        );
+        expect(await iexecPoco.frozenOf(account.signer.address)).to.equal(account.frozen, message);
+    }
+}
