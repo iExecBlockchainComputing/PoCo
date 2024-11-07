@@ -88,6 +88,7 @@ export class IexecWrapper {
         }
     }
 
+    // TODO rename to computeSchedulerStakePerDeal
     /**
      * Compute the amount of RLCs to be staked by the scheduler
      * for a deal. We first compute the percentage by task
@@ -126,12 +127,11 @@ export class IexecWrapper {
     }
 
     /**
-     * Compute the amount of RLC tokens that the scheduler receives
-     * as a reward by task.
+     * Get the scheduler reward ratio policy.
      * @param workerpoolAddress address of the workerpool
      * @returns value of the reward
      */
-    async getSchedulerTaskRewardRatio(workerpoolAddress: string) {
+    async getSchedulerRewardRatioPerTask(workerpoolAddress: string) {
         return (
             await Workerpool__factory.connect(
                 workerpoolAddress,
