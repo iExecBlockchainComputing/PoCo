@@ -232,9 +232,11 @@ export class IexecWrapper {
         const dealPrice = taskPrice * volume;
         const dealPayer = withSponsor ? this.accounts.sponsor : this.accounts.requester;
         await this.depositInIexecAccount(dealPayer, dealPrice);
-        await this.computeSchedulerDealStake(Number(workerpoolOrder.workerpoolprice), volume).then(
-            (stake) => this.depositInIexecAccount(this.accounts.scheduler, stake),
+        const schedulerStakePerDeal = await this.computeSchedulerDealStake(
+            Number(workerpoolOrder.workerpoolprice),
+            volume,
         );
+        await this.depositInIexecAccount(this.accounts.scheduler, schedulerStakePerDeal);
         const startTime = await setNextBlockTimestamp();
         const iexecPocoAsDealPayer = IexecPoco1__factory.connect(this.proxyAddress, dealPayer);
         await (
@@ -242,7 +244,7 @@ export class IexecWrapper {
                 ? iexecPocoAsDealPayer.sponsorMatchOrders(...orders.toArray())
                 : iexecPocoAsDealPayer.matchOrders(...orders.toArray())
         ).then((tx) => tx.wait());
-        return { dealId, taskId, taskIndex, dealPrice, startTime };
+        return { dealId, taskId, taskIndex, dealPrice, schedulerStakePerDeal, startTime };
     }
 
     async createAssets() {
