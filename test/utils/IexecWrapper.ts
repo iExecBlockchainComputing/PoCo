@@ -140,6 +140,33 @@ export class IexecWrapper {
         ).toNumber();
     }
 
+    /**
+     * Compute the amount of RLC tokens that the worker receives
+     * as a reward per task.
+     * @param dealId
+     * @param mode
+     * @returns
+     */
+    async computeWorkerRewardPerTask(dealId: string, mode: PocoMode) {
+        if (mode === PocoMode.BOOST) {
+            return (
+                await IexecPocoBoostAccessors__factory.connect(
+                    this.proxyAddress,
+                    ethers.provider,
+                ).viewDealBoost(dealId)
+            ).workerReward.toNumber();
+        }
+        // CLASSIC mode.
+        const deal = await IexecAccessors__factory.connect(
+            this.proxyAddress,
+            ethers.provider,
+        ).viewDeal(dealId);
+        // (workerpoolPrice * workerRatio) / 100
+        return (
+            (deal.workerpool.price.toNumber() * (100 - deal.schedulerRewardRatio.toNumber())) / 100
+        );
+    }
+
     async setTeeBroker(brokerAddress: string) {
         await IexecMaintenanceDelegate__factory.connect(this.proxyAddress, this.accounts.iexecAdmin)
             .setTeeBroker(brokerAddress)
