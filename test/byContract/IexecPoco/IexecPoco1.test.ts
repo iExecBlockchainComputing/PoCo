@@ -380,7 +380,7 @@ describe('IexecPoco1', () => {
                 workerpoolPrice,
             );
             const schedulerRewardRatioPerTask =
-                await iexecWrapper.getSchedulerRewardRatioPerTask(workerpoolAddress);
+                await iexecWrapper.getSchedulerRewardRatio(workerpoolAddress);
             // Deposit required amounts.
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
@@ -505,7 +505,7 @@ describe('IexecPoco1', () => {
                 await iexecWrapper.computeWorkerTaskStake(workerpoolAddress, workerpoolPrice),
             );
             expect(deal.schedulerRewardRatio).to.equal(
-                await iexecWrapper.getSchedulerRewardRatioPerTask(workerpoolAddress),
+                await iexecWrapper.getSchedulerRewardRatio(workerpoolAddress),
             );
             expect(deal.sponsor).to.equal(requester.address);
         });

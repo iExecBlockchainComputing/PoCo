@@ -142,7 +142,7 @@ export class IexecWrapper {
      * @param workerpoolAddress address of the workerpool
      * @returns value of the reward
      */
-    async getSchedulerRewardRatioPerTask(workerpoolAddress: string) {
+    async getSchedulerRewardRatio(workerpoolAddress: string) {
         return (
             await Workerpool__factory.connect(
                 workerpoolAddress,
