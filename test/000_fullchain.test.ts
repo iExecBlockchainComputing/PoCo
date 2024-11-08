@@ -128,6 +128,7 @@ describe('Integration tests', function () {
         );
         const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
         // Check initial balances.
+        // TODO save initial balances and use them in for loop for comparison.
         await checkBalancesAndFrozens({
             proxyBalance: dealPrice + schedulerStakePerDeal,
             accounts: [
