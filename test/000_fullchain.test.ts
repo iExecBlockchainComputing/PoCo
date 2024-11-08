@@ -159,7 +159,7 @@ describe('Integration tests', function () {
             expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
-            const timesTasks = (amount: number) => amount * (taskIndex + 1);
+            const completedTasks = taskIndex + 1;
             // For each task, balances change such as:
             //   - Sponsor
             //      - frozen: frozenBefore - taskPrice
@@ -178,20 +178,20 @@ describe('Integration tests', function () {
                 proxyBalance:
                     dealPrice +
                     schedulerStakePerDeal -
-                    timesTasks(taskPrice + schedulerStakePerTask),
+                    (taskPrice + schedulerStakePerTask) * completedTasks,
                 accounts: [
-                    { signer: sponsor, balance: 0, frozen: dealPrice - timesTasks(taskPrice) },
+                    { signer: sponsor, balance: 0, frozen: dealPrice - taskPrice * completedTasks },
                     { signer: requester, balance: 0, frozen: 0 },
                     {
                         signer: scheduler,
-                        balance: timesTasks(schedulerStakePerTask + schedulerRewardPerTask),
-                        frozen: schedulerStakePerDeal - timesTasks(schedulerStakePerTask),
+                        balance: (schedulerStakePerTask + schedulerRewardPerTask) * completedTasks,
+                        frozen: schedulerStakePerDeal - schedulerStakePerTask * completedTasks,
                     },
-                    { signer: appProvider, balance: timesTasks(appPrice), frozen: 0 },
-                    { signer: datasetProvider, balance: timesTasks(datasetPrice), frozen: 0 },
+                    { signer: appProvider, balance: appPrice * completedTasks, frozen: 0 },
+                    { signer: datasetProvider, balance: datasetPrice * completedTasks, frozen: 0 },
                     {
                         signer: worker1,
-                        balance: timesTasks(workerStakePerTask + workerRewardPerTask),
+                        balance: (workerStakePerTask + workerRewardPerTask) * completedTasks,
                         frozen: 0,
                     },
                 ],
