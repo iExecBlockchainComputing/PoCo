@@ -5,24 +5,13 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
-import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
-    IexecPocoAccessors__factory,
-} from '../typechain';
-import {
-    OrdersActors,
-    OrdersAssets,
-    OrdersPrices,
-    buildOrders,
-    signOrders,
-} from '../utils/createOrders';
+import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
+import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import {
     PocoMode,
     TaskStatusEnum,
     buildResultCallbackAndDigest,
     buildUtf8ResultAndDigest,
-    getDealId,
     getIexecAccounts,
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
@@ -209,73 +198,6 @@ describe('Integration tests', function () {
     it('[4] No sponsorship, beneficiary, callback, BoT, no replication', async function () {});
 
     it('[5] No sponsorship, no beneficiary, no callback, no BoT, no replication', async function () {});
-
-    describe.skip('MatchOrders', function () {
-        it('Should sponsor match orders (TEE)', async function () {
-            const callbackAddress = ethers.Wallet.createRandom().address;
-            const orders = buildOrders({
-                assets: ordersAssets,
-                requester: requester.address,
-                beneficiary: beneficiary.address,
-                tag: teeDealTag,
-                prices: ordersPrices,
-                callback: callbackAddress,
-            });
-            const dealPrice =
-                (appPrice + datasetPrice + workerpoolPrice) * // task price
-                volume;
-            expect(await iexecAccessor.balanceOf(proxyAddress)).to.be.equal(0);
-            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
-            expect(await iexecAccessor.balanceOf(sponsor.address)).to.be.equal(dealPrice);
-            expect(await iexecAccessor.frozenOf(sponsor.address)).to.be.equal(0);
-            expect(await iexecAccessor.balanceOf(requester.address)).to.be.equal(0);
-            expect(await iexecAccessor.frozenOf(requester.address)).to.be.equal(0);
-            // Deposit RLC in the scheduler's account.
-            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
-                workerpoolPrice,
-                volume,
-            );
-            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
-            expect(await iexecAccessor.balanceOf(scheduler.address)).to.be.equal(schedulerStake);
-            expect(await iexecAccessor.frozenOf(scheduler.address)).to.be.equal(0);
-            await signOrders(domain, orders, ordersActors);
-            const { appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash } =
-                iexecWrapper.hashOrders(orders);
-            const dealId = getDealId(domain, orders.requester, taskIndex);
-            expect(
-                await IexecPocoAccessors__factory.connect(proxyAddress, anyone).computeDealVolume(
-                    ...orders.toArray(),
-                ),
-            ).to.equal(volume);
-
-            expect(
-                await iexecPoco.connect(sponsor).callStatic.sponsorMatchOrders(...orders.toArray()),
-            ).to.equal(dealId);
-            await expect(iexecPoco.connect(sponsor).sponsorMatchOrders(...orders.toArray()))
-                .to.emit(iexecPoco, 'OrdersMatched')
-                .withArgs(
-                    dealId,
-                    appOrderHash,
-                    datasetOrderHash,
-                    workerpoolOrderHash,
-                    requestOrderHash,
-                    volume,
-                )
-                .to.emit(iexecPoco, 'DealSponsored')
-                .withArgs(dealId, sponsor.address);
-            expect(await iexecAccessor.balanceOf(proxyAddress)).to.be.equal(
-                dealPrice + schedulerStake,
-            );
-            expect(await iexecAccessor.balanceOf(sponsor.address)).to.be.equal(0);
-            expect(await iexecAccessor.frozenOf(sponsor.address)).to.be.equal(dealPrice);
-            expect(await iexecAccessor.balanceOf(requester.address)).to.be.equal(0);
-            expect(await iexecAccessor.frozenOf(requester.address)).to.be.equal(0);
-            expect(await iexecAccessor.balanceOf(scheduler.address)).to.be.equal(0);
-            expect(await iexecAccessor.frozenOf(scheduler.address)).to.be.equal(schedulerStake);
-            const deal = await iexecAccessor.viewDeal(dealId);
-            expect(deal.sponsor).to.be.equal(sponsor.address);
-        });
-    });
 });
 
 async function checkBalancesAndFrozens(args: {
