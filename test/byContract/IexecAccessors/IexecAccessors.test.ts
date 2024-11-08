@@ -207,7 +207,7 @@ describe('IexecAccessors', async () => {
 
             const unsetTaskId = getTaskId(dealId, 0);
             const activeTaskId = await iexecWrapper.initializeTask(dealId, 1);
-            const revealingTaskId = await iexecWrapper
+            const { taskId: revealingTaskId } = await iexecWrapper
                 .initializeTask(dealId, 2)
                 .then(() => iexecWrapper.contributeToTask(dealId, 2, resultDigest, worker1));
 
