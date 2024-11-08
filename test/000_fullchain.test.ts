@@ -43,7 +43,7 @@ const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 const callbackAddress = ethers.Wallet.createRandom().address;
-const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+const { results } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
 let proxyAddress: string;
@@ -198,6 +198,8 @@ describe('Integration tests', function () {
             });
         }
     });
+
+    // TODO implement the following tests.
 
     it('[2] No sponsorship, beneficiary, callback, BoT, replication', async function () {});
 
