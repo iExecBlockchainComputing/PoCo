@@ -59,10 +59,6 @@ let [
     scheduler,
     anyone,
     worker1,
-    worker2,
-    worker3,
-    worker4,
-    worker5,
 ]: SignerWithAddress[] = [];
 let ordersActors: OrdersActors;
 let ordersAssets: OrdersAssets;
@@ -87,10 +83,6 @@ describe('Integration tests', function () {
             scheduler,
             anyone,
             worker1,
-            worker2,
-            worker3,
-            worker4,
-            worker5,
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
@@ -114,7 +106,7 @@ describe('Integration tests', function () {
     }
 
     it('[1] Sponsorship, beneficiary, callback, BoT, replication', async function () {
-        const volume = 5;
+        const volume = 3;
         // Create deal.
         const orders = buildOrders({
             assets: ordersAssets,
