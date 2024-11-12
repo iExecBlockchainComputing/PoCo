@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero, HashZero } from '@ethersproject/constants';
+import { HashZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers, expect } from 'hardhat';
@@ -14,9 +14,7 @@ import {
 import { OrdersAssets, buildOrders } from '../../../utils/createOrders';
 import {
     TaskStatusEnum,
-    buildAndSignContributionAuthorizationMessage,
     buildResultCallbackAndDigest,
-    buildResultHashAndResultSeal,
     buildUtf8ResultAndDigest,
     getIexecAccounts,
     getTaskId,
@@ -87,7 +85,7 @@ describe('IexecAccessors', async () => {
 
     it('viewTask', async function () {
         const { dealId, taskId, taskIndex, startTime, timeRef } = await createDeal();
-        await initializeTask(dealId, taskIndex);
+        await iexecWrapper.initializeTask(dealId, taskIndex);
 
         const contributionDeadlineRatio = (
             await iexecPoco.contribution_deadline_ratio()
@@ -186,9 +184,11 @@ describe('IexecAccessors', async () => {
         it('Should get result of task', async function () {
             const { dealId, taskId, taskIndex } = await createDeal();
 
-            await initializeTask(dealId, taskIndex).then(() =>
-                contributeToTask(dealId, taskIndex, callbackResultDigest),
-            );
+            await iexecWrapper
+                .initializeTask(dealId, taskIndex)
+                .then(() =>
+                    iexecWrapper.contributeToTask(dealId, taskIndex, callbackResultDigest, worker1),
+                );
             await iexecPoco
                 .connect(worker1)
                 .reveal(taskId, callbackResultDigest)
@@ -206,10 +206,10 @@ describe('IexecAccessors', async () => {
             const { dealId } = await createDeal(3);
 
             const unsetTaskId = getTaskId(dealId, 0);
-            const activeTaskId = await initializeTask(dealId, 1);
-            const revealingTaskId = await initializeTask(dealId, 2).then(() =>
-                contributeToTask(dealId, 2, resultDigest),
-            );
+            const activeTaskId = await iexecWrapper.initializeTask(dealId, 1);
+            const { taskId: revealingTaskId } = await iexecWrapper
+                .initializeTask(dealId, 2)
+                .then(() => iexecWrapper.contributeToTask(dealId, 2, resultDigest, worker1));
 
             await verifyTaskStatusAndResult(unsetTaskId, TaskStatusEnum.UNSET);
             await verifyTaskStatusAndResult(activeTaskId, TaskStatusEnum.ACTIVE);
@@ -234,37 +234,6 @@ async function createDeal(volume: number = 1) {
     const dealCategory = (await iexecPoco.viewDeal(dealId)).category;
     const timeRef = (await iexecPoco.viewCategory(dealCategory)).workClockTimeRef.toNumber();
     return { dealId, taskId, taskIndex, startTime, timeRef };
-}
-
-/**
- * Helper function to initialize a task.
- */
-async function initializeTask(dealId: string, taskIndex: number) {
-    await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-    return getTaskId(dealId, taskIndex);
-}
-
-/**
- * Helper function to contribute to a task.
- */
-async function contributeToTask(dealId: string, taskIndex: number, resultDigest: string) {
-    const taskId = getTaskId(dealId, taskIndex);
-    const workerTaskStake = await iexecPoco
-        .viewDeal(dealId)
-        .then((deal) => deal.workerStake.toNumber());
-    const { resultHash, resultSeal } = buildResultHashAndResultSeal(taskId, resultDigest, worker1);
-    const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
-        worker1.address,
-        taskId,
-        AddressZero,
-        scheduler,
-    );
-    await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
-    await iexecPoco
-        .connect(worker1)
-        .contribute(taskId, resultHash, resultSeal, AddressZero, '0x', schedulerSignature)
-        .then((tx) => tx.wait());
-    return taskId;
 }
 
 async function verifyTaskStatusAndResult(taskId: string, expectedStatus: number) {

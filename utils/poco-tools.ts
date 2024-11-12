@@ -34,6 +34,11 @@ export enum OrderOperationEnum {
     CLOSE,
 }
 
+export enum PocoMode {
+    CLASSIC,
+    BOOST,
+}
+
 export interface IexecAccounts {
     iexecAdmin: SignerWithAddress;
     requester: SignerWithAddress;
@@ -42,14 +47,15 @@ export interface IexecAccounts {
     appProvider: SignerWithAddress;
     datasetProvider: SignerWithAddress;
     scheduler: SignerWithAddress;
+    enclave: SignerWithAddress;
+    sms: SignerWithAddress;
+    anyone: SignerWithAddress;
     worker: SignerWithAddress;
     worker1: SignerWithAddress;
     worker2: SignerWithAddress;
     worker3: SignerWithAddress;
     worker4: SignerWithAddress;
-    enclave: SignerWithAddress;
-    sms: SignerWithAddress;
-    anyone: SignerWithAddress;
+    worker5: SignerWithAddress;
 }
 
 export async function getIexecAccounts(): Promise<IexecAccounts> {
@@ -62,14 +68,15 @@ export async function getIexecAccounts(): Promise<IexecAccounts> {
         appProvider: signers[4],
         datasetProvider: signers[5],
         scheduler: signers[6],
-        worker: signers[7], // same as worker1
-        worker1: signers[7],
-        worker2: signers[8],
-        worker3: signers[9],
-        worker4: signers[10],
-        enclave: signers[11],
-        sms: signers[12],
-        anyone: signers[13],
+        enclave: signers[7],
+        sms: signers[8],
+        anyone: signers[9],
+        worker: signers[10], // same as worker1
+        worker1: signers[10],
+        worker2: signers[11],
+        worker3: signers[12],
+        worker4: signers[13],
+        worker5: signers[14],
     };
 }
 

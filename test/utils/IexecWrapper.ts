@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
+import { AddressZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, ContractReceipt } from 'ethers';
 import hre, { ethers } from 'hardhat';
@@ -15,6 +16,8 @@ import {
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
     IexecMaintenanceDelegate__factory,
+    IexecPoco2__factory,
+    IexecPocoBoostAccessors__factory,
     RLC__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
@@ -28,7 +31,15 @@ import {
     signOrderOperation,
     signOrders,
 } from '../../utils/createOrders';
-import { IexecAccounts, getDealId, getTaskId, setNextBlockTimestamp } from '../../utils/poco-tools';
+import {
+    IexecAccounts,
+    PocoMode,
+    buildAndSignContributionAuthorizationMessage,
+    buildResultHashAndResultSeal,
+    getDealId,
+    getTaskId,
+    setNextBlockTimestamp,
+} from '../../utils/poco-tools';
 import { extractEventsFromReceipt } from '../../utils/tools';
 const DEPLOYMENT_CONFIG = config.chains.default;
 
@@ -88,6 +99,7 @@ export class IexecWrapper {
         }
     }
 
+    // TODO rename to computeSchedulerStakePerDeal
     /**
      * Compute the amount of RLCs to be staked by the scheduler
      * for a deal. We first compute the percentage by task
@@ -126,18 +138,44 @@ export class IexecWrapper {
     }
 
     /**
-     * Compute the amount of RLC tokens that the scheduler receives
-     * as a reward by task.
+     * Get the scheduler reward ratio policy.
      * @param workerpoolAddress address of the workerpool
      * @returns value of the reward
      */
-    async getSchedulerTaskRewardRatio(workerpoolAddress: string) {
+    async getSchedulerRewardRatio(workerpoolAddress: string) {
         return (
             await Workerpool__factory.connect(
                 workerpoolAddress,
                 this.accounts.anyone,
             ).m_schedulerRewardRatioPolicy()
         ).toNumber();
+    }
+
+    /**
+     * Compute the amount of RLC tokens that the worker receives
+     * as a reward per task.
+     * @param dealId
+     * @param mode
+     * @returns
+     */
+    async computeWorkerRewardPerTask(dealId: string, mode: PocoMode) {
+        if (mode === PocoMode.BOOST) {
+            return (
+                await IexecPocoBoostAccessors__factory.connect(
+                    this.proxyAddress,
+                    ethers.provider,
+                ).viewDealBoost(dealId)
+            ).workerReward.toNumber();
+        }
+        // CLASSIC mode.
+        const deal = await IexecAccessors__factory.connect(
+            this.proxyAddress,
+            ethers.provider,
+        ).viewDeal(dealId);
+        // (workerpoolPrice * workerRatio) / 100
+        return (
+            (deal.workerpool.price.toNumber() * (100 - deal.schedulerRewardRatio.toNumber())) / 100
+        );
     }
 
     async setTeeBroker(brokerAddress: string) {
@@ -232,9 +270,11 @@ export class IexecWrapper {
         const dealPrice = taskPrice * volume;
         const dealPayer = withSponsor ? this.accounts.sponsor : this.accounts.requester;
         await this.depositInIexecAccount(dealPayer, dealPrice);
-        await this.computeSchedulerDealStake(Number(workerpoolOrder.workerpoolprice), volume).then(
-            (stake) => this.depositInIexecAccount(this.accounts.scheduler, stake),
+        const schedulerStakePerDeal = await this.computeSchedulerDealStake(
+            Number(workerpoolOrder.workerpoolprice),
+            volume,
         );
+        await this.depositInIexecAccount(this.accounts.scheduler, schedulerStakePerDeal);
         const startTime = await setNextBlockTimestamp();
         const iexecPocoAsDealPayer = IexecPoco1__factory.connect(this.proxyAddress, dealPayer);
         await (
@@ -242,7 +282,7 @@ export class IexecWrapper {
                 ? iexecPocoAsDealPayer.sponsorMatchOrders(...orders.toArray())
                 : iexecPocoAsDealPayer.matchOrders(...orders.toArray())
         ).then((tx) => tx.wait());
-        return { dealId, taskId, taskIndex, dealPrice, startTime };
+        return { dealId, taskId, taskIndex, dealPrice, schedulerStakePerDeal, startTime };
     }
 
     async createAssets() {
@@ -287,6 +327,69 @@ export class IexecWrapper {
             )
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(datasetReceipt, datasetRegistry.address);
+    }
+
+    /**
+     * Helper function to initialize a task.
+     * @param dealId id of the deal
+     * @param taskIndex index of the task
+     * @returns
+     */
+    async initializeTask(dealId: string, taskIndex: number) {
+        await IexecPoco2__factory.connect(this.proxyAddress, this.accounts.anyone)
+            .initialize(dealId, taskIndex)
+            .then((tx) => tx.wait());
+        return getTaskId(dealId, taskIndex);
+    }
+
+    /**
+     * Helper function to contribute to a task. The contributor's stake is
+     * automatically deposited before contributing.
+     * Note: no enclave address is used.
+     * @param contributor Signer to sign the contribution
+     * @param dealId id of the deal
+     * @param taskIndex index of the task.
+     * @param resultDigest hash of the result
+     * @returns id of the task
+     */
+    async contributeToTask(
+        dealId: string,
+        taskIndex: number,
+        resultDigest: string,
+        contributor: SignerWithAddress,
+    ) {
+        const enclaveAddress = AddressZero;
+        const enclaveSignature = '0x';
+        const taskId = getTaskId(dealId, taskIndex);
+        const workerStakePerTask = await IexecAccessors__factory.connect(
+            this.proxyAddress,
+            ethers.provider,
+        )
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            taskId,
+            resultDigest,
+            contributor,
+        );
+        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+            contributor.address,
+            taskId,
+            enclaveAddress,
+            this.accounts.scheduler,
+        );
+        await this.depositInIexecAccount(contributor, workerStakePerTask);
+        await IexecPoco2__factory.connect(this.proxyAddress, contributor)
+            .contribute(
+                taskId,
+                resultHash,
+                resultSeal,
+                enclaveAddress,
+                enclaveSignature,
+                schedulerSignature,
+            )
+            .then((tx) => tx.wait());
+        return { taskId, workerStakePerTask };
     }
 
     async createWorkerpool() {
