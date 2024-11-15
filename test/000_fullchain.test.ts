@@ -233,7 +233,6 @@ describe('Integration tests', function () {
                 );
                 const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
                 // Check initial balances.
-                // TODO save initial balances and use them in for loop for comparison.
                 let accounts = [
                     { signer: requester, balance: 0, frozen: dealPrice },
                     { signer: scheduler, balance: 0, frozen: schedulerStakePerDeal },
