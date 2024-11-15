@@ -34,7 +34,7 @@ const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 const callbackAddress = ethers.Wallet.createRandom().address;
-const { results } = buildUtf8ResultAndDigest('result');
+const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
 let proxyAddress: string;
@@ -296,8 +296,8 @@ describe('Integration tests', function () {
 
     it('[5] No sponsorship, no beneficiary, no callback, no BoT, no replication', async function () {});
 
-    describe.only('Integration tests array of worker', function () {
-        for (let workerNumber = 1; workerNumber < 5; workerNumber++) {
+    describe('Integration tests array of worker', function () {
+        for (let workerNumber = 1; workerNumber < 6; workerNumber++) {
             it(`[6.${workerNumber}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers`, async function () {
                 const volume = 1;
                 const disposableWokers = [worker1, worker2, worker3, worker4, worker5];
@@ -312,9 +312,8 @@ describe('Integration tests', function () {
                     requester: requester.address,
                     tag: standardDealTag,
                     beneficiary: beneficiary.address,
-                    callback: callbackAddress,
                     volume,
-                    trust: workerNumber,
+                    trust: workerNumber ** 2 - 1,
                 });
                 const { dealId, dealPrice, schedulerStakePerDeal } =
                     await iexecWrapper.signAndMatchOrders(...orders.toArray());
@@ -340,46 +339,31 @@ describe('Integration tests', function () {
                     proxyBalance: dealPrice + schedulerStakePerDeal,
                     accounts,
                 });
+                for (let i = 0; i < workerNumber; i++) {
+                    expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
+                }
                 const taskId = await iexecWrapper.initializeTask(dealId, 0);
                 // Finalize each task and check balance changes.
-                let workerStake: number = 0;
+                const workerStake = await iexecPoco
+                    .viewDeal(dealId)
+                    .then((deal) => deal.workerStake.toNumber());
+
                 for (let i = 0; i < workerNumber; i++) {
-                    console.log('worker ' + i + ' is contributing');
-                    const { workerStakePerTask } = await iexecWrapper.contributeToTask(
-                        dealId,
-                        0,
-                        callbackResultDigest,
-                        workers[i],
-                    );
+                    await iexecWrapper.contributeToTask(dealId, 0, resultDigest, workers[i]);
+                }
+                for (let i = 0; i < workerNumber; i++) {
                     await iexecPoco
                         .connect(workers[i])
-                        .reveal(taskId, callbackResultDigest)
+                        .reveal(taskId, resultDigest)
                         .then((tx) => tx.wait());
-                    workerStake = workerStakePerTask;
                 }
                 await iexecPoco
                     .connect(scheduler)
-                    .finalize(taskId, results, resultsCallback)
+                    .finalize(taskId, results, '0x')
                     .then((tx) => tx.wait());
                 expect((await iexecPoco.viewTask(taskId)).status).to.equal(
                     TaskStatusEnum.COMPLETED,
                 );
-                // Multiply amount by the number of finalized tasks to correctly compute
-                // stake and reward amounts.
-
-                // For each task, balances change such as:
-                //   - Requester
-                //      - frozen: frozenBefore - taskPrice
-                //   - Scheduler
-                //      - balance: balanceBefore + taskStake + taskReward
-                //      - frozen: frozenBefore - taskStake
-                //   - App
-                //      - balance: balance before + appPrice
-                //   - Dataset
-                //      - balance: balance before + datasetPrice
-                //   - Worker:
-                //      - balance: balance before + taskStake + taskReward
-                //      - frozen: frozen before - taskStake
                 accounts = [
                     { signer: requester, balance: 0, frozen: dealPrice - taskPrice },
                     {
@@ -393,7 +377,7 @@ describe('Integration tests', function () {
                 for (let i = 0; i < workerNumber; i++) {
                     accounts.push({
                         signer: disposableWokers[i],
-                        balance: workerStake + workerRewardPerTask,
+                        balance: workerStake + workerRewardPerTask / workerNumber,
                         frozen: 0,
                     });
                 }
@@ -401,26 +385,20 @@ describe('Integration tests', function () {
                     proxyBalance: 0,
                     accounts,
                 });
+                for (let i = 0; i < workerNumber; i++) {
+                    if (workerNumber == 1) {
+                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
+                    }
+                }
             });
         }
     });
-
-    it('[6] No sponsorship, no beneficiary, no callback, no BoT, up to 5 workers', async function () {
-        const volume = 1;
-        let workers = [];
-        const disposableWokers = [worker1, worker2, worker3, worker4, worker5];
-
-        for (let workerNumber = 1; workerNumber < 3; workerNumber++) {}
-    });
-
-    it('[7] No sponsorship, no beneficiary, no callback, no BoT, up to 5 workers with 1 bad actor', async function () {});
 });
 
 async function checkBalancesAndFrozens(args: {
     proxyBalance: number;
     accounts: { signer: SignerWithAddress; balance: number; frozen: number }[];
 }) {
-    console.log('Checking balances... => proxy first');
     expect(await iexecPoco.balanceOf(proxyAddress)).to.equal(args.proxyBalance);
     for (const account of args.accounts) {
         const message = `Failed with account at index ${args.accounts.indexOf(account)}`;
