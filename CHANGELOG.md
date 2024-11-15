@@ -4,6 +4,7 @@
 
 - Migrate integration test files to Typescript & Hardhat:
     - 000_fullchain.js (#156, #157)
+    - 00X_fullchain-Xworkers.js (#158)
 - Remove `smock` from unit tests:
     - IexecEscrow.v8 (#154, #155)
     - IexecPocoDelegate (#149, #151)
