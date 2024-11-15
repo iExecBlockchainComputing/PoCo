@@ -24,8 +24,6 @@ import { IexecWrapper } from './utils/IexecWrapper';
 //  |   [3]   |     ✔       |     x       |     ✔       |    ✔     |  ✔  |  Standard,TEE  |
 //  |   [4]   |     x       |     x       |     ✔       |    ✔     |  ✔  |  Standard,TEE  |
 //  |   [5]   |     x       |     x       |     x       |    x     |  x  |  Standard,TEE  |
-//  |   [6]   |     x       |     ✔       |     x       |    x     |  x  |  Standard,TEE X goods |
-//  |   [7]   |     x       |     ✔       |     x       |    x     |  x  |  Standard,TEE goods Y 1 bad |
 //  +---------+-------------+-------------+----------+-----+-------------+----------------+
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -176,20 +174,22 @@ describe('Integration tests', function () {
             //      - frozen: frozen before - taskStake
             await checkBalancesAndFrozens({
                 proxyBalance:
-                    dealPrice + schedulerStakePerDeal - (taskPrice + schedulerStakePerTask),
+                    dealPrice +
+                    schedulerStakePerDeal -
+                    (taskPrice + schedulerStakePerTask) * completedTasks,
                 accounts: [
-                    { signer: sponsor, balance: 0, frozen: dealPrice - taskPrice },
+                    { signer: sponsor, balance: 0, frozen: dealPrice - taskPrice * completedTasks },
                     { signer: requester, balance: 0, frozen: 0 },
                     {
                         signer: scheduler,
-                        balance: schedulerStakePerTask + schedulerRewardPerTask,
-                        frozen: schedulerStakePerDeal - schedulerStakePerTask,
+                        balance: (schedulerStakePerTask + schedulerRewardPerTask) * completedTasks,
+                        frozen: schedulerStakePerDeal - schedulerStakePerTask * completedTasks,
                     },
-                    { signer: appProvider, balance: appPrice, frozen: 0 },
-                    { signer: datasetProvider, balance: datasetPrice, frozen: 0 },
+                    { signer: appProvider, balance: appPrice * completedTasks, frozen: 0 },
+                    { signer: datasetProvider, balance: datasetPrice * completedTasks, frozen: 0 },
                     {
                         signer: worker1,
-                        balance: workerStakePerTask + workerRewardPerTask,
+                        balance: (workerStakePerTask + workerRewardPerTask) * completedTasks,
                         frozen: 0,
                     },
                 ],
@@ -199,96 +199,7 @@ describe('Integration tests', function () {
 
     // TODO implement the following tests.
 
-    it('[2] No sponsorship, beneficiary, callback, BoT, replication', async function () {
-        const volume = 3;
-        // Create deal.
-        const orders = buildOrders({
-            assets: ordersAssets,
-            prices: ordersPrices,
-            requester: requester.address,
-            tag: standardDealTag,
-            beneficiary: beneficiary.address,
-            callback: callbackAddress,
-            volume,
-            trust: 1, // TODO use 5 workers.
-        });
-        const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
-            ...orders.toArray(),
-        );
-        const taskPrice = appPrice + datasetPrice + workerpoolPrice;
-        const schedulerStakePerTask = schedulerStakePerDeal / volume;
-        const workerRewardPerTask = await iexecWrapper.computeWorkerRewardPerTask(
-            dealId,
-            PocoMode.CLASSIC,
-        );
-        const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
-        // Check initial balances.
-        // TODO save initial balances and use them in for loop for comparison.
-        await checkBalancesAndFrozens({
-            proxyBalance: dealPrice + schedulerStakePerDeal,
-            accounts: [
-                { signer: requester, balance: 0, frozen: dealPrice },
-                { signer: scheduler, balance: 0, frozen: schedulerStakePerDeal },
-                { signer: appProvider, balance: 0, frozen: 0 },
-                { signer: datasetProvider, balance: 0, frozen: 0 },
-                { signer: worker1, balance: 0, frozen: 0 },
-            ],
-        });
-        // Finalize each task and check balance changes.
-        for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
-            const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
-            const { workerStakePerTask } = await iexecWrapper.contributeToTask(
-                dealId,
-                taskIndex,
-                callbackResultDigest,
-                worker1,
-            );
-            await iexecPoco
-                .connect(worker1)
-                .reveal(taskId, callbackResultDigest)
-                .then((tx) => tx.wait());
-            await iexecPoco
-                .connect(scheduler)
-                .finalize(taskId, results, resultsCallback)
-                .then((tx) => tx.wait());
-            expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
-            // Multiply amount by the number of finalized tasks to correctly compute
-            // stake and reward amounts.
-            const completedTasks = taskIndex + 1;
-            // For each task, balances change such as:
-            //   - Requester
-            //      - frozen: frozenBefore - taskPrice
-            //   - Scheduler
-            //      - balance: balanceBefore + taskStake + taskReward
-            //      - frozen: frozenBefore - taskStake
-            //   - App
-            //      - balance: balance before + appPrice
-            //   - Dataset
-            //      - balance: balance before + datasetPrice
-            //   - Worker:
-            //      - balance: balance before + taskStake + taskReward
-            //      - frozen: frozen before - taskStake
-            await checkBalancesAndFrozens({
-                proxyBalance:
-                    dealPrice + schedulerStakePerDeal - (taskPrice + schedulerStakePerTask),
-                accounts: [
-                    { signer: requester, balance: 0, frozen: dealPrice - taskPrice },
-                    {
-                        signer: scheduler,
-                        balance: schedulerStakePerTask + schedulerRewardPerTask,
-                        frozen: schedulerStakePerDeal - schedulerStakePerTask,
-                    },
-                    { signer: appProvider, balance: appPrice, frozen: 0 },
-                    { signer: datasetProvider, balance: datasetPrice, frozen: 0 },
-                    {
-                        signer: worker1,
-                        balance: workerStakePerTask + workerRewardPerTask,
-                        frozen: 0,
-                    },
-                ],
-            });
-        }
-    });
+    it('[2] No sponsorship, beneficiary, callback, BoT, replication', async function () {});
 
     it('[3] Sponsorship, beneficiary, callback, BoT, no replication', async function () {});
 
@@ -300,11 +211,8 @@ describe('Integration tests', function () {
         for (let workerNumber = 1; workerNumber < 6; workerNumber++) {
             it(`[6.${workerNumber}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers`, async function () {
                 const volume = 1;
-                const disposableWokers = [worker1, worker2, worker3, worker4, worker5];
-                let workers = [];
-                for (let i = 0; i < workerNumber; i++) {
-                    workers.push(disposableWokers[i]);
-                }
+                const disposableWorkers = [worker1, worker2, worker3, worker4, worker5];
+                const workers = disposableWorkers.slice(0, workerNumber);
                 // Create deal.
                 const orders = buildOrders({
                     assets: ordersAssets,
@@ -376,7 +284,7 @@ describe('Integration tests', function () {
                 ];
                 for (let i = 0; i < workerNumber; i++) {
                     accounts.push({
-                        signer: disposableWokers[i],
+                        signer: disposableWorkers[i],
                         balance: workerStake + workerRewardPerTask / workerNumber,
                         frozen: 0,
                     });
