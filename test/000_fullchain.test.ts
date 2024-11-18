@@ -233,18 +233,19 @@ describe('Integration tests', function () {
                 );
                 const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
                 // Check initial balances.
-                let accounts = [
+                let proxyInitBalance = dealPrice + schedulerStakePerDeal;
+                let accountsInitBalances = [
                     { signer: requester, balance: 0, frozen: dealPrice },
                     { signer: scheduler, balance: 0, frozen: schedulerStakePerDeal },
                     { signer: appProvider, balance: 0, frozen: 0 },
                     { signer: datasetProvider, balance: 0, frozen: 0 },
                 ];
                 for (let i = 0; i < workerNumber; i++) {
-                    accounts.push({ signer: workers[i], balance: 0, frozen: 0 });
+                    accountsInitBalances.push({ signer: workers[i], balance: 0, frozen: 0 });
                 }
                 await checkBalancesAndFrozens({
-                    proxyBalance: dealPrice + schedulerStakePerDeal,
-                    accounts,
+                    proxyBalance: proxyInitBalance,
+                    accounts: accountsInitBalances,
                 });
                 for (let i = 0; i < workerNumber; i++) {
                     expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
@@ -271,26 +272,44 @@ describe('Integration tests', function () {
                 expect((await iexecPoco.viewTask(taskId)).status).to.equal(
                     TaskStatusEnum.COMPLETED,
                 );
-                accounts = [
-                    { signer: requester, balance: 0, frozen: dealPrice - taskPrice },
+                let proxyFinalBalance = proxyInitBalance - (dealPrice + schedulerStakePerDeal);
+                let accountsFinalBalances = [
+                    {
+                        signer: requester,
+                        balance: accountsInitBalances[0].balance,
+                        frozen: accountsInitBalances[0].frozen - taskPrice,
+                    },
                     {
                         signer: scheduler,
-                        balance: schedulerStakePerTask + schedulerRewardPerTask,
-                        frozen: schedulerStakePerDeal - schedulerStakePerTask,
+                        balance:
+                            accountsInitBalances[1].balance +
+                            (schedulerStakePerTask + schedulerRewardPerTask),
+                        frozen: accountsInitBalances[1].frozen - schedulerStakePerTask,
                     },
-                    { signer: appProvider, balance: appPrice, frozen: 0 },
-                    { signer: datasetProvider, balance: datasetPrice, frozen: 0 },
+                    {
+                        signer: appProvider,
+                        balance: accountsInitBalances[2].balance + appPrice,
+                        frozen: accountsInitBalances[2].frozen,
+                    },
+                    {
+                        signer: datasetProvider,
+                        balance: accountsInitBalances[3].balance + datasetPrice,
+                        frozen: accountsInitBalances[3].frozen,
+                    },
                 ];
                 for (let i = 0; i < workerNumber; i++) {
-                    accounts.push({
-                        signer: disposableWorkers[i],
-                        balance: workerStake + workerRewardPerTask / workerNumber,
-                        frozen: 0,
+                    accountsFinalBalances.push({
+                        signer: workers[i],
+                        balance:
+                            accountsInitBalances[4 + i].balance +
+                            workerStake +
+                            workerRewardPerTask / workerNumber,
+                        frozen: accountsInitBalances[4 + i].frozen,
                     });
                 }
                 await checkBalancesAndFrozens({
-                    proxyBalance: 0,
-                    accounts,
+                    proxyBalance: proxyFinalBalance,
+                    accounts: accountsFinalBalances,
                 });
                 for (let i = 0; i < workerNumber; i++) {
                     if (workerNumber == 1) {
