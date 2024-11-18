@@ -213,6 +213,7 @@ describe('Integration tests', function () {
                 const volume = 1;
                 const disposableWorkers = [worker1, worker2, worker3, worker4, worker5];
                 const workers = disposableWorkers.slice(0, workerNumber);
+                const acounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
                 // Create deal.
                 const orders = buildOrders({
                     assets: ordersAssets,
@@ -233,20 +234,19 @@ describe('Integration tests', function () {
                 );
                 const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
                 // Check initial balances.
-                let proxyInitBalance = dealPrice + schedulerStakePerDeal;
                 let accountsInitBalances = [
-                    { signer: requester, balance: 0, frozen: dealPrice },
-                    { signer: scheduler, balance: 0, frozen: schedulerStakePerDeal },
-                    { signer: appProvider, balance: 0, frozen: 0 },
-                    { signer: datasetProvider, balance: 0, frozen: 0 },
+                    {
+                        address: proxyAddress,
+                        balance: (await iexecPoco.balanceOf(proxyAddress)).toNumber(),
+                        frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
+                    },
                 ];
-                for (let i = 0; i < workerNumber; i++) {
-                    accountsInitBalances.push({ signer: workers[i], balance: 0, frozen: 0 });
+                for (const account of acounts) {
+                    let address = account.address;
+                    let balance = (await iexecPoco.balanceOf(account.address)).toNumber();
+                    let frozen = (await iexecPoco.frozenOf(account.address)).toNumber();
+                    accountsInitBalances.push({ address, balance, frozen });
                 }
-                await checkBalancesAndFrozens({
-                    proxyBalance: proxyInitBalance,
-                    accounts: accountsInitBalances,
-                });
                 for (let i = 0; i < workerNumber; i++) {
                     expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
                 }
@@ -272,44 +272,22 @@ describe('Integration tests', function () {
                 expect((await iexecPoco.viewTask(taskId)).status).to.equal(
                     TaskStatusEnum.COMPLETED,
                 );
-                let proxyFinalBalance = proxyInitBalance - (dealPrice + schedulerStakePerDeal);
-                let accountsFinalBalances = [
-                    {
-                        signer: requester,
-                        balance: accountsInitBalances[0].balance,
-                        frozen: accountsInitBalances[0].frozen - taskPrice,
-                    },
-                    {
-                        signer: scheduler,
-                        balance:
-                            accountsInitBalances[1].balance +
-                            (schedulerStakePerTask + schedulerRewardPerTask),
-                        frozen: accountsInitBalances[1].frozen - schedulerStakePerTask,
-                    },
-                    {
-                        signer: appProvider,
-                        balance: accountsInitBalances[2].balance + appPrice,
-                        frozen: accountsInitBalances[2].frozen,
-                    },
-                    {
-                        signer: datasetProvider,
-                        balance: accountsInitBalances[3].balance + datasetPrice,
-                        frozen: accountsInitBalances[3].frozen,
-                    },
+                const expectedBalanceChanges = [
+                    -(dealPrice + schedulerStakePerDeal),
+                    0,
+                    schedulerStakePerTask + schedulerRewardPerTask,
+                    appPrice,
+                    datasetPrice,
                 ];
+                const expectedFrozenChanges = [0, -taskPrice, -schedulerStakePerTask, 0, 0];
                 for (let i = 0; i < workerNumber; i++) {
-                    accountsFinalBalances.push({
-                        signer: workers[i],
-                        balance:
-                            accountsInitBalances[4 + i].balance +
-                            workerStake +
-                            workerRewardPerTask / workerNumber,
-                        frozen: accountsInitBalances[4 + i].frozen,
-                    });
+                    expectedBalanceChanges.push(workerStake + workerRewardPerTask / workerNumber);
+                    expectedFrozenChanges.push(0);
                 }
-                await checkBalancesAndFrozens({
-                    proxyBalance: proxyFinalBalance,
-                    accounts: accountsFinalBalances,
+                await changesInBalancesAndFrozens({
+                    accountsInitBalances,
+                    balanceChanges: expectedBalanceChanges,
+                    frozenChanges: expectedFrozenChanges,
                 });
                 for (let i = 0; i < workerNumber; i++) {
                     if (workerNumber == 1) {
@@ -333,5 +311,23 @@ async function checkBalancesAndFrozens(args: {
             message,
         );
         expect(await iexecPoco.frozenOf(account.signer.address)).to.equal(account.frozen, message);
+    }
+}
+
+async function changesInBalancesAndFrozens(args: {
+    accountsInitBalances: { address: string; balance: number; frozen: number }[];
+    balanceChanges: number[];
+    frozenChanges: number[];
+}) {
+    for (let i = 0; i < args.accountsInitBalances.length; i++) {
+        const message = `Failed with account at index ${i}`;
+        expect(await iexecPoco.balanceOf(args.accountsInitBalances[i].address)).to.equal(
+            args.accountsInitBalances[i].balance + args.balanceChanges[i],
+            message,
+        );
+        expect(await iexecPoco.frozenOf(args.accountsInitBalances[i].address)).to.equal(
+            args.accountsInitBalances[i].frozen + args.frozenChanges[i],
+            message,
+        );
     }
 }
