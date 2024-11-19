@@ -16,15 +16,16 @@ import {
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 
-//  +---------+-------------+-------------+-------------+----------+-----+----------------+
-//  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |      Type      |
-//  +---------+-------------+-------------+-------------+----------+-----+----------------+
-//  |   [1]   |     ✔       |     ✔       |     ✔       |    ✔     |  ✔  |   Standard     |
-//  |   [2]   |     x       |     ✔       |     ✔       |    ✔     |  ✔  |   Standard     |
-//  |   [3]   |     ✔       |     x       |     ✔       |    ✔     |  ✔  |  Standard,TEE  |
-//  |   [4]   |     x       |     x       |     ✔       |    ✔     |  ✔  |  Standard,TEE  |
-//  |   [5]   |     x       |     x       |     x       |    x     |  x  |  Standard,TEE  |
-//  +---------+-------------+-------------+----------+-----+-------------+----------------+
+//  +---------+-------------+-------------+-------------+----------+-----+---------------------------------+
+//  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |              Type               |
+//  +---------+-------------+-------------+-------------+----------+-----+---------------------------------+
+//  |   [1]   |     ✔       |     ✔       |     ✔       |    ✔     |  ✔  |             Standard            |
+//  |   [2]   |     x       |     ✔       |     ✔       |    ✔     |  ✔  |             Standard            |
+//  |   [3]   |     ✔       |     x       |     ✔       |    ✔     |  ✔  |           Standard,TEE          |
+//  |   [4]   |     x       |     x       |     ✔       |    ✔     |  ✔  |           Standard,TEE          |
+//  |   [5]   |     x       |     x       |     x       |    x     |  x  |           Standard,TEE          |
+//  |   [6.x] |     x       |     ✔       |     x       |    x     |  x  |  Standard,TEE, X good workers   |
+//  +---------+-------------+-------------+-------------+----------+-----+---------------------------------+
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
@@ -32,7 +33,7 @@ const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 const callbackAddress = ethers.Wallet.createRandom().address;
-const { results } = buildUtf8ResultAndDigest('result');
+const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
 let proxyAddress: string;
@@ -48,6 +49,10 @@ let [
     scheduler,
     anyone,
     worker1,
+    worker2,
+    worker3,
+    worker4,
+    worker5,
 ]: SignerWithAddress[] = [];
 let ordersActors: OrdersActors;
 let ordersAssets: OrdersAssets;
@@ -72,6 +77,10 @@ describe('Integration tests', function () {
             scheduler,
             anyone,
             worker1,
+            worker2,
+            worker3,
+            worker4,
+            worker5,
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
@@ -198,6 +207,103 @@ describe('Integration tests', function () {
     it('[4] No sponsorship, beneficiary, callback, BoT, no replication', async function () {});
 
     it('[5] No sponsorship, no beneficiary, no callback, no BoT, no replication', async function () {});
+
+    describe('Integration tests array of worker', function () {
+        for (let workerNumber = 1; workerNumber < 6; workerNumber++) {
+            it(`[6.${workerNumber}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers`, async function () {
+                const volume = 1;
+                const disposableWorkers = [worker1, worker2, worker3, worker4, worker5];
+                const workers = disposableWorkers.slice(0, workerNumber);
+                const acounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
+                // Create deal.
+                const orders = buildOrders({
+                    assets: ordersAssets,
+                    prices: ordersPrices,
+                    requester: requester.address,
+                    tag: standardDealTag,
+                    beneficiary: beneficiary.address,
+                    volume,
+                    trust: workerNumber ** 2 - 1,
+                });
+                const { dealId, dealPrice, schedulerStakePerDeal } =
+                    await iexecWrapper.signAndMatchOrders(...orders.toArray());
+                const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+                const schedulerStakePerTask = schedulerStakePerDeal / volume;
+                const workerRewardPerTask = await iexecWrapper.computeWorkerRewardPerTask(
+                    dealId,
+                    PocoMode.CLASSIC,
+                );
+                const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
+                // Check initial balances.
+                let accountsInitBalances = [
+                    {
+                        address: proxyAddress,
+                        frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
+                    },
+                ];
+                for (const account of acounts) {
+                    let address = account.address;
+                    let frozen = (await iexecPoco.frozenOf(account.address)).toNumber();
+                    accountsInitBalances.push({ address, frozen });
+                }
+                for (let i = 0; i < workerNumber; i++) {
+                    expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
+                }
+                const taskId = await iexecWrapper.initializeTask(dealId, 0);
+                // Finalize each task and check balance changes.
+                const workerStake = await iexecPoco
+                    .viewDeal(dealId)
+                    .then((deal) => deal.workerStake.toNumber());
+
+                for (let i = 0; i < workerNumber; i++) {
+                    await iexecWrapper.contributeToTask(dealId, 0, resultDigest, workers[i]);
+                }
+                for (let i = 0; i < workerNumber; i++) {
+                    await iexecPoco
+                        .connect(workers[i])
+                        .reveal(taskId, resultDigest)
+                        .then((tx) => tx.wait());
+                }
+                const finalizeTx = await iexecPoco
+                    .connect(scheduler)
+                    .finalize(taskId, results, '0x');
+                expect(finalizeTx).to.changeTokenBalances(
+                    iexecPoco,
+                    [proxyAddress, requester, scheduler, appProvider, datasetProvider],
+                    [
+                        -(dealPrice + schedulerStakePerDeal),
+                        0,
+                        schedulerStakePerTask + schedulerRewardPerTask,
+                        appPrice,
+                        datasetPrice,
+                    ],
+                );
+                for (let i = 0; i < workerNumber; i++) {
+                    expect(finalizeTx).to.changeTokenBalances(
+                        iexecPoco,
+                        [workers[i]],
+                        [workerStake + workerRewardPerTask / workerNumber],
+                    );
+                }
+                expect((await iexecPoco.viewTask(taskId)).status).to.equal(
+                    TaskStatusEnum.COMPLETED,
+                );
+                const expectedFrozenChanges = [0, -taskPrice, -schedulerStakePerTask, 0, 0];
+                for (let i = 0; i < workerNumber; i++) {
+                    expectedFrozenChanges.push(0);
+                }
+                await changesInFrozen({
+                    accountsInitBalances,
+                    frozenChanges: expectedFrozenChanges,
+                });
+                for (let i = 0; i < workerNumber; i++) {
+                    if (workerNumber == 1) {
+                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
+                    }
+                }
+            });
+        }
+    });
 });
 
 async function checkBalancesAndFrozens(args: {
@@ -212,5 +318,18 @@ async function checkBalancesAndFrozens(args: {
             message,
         );
         expect(await iexecPoco.frozenOf(account.signer.address)).to.equal(account.frozen, message);
+    }
+}
+
+async function changesInFrozen(args: {
+    accountsInitBalances: { address: string; frozen: number }[];
+    frozenChanges: number[];
+}) {
+    for (let i = 0; i < args.accountsInitBalances.length; i++) {
+        const message = `Failed with account at index ${i}`;
+        expect(await iexecPoco.frozenOf(args.accountsInitBalances[i].address)).to.equal(
+            args.accountsInitBalances[i].frozen + args.frozenChanges[i],
+            message,
+        );
     }
 }
