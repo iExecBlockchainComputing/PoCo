@@ -237,15 +237,13 @@ describe('Integration tests', function () {
                 let accountsInitBalances = [
                     {
                         address: proxyAddress,
-                        balance: (await iexecPoco.balanceOf(proxyAddress)).toNumber(),
                         frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
                     },
                 ];
                 for (const account of acounts) {
                     let address = account.address;
-                    let balance = (await iexecPoco.balanceOf(account.address)).toNumber();
                     let frozen = (await iexecPoco.frozenOf(account.address)).toNumber();
-                    accountsInitBalances.push({ address, balance, frozen });
+                    accountsInitBalances.push({ address, frozen });
                 }
                 for (let i = 0; i < workerNumber; i++) {
                     expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
@@ -265,28 +263,36 @@ describe('Integration tests', function () {
                         .reveal(taskId, resultDigest)
                         .then((tx) => tx.wait());
                 }
-                await iexecPoco
+                const finalizeTx = await iexecPoco
                     .connect(scheduler)
-                    .finalize(taskId, results, '0x')
-                    .then((tx) => tx.wait());
+                    .finalize(taskId, results, '0x');
+                expect(finalizeTx).to.changeTokenBalances(
+                    iexecPoco,
+                    [proxyAddress, requester, scheduler, appProvider, datasetProvider],
+                    [
+                        -(dealPrice + schedulerStakePerDeal),
+                        0,
+                        schedulerStakePerTask + schedulerRewardPerTask,
+                        appPrice,
+                        datasetPrice,
+                    ],
+                );
+                for (let i = 0; i < workerNumber; i++) {
+                    expect(finalizeTx).to.changeTokenBalances(
+                        iexecPoco,
+                        [workers[i]],
+                        [workerStake + workerRewardPerTask / workerNumber],
+                    );
+                }
                 expect((await iexecPoco.viewTask(taskId)).status).to.equal(
                     TaskStatusEnum.COMPLETED,
                 );
-                const expectedBalanceChanges = [
-                    -(dealPrice + schedulerStakePerDeal),
-                    0,
-                    schedulerStakePerTask + schedulerRewardPerTask,
-                    appPrice,
-                    datasetPrice,
-                ];
                 const expectedFrozenChanges = [0, -taskPrice, -schedulerStakePerTask, 0, 0];
                 for (let i = 0; i < workerNumber; i++) {
-                    expectedBalanceChanges.push(workerStake + workerRewardPerTask / workerNumber);
                     expectedFrozenChanges.push(0);
                 }
-                await changesInBalancesAndFrozens({
+                await changesInFrozen({
                     accountsInitBalances,
-                    balanceChanges: expectedBalanceChanges,
                     frozenChanges: expectedFrozenChanges,
                 });
                 for (let i = 0; i < workerNumber; i++) {
@@ -314,17 +320,12 @@ async function checkBalancesAndFrozens(args: {
     }
 }
 
-async function changesInBalancesAndFrozens(args: {
-    accountsInitBalances: { address: string; balance: number; frozen: number }[];
-    balanceChanges: number[];
+async function changesInFrozen(args: {
+    accountsInitBalances: { address: string; frozen: number }[];
     frozenChanges: number[];
 }) {
     for (let i = 0; i < args.accountsInitBalances.length; i++) {
         const message = `Failed with account at index ${i}`;
-        expect(await iexecPoco.balanceOf(args.accountsInitBalances[i].address)).to.equal(
-            args.accountsInitBalances[i].balance + args.balanceChanges[i],
-            message,
-        );
         expect(await iexecPoco.frozenOf(args.accountsInitBalances[i].address)).to.equal(
             args.accountsInitBalances[i].frozen + args.frozenChanges[i],
             message,
