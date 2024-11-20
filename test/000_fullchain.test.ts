@@ -305,7 +305,6 @@ describe('Integration tests', function () {
             });
         }
         for (let workerNumber = 4; workerNumber < 6; workerNumber++) {
-            let goodWorkersNumber = workerNumber - 1;
             // Worker1 will contribute badly
             it(`[7.${workerNumber - 3}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers with 1 bad actor`, async function () {
                 const volume = 1;
@@ -333,7 +332,7 @@ describe('Integration tests', function () {
                     tag: standardDealTag,
                     beneficiary: beneficiary.address,
                     volume,
-                    trust: goodWorkersNumber,
+                    trust: winningWorkers.length,
                 });
 
                 const { dealId, dealPrice, schedulerStakePerDeal } =
@@ -401,7 +400,7 @@ describe('Integration tests', function () {
                     expect(finalizeTx).to.changeTokenBalances(
                         iexecPoco,
                         [winningWorker.address],
-                        [workerStake + workerRewardPerTask / goodWorkersNumber],
+                        [workerStake + workerRewardPerTask / winningWorkers.length],
                     );
                     expect(await iexecPoco.viewScore(winningWorker.address)).to.be.equal(1);
                 }
@@ -409,7 +408,7 @@ describe('Integration tests', function () {
                 expect((await iexecPoco.viewTask(taskId)).status).to.equal(
                     TaskStatusEnum.COMPLETED,
                 );
-                // checks n frozen balance changes
+                // checks on frozen balance changes
                 const expectedFrozenChanges = [0, -taskPrice, -schedulerStakePerTask, 0, 0];
                 for (let i = 0; i < workerNumber; i++) {
                     expectedFrozenChanges.push(0);
