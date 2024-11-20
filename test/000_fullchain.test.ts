@@ -308,17 +308,24 @@ describe('Integration tests', function () {
         }
         for (let workerNumber = 4; workerNumber < 6; workerNumber++) {
             let goodWorkersNumber = workerNumber - 1;
-            // Worker2 will contribute badly
+            // Worker1 will contribute badly
             it(`[7.${workerNumber - 3}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers with 1 bad actor`, async function () {
                 const volume = 1;
-                const workers = [worker1, worker2, worker3, worker4, worker5];
-                const disposableWokers = workers.slice(0, workerNumber);
+                const workersAvailable = [worker1, worker2, worker3, worker4, worker5];
+                const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
+                const losingWorker = worker1;
+                const winningWorkers = workersAvailable.slice(1, workerNumber);
+                let workers = [{ signer: worker1, resultDigest: badResultDigest }];
+                for (const worker of winningWorkers) {
+                    workers.push({ signer: worker, resultDigest: resultDigest });
+                }
                 const acounts = [
                     requester,
                     scheduler,
                     appProvider,
                     datasetProvider,
-                    ...disposableWokers,
+                    losingWorker,
+                    ...winningWorkers,
                 ];
                 // Create deal.
                 const orders = buildOrders({
@@ -352,41 +359,29 @@ describe('Integration tests', function () {
                     let frozen = (await iexecPoco.frozenOf(account.address)).toNumber();
                     accountsInitBalances.push({ address, frozen });
                 }
-                for (let i = 0; i < workerNumber; i++) {
-                    expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
+                // for (let i = 0; i < workerNumber; i++) {
+                for (const worker of workers) {
+                    expect(await iexecPoco.viewScore(worker.signer.address)).to.be.equal(0);
                 }
+                // }
                 const taskId = await iexecWrapper.initializeTask(dealId, 0);
                 // Finalize each task and check balance changes.
                 const workerStake = await iexecPoco
                     .viewDeal(dealId)
                     .then((deal) => deal.workerStake.toNumber());
-
-                for (let i = 0; i < workerNumber; i++) {
-                    if (i == 1) {
-                        const { resultDigest: badResultDigest } =
-                            buildUtf8ResultAndDigest('bad-result');
-                        await iexecWrapper.contributeToTask(
-                            dealId,
-                            0,
-                            badResultDigest,
-                            disposableWokers[i],
-                        );
-                    } else {
-                        await iexecWrapper.contributeToTask(
-                            dealId,
-                            0,
-                            resultDigest,
-                            disposableWokers[i],
-                        );
-                    }
+                for (const worker of workers) {
+                    await iexecWrapper.contributeToTask(
+                        dealId,
+                        0,
+                        worker.resultDigest,
+                        worker.signer,
+                    );
                 }
-                for (let i = 0; i < workerNumber; i++) {
-                    if (i !== 1) {
-                        await iexecPoco
-                            .connect(disposableWokers[i])
-                            .reveal(taskId, resultDigest)
-                            .then((tx) => tx.wait());
-                    }
+                for (const winningWorker of winningWorkers) {
+                    await iexecPoco
+                        .connect(winningWorker)
+                        .reveal(taskId, resultDigest)
+                        .then((tx) => tx.wait());
                 }
                 const finalizeTx = await iexecPoco
                     .connect(scheduler)
@@ -402,20 +397,23 @@ describe('Integration tests', function () {
                         datasetPrice,
                     ],
                 );
-                for (let i = 0; i < workerNumber; i++) {
-                    if (i !== 1) {
-                        expect(finalizeTx).to.changeTokenBalances(
-                            iexecPoco,
-                            [workers[i]],
-                            [workerStake + workerRewardPerTask / goodWorkersNumber],
-                        );
-                    } else {
-                        expect(finalizeTx).to.changeTokenBalances(iexecPoco, [workers[i]], [0]);
-                    }
+                // checks on losing worker
+                expect(finalizeTx).to.changeTokenBalances(iexecPoco, [losingWorker], [0]);
+                expect(await iexecPoco.viewScore(losingWorker.address)).to.be.equal(0);
+                // checks on winning workers
+                for (const winningWorker of winningWorkers) {
+                    expect(finalizeTx).to.changeTokenBalances(
+                        iexecPoco,
+                        [winningWorker.address],
+                        [workerStake + workerRewardPerTask / goodWorkersNumber],
+                    );
+                    expect(await iexecPoco.viewScore(winningWorker.address)).to.be.equal(1);
                 }
+                // verify task status
                 expect((await iexecPoco.viewTask(taskId)).status).to.equal(
                     TaskStatusEnum.COMPLETED,
                 );
+                // checks n frozen balance changes
                 const expectedFrozenChanges = [0, -taskPrice, -schedulerStakePerTask, 0, 0];
                 for (let i = 0; i < workerNumber; i++) {
                     expectedFrozenChanges.push(0);
@@ -424,13 +422,6 @@ describe('Integration tests', function () {
                     accountsInitBalances,
                     frozenChanges: expectedFrozenChanges,
                 });
-                for (let i = 0; i < workerNumber; i++) {
-                    if (i !== 1) {
-                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(1);
-                    } else {
-                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
-                    }
-                }
             });
         }
     });
