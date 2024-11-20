@@ -359,11 +359,9 @@ describe('Integration tests', function () {
                     let frozen = (await iexecPoco.frozenOf(account.address)).toNumber();
                     accountsInitBalances.push({ address, frozen });
                 }
-                // for (let i = 0; i < workerNumber; i++) {
                 for (const worker of workers) {
                     expect(await iexecPoco.viewScore(worker.signer.address)).to.be.equal(0);
                 }
-                // }
                 const taskId = await iexecWrapper.initializeTask(dealId, 0);
                 // Finalize each task and check balance changes.
                 const workerStake = await iexecPoco
