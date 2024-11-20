@@ -298,11 +298,9 @@ describe('Integration tests', function () {
                     frozenChanges: expectedFrozenChanges,
                 });
                 for (let i = 0; i < workerNumber; i++) {
-                    if (workerNumber == 1) {
-                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
-                    } else {
-                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(1);
-                    }
+                    expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(
+                        workerNumber == 1 ? 0 : 1,
+                    );
                 }
             });
         }
