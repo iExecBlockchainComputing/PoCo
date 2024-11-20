@@ -299,6 +299,135 @@ describe('Integration tests', function () {
                 for (let i = 0; i < workerNumber; i++) {
                     if (workerNumber == 1) {
                         expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
+                    } else {
+                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(1);
+                    }
+                }
+            });
+        }
+        for (let workerNumber = 4; workerNumber < 6; workerNumber++) {
+            let goodWorkersNumber = workerNumber - 1;
+            // Worker2 will contribute badly
+            it(`[7.${workerNumber - 3}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers with 1 bad actor`, async function () {
+                const volume = 1;
+                const workers = [worker1, worker2, worker3, worker4, worker5];
+                const disposableWokers = workers.slice(0, workerNumber);
+                const acounts = [
+                    requester,
+                    scheduler,
+                    appProvider,
+                    datasetProvider,
+                    ...disposableWokers,
+                ];
+                // Create deal.
+                const orders = buildOrders({
+                    assets: ordersAssets,
+                    prices: ordersPrices,
+                    requester: requester.address,
+                    tag: standardDealTag,
+                    beneficiary: beneficiary.address,
+                    volume,
+                    trust: goodWorkersNumber,
+                });
+
+                const { dealId, dealPrice, schedulerStakePerDeal } =
+                    await iexecWrapper.signAndMatchOrders(...orders.toArray());
+                const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+                const schedulerStakePerTask = schedulerStakePerDeal / volume;
+                const workerRewardPerTask = await iexecWrapper.computeWorkerRewardPerTask(
+                    dealId,
+                    PocoMode.CLASSIC,
+                );
+                const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
+                // Check initial balances.
+                let accountsInitBalances = [
+                    {
+                        address: proxyAddress,
+                        frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
+                    },
+                ];
+                for (const account of acounts) {
+                    let address = account.address;
+                    let frozen = (await iexecPoco.frozenOf(account.address)).toNumber();
+                    accountsInitBalances.push({ address, frozen });
+                }
+                for (let i = 0; i < workerNumber; i++) {
+                    expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
+                }
+                const taskId = await iexecWrapper.initializeTask(dealId, 0);
+                // Finalize each task and check balance changes.
+                const workerStake = await iexecPoco
+                    .viewDeal(dealId)
+                    .then((deal) => deal.workerStake.toNumber());
+
+                for (let i = 0; i < workerNumber; i++) {
+                    if (i == 1) {
+                        const { resultDigest: badResultDigest } =
+                            buildUtf8ResultAndDigest('bad-result');
+                        await iexecWrapper.contributeToTask(
+                            dealId,
+                            0,
+                            badResultDigest,
+                            disposableWokers[i],
+                        );
+                    } else {
+                        await iexecWrapper.contributeToTask(
+                            dealId,
+                            0,
+                            resultDigest,
+                            disposableWokers[i],
+                        );
+                    }
+                }
+                for (let i = 0; i < workerNumber; i++) {
+                    if (i !== 1) {
+                        await iexecPoco
+                            .connect(disposableWokers[i])
+                            .reveal(taskId, resultDigest)
+                            .then((tx) => tx.wait());
+                    }
+                }
+                const finalizeTx = await iexecPoco
+                    .connect(scheduler)
+                    .finalize(taskId, results, '0x');
+                expect(finalizeTx).to.changeTokenBalances(
+                    iexecPoco,
+                    [proxyAddress, requester, scheduler, appProvider, datasetProvider],
+                    [
+                        -(dealPrice + schedulerStakePerDeal),
+                        0,
+                        schedulerStakePerTask + schedulerRewardPerTask,
+                        appPrice,
+                        datasetPrice,
+                    ],
+                );
+                for (let i = 0; i < workerNumber; i++) {
+                    if (i !== 1) {
+                        expect(finalizeTx).to.changeTokenBalances(
+                            iexecPoco,
+                            [workers[i]],
+                            [workerStake + workerRewardPerTask / goodWorkersNumber],
+                        );
+                    } else {
+                        expect(finalizeTx).to.changeTokenBalances(iexecPoco, [workers[i]], [0]);
+                    }
+                }
+                expect((await iexecPoco.viewTask(taskId)).status).to.equal(
+                    TaskStatusEnum.COMPLETED,
+                );
+                const expectedFrozenChanges = [0, -taskPrice, -schedulerStakePerTask, 0, 0];
+                for (let i = 0; i < workerNumber; i++) {
+                    expectedFrozenChanges.push(0);
+                }
+                await changesInFrozen({
+                    accountsInitBalances,
+                    frozenChanges: expectedFrozenChanges,
+                });
+                for (let i = 0; i < workerNumber; i++) {
+                    if (i !== 1) {
+                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(1);
+                    } else {
+                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
                     }
                 }
             });
