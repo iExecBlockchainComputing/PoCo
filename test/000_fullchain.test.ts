@@ -302,9 +302,9 @@ describe('Integration tests', function () {
                 const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
                 const losingWorker = worker1;
                 const winningWorkers = workersAvailable.slice(1, workerNumber);
-                let workers = [{ signer: worker1, resultDigest: badResultDigest }];
+                let contributions = [{ signer: worker1, resultDigest: badResultDigest }];
                 for (const worker of winningWorkers) {
-                    workers.push({ signer: worker, resultDigest: resultDigest });
+                    contributions.push({ signer: worker, resultDigest: resultDigest });
                 }
                 const accounts = [
                     requester,
@@ -336,20 +336,20 @@ describe('Integration tests', function () {
                 const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
                 const accountsInitialFrozens = await getInitialFrozens(accounts);
                 // Check initial balances.
-                for (const worker of workers) {
-                    expect(await iexecPoco.viewScore(worker.signer.address)).to.be.equal(0);
+                for (const contributor of contributions) {
+                    expect(await iexecPoco.viewScore(contributor.signer.address)).to.be.equal(0);
                 }
                 const taskId = await iexecWrapper.initializeTask(dealId, 0);
                 // Finalize task and check balance changes.
                 const workerStake = await iexecPoco
                     .viewDeal(dealId)
                     .then((deal) => deal.workerStake.toNumber());
-                for (const worker of workers) {
+                for (const contributor of contributions) {
                     await iexecWrapper.contributeToTask(
                         dealId,
                         0,
-                        worker.resultDigest,
-                        worker.signer,
+                        contributor.resultDigest,
+                        contributor.signer,
                     );
                 }
                 for (const winningWorker of winningWorkers) {
