@@ -14,7 +14,10 @@ import chainConfig from './config/config.json';
 
 const isNativeChainType = chainConfig.chains.default.asset == 'Native';
 const isLocalFork = process.env.LOCAL_FORK == 'true';
-const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
+const bellecourBlockscoutUrl =
+    process.env.BLOCKSCOUT_VERSION == 'v5'
+        ? 'https://blockscout-v5.bellecour.iex.ec' // Remove this link when v5 is shutdown
+        : 'https://blockscout.bellecour.iex.ec'; // Use this by default
 const settings = {
     optimizer: {
         enabled: true,

@@ -45,6 +45,13 @@ IexecPocoAccessorsDelegate: 0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261 // https:
 
 0b. Verify contracts
 
+- Blockscout v5
+```
+BLOCKSCOUT_VERSION=v5 npx hardhat run ./scripts/sponsoring/verify.ts --network bellecour
+```
+
+- Blockscout v6
+
 Contracts have been verified using `etherscan-verify` plugin of `hardhat-deploy` (v0.12.4):
 ```
 npx hardhat --network bellecour etherscan-verify
