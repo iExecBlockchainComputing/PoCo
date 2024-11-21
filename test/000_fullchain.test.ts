@@ -215,7 +215,7 @@ describe('Integration tests', function () {
                 const volume = 1;
                 const disposableWorkers = [worker1, worker2, worker3, worker4, worker5];
                 const workers = disposableWorkers.slice(0, workerNumber);
-                const acounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
+                const accounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
                 // Create deal.
                 const orders = buildOrders({
                     assets: ordersAssets,
@@ -235,18 +235,8 @@ describe('Integration tests', function () {
                     PocoMode.CLASSIC,
                 );
                 const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
-                // Check initial balances.
-                let accountsInitBalances = [
-                    {
-                        address: proxyAddress,
-                        frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
-                    },
-                ];
-                for (const account of acounts) {
-                    let address = account.address;
-                    let frozen = (await iexecPoco.frozenOf(account.address)).toNumber();
-                    accountsInitBalances.push({ address, frozen });
-                }
+                const accountsInitialFrozens = await getInitialFrozens(accounts);
+
                 for (let i = 0; i < workerNumber; i++) {
                     expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
                 }
@@ -294,7 +284,7 @@ describe('Integration tests', function () {
                     expectedFrozenChanges.push(0);
                 }
                 await changesInFrozen({
-                    accountsInitBalances,
+                    accountsInitialFrozens,
                     frozenChanges: expectedFrozenChanges,
                 });
                 for (let i = 0; i < workerNumber; i++) {
@@ -306,7 +296,7 @@ describe('Integration tests', function () {
         }
         for (let workerNumber = 4; workerNumber < 6; workerNumber++) {
             // Worker1 will contribute badly
-            it(`[7.${workerNumber - 3}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers with 1 bad actor`, async function () {
+            it(`[7.${workerNumber - 3}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers with 1 bad worker`, async function () {
                 const volume = 1;
                 const workersAvailable = [worker1, worker2, worker3, worker4, worker5];
                 const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
@@ -316,7 +306,7 @@ describe('Integration tests', function () {
                 for (const worker of winningWorkers) {
                     workers.push({ signer: worker, resultDigest: resultDigest });
                 }
-                const acounts = [
+                const accounts = [
                     requester,
                     scheduler,
                     appProvider,
@@ -344,23 +334,13 @@ describe('Integration tests', function () {
                     PocoMode.CLASSIC,
                 );
                 const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
+                const accountsInitialFrozens = await getInitialFrozens(accounts);
                 // Check initial balances.
-                let accountsInitBalances = [
-                    {
-                        address: proxyAddress,
-                        frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
-                    },
-                ];
-                for (const account of acounts) {
-                    let address = account.address;
-                    let frozen = (await iexecPoco.frozenOf(account.address)).toNumber();
-                    accountsInitBalances.push({ address, frozen });
-                }
                 for (const worker of workers) {
                     expect(await iexecPoco.viewScore(worker.signer.address)).to.be.equal(0);
                 }
                 const taskId = await iexecWrapper.initializeTask(dealId, 0);
-                // Finalize each task and check balance changes.
+                // Finalize task and check balance changes.
                 const workerStake = await iexecPoco
                     .viewDeal(dealId)
                     .then((deal) => deal.workerStake.toNumber());
@@ -414,12 +394,28 @@ describe('Integration tests', function () {
                     expectedFrozenChanges.push(0);
                 }
                 await changesInFrozen({
-                    accountsInitBalances,
+                    accountsInitialFrozens,
                     frozenChanges: expectedFrozenChanges,
                 });
             });
         }
     });
+
+    async function getInitialFrozens(accounts: SignerWithAddress[]) {
+        let initialFrozens = [
+            {
+                address: proxyAddress,
+                frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
+            },
+        ];
+        for (const account of accounts) {
+            initialFrozens.push({
+                address: account.address,
+                frozen: (await iexecPoco.frozenOf(account.address)).toNumber(),
+            });
+        }
+        return initialFrozens;
+    }
 });
 
 async function checkBalancesAndFrozens(args: {
@@ -438,13 +434,13 @@ async function checkBalancesAndFrozens(args: {
 }
 
 async function changesInFrozen(args: {
-    accountsInitBalances: { address: string; frozen: number }[];
+    accountsInitialFrozens: { address: string; frozen: number }[];
     frozenChanges: number[];
 }) {
-    for (let i = 0; i < args.accountsInitBalances.length; i++) {
+    for (let i = 0; i < args.accountsInitialFrozens.length; i++) {
         const message = `Failed with account at index ${i}`;
-        expect(await iexecPoco.frozenOf(args.accountsInitBalances[i].address)).to.equal(
-            args.accountsInitBalances[i].frozen + args.frozenChanges[i],
+        expect(await iexecPoco.frozenOf(args.accountsInitialFrozens[i].address)).to.equal(
+            args.accountsInitialFrozens[i].frozen + args.frozenChanges[i],
             message,
         );
     }
