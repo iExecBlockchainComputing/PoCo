@@ -14,10 +14,7 @@ import chainConfig from './config/config.json';
 
 const isNativeChainType = chainConfig.chains.default.asset == 'Native';
 const isLocalFork = process.env.LOCAL_FORK == 'true';
-const bellecourBlockscoutUrl =
-    process.env.BLOCKSCOUT_VERSION == 'v5'
-        ? 'https://blockscout.bellecour.iex.ec'
-        : 'https://blockscout-v6.bellecour.iex.ec'; // Use Blockscout v6 by default
+const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
 const settings = {
     optimizer: {
         enabled: true,
