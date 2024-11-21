@@ -352,6 +352,10 @@ describe('Integration tests', function () {
                         contributor.signer,
                     );
                 }
+                // verify that the bad worker can't reveal.
+                await expect(
+                    iexecPoco.connect(losingWorker).reveal(taskId, badResultDigest),
+                ).to.be.revertedWithoutReason();
                 for (const winningWorker of winningWorkers) {
                     await iexecPoco
                         .connect(winningWorker)
