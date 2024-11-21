@@ -16,16 +16,17 @@ import {
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 
-//  +---------+-------------+-------------+-------------+----------+-----+---------------------------------+
-//  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |              Type               |
-//  +---------+-------------+-------------+-------------+----------+-----+---------------------------------+
-//  |   [1]   |     ✔       |     ✔       |     ✔       |    ✔     |  ✔  |             Standard            |
-//  |   [2]   |     x       |     ✔       |     ✔       |    ✔     |  ✔  |             Standard            |
-//  |   [3]   |     ✔       |     x       |     ✔       |    ✔     |  ✔  |           Standard,TEE          |
-//  |   [4]   |     x       |     x       |     ✔       |    ✔     |  ✔  |           Standard,TEE          |
-//  |   [5]   |     x       |     x       |     x       |    x     |  x  |           Standard,TEE          |
-//  |   [6.x] |     x       |     ✔       |     x       |    x     |  x  |  Standard,TEE, X good workers   |
-//  +---------+-------------+-------------+-------------+----------+-----+---------------------------------+
+//  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
+//  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |              Type                           |
+//  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
+//  |   [1]   |     ✔       |     ✔       |     ✔       |    ✔     |  ✔  |                  Standard                   |
+//  |   [2]   |     x       |     ✔       |     ✔       |    ✔     |  ✔  |                  Standard                   |
+//  |   [3]   |     ✔       |     x       |     ✔       |    ✔     |  ✔  |                  Standard,TEE               |
+//  |   [4]   |     x       |     x       |     ✔       |    ✔     |  ✔  |                  Standard,TEE               |
+//  |   [5]   |     x       |     x       |     x       |    x     |  x  |                  Standard,TEE               |
+//  |   [6.x] |     x       |     ✔       |     x       |    x     |  x  |  Standard,TEE, X good workers               |
+//  |   [7]   |     x       |     ✔       |     x       |    x     |  x  |  Standard,TEE, 4 good workers 1 bad worker  |
+//  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
@@ -214,7 +215,7 @@ describe('Integration tests', function () {
                 const volume = 1;
                 const disposableWorkers = [worker1, worker2, worker3, worker4, worker5];
                 const workers = disposableWorkers.slice(0, workerNumber);
-                const acounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
+                const accounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
                 // Create deal.
                 const orders = buildOrders({
                     assets: ordersAssets,
@@ -234,18 +235,8 @@ describe('Integration tests', function () {
                     PocoMode.CLASSIC,
                 );
                 const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
-                // Check initial balances.
-                let accountsInitBalances = [
-                    {
-                        address: proxyAddress,
-                        frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
-                    },
-                ];
-                for (const account of acounts) {
-                    let address = account.address;
-                    let frozen = (await iexecPoco.frozenOf(account.address)).toNumber();
-                    accountsInitBalances.push({ address, frozen });
-                }
+                const accountsInitialFrozens = await getInitialFrozens(accounts);
+
                 for (let i = 0; i < workerNumber; i++) {
                     expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
                 }
@@ -293,17 +284,136 @@ describe('Integration tests', function () {
                     expectedFrozenChanges.push(0);
                 }
                 await changesInFrozen({
-                    accountsInitBalances,
+                    accountsInitialFrozens,
                     frozenChanges: expectedFrozenChanges,
                 });
                 for (let i = 0; i < workerNumber; i++) {
-                    if (workerNumber == 1) {
-                        expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
-                    }
+                    expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(
+                        workerNumber == 1 ? 0 : 1,
+                    );
                 }
             });
         }
     });
+    it(`[7] No sponsorship, no beneficiary, no callback, no BoT, up to 5 workers with 1 bad worker`, async function () {
+        const volume = 1;
+        const workersAvailable = [worker1, worker2, worker3, worker4, worker5];
+        const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
+        const losingWorker = worker1;
+        const winningWorkers = workersAvailable.slice(1, workersAvailable.length);
+        let contributions = [{ signer: worker1, resultDigest: badResultDigest }];
+        for (const worker of winningWorkers) {
+            contributions.push({ signer: worker, resultDigest: resultDigest });
+        }
+        const accounts = [
+            requester,
+            scheduler,
+            appProvider,
+            datasetProvider,
+            losingWorker,
+            ...winningWorkers,
+        ];
+        // Create deal.
+        const orders = buildOrders({
+            assets: ordersAssets,
+            prices: ordersPrices,
+            requester: requester.address,
+            tag: standardDealTag,
+            beneficiary: beneficiary.address,
+            volume,
+            trust: winningWorkers.length,
+        });
+
+        const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
+            ...orders.toArray(),
+        );
+        const taskPrice = appPrice + datasetPrice + workerpoolPrice;
+        const schedulerStakePerTask = schedulerStakePerDeal / volume;
+        const workerRewardPerTask = await iexecWrapper.computeWorkerRewardPerTask(
+            dealId,
+            PocoMode.CLASSIC,
+        );
+        const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
+        const accountsInitialFrozens = await getInitialFrozens(accounts);
+        // Check initial balances.
+        for (const contributor of contributions) {
+            expect(await iexecPoco.viewScore(contributor.signer.address)).to.be.equal(0);
+        }
+        const taskId = await iexecWrapper.initializeTask(dealId, 0);
+        // Finalize task and check balance changes.
+        const workerStake = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
+        for (const contributor of contributions) {
+            await iexecWrapper.contributeToTask(
+                dealId,
+                0,
+                contributor.resultDigest,
+                contributor.signer,
+            );
+        }
+        // verify that the bad worker can't reveal.
+        await expect(
+            iexecPoco.connect(losingWorker).reveal(taskId, badResultDigest),
+        ).to.be.revertedWithoutReason();
+        for (const winningWorker of winningWorkers) {
+            await iexecPoco
+                .connect(winningWorker)
+                .reveal(taskId, resultDigest)
+                .then((tx) => tx.wait());
+        }
+        const finalizeTx = await iexecPoco.connect(scheduler).finalize(taskId, results, '0x');
+        expect(finalizeTx).to.changeTokenBalances(
+            iexecPoco,
+            [proxyAddress, requester, scheduler, appProvider, datasetProvider],
+            [
+                -(dealPrice + schedulerStakePerDeal),
+                0,
+                schedulerStakePerTask + schedulerRewardPerTask,
+                appPrice,
+                datasetPrice,
+            ],
+        );
+        // checks on losing worker
+        expect(finalizeTx).to.changeTokenBalances(iexecPoco, [losingWorker], [0]);
+        expect(await iexecPoco.viewScore(losingWorker.address)).to.be.equal(0);
+        // checks on winning workers
+        for (const winningWorker of winningWorkers) {
+            expect(finalizeTx).to.changeTokenBalances(
+                iexecPoco,
+                [winningWorker.address],
+                [workerStake + workerRewardPerTask / winningWorkers.length],
+            );
+            expect(await iexecPoco.viewScore(winningWorker.address)).to.be.equal(1);
+        }
+        // verify task status
+        expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
+        // checks on frozen balance changes
+        const expectedFrozenChanges = [0, -taskPrice, -schedulerStakePerTask, 0, 0];
+        for (let i = 0; i < workersAvailable.length; i++) {
+            expectedFrozenChanges.push(0);
+        }
+        await changesInFrozen({
+            accountsInitialFrozens,
+            frozenChanges: expectedFrozenChanges,
+        });
+    });
+
+    async function getInitialFrozens(accounts: SignerWithAddress[]) {
+        let initialFrozens = [
+            {
+                address: proxyAddress,
+                frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
+            },
+        ];
+        for (const account of accounts) {
+            initialFrozens.push({
+                address: account.address,
+                frozen: (await iexecPoco.frozenOf(account.address)).toNumber(),
+            });
+        }
+        return initialFrozens;
+    }
 });
 
 async function checkBalancesAndFrozens(args: {
@@ -322,13 +432,13 @@ async function checkBalancesAndFrozens(args: {
 }
 
 async function changesInFrozen(args: {
-    accountsInitBalances: { address: string; frozen: number }[];
+    accountsInitialFrozens: { address: string; frozen: number }[];
     frozenChanges: number[];
 }) {
-    for (let i = 0; i < args.accountsInitBalances.length; i++) {
+    for (let i = 0; i < args.accountsInitialFrozens.length; i++) {
         const message = `Failed with account at index ${i}`;
-        expect(await iexecPoco.frozenOf(args.accountsInitBalances[i].address)).to.equal(
-            args.accountsInitBalances[i].frozen + args.frozenChanges[i],
+        expect(await iexecPoco.frozenOf(args.accountsInitialFrozens[i].address)).to.equal(
+            args.accountsInitialFrozens[i].frozen + args.frozenChanges[i],
             message,
         );
     }
