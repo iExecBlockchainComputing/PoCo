@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-
+- Remove references to blockscout v5. (#161)
 - Migrate integration test files to Typescript & Hardhat:
     - 000_fullchain.js (#156, #157)
     - 00X_fullchain-Xworkers.js (#158, #159)
