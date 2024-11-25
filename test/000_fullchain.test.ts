@@ -24,8 +24,8 @@ import { IexecWrapper } from './utils/IexecWrapper';
 //  |   [3]   |     ✔       |     x       |     ✔       |    ✔     |  ✔  |                  Standard,TEE               |
 //  |   [4]   |     x       |     x       |     ✔       |    ✔     |  ✔  |                  Standard,TEE               |
 //  |   [5]   |     x       |     x       |     x       |    x     |  x  |                  Standard,TEE               |
-//  |   [6.x] |     x       |     ✔       |     x       |    x     |  x  |  Standard,TEE, X good workers               |
-//  |   [7]   |     x       |     ✔       |     x       |    x     |  x  |  Standard,TEE, 4 good workers 1 bad worker  |
+//  |   [6.x] |     x       |     ✔       |     x       |    x     |  x  |             Standard, X good workers        |
+//  |   [7]   |     x       |     ✔       |     x       |    x     |  x  |     Standard, 4 good workers 1 bad worker   |
 //  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -320,7 +320,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: standardDealTag,
+            tag: teeDealTag,
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
@@ -341,7 +341,7 @@ describe('Integration tests', function () {
         // Finalize each task and check balance changes.
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
-            const { workerStakePerTask } = await iexecWrapper.contributeToTask(
+            const { workerStakePerTask } = await iexecWrapper.contributeTeeToTask(
                 dealId,
                 taskIndex,
                 callbackResultDigest,
@@ -399,7 +399,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: standardDealTag,
+            tag: teeDealTag,
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
@@ -421,7 +421,7 @@ describe('Integration tests', function () {
         // Finalize each task and check balance changes.
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
-            const { workerStakePerTask } = await iexecWrapper.contributeToTask(
+            const { workerStakePerTask } = await iexecWrapper.contributeTeeToTask(
                 dealId,
                 taskIndex,
                 callbackResultDigest,
@@ -478,7 +478,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: standardDealTag,
+            tag: teeDealTag,
             volume,
             trust: 1,
         });
@@ -497,7 +497,7 @@ describe('Integration tests', function () {
         const accountsInitialFrozens = await getInitialFrozens(accounts);
         const taskIndex = 0;
         const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
-        const { workerStakePerTask } = await iexecWrapper.contributeToTask(
+        const { workerStakePerTask } = await iexecWrapper.contributeTeeToTask(
             dealId,
             taskIndex,
             resultDigest,
