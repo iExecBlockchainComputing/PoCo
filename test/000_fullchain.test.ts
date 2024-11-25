@@ -557,7 +557,6 @@ describe('Integration tests', function () {
                     prices: ordersPrices,
                     requester: requester.address,
                     tag: standardDealTag,
-                    beneficiary: beneficiary.address,
                     volume,
                     trust: workerNumber ** 2 - 1,
                 });
@@ -654,7 +653,6 @@ describe('Integration tests', function () {
             prices: ordersPrices,
             requester: requester.address,
             tag: standardDealTag,
-            beneficiary: beneficiary.address,
             volume,
             trust: winningWorkers.length,
         });
