@@ -107,6 +107,7 @@ describe('Integration tests', function () {
     it('[1] Sponsorship, beneficiary, callback, BoT, replication', async function () {
         const volume = 3;
         // Create deal.
+        const workers = [worker1, worker2];
         const orders = buildOrders({
             assets: ordersAssets,
             prices: ordersPrices,
@@ -115,7 +116,7 @@ describe('Integration tests', function () {
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
-            trust: 1, // TODO use 5 workers.
+            trust: workers.length ** 2 - 1,
         });
         const { dealId, dealPrice, schedulerStakePerDeal } =
             await iexecWrapper.signAndSponsorMatchOrders(...orders.toArray());
@@ -127,21 +128,30 @@ describe('Integration tests', function () {
         );
         const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
         // Save frozens
-        const accounts = [sponsor, requester, scheduler, appProvider, datasetProvider, worker1];
+
+        const accounts = [sponsor, requester, scheduler, appProvider, datasetProvider, ...workers];
         const accountsInitialFrozens = await getInitialFrozens(accounts);
         // Finalize each task and check balance changes.
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
-            const { workerStakePerTask } = await iexecWrapper.contributeToTask(
-                dealId,
-                taskIndex,
-                callbackResultDigest,
-                worker1,
-            );
-            await iexecPoco
-                .connect(worker1)
-                .reveal(taskId, callbackResultDigest)
-                .then((tx) => tx.wait());
+            const workerStakePerTask = await iexecPoco
+                .viewDeal(dealId)
+                .then((deal) => deal.workerStake.toNumber());
+            for (const worker of workers) {
+                await iexecWrapper.contributeToTask(
+                    dealId,
+                    taskIndex,
+                    callbackResultDigest,
+                    worker,
+                );
+            }
+            // Reveal contributions for all workers
+            for (const worker of workers) {
+                await iexecPoco
+                    .connect(worker)
+                    .reveal(taskId, callbackResultDigest)
+                    .then((tx) => tx.wait());
+            }
             const finalizeTx = await iexecPoco
                 .connect(scheduler)
                 .finalize(taskId, results, resultsCallback);
@@ -170,16 +180,22 @@ describe('Integration tests', function () {
             );
             expect(finalizeTx).to.changeTokenBalances(
                 iexecPoco,
-                [proxyAddress, sponsor, scheduler, appProvider, datasetProvider, worker1],
+                [proxyAddress, sponsor, scheduler, appProvider, datasetProvider],
                 [
                     expectedProxyBalanceChange, // Proxy
                     -taskPrice * completedTasks, // Sponsor
                     schedulerStakePerTask + schedulerRewardPerTask, // Scheduler
                     appPrice, // AppProvider
                     datasetPrice, // DatasetProvider
-                    workerStakePerTask + workerRewardPerTask, // Worker
                 ],
             );
+            for (const worker of workers) {
+                expect(finalizeTx).to.changeTokenBalances(
+                    iexecPoco,
+                    [worker],
+                    [workerStakePerTask + workerRewardPerTask / workers.length],
+                );
+            }
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
                 0, // Proxy
@@ -188,8 +204,10 @@ describe('Integration tests', function () {
                 -schedulerStakePerTask * completedTasks, // Scheduler
                 0, // AppProvider
                 0, // DatasetProvider
-                0, // Worker
             ];
+            for (let i = 0; i < workers.length; i++) {
+                expectedFrozenChanges.push(0);
+            }
             await changesInFrozen({
                 accountsInitialFrozens,
                 frozenChanges: expectedFrozenChanges,
