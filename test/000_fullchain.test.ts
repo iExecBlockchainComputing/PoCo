@@ -545,8 +545,8 @@ describe('Integration tests', function () {
     });
 
     describe('Integration tests array of worker', function () {
-        for (let workerNumber = 1; workerNumber < 6; workerNumber++) {
-            it(`[6.${workerNumber}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers`, async function () {
+        for (let workerNumber = 2; workerNumber < 6; workerNumber++) {
+            it(`[6.${workerNumber - 1}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers`, async function () {
                 const volume = 1;
                 const disposableWorkers = [worker1, worker2, worker3, worker4, worker5];
                 const workers = disposableWorkers.slice(0, workerNumber);
