@@ -160,20 +160,6 @@ describe('Integration tests', function () {
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
             const completedTasks = taskIndex + 1;
-            // For each task, balances change such as:
-            //   - Sponsor
-            //      - frozen: frozenBefore - taskPrice
-            //   - Requester: no changes
-            //   - Scheduler
-            //      - balance: balanceBefore + taskStake + taskReward
-            //      - frozen: frozenBefore - taskStake
-            //   - App
-            //      - balance: balance before + appPrice
-            //   - Dataset
-            //      - balance: balance before + datasetPrice
-            //   - Worker:
-            //      - balance: balance before + taskStake + taskReward
-            //      - frozen: frozen before - taskStake
             // Verify token balance changes
             const expectedProxyBalanceChange = -(
                 taskPrice * completedTasks +
