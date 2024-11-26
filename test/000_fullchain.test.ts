@@ -165,9 +165,11 @@ describe('Integration tests', function () {
                 taskPrice * completedTasks +
                 schedulerStakePerTask * completedTasks
             );
+            const expectedWorkerBalanceChange =
+                workerStakePerTask + workerRewardPerTask / workers.length;
             expect(finalizeTx).to.changeTokenBalances(
                 iexecPoco,
-                [proxyAddress, sponsor, requester, scheduler, appProvider, datasetProvider],
+                [proxyAddress, ...accounts],
                 [
                     expectedProxyBalanceChange, // Proxy
                     -taskPrice * completedTasks, // Sponsor
@@ -175,15 +177,9 @@ describe('Integration tests', function () {
                     schedulerStakePerTask + schedulerRewardPerTask, // Scheduler
                     appPrice, // AppProvider
                     datasetPrice, // DatasetProvider
+                    ...workers.map(() => expectedWorkerBalanceChange), // Workers
                 ],
             );
-            for (const worker of workers) {
-                expect(finalizeTx).to.changeTokenBalances(
-                    iexecPoco,
-                    [worker],
-                    [workerStakePerTask + workerRewardPerTask / workers.length],
-                );
-            }
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
                 0, // Proxy
@@ -263,24 +259,20 @@ describe('Integration tests', function () {
                 taskPrice * completedTasks +
                 schedulerStakePerTask * completedTasks
             );
+            const expectedWorkerBalanceChange =
+                workerStakePerTask + workerRewardPerTask / workers.length;
             expect(finalizeTx).to.changeTokenBalances(
                 iexecPoco,
-                [proxyAddress, requester, scheduler, appProvider, datasetProvider],
+                [proxyAddress, ...accounts],
                 [
                     expectedProxyBalanceChange, // Proxy
                     -taskPrice * completedTasks, // Requester
                     schedulerStakePerTask + schedulerRewardPerTask, // Scheduler
                     appPrice, // AppProvider
                     datasetPrice, // DatasetProvider
+                    ...workers.map(() => expectedWorkerBalanceChange), // Workers
                 ],
             );
-            for (const worker of workers) {
-                expect(finalizeTx).to.changeTokenBalances(
-                    iexecPoco,
-                    [worker],
-                    [workerStakePerTask + workerRewardPerTask / workers.length],
-                );
-            }
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
                 0, // Proxy
@@ -563,7 +555,7 @@ describe('Integration tests', function () {
                 }
                 const taskId = await iexecWrapper.initializeTask(dealId, 0);
                 // Finalize each task and check balance changes.
-                const workerStake = await iexecPoco
+                const workerStakePerTask = await iexecPoco
                     .viewDeal(dealId)
                     .then((deal) => deal.workerStake.toNumber());
 
@@ -580,24 +572,20 @@ describe('Integration tests', function () {
                     .connect(scheduler)
                     .finalize(taskId, results, '0x');
                 await finalizeTx.wait();
+                const expectedWorkerBalanceChange =
+                    workerStakePerTask + workerRewardPerTask / workerNumber;
                 expect(finalizeTx).to.changeTokenBalances(
                     iexecPoco,
-                    [proxyAddress, requester, scheduler, appProvider, datasetProvider],
+                    [proxyAddress, ...accounts],
                     [
                         -(dealPrice + schedulerStakePerDeal),
                         0,
                         schedulerStakePerTask + schedulerRewardPerTask,
                         appPrice,
                         datasetPrice,
+                        ...workers.map(() => expectedWorkerBalanceChange), // Workers
                     ],
                 );
-                for (let i = 0; i < workerNumber; i++) {
-                    expect(finalizeTx).to.changeTokenBalances(
-                        iexecPoco,
-                        [workers[i]],
-                        [workerStake + workerRewardPerTask / workerNumber],
-                    );
-                }
                 expect((await iexecPoco.viewTask(taskId)).status).to.equal(
                     TaskStatusEnum.COMPLETED,
                 );
@@ -689,27 +677,25 @@ describe('Integration tests', function () {
         }
         const finalizeTx = await iexecPoco.connect(scheduler).finalize(taskId, results, '0x');
         await finalizeTx.wait();
+        const expectedWinningWorkerBalanceChange =
+            workerStake + workerRewardPerTask / winningWorkers.length;
         expect(finalizeTx).to.changeTokenBalances(
             iexecPoco,
-            [proxyAddress, requester, scheduler, appProvider, datasetProvider],
+            [proxyAddress, ...accounts],
             [
                 -(dealPrice + schedulerStakePerDeal),
                 0,
                 schedulerStakePerTask + schedulerRewardPerTask,
                 appPrice,
                 datasetPrice,
+                0, // losing worker
+                ...winningWorkers.map(() => expectedWinningWorkerBalanceChange), // winning workers
             ],
         );
         // checks on losing worker
-        expect(finalizeTx).to.changeTokenBalances(iexecPoco, [losingWorker], [0]);
         expect(await iexecPoco.viewScore(losingWorker.address)).to.be.equal(0);
         // checks on winning workers
         for (const winningWorker of winningWorkers) {
-            expect(finalizeTx).to.changeTokenBalances(
-                iexecPoco,
-                [winningWorker.address],
-                [workerStake + workerRewardPerTask / winningWorkers.length],
-            );
             expect(await iexecPoco.viewScore(winningWorker.address)).to.be.equal(1);
         }
         // verify task status
