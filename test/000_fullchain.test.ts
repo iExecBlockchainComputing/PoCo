@@ -311,7 +311,7 @@ describe('Integration tests', function () {
         // Finalize each task and check balance changes.
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
-            const { workerStakePerTask } = await iexecWrapper.contributeTeeToTask(
+            const { workerStakePerTask } = await iexecWrapper.contributeToTeeTask(
                 dealId,
                 taskIndex,
                 callbackResultDigest,
@@ -389,7 +389,7 @@ describe('Integration tests', function () {
         // Finalize each task and check balance changes.
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
-            const { workerStakePerTask } = await iexecWrapper.contributeTeeToTask(
+            const { workerStakePerTask } = await iexecWrapper.contributeToTeeTask(
                 dealId,
                 taskIndex,
                 callbackResultDigest,
@@ -463,7 +463,7 @@ describe('Integration tests', function () {
         const accountsInitialFrozens = await getInitialFrozens(accounts);
         const taskIndex = 0;
         const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
-        const { workerStakePerTask } = await iexecWrapper.contributeTeeToTask(
+        const { workerStakePerTask } = await iexecWrapper.contributeToTeeTask(
             dealId,
             taskIndex,
             resultDigest,

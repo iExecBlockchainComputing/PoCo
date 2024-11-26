@@ -379,7 +379,7 @@ export class IexecWrapper {
      * @param resultDigest hash of the result
      * @returns id of the task
      */
-    async contributeTeeToTask(
+    async contributeToTeeTask(
         dealId: string,
         taskIndex: number,
         resultDigest: string,
