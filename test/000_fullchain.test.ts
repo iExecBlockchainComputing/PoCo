@@ -155,6 +155,7 @@ describe('Integration tests', function () {
             const finalizeTx = await iexecPoco
                 .connect(scheduler)
                 .finalize(taskId, results, resultsCallback);
+            await finalizeTx.wait();
             expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
@@ -268,6 +269,7 @@ describe('Integration tests', function () {
             const finalizeTx = await iexecPoco
                 .connect(scheduler)
                 .finalize(taskId, results, resultsCallback);
+            await finalizeTx.wait();
             expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
@@ -354,6 +356,7 @@ describe('Integration tests', function () {
             const finalizeTx = await iexecPoco
                 .connect(scheduler)
                 .finalize(taskId, results, resultsCallback);
+            await finalizeTx.wait();
             expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
@@ -434,6 +437,7 @@ describe('Integration tests', function () {
             const finalizeTx = await iexecPoco
                 .connect(scheduler)
                 .finalize(taskId, results, resultsCallback);
+            await finalizeTx.wait();
             expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
@@ -508,6 +512,7 @@ describe('Integration tests', function () {
             .reveal(taskId, resultDigest)
             .then((tx) => tx.wait());
         const finalizeTx = await iexecPoco.connect(scheduler).finalize(taskId, results, '0x');
+        await finalizeTx.wait();
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
         // Multiply amount by the number of finalized tasks to correctly compute
         // stake and reward amounts.
@@ -592,6 +597,7 @@ describe('Integration tests', function () {
                 const finalizeTx = await iexecPoco
                     .connect(scheduler)
                     .finalize(taskId, results, '0x');
+                await finalizeTx.wait();
                 expect(finalizeTx).to.changeTokenBalances(
                     iexecPoco,
                     [proxyAddress, requester, scheduler, appProvider, datasetProvider],
@@ -696,6 +702,7 @@ describe('Integration tests', function () {
                 .then((tx) => tx.wait());
         }
         const finalizeTx = await iexecPoco.connect(scheduler).finalize(taskId, results, '0x');
+        await finalizeTx.wait();
         expect(finalizeTx).to.changeTokenBalances(
             iexecPoco,
             [proxyAddress, requester, scheduler, appProvider, datasetProvider],
