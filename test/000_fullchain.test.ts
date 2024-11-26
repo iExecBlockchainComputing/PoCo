@@ -190,10 +190,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider,
                 ...workers.map(() => 0), // Add 0 for each worker
             ];
-            await changesInFrozen({
-                accountsInitialFrozens,
-                frozenChanges: expectedFrozenChanges,
-            });
+            await checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
@@ -282,10 +279,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider
                 ...workers.map(() => 0), // Add 0 for each worker
             ];
-            await changesInFrozen({
-                accountsInitialFrozens,
-                frozenChanges: expectedFrozenChanges,
-            });
+            await checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
@@ -362,10 +356,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider
                 0, // Worker
             ];
-            await changesInFrozen({
-                accountsInitialFrozens,
-                frozenChanges: expectedFrozenChanges,
-            });
+            await checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
@@ -442,10 +433,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider
                 0, // Worker
             ];
-            await changesInFrozen({
-                accountsInitialFrozens,
-                frozenChanges: expectedFrozenChanges,
-            });
+            await checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
@@ -517,10 +505,7 @@ describe('Integration tests', function () {
             0, // DatasetProvider
             0, // Worker
         ];
-        await changesInFrozen({
-            accountsInitialFrozens,
-            frozenChanges: expectedFrozenChanges,
-        });
+        await checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
     });
 
     describe('Integration tests array of worker', function () {
@@ -597,10 +582,7 @@ describe('Integration tests', function () {
                     0,
                     ...workers.map(() => 0),
                 ];
-                await changesInFrozen({
-                    accountsInitialFrozens,
-                    frozenChanges: expectedFrozenChanges,
-                });
+                await checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
                 for (let i = 0; i < workerNumber; i++) {
                     expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(
                         workerNumber == 1 ? 0 : 1,
@@ -709,10 +691,7 @@ describe('Integration tests', function () {
             0,
             ...workersAvailable.map(() => 0),
         ];
-        await changesInFrozen({
-            accountsInitialFrozens,
-            frozenChanges: expectedFrozenChanges,
-        });
+        await checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
     });
 
     async function getInitialFrozens(accounts: SignerWithAddress[]) {
@@ -732,14 +711,14 @@ describe('Integration tests', function () {
     }
 });
 
-async function changesInFrozen(args: {
-    accountsInitialFrozens: { address: string; frozen: number }[];
-    frozenChanges: number[];
-}) {
-    for (let i = 0; i < args.accountsInitialFrozens.length; i++) {
+async function checkFrozenChanges(
+    accountsInitialFrozens: { address: string; frozen: number }[],
+    expectedFrozenChanges: number[],
+) {
+    for (let i = 0; i < accountsInitialFrozens.length; i++) {
         const message = `Failed with account at index ${i}`;
-        expect(await iexecPoco.frozenOf(args.accountsInitialFrozens[i].address)).to.equal(
-            args.accountsInitialFrozens[i].frozen + args.frozenChanges[i],
+        expect(await iexecPoco.frozenOf(accountsInitialFrozens[i].address)).to.equal(
+            accountsInitialFrozens[i].frozen + expectedFrozenChanges[i],
             message,
         );
     }
