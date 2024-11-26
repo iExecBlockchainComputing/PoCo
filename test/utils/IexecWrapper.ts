@@ -35,6 +35,7 @@ import {
     IexecAccounts,
     PocoMode,
     buildAndSignContributionAuthorizationMessage,
+    buildAndSignPocoClassicEnclaveMessage,
     buildResultHashAndResultSeal,
     getDealId,
     getTaskId,
@@ -345,7 +346,7 @@ export class IexecWrapper {
     /**
      * Helper function to contribute to a task. The contributor's stake is
      * automatically deposited before contributing.
-     * Note: no enclave address is used.
+     * Note: no enclave is used.
      * @param contributor Signer to sign the contribution
      * @param dealId id of the deal
      * @param taskIndex index of the task.
@@ -358,8 +359,60 @@ export class IexecWrapper {
         resultDigest: string,
         contributor: SignerWithAddress,
     ) {
-        const enclaveAddress = AddressZero;
-        const enclaveSignature = '0x';
+        const { taskId, workerStakePerTask } = await this._contributeToTask(
+            dealId,
+            taskIndex,
+            resultDigest,
+            contributor,
+            false, // No enclave used
+        );
+        return { taskId, workerStakePerTask };
+    }
+
+    /**
+     * Helper function to contribute to a task using a secure enclave. The contributor's stake is
+     * automatically deposited before contributing.
+     * This function is used for enclave-based contributions (involving a secure enclave address).
+     * @param contributor Signer to sign the contribution
+     * @param dealId id of the deal
+     * @param taskIndex index of the task.
+     * @param resultDigest hash of the result
+     * @returns id of the task
+     */
+    async contributeToTeeTask(
+        dealId: string,
+        taskIndex: number,
+        resultDigest: string,
+        contributor: SignerWithAddress,
+    ) {
+        const { taskId, workerStakePerTask } = await this._contributeToTask(
+            dealId,
+            taskIndex,
+            resultDigest,
+            contributor,
+            true,
+        );
+        return { taskId, workerStakePerTask };
+    }
+
+    /**
+     * Internal helper function to handle task contributions with optional enclave support.
+     * Automatically deposits the contributor's stake before contributing and handles
+     * enclave-related signing and validation if required.
+     * @param contributor Signer to sign the contribution
+     * @param dealId id of the deal
+     * @param taskIndex index of the task.
+     * @param resultDigest hash of the result
+     * @param useEnclave - Boolean flag indicating whether an enclave is used for this contribution.
+     * @returns id of the task
+     */
+    async _contributeToTask(
+        dealId: string,
+        taskIndex: number,
+        resultDigest: string,
+        contributor: SignerWithAddress,
+        useEnclave: Boolean,
+    ) {
         const taskId = getTaskId(dealId, taskIndex);
         const workerStakePerTask = await IexecAccessors__factory.connect(
             this.proxyAddress,
@@ -372,6 +425,14 @@ export class IexecWrapper {
             resultDigest,
             contributor,
         );
+        const enclaveAddress = useEnclave ? this.accounts.enclave.address : AddressZero;
+        const enclaveSignature = useEnclave
+            ? await buildAndSignPocoClassicEnclaveMessage(
+                  resultHash,
+                  resultSeal,
+                  this.accounts.enclave,
+              )
+            : '0x';
         const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
             contributor.address,
             taskId,

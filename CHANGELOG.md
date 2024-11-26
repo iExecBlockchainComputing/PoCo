@@ -6,6 +6,7 @@
     - 000_fullchain.js (#156, #157)
     - 00X_fullchain-Xworkers.js (#158, #159)
     - 000_fullchain-5workers-1error.js (#160, #162)
+    - Clean ToDo (#163)
 - Remove `smock` from unit tests:
     - IexecEscrow.v8 (#154, #155)
     - IexecPocoDelegate (#149, #151)
