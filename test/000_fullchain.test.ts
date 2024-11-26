@@ -191,11 +191,9 @@ describe('Integration tests', function () {
                 0, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
                 0, // AppProvider
-                0, // DatasetProvider
+                0, // DatasetProvider,
+                ...workers.map(() => 0), // Add 0 for each worker
             ];
-            for (let i = 0; i < workers.length; i++) {
-                expectedFrozenChanges.push(0);
-            }
             await changesInFrozen({
                 accountsInitialFrozens,
                 frozenChanges: expectedFrozenChanges,
@@ -290,10 +288,8 @@ describe('Integration tests', function () {
                 -schedulerStakePerTask * completedTasks, // Scheduler
                 0, // AppProvider
                 0, // DatasetProvider
+                ...workers.map(() => 0), // Add 0 for each worker
             ];
-            for (let i = 0; i < workers.length; i++) {
-                expectedFrozenChanges.push(0);
-            }
             await changesInFrozen({
                 accountsInitialFrozens,
                 frozenChanges: expectedFrozenChanges,
@@ -605,10 +601,14 @@ describe('Integration tests', function () {
                 expect((await iexecPoco.viewTask(taskId)).status).to.equal(
                     TaskStatusEnum.COMPLETED,
                 );
-                const expectedFrozenChanges = [0, -taskPrice, -schedulerStakePerTask, 0, 0];
-                for (let i = 0; i < workerNumber; i++) {
-                    expectedFrozenChanges.push(0);
-                }
+                const expectedFrozenChanges = [
+                    0,
+                    -taskPrice,
+                    -schedulerStakePerTask,
+                    0,
+                    0,
+                    ...workers.map(() => 0),
+                ];
                 await changesInFrozen({
                     accountsInitialFrozens,
                     frozenChanges: expectedFrozenChanges,
@@ -715,10 +715,14 @@ describe('Integration tests', function () {
         // verify task status
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
         // checks on frozen balance changes
-        const expectedFrozenChanges = [0, -taskPrice, -schedulerStakePerTask, 0, 0];
-        for (let i = 0; i < workersAvailable.length; i++) {
-            expectedFrozenChanges.push(0);
-        }
+        const expectedFrozenChanges = [
+            0,
+            -taskPrice,
+            -schedulerStakePerTask,
+            0,
+            0,
+            ...workersAvailable.map(() => 0),
+        ];
         await changesInFrozen({
             accountsInitialFrozens,
             frozenChanges: expectedFrozenChanges,
