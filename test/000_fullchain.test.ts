@@ -131,12 +131,12 @@ describe('Integration tests', function () {
 
         const accounts = [sponsor, requester, scheduler, appProvider, datasetProvider, ...workers];
         const accountsInitialFrozens = await getInitialFrozens(accounts);
+        const workerStakePerTask = await iexecPoco
+            .viewDeal(dealId)
+            .then((deal) => deal.workerStake.toNumber());
         // Finalize each task and check balance changes.
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
-            const workerStakePerTask = await iexecPoco
-                .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
             for (const worker of workers) {
                 await iexecWrapper.contributeToTask(
                     dealId,
