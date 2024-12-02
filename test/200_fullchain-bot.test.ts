@@ -129,7 +129,6 @@ describe('Integration tests', function () {
         );
         const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
         // Save frozens
-
         const accounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
         const accountsInitialFrozens = await getInitialFrozens(accounts);
         // Track initial scores
