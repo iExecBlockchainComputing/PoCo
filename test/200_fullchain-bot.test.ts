@@ -129,8 +129,8 @@ describe('Integration tests', function () {
         );
         const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
         // Save frozens
-        const accounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
-        const accountsInitialFrozens = await getInitialFrozens(accounts);
+        const accounts = [requester, scheduler, appProvider, datasetProvider];
+        const accountsInitialFrozens = await getInitialFrozens([...accounts, ...workers]);
         // Track initial scores
         // Finalize each task and check balance changes.
         const workerStakePerTask = await iexecPoco
@@ -169,10 +169,6 @@ describe('Integration tests', function () {
             // stake and reward amounts.
             const completedTasks = taskIndex + 1;
             // Verify token balance changes
-            const expectedProxyBalanceChange = -(
-                taskPrice * completedTasks +
-                schedulerStakePerTask * completedTasks
-            );
             const winningWorkers = contributions
                 .filter(
                     (contribution) => contribution.result === 'iExec BOT ' + taskIndex.toString(),
@@ -186,15 +182,41 @@ describe('Integration tests', function () {
             const nonParticipantWorkers = workers.filter(
                 (worker) => !winningWorkers.includes(worker) && !loosingWorkers.includes(worker),
             );
+            const participantWorkers = workers.filter(
+                (worker) => !nonParticipantWorkers.includes(worker),
+            );
+            const totalWorkerPoolReward =
+                workerpoolPrice + workerStakePerTask * loosingWorkers.length; // bad wrokers lose their stake and add it to the pool price
+            // compute expected worker reward for current task
+            const workerRewardPerTask = await computeWorkerRewardForCurrentTask(
+                totalWorkerPoolReward,
+                dealId,
+            );
             const expectedWorkerBalanceChange =
                 workerStakePerTask + workerRewardPerTask / winningWorkers.length;
-            expect(finalizeTx).to.changeTokenBalances(
+            // compute expected scheduler reward for current task
+            const schedulerRewardPerTask = totalWorkerPoolReward - workerRewardPerTask;
+            const expectedSchedulerBalanceChange = schedulerStakePerTask + schedulerRewardPerTask;
+
+            const expectedProxyBalanceChange = -(
+                taskPrice +
+                workerStakePerTask * participantWorkers.length +
+                schedulerStakePerTask
+            );
+
+            await expect(finalizeTx).to.changeTokenBalances(
                 iexecPoco,
-                [proxyAddress, ...accounts],
+                [
+                    proxyAddress,
+                    ...accounts,
+                    ...winningWorkers,
+                    ...loosingWorkers,
+                    ...nonParticipantWorkers,
+                ],
                 [
                     expectedProxyBalanceChange, // Proxy
-                    -taskPrice * completedTasks, // Requester
-                    schedulerStakePerTask + schedulerRewardPerTask, // Scheduler
+                    -0, // Requester
+                    expectedSchedulerBalanceChange, // Scheduler
                     appPrice, // AppProvider
                     datasetPrice, // DatasetProvider
                     ...winningWorkers.map(() => expectedWorkerBalanceChange), // winning workers
@@ -244,6 +266,11 @@ describe('Integration tests', function () {
             scores[worker.address] = (await iexecPoco.viewScore(worker.address)).toNumber();
         }
         return scores;
+    }
+
+    async function computeWorkerRewardForCurrentTask(totalPoolReward: number, dealId: string) {
+        const deal = await iexecPoco.viewDeal(dealId);
+        return (totalPoolReward * (100 - deal.schedulerRewardRatio.toNumber())) / 100;
     }
 });
 
