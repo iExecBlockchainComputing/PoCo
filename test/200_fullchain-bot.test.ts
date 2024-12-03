@@ -165,9 +165,6 @@ describe('Integration tests', function () {
             const finalizeTx = await iexecPoco.connect(scheduler).finalize(taskId, results, '0x');
             await finalizeTx.wait();
             expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
-            // Multiply amount by the number of finalized tasks to correctly compute
-            // stake and reward amounts.
-            const completedTasks = taskIndex + 1;
             // Verify token balance changes
             const winningWorkers = contributions
                 .filter(
@@ -224,6 +221,9 @@ describe('Integration tests', function () {
                     ...nonParticipantWorkers.map(() => 0), // non participant workers
                 ],
             );
+            // Multiply amount by the number of finalized tasks to correctly compute
+            // stake and reward amounts.
+            const completedTasks = taskIndex + 1;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
                 0, // Proxy
