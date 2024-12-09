@@ -189,7 +189,7 @@ describe('Integration tests', function () {
                 totalWorkerPoolReward,
                 dealId,
             );
-            const expectedWorkerBalanceChange =
+            const expectedWinningWorkerBalanceChange =
                 workerStakePerTask + workerRewardPerTask / winningWorkers.length;
             // compute expected scheduler reward for current task
             const schedulerRewardPerTask = totalWorkerPoolReward - workerRewardPerTask;
@@ -216,7 +216,7 @@ describe('Integration tests', function () {
                     expectedSchedulerBalanceChange, // Scheduler
                     appPrice, // AppProvider
                     datasetPrice, // DatasetProvider
-                    ...winningWorkers.map(() => expectedWorkerBalanceChange), // winning workers
+                    ...winningWorkers.map(() => expectedWinningWorkerBalanceChange), // winning workers
                     ...loosingWorkers.map(() => 0), // loosing workers
                     ...nonParticipantWorkers.map(() => 0), // non participant workers
                 ],
