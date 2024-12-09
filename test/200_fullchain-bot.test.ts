@@ -7,12 +7,7 @@ import { expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
-import {
-    PocoMode,
-    TaskStatusEnum,
-    buildUtf8ResultAndDigest,
-    getIexecAccounts,
-} from '../utils/poco-tools';
+import { TaskStatusEnum, buildUtf8ResultAndDigest, getIexecAccounts } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -123,11 +118,6 @@ describe('Integration tests', function () {
         );
         const taskPrice = appPrice + datasetPrice + workerpoolPrice;
         const schedulerStakePerTask = schedulerStakePerDeal / volume;
-        const workerRewardPerTask = await iexecWrapper.computeWorkerRewardPerTask(
-            dealId,
-            PocoMode.CLASSIC,
-        );
-        const schedulerRewardPerTask = workerpoolPrice - workerRewardPerTask;
         // Save frozens
         const accounts = [requester, scheduler, appProvider, datasetProvider];
         const accountsInitialFrozens = await getInitialFrozens([...accounts, ...workers]);
@@ -185,7 +175,7 @@ describe('Integration tests', function () {
             const totalWorkerPoolReward =
                 workerpoolPrice + workerStakePerTask * loosingWorkers.length; // bad wrokers lose their stake and add it to the pool price
             // compute expected worker reward for current task
-            const workerRewardPerTask = await computeWorkerRewardForCurrentTask(
+            const workerRewardPerTask = await computeWorkersRewardForCurrentTask(
                 totalWorkerPoolReward,
                 dealId,
             );
@@ -268,7 +258,7 @@ describe('Integration tests', function () {
         return scores;
     }
 
-    async function computeWorkerRewardForCurrentTask(totalPoolReward: number, dealId: string) {
+    async function computeWorkersRewardForCurrentTask(totalPoolReward: number, dealId: string) {
         const deal = await iexecPoco.viewDeal(dealId);
         return (totalPoolReward * (100 - deal.schedulerRewardRatio.toNumber())) / 100;
     }
