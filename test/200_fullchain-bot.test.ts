@@ -99,7 +99,7 @@ describe('Integration tests', function () {
             ],
             2: [
                 { worker: worker1, useEnclave: false, result: 'iExec BOT 2' },
-                { worker: worker3, useEnclave: false, result: '<timeout reached>' },
+                { worker: worker3, useEnclave: false, result: '<bad contribution>' },
                 { worker: worker2, useEnclave: true, result: 'iExec BOT 2' },
                 { worker: worker4, useEnclave: true, result: 'iExec BOT 2' },
                 { worker: worker5, useEnclave: true, result: 'iExec BOT 2' },
@@ -127,6 +127,7 @@ describe('Integration tests', function () {
             .viewDeal(dealId)
             .then((deal) => deal.workerStake.toNumber());
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
+            console.log('Task index: ' + taskIndex);
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
             const initialScores = await getInitialScores(workers);
             const contributions = tasksAndWorkers[taskIndex];
@@ -144,7 +145,7 @@ describe('Integration tests', function () {
             for (const contribution of contributions) {
                 const { worker, result } = contribution;
                 const { resultDigest } = buildUtf8ResultAndDigest(result);
-                if (result !== '<timeout reached>') {
+                if (result !== '<bad contribution>') {
                     await iexecPoco
                         .connect(worker)
                         .reveal(taskId, resultDigest)
