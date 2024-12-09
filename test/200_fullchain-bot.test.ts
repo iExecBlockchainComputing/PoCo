@@ -127,7 +127,6 @@ describe('Integration tests', function () {
             .viewDeal(dealId)
             .then((deal) => deal.workerStake.toNumber());
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
-            console.log('Task index: ' + taskIndex);
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
             const initialScores = await getInitialScores(workers);
             const contributions = tasksAndWorkers[taskIndex];
