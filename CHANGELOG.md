@@ -8,6 +8,7 @@
     - 000_fullchain-5workers-1error.js (#160, #162)
     - Clean ToDo (#163)
     - 200_fullchain-bot.js (#164)
+    - Fix math and refactor (#165)
 - Remove `smock` from unit tests:
     - IexecEscrow.v8 (#154, #155)
     - IexecPocoDelegate (#149, #151)
