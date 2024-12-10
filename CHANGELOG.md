@@ -7,7 +7,7 @@
     - 00X_fullchain-Xworkers.js (#158, #159)
     - 000_fullchain-5workers-1error.js (#160, #162)
     - Clean ToDo (#163)
-    - 200_fullchain-bot.js (#164)
+    - 200_fullchain-bot.js (#164, #166)
     - Fix balance checks in integration tests (#165)
 - Remove `smock` from unit tests:
     - IexecEscrow.v8 (#154, #155)
