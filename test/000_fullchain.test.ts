@@ -229,7 +229,7 @@ describe('Integration tests', function () {
         const accounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
         const accountsInitialFrozens = await getInitialFrozens(iexecPoco, accounts);
         // Finalize each task and check balance changes.
-        const workerStake = await iexecPoco
+        const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
             .then((deal) => deal.workerStake.toNumber());
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
@@ -258,9 +258,10 @@ describe('Integration tests', function () {
             const expectedProxyBalanceChange = -(
                 taskPrice +
                 schedulerStakePerTask +
-                workerStake * workers.length
+                workerStakePerTask * workers.length
             );
-            const expectedWorkerBalanceChange = workerStake + workersRewardPerTask / workers.length;
+            const expectedWorkerBalanceChange =
+                workerStakePerTask + workersRewardPerTask / workers.length;
             await expect(finalizeTx).to.changeTokenBalances(
                 iexecPoco,
                 [proxyAddress, ...accounts],
@@ -546,7 +547,7 @@ describe('Integration tests', function () {
                 }
                 const taskId = await iexecWrapper.initializeTask(dealId, 0);
                 // Finalize each task and check balance changes.
-                const workerStake = await iexecPoco
+                const workerStakePerTask = await iexecPoco
                     .viewDeal(dealId)
                     .then((deal) => deal.workerStake.toNumber());
 
@@ -566,10 +567,10 @@ describe('Integration tests', function () {
                 const expectedProxyBalanceChange = -(
                     dealPrice +
                     schedulerStakePerTask +
-                    workerStake * workers.length
+                    workerStakePerTask * workers.length
                 );
                 const expectedWorkerBalanceChange =
-                    workerStake + workersRewardPerTask / workerNumber;
+                    workerStakePerTask + workersRewardPerTask / workerNumber;
                 await expect(finalizeTx).to.changeTokenBalances(
                     iexecPoco,
                     [proxyAddress, ...accounts],
@@ -641,7 +642,7 @@ describe('Integration tests', function () {
         }
         const taskId = await iexecWrapper.initializeTask(dealId, 0);
         // Finalize task and check balance changes.
-        const workerStake = await iexecPoco
+        const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
             .then((deal) => deal.workerStake.toNumber());
         for (const contributor of contributions) {
@@ -665,7 +666,7 @@ describe('Integration tests', function () {
         const finalizeTx = await iexecPoco.connect(scheduler).finalize(taskId, results, '0x');
         await finalizeTx.wait();
 
-        const totalWorkerPoolReward = workerpoolPrice + workerStake * 1; // bad wrokers lose their stake and add it to the pool price
+        const totalWorkerPoolReward = workerpoolPrice + workerStakePerTask * 1; // bad wrokers lose their stake and add it to the pool price
         // compute expected worker reward for current task
         const workersRewardPerTask = await computeWorkersRewardForCurrentTask(
             iexecPoco,
@@ -673,14 +674,14 @@ describe('Integration tests', function () {
             dealId,
         );
         const expectedWorkerBalanceChange =
-            workerStake + workersRewardPerTask / winningWorkers.length;
+            workerStakePerTask + workersRewardPerTask / winningWorkers.length;
         // compute expected scheduler reward for current task
         const schedulerRewardPerTask = totalWorkerPoolReward - workersRewardPerTask;
         const expectedSchedulerBalanceChange = schedulerStakePerTask + schedulerRewardPerTask;
 
         const expectedProxyBalanceChange = -(
             dealPrice +
-            workerStake * workersAvailable.length +
+            workerStakePerTask * workersAvailable.length +
             schedulerStakePerTask
         );
         await expect(finalizeTx).to.changeTokenBalances(
