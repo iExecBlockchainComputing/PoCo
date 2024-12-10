@@ -168,7 +168,7 @@ describe('Integration tests', function () {
                 schedulerStakePerTask +
                 workerStakePerTask * workers.length
             );
-            const expectedWorkerBalanceChange =
+            const expectedWinningWorkerBalanceChange =
                 workerStakePerTask + workersRewardPerTask / workers.length;
             await expect(finalizeTx).to.changeTokenBalances(
                 iexecPoco,
@@ -180,7 +180,7 @@ describe('Integration tests', function () {
                     schedulerStakePerTask + schedulerRewardPerTask, // Scheduler
                     appPrice, // AppProvider
                     datasetPrice, // DatasetProvider
-                    ...workers.map(() => expectedWorkerBalanceChange), // Workers
+                    ...workers.map(() => expectedWinningWorkerBalanceChange), // Workers
                 ],
             );
             // Multiply amount by the number of finalized tasks to correctly compute
@@ -260,7 +260,7 @@ describe('Integration tests', function () {
                 schedulerStakePerTask +
                 workerStakePerTask * workers.length
             );
-            const expectedWorkerBalanceChange =
+            const expectedWinningWorkerBalanceChange =
                 workerStakePerTask + workersRewardPerTask / workers.length;
             await expect(finalizeTx).to.changeTokenBalances(
                 iexecPoco,
@@ -271,7 +271,7 @@ describe('Integration tests', function () {
                     schedulerStakePerTask + schedulerRewardPerTask, // Scheduler
                     appPrice, // AppProvider
                     datasetPrice, // DatasetProvider
-                    ...workers.map(() => expectedWorkerBalanceChange), // Workers
+                    ...workers.map(() => expectedWinningWorkerBalanceChange), // Workers
                 ],
             );
             // Multiply amount by the number of finalized tasks to correctly compute
@@ -569,7 +569,7 @@ describe('Integration tests', function () {
                     schedulerStakePerTask +
                     workerStakePerTask * workers.length
                 );
-                const expectedWorkerBalanceChange =
+                const expectedWinningWorkerBalanceChange =
                     workerStakePerTask + workersRewardPerTask / workerNumber;
                 await expect(finalizeTx).to.changeTokenBalances(
                     iexecPoco,
@@ -580,7 +580,7 @@ describe('Integration tests', function () {
                         schedulerStakePerTask + schedulerRewardPerTask,
                         appPrice,
                         datasetPrice,
-                        ...workers.map(() => expectedWorkerBalanceChange), // Workers
+                        ...workers.map(() => expectedWinningWorkerBalanceChange), // Workers
                     ],
                 );
                 expect((await iexecPoco.viewTask(taskId)).status).to.equal(
@@ -673,7 +673,7 @@ describe('Integration tests', function () {
             totalWorkerPoolReward,
             dealId,
         );
-        const expectedWorkerBalanceChange =
+        const expectedWinningWorkerBalanceChange =
             workerStakePerTask + workersRewardPerTask / winningWorkers.length;
         // compute expected scheduler reward for current task
         const schedulerRewardPerTask = totalWorkerPoolReward - workersRewardPerTask;
@@ -694,7 +694,7 @@ describe('Integration tests', function () {
                 appPrice,
                 datasetPrice,
                 0, // losing worker
-                ...winningWorkers.map(() => expectedWorkerBalanceChange), // winning workers
+                ...winningWorkers.map(() => expectedWinningWorkerBalanceChange), // winning workers
             ],
         );
         // checks on losing worker
