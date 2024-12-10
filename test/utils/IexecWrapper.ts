@@ -159,7 +159,7 @@ export class IexecWrapper {
      * @param mode
      * @returns
      */
-    async computeWorkerRewardPerTask(dealId: string, mode: PocoMode) {
+    async computeWorkersRewardPerTask(dealId: string, mode: PocoMode) {
         if (mode === PocoMode.BOOST) {
             return (
                 await IexecPocoBoostAccessors__factory.connect(

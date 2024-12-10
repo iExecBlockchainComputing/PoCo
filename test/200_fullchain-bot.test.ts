@@ -175,14 +175,14 @@ describe('Integration tests', function () {
             const totalWorkerPoolReward =
                 workerpoolPrice + workerStakePerTask * loosingWorkers.length; // bad wrokers lose their stake and add it to the pool price
             // compute expected worker reward for current task
-            const workerRewardPerTask = await computeWorkersRewardForCurrentTask(
+            const workersRewardPerTask = await computeWorkersRewardForCurrentTask(
                 totalWorkerPoolReward,
                 dealId,
             );
             const expectedWinningWorkerBalanceChange =
-                workerStakePerTask + workerRewardPerTask / winningWorkers.length;
+                workerStakePerTask + workersRewardPerTask / winningWorkers.length;
             // compute expected scheduler reward for current task
-            const schedulerRewardPerTask = totalWorkerPoolReward - workerRewardPerTask;
+            const schedulerRewardPerTask = totalWorkerPoolReward - workersRewardPerTask;
             const expectedSchedulerBalanceChange = schedulerStakePerTask + schedulerRewardPerTask;
 
             const expectedProxyBalanceChange = -(
