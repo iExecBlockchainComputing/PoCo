@@ -464,27 +464,19 @@ export class IexecWrapper {
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(workerpoolReceipt, workerpoolRegistry.address);
     }
+
     async getInitialFrozens(accounts: SignerWithAddress[]) {
+        let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
         const initialFrozens = [
             {
                 address: this.proxyAddress,
-                frozen: (
-                    await IexecInterfaceNative__factory.connect(
-                        this.proxyAddress,
-                        ethers.provider,
-                    ).frozenOf(this.proxyAddress)
-                ).toNumber(),
+                frozen: (await iexecPoco.frozenOf(this.proxyAddress)).toNumber(),
             },
         ];
         for (const account of accounts) {
             initialFrozens.push({
                 address: account.address,
-                frozen: (
-                    await IexecInterfaceNative__factory.connect(
-                        this.proxyAddress,
-                        ethers.provider,
-                    ).frozenOf(account.address)
-                ).toNumber(),
+                frozen: (await iexecPoco.frozenOf(account.address)).toNumber(),
             });
         }
         return initialFrozens;
@@ -494,12 +486,10 @@ export class IexecWrapper {
         accountsInitialFrozens: { address: string; frozen: number }[],
         expectedFrozenChanges: number[],
     ) {
+        let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
         for (let i = 0; i < accountsInitialFrozens.length; i++) {
             const actualFrozen = (
-                await IexecInterfaceNative__factory.connect(
-                    this.proxyAddress,
-                    ethers.provider,
-                ).frozenOf(accountsInitialFrozens[i].address)
+                await iexecPoco.frozenOf(accountsInitialFrozens[i].address)
             ).toNumber();
 
             const expectedFrozen = accountsInitialFrozens[i].frozen + expectedFrozenChanges[i];
