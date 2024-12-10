@@ -9,11 +9,6 @@ import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechai
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import { TaskStatusEnum, buildUtf8ResultAndDigest, getIexecAccounts } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
-import {
-    checkFrozenChanges,
-    computeWorkersRewardForCurrentTask,
-    getInitialFrozens,
-} from './utils/commons';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const appPrice = 1000;
@@ -125,7 +120,7 @@ describe('Integration tests', function () {
         const schedulerStakePerTask = schedulerStakePerDeal / volume;
         // Save frozens
         const accounts = [requester, scheduler, appProvider, datasetProvider];
-        const accountsInitialFrozens = await getInitialFrozens(iexecPoco, [
+        const accountsInitialFrozens = await iexecWrapper.getInitialFrozens([
             ...accounts,
             ...workers,
         ]);
@@ -183,8 +178,7 @@ describe('Integration tests', function () {
             const totalWorkerPoolReward =
                 workerpoolPrice + workerStakePerTask * loosingWorkers.length; // bad wrokers lose their stake and add it to the pool price
             // compute expected worker reward for current task
-            const workersRewardPerTask = await computeWorkersRewardForCurrentTask(
-                iexecPoco,
+            const workersRewardPerTask = await iexecWrapper.computeWorkersRewardForCurrentTask(
                 totalWorkerPoolReward,
                 dealId,
             );
@@ -232,7 +226,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider
                 ...workers.map(() => 0), // Add 0 for each worker
             ];
-            await checkFrozenChanges(iexecPoco, accountsInitialFrozens, expectedFrozenChanges);
+            await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
             await validateScores(
                 initialScores,
                 winningWorkers,

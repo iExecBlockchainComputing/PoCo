@@ -15,11 +15,6 @@ import {
     getIexecAccounts,
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
-import {
-    checkFrozenChanges,
-    computeWorkersRewardForCurrentTask,
-    getInitialFrozens,
-} from './utils/commons';
 
 //  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
 //  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |              Type                           |
@@ -135,7 +130,7 @@ describe('Integration tests', function () {
         // Save frozens
 
         const accounts = [sponsor, requester, scheduler, appProvider, datasetProvider, ...workers];
-        const accountsInitialFrozens = await getInitialFrozens(iexecPoco, accounts);
+        const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
             .then((deal) => deal.workerStake.toNumber());
@@ -196,7 +191,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider,
                 ...workers.map(() => 0), // Add 0 for each worker
             ];
-            await checkFrozenChanges(iexecPoco, accountsInitialFrozens, expectedFrozenChanges);
+            await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
@@ -227,7 +222,7 @@ describe('Integration tests', function () {
         // Save frozens
 
         const accounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
-        const accountsInitialFrozens = await getInitialFrozens(iexecPoco, accounts);
+        const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         // Finalize each task and check balance changes.
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
@@ -286,7 +281,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider
                 ...workers.map(() => 0), // Add 0 for each worker
             ];
-            await checkFrozenChanges(iexecPoco, accountsInitialFrozens, expectedFrozenChanges);
+            await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
@@ -314,7 +309,7 @@ describe('Integration tests', function () {
         const schedulerRewardPerTask = workerpoolPrice - workersRewardPerTask;
         // Save frozens
         const accounts = [sponsor, requester, scheduler, appProvider, datasetProvider, worker1];
-        const accountsInitialFrozens = await getInitialFrozens(iexecPoco, accounts);
+        const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         // Finalize each task and check balance changes.
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
@@ -364,7 +359,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider
                 0, // Worker
             ];
-            await checkFrozenChanges(iexecPoco, accountsInitialFrozens, expectedFrozenChanges);
+            await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
@@ -393,7 +388,7 @@ describe('Integration tests', function () {
         const schedulerRewardPerTask = workerpoolPrice - workersRewardPerTask;
         // Save frozens
         const accounts = [requester, scheduler, appProvider, datasetProvider, worker1];
-        const accountsInitialFrozens = await getInitialFrozens(iexecPoco, accounts);
+        const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         // Finalize each task and check balance changes.
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
@@ -443,7 +438,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider
                 0, // Worker
             ];
-            await checkFrozenChanges(iexecPoco, accountsInitialFrozens, expectedFrozenChanges);
+            await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
@@ -469,7 +464,7 @@ describe('Integration tests', function () {
         const schedulerRewardPerTask = workerpoolPrice - workersRewardPerTask;
         // Save frozens
         const accounts = [requester, scheduler, appProvider, datasetProvider, worker1];
-        const accountsInitialFrozens = await getInitialFrozens(iexecPoco, accounts);
+        const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         const taskIndex = 0;
         const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
         const { workerStakePerTask } = await iexecWrapper.contributeToTeeTask(
@@ -512,7 +507,7 @@ describe('Integration tests', function () {
             0, // DatasetProvider
             0, // Worker
         ];
-        await checkFrozenChanges(iexecPoco, accountsInitialFrozens, expectedFrozenChanges);
+        await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
     });
 
     describe('Integration tests array of worker', function () {
@@ -540,7 +535,7 @@ describe('Integration tests', function () {
                     PocoMode.CLASSIC,
                 );
                 const schedulerRewardPerTask = workerpoolPrice - workersRewardPerTask;
-                const accountsInitialFrozens = await getInitialFrozens(iexecPoco, accounts);
+                const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
 
                 for (let i = 0; i < workerNumber; i++) {
                     expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
@@ -594,7 +589,10 @@ describe('Integration tests', function () {
                     0,
                     ...workers.map(() => 0),
                 ];
-                await checkFrozenChanges(iexecPoco, accountsInitialFrozens, expectedFrozenChanges);
+                await iexecWrapper.checkFrozenChanges(
+                    accountsInitialFrozens,
+                    expectedFrozenChanges,
+                );
                 for (let i = 0; i < workerNumber; i++) {
                     expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(
                         workerNumber == 1 ? 0 : 1,
@@ -635,7 +633,7 @@ describe('Integration tests', function () {
             ...orders.toArray(),
         );
         const schedulerStakePerTask = schedulerStakePerDeal / volume;
-        const accountsInitialFrozens = await getInitialFrozens(iexecPoco, accounts);
+        const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         // Check initial balances.
         for (const contributor of contributions) {
             expect(await iexecPoco.viewScore(contributor.signer.address)).to.be.equal(0);
@@ -668,8 +666,7 @@ describe('Integration tests', function () {
 
         const totalWorkerPoolReward = workerpoolPrice + workerStakePerTask * 1; // bad wrokers lose their stake and add it to the pool price
         // compute expected worker reward for current task
-        const workersRewardPerTask = await computeWorkersRewardForCurrentTask(
-            iexecPoco,
+        const workersRewardPerTask = await iexecWrapper.computeWorkersRewardForCurrentTask(
             totalWorkerPoolReward,
             dealId,
         );
@@ -714,6 +711,6 @@ describe('Integration tests', function () {
             0,
             ...allWorkers.map(() => 0),
         ];
-        await checkFrozenChanges(iexecPoco, accountsInitialFrozens, expectedFrozenChanges);
+        await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
     });
 });

@@ -5,7 +5,7 @@ import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { AddressZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, ContractReceipt } from 'ethers';
-import hre, { ethers } from 'hardhat';
+import hre, { ethers, expect } from 'hardhat';
 import config from '../../config/config.json';
 import {
     AppRegistry,
@@ -463,6 +463,56 @@ export class IexecWrapper {
             .createWorkerpool(this.accounts.scheduler.address, 'my-workerpool')
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(workerpoolReceipt, workerpoolRegistry.address);
+    }
+    async getInitialFrozens(accounts: SignerWithAddress[]) {
+        const initialFrozens = [
+            {
+                address: this.proxyAddress,
+                frozen: (
+                    await IexecInterfaceNative__factory.connect(
+                        this.proxyAddress,
+                        ethers.provider,
+                    ).frozenOf(this.proxyAddress)
+                ).toNumber(),
+            },
+        ];
+        for (const account of accounts) {
+            initialFrozens.push({
+                address: account.address,
+                frozen: (
+                    await IexecInterfaceNative__factory.connect(
+                        this.proxyAddress,
+                        ethers.provider,
+                    ).frozenOf(account.address)
+                ).toNumber(),
+            });
+        }
+        return initialFrozens;
+    }
+
+    async checkFrozenChanges(
+        accountsInitialFrozens: { address: string; frozen: number }[],
+        expectedFrozenChanges: number[],
+    ) {
+        for (let i = 0; i < accountsInitialFrozens.length; i++) {
+            const actualFrozen = (
+                await IexecInterfaceNative__factory.connect(
+                    this.proxyAddress,
+                    ethers.provider,
+                ).frozenOf(accountsInitialFrozens[i].address)
+            ).toNumber();
+
+            const expectedFrozen = accountsInitialFrozens[i].frozen + expectedFrozenChanges[i];
+            expect(actualFrozen).to.equal(expectedFrozen, `Mismatch at index ${i}`);
+        }
+    }
+
+    async computeWorkersRewardForCurrentTask(totalPoolReward: number, dealId: string) {
+        const deal = await IexecInterfaceNative__factory.connect(
+            this.proxyAddress,
+            ethers.provider,
+        ).viewDeal(dealId);
+        return (totalPoolReward * (100 - deal.schedulerRewardRatio.toNumber())) / 100;
     }
 }
 
