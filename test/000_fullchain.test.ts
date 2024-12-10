@@ -519,8 +519,8 @@ describe('Integration tests', function () {
         for (let workerNumber = 2; workerNumber < 6; workerNumber++) {
             it(`[6.${workerNumber - 1}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers`, async function () {
                 const volume = 1;
-                const disposableWorkers = [worker1, worker2, worker3, worker4, worker5];
-                const workers = disposableWorkers.slice(0, workerNumber);
+                const allWorkers = [worker1, worker2, worker3, worker4, worker5];
+                const workers = allWorkers.slice(0, workerNumber);
                 const accounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
                 // Create deal.
                 const orders = buildOrders({
@@ -605,10 +605,10 @@ describe('Integration tests', function () {
     });
     it(`[7] No sponsorship, no beneficiary, no callback, no BoT, up to 5 workers with 1 bad worker`, async function () {
         const volume = 1;
-        const workersAvailable = [worker1, worker2, worker3, worker4, worker5];
+        const allWorkers = [worker1, worker2, worker3, worker4, worker5];
         const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
         const losingWorker = worker1;
-        const winningWorkers = workersAvailable.slice(1, workersAvailable.length);
+        const winningWorkers = allWorkers.slice(1, allWorkers.length);
         let contributions = [{ signer: worker1, resultDigest: badResultDigest }];
         for (const worker of winningWorkers) {
             contributions.push({ signer: worker, resultDigest: resultDigest });
@@ -681,7 +681,7 @@ describe('Integration tests', function () {
 
         const expectedProxyBalanceChange = -(
             dealPrice +
-            workerStakePerTask * workersAvailable.length +
+            workerStakePerTask * allWorkers.length +
             schedulerStakePerTask
         );
         await expect(finalizeTx).to.changeTokenBalances(
@@ -712,7 +712,7 @@ describe('Integration tests', function () {
             -schedulerStakePerTask,
             0,
             0,
-            ...workersAvailable.map(() => 0),
+            ...allWorkers.map(() => 0),
         ];
         await checkFrozenChanges(iexecPoco, accountsInitialFrozens, expectedFrozenChanges);
     });
