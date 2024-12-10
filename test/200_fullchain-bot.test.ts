@@ -120,7 +120,10 @@ describe('Integration tests', function () {
         const schedulerStakePerTask = schedulerStakePerDeal / volume;
         // Save frozens
         const accounts = [requester, scheduler, appProvider, datasetProvider];
-        const accountsInitialFrozens = await getInitialFrozens([...accounts, ...workers]);
+        const accountsInitialFrozens = await iexecWrapper.getInitialFrozens([
+            ...accounts,
+            ...workers,
+        ]);
         // Track initial scores
         // Finalize each task and check balance changes.
         const workerStakePerTask = await iexecPoco
@@ -175,14 +178,14 @@ describe('Integration tests', function () {
             const totalWorkerPoolReward =
                 workerpoolPrice + workerStakePerTask * loosingWorkers.length; // bad wrokers lose their stake and add it to the pool price
             // compute expected worker reward for current task
-            const workerRewardPerTask = await computeWorkersRewardForCurrentTask(
+            const workersRewardPerTask = await iexecWrapper.computeWorkersRewardForCurrentTask(
                 totalWorkerPoolReward,
                 dealId,
             );
             const expectedWinningWorkerBalanceChange =
-                workerStakePerTask + workerRewardPerTask / winningWorkers.length;
+                workerStakePerTask + workersRewardPerTask / winningWorkers.length;
             // compute expected scheduler reward for current task
-            const schedulerRewardPerTask = totalWorkerPoolReward - workerRewardPerTask;
+            const schedulerRewardPerTask = totalWorkerPoolReward - workersRewardPerTask;
             const expectedSchedulerBalanceChange = schedulerStakePerTask + schedulerRewardPerTask;
 
             const expectedProxyBalanceChange = -(
@@ -223,7 +226,7 @@ describe('Integration tests', function () {
                 0, // DatasetProvider
                 ...workers.map(() => 0), // Add 0 for each worker
             ];
-            await checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
+            await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
             await validateScores(
                 initialScores,
                 winningWorkers,
@@ -232,21 +235,6 @@ describe('Integration tests', function () {
             );
         }
     });
-    async function getInitialFrozens(accounts: SignerWithAddress[]) {
-        let initialFrozens = [
-            {
-                address: proxyAddress,
-                frozen: (await iexecPoco.frozenOf(proxyAddress)).toNumber(),
-            },
-        ];
-        for (const account of accounts) {
-            initialFrozens.push({
-                address: account.address,
-                frozen: (await iexecPoco.frozenOf(account.address)).toNumber(),
-            });
-        }
-        return initialFrozens;
-    }
 
     async function getInitialScores(
         workers: SignerWithAddress[],
@@ -257,25 +245,7 @@ describe('Integration tests', function () {
         }
         return scores;
     }
-
-    async function computeWorkersRewardForCurrentTask(totalPoolReward: number, dealId: string) {
-        const deal = await iexecPoco.viewDeal(dealId);
-        return (totalPoolReward * (100 - deal.schedulerRewardRatio.toNumber())) / 100;
-    }
 });
-
-async function checkFrozenChanges(
-    accountsInitialFrozens: { address: string; frozen: number }[],
-    expectedFrozenChanges: number[],
-) {
-    for (let i = 0; i < accountsInitialFrozens.length; i++) {
-        const message = `Failed with account at index ${i}`;
-        expect(await iexecPoco.frozenOf(accountsInitialFrozens[i].address)).to.equal(
-            accountsInitialFrozens[i].frozen + expectedFrozenChanges[i],
-            message,
-        );
-    }
-}
 
 async function validateScores(
     initialScores: { [address: string]: number },

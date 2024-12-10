@@ -5,7 +5,7 @@ import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { AddressZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, ContractReceipt } from 'ethers';
-import hre, { ethers } from 'hardhat';
+import hre, { ethers, expect } from 'hardhat';
 import config from '../../config/config.json';
 import {
     AppRegistry,
@@ -159,7 +159,7 @@ export class IexecWrapper {
      * @param mode
      * @returns
      */
-    async computeWorkerRewardPerTask(dealId: string, mode: PocoMode) {
+    async computeWorkersRewardPerTask(dealId: string, mode: PocoMode) {
         if (mode === PocoMode.BOOST) {
             return (
                 await IexecPocoBoostAccessors__factory.connect(
@@ -463,6 +463,46 @@ export class IexecWrapper {
             .createWorkerpool(this.accounts.scheduler.address, 'my-workerpool')
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(workerpoolReceipt, workerpoolRegistry.address);
+    }
+
+    async getInitialFrozens(accounts: SignerWithAddress[]) {
+        let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
+        const initialFrozens = [
+            {
+                address: this.proxyAddress,
+                frozen: (await iexecPoco.frozenOf(this.proxyAddress)).toNumber(),
+            },
+        ];
+        for (const account of accounts) {
+            initialFrozens.push({
+                address: account.address,
+                frozen: (await iexecPoco.frozenOf(account.address)).toNumber(),
+            });
+        }
+        return initialFrozens;
+    }
+
+    async checkFrozenChanges(
+        accountsInitialFrozens: { address: string; frozen: number }[],
+        expectedFrozenChanges: number[],
+    ) {
+        let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
+        for (let i = 0; i < accountsInitialFrozens.length; i++) {
+            const actualFrozen = (
+                await iexecPoco.frozenOf(accountsInitialFrozens[i].address)
+            ).toNumber();
+
+            const expectedFrozen = accountsInitialFrozens[i].frozen + expectedFrozenChanges[i];
+            expect(actualFrozen).to.equal(expectedFrozen, `Mismatch at index ${i}`);
+        }
+    }
+
+    async computeWorkersRewardForCurrentTask(totalPoolReward: number, dealId: string) {
+        const deal = await IexecInterfaceNative__factory.connect(
+            this.proxyAddress,
+            ethers.provider,
+        ).viewDeal(dealId);
+        return (totalPoolReward * (100 - deal.schedulerRewardRatio.toNumber())) / 100;
     }
 }
 
