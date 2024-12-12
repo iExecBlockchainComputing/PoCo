@@ -72,9 +72,9 @@ describe('Integration tests', function () {
         const volume = 3;
         const workerpoolOrderVolume1 = 2;
         const workerpoolOrderVolume2 = 10;
-        const dealVolume1 = volume - workerpoolOrderVolume1; // 2
+        const dealVolume1 = Math.min(workerpoolOrderVolume1, volume); // min(2, 3);
         console.log('🚀 ~ dealVolume1:', dealVolume1);
-        const dealVolume2 = Math.min(volume - dealVolume1, workerpoolOrderVolume2); // min(1, 10)
+        const dealVolume2 = Math.min(workerpoolOrderVolume2, volume - dealVolume1); // min(10, 1)
         // console.log("🚀 ~ dealVolume2:", dealVolume2)
         const workerpoolPrice1 = workerpoolPrice + 15;
         console.log('🚀 ~ workerpoolPrice1:', workerpoolPrice1);
