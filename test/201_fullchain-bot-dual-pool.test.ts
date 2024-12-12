@@ -107,18 +107,20 @@ describe('Integration tests', function () {
         const {
             dealId: dealId1,
             taskIndex: taskIndex1,
-            schedulerStakePerDeal: schedulerStakeForDeal1,
             dealPrice: dealPrice1,
+            schedulerStakePerDeal: schedulerStakeForDeal1,
         } = await iexecWrapper.signAndMatchOrders(
             appOrder,
             datasetOrder,
             workerpoolOrder1,
             requestOrder,
         ); // First task index is 0.
+        console.log('🚀 ~ schedulerStakeForDeal1:', schedulerStakeForDeal1);
         console.log('🚀 ~ dealPrice1:', dealPrice1);
         const {
             dealId: dealId2,
             taskIndex: taskIndex2,
+            dealPrice: dealPrice2,
             schedulerStakePerDeal: schedulerStakeForDeal2,
         } = await iexecWrapper.signAndMatchOrders(
             appOrder,
@@ -126,6 +128,7 @@ describe('Integration tests', function () {
             workerpoolOrder2,
             requestOrder,
         ); // First task index is 2.
+        // console.log('🚀 ~ dealPrice2:', dealPrice2);
         const deal1 = await iexecPoco.viewDeal(dealId1);
         expect(deal1.botFirst).to.equal(0);
         expect(deal1.botSize).to.equal(dealVolume1);
@@ -154,6 +157,7 @@ describe('Integration tests', function () {
         // console.log("🚀 ~ schedulerRewardPerTaskOfDeal2:", schedulerRewardPerTaskOfDeal2)
 
         // Finalize each task and run checks.
+        console.log('🚀 ~ run1');
         await runTaskThenCheckBalancesAndVolumes(
             dealId1,
             taskIndex1,
@@ -162,6 +166,7 @@ describe('Integration tests', function () {
             schedulerRewardPerTaskOfDeal1,
             workersRewardPerTaskOfDeal1,
         );
+        console.log('🚀 ~ run2');
         await runTaskThenCheckBalancesAndVolumes(
             dealId1,
             taskIndex1 + 1,
@@ -170,6 +175,7 @@ describe('Integration tests', function () {
             schedulerRewardPerTaskOfDeal1,
             workersRewardPerTaskOfDeal1,
         );
+        console.log('🚀 ~ run1');
         await runTaskThenCheckBalancesAndVolumes(
             dealId2,
             taskIndex2,
@@ -215,7 +221,10 @@ describe('Integration tests', function () {
         expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
         expect(task.idx).to.equal(taskIndex);
         // Verify token balance changes.
+        const proxyBalance = await iexecPoco.balanceOf(proxyAddress);
+        console.log('🚀 ~ proxyBalance:', proxyBalance);
         const expectedProxyBalanceChange = -(taskPrice + schedulerStake + workerStake);
+        console.log('🚀 ~ expectedProxyBalanceChange:', expectedProxyBalanceChange);
         await expect(finalizeTx).to.changeTokenBalances(
             iexecPoco,
             [proxyAddress, requester, scheduler, appProvider, datasetProvider, worker1],
