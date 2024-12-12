@@ -153,8 +153,8 @@ export class IexecWrapper {
     }
 
     /**
-     * Compute the amount of RLC tokens that the worker receives
-     * as a reward per task.
+     * Compute the amount of RLC tokens that all contributing workers receive
+     * when a task is finalized.
      * @param dealId
      * @param mode
      * @returns
@@ -256,10 +256,9 @@ export class IexecWrapper {
         const workerpoolOrder = orders.workerpool;
         const requestOrder = orders.requester;
         const taskIndex = (
-            await IexecAccessors__factory.connect(
-                this.proxyAddress,
-                this.accounts.anyone,
-            ).viewConsumed(this.hashOrder(requestOrder))
+            await IexecAccessors__factory.connect(this.proxyAddress, ethers.provider).viewConsumed(
+                this.hashOrder(requestOrder),
+            )
         ).toNumber();
         const dealId = getDealId(this.domain, requestOrder, taskIndex);
         const taskId = getTaskId(dealId, taskIndex);
