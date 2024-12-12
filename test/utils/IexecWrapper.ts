@@ -17,6 +17,7 @@ import {
     IexecLibOrders_v5,
     IexecMaintenanceDelegate__factory,
     IexecPoco2__factory,
+    IexecPocoAccessors__factory,
     IexecPocoBoostAccessors__factory,
     RLC__factory,
     WorkerpoolRegistry,
@@ -262,7 +263,13 @@ export class IexecWrapper {
         ).toNumber();
         const dealId = getDealId(this.domain, requestOrder, taskIndex);
         const taskId = getTaskId(dealId, taskIndex);
-        const volume = Number(requestOrder.volume);
+        // const volume = Number(requestOrder.volume);
+        const volume = (
+            await IexecPocoAccessors__factory.connect(
+                this.proxyAddress,
+                ethers.provider,
+            ).computeDealVolume(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+        ).toNumber();
         const taskPrice =
             Number(appOrder.appprice) +
             Number(datasetOrder.datasetprice) +
