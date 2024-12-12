@@ -638,6 +638,8 @@ describe('IexecPoco1', () => {
         //   - identity groups
         //   - pre-signatures
         //   - low orders volumes
+        //      - test when the lowest volume is in one of the orders
+        //      - test when the lowest volume in order < unconsumed volume
         //   - multiple matches of the same order
 
         it('Should fail when categories are different', async () => {
