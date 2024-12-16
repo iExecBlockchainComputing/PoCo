@@ -338,7 +338,6 @@ describe('IexecPoco2#finalize', async () => {
         const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
 
         await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
-            .to.emit(iexecPoco, 'TaskFinalize')
             .to.changeTokenBalances(
                 iexecPoco,
                 [requester, sponsor, appProvider, datasetProvider],
@@ -348,7 +347,8 @@ describe('IexecPoco2#finalize', async () => {
                     appPrice, // app provider is rewarded
                     0, // but dataset provider is not rewarded
                 ],
-            );
+            )
+            .to.emit(iexecPoco, 'TaskFinalize');
         expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(
             requesterFrozenBefore - taskPrice,
         );
@@ -517,14 +517,6 @@ describe('IexecPoco2#finalize', async () => {
                     (await iexecPoco.viewTask(kittyFillingDeal.taskId)).finalDeadline,
                 );
                 await expect(iexecPoco.claim(kittyFillingDeal.taskId))
-                    .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(iexecPoco.address, kittyAddress, kittyFillingSchedulerTaskStake)
-                    .to.emit(iexecPoco, 'Reward')
-                    .withArgs(kittyAddress, kittyFillingSchedulerTaskStake, kittyFillingDeal.taskId)
-                    .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(kittyAddress, iexecPoco.address, kittyFillingSchedulerTaskStake)
-                    .to.emit(iexecPoco, 'Lock')
-                    .withArgs(kittyAddress, kittyFillingSchedulerTaskStake)
                     .to.changeTokenBalances(
                         iexecPoco,
                         [iexecPoco, kittyAddress],
@@ -532,7 +524,11 @@ describe('IexecPoco2#finalize', async () => {
                             -workerpoolPriceToFillKitty, // deal payer is refunded
                             0,
                         ],
-                    );
+                    )
+                    .to.emit(iexecPoco, 'Reward')
+                    .withArgs(kittyAddress, kittyFillingSchedulerTaskStake, kittyFillingDeal.taskId)
+                    .to.emit(iexecPoco, 'Lock')
+                    .withArgs(kittyAddress, kittyFillingSchedulerTaskStake);
                 const kittyFrozenAfterClaim = (await iexecPoco.frozenOf(kittyAddress)).toNumber();
                 expect(kittyFrozenAfterClaim).to.equal(
                     kittyFrozenBeforeClaim + kittyFillingSchedulerTaskStake,
@@ -579,6 +575,11 @@ describe('IexecPoco2#finalize', async () => {
                     .reveal(taskId, resultDigest)
                     .then((tx) => tx.wait());
                 await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
+                    .to.changeTokenBalances(
+                        iexecPoco,
+                        [iexecPoco, scheduler, kittyAddress],
+                        [-expectedSchedulerKittyPartReward, expectedSchedulerKittyPartReward, 0],
+                    )
                     .to.emit(iexecPoco, 'TaskFinalize')
                     .to.emit(iexecPoco, 'Seize')
                     .withArgs(kittyAddress, expectedSchedulerKittyPartReward, taskId)
@@ -589,12 +590,7 @@ describe('IexecPoco2#finalize', async () => {
                         expectedSchedulerKittyPartReward,
                     )
                     .to.emit(iexecPoco, 'Reward')
-                    .withArgs(scheduler.address, expectedSchedulerKittyPartReward, taskId)
-                    .to.changeTokenBalances(
-                        iexecPoco,
-                        [iexecPoco, scheduler, kittyAddress],
-                        [-expectedSchedulerKittyPartReward, expectedSchedulerKittyPartReward, 0],
-                    );
+                    .withArgs(scheduler.address, expectedSchedulerKittyPartReward, taskId);
                 expect(await iexecPoco.frozenOf(kittyAddress)).to.equal(
                     kittyFrozenAfterClaim - expectedSchedulerKittyPartReward,
                 );
