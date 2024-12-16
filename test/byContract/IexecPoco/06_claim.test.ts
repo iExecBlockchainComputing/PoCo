@@ -144,12 +144,8 @@ describe('IexecPoco2#claim', async () => {
             .withArgs(sponsor.address, taskPrice)
             .to.emit(iexecPoco, 'Seize')
             .withArgs(scheduler.address, schedulerTaskStake, taskId)
-            .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, kittyAddress, schedulerTaskStake)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(kittyAddress, schedulerTaskStake, taskId)
-            .to.emit(iexecPoco, 'Transfer')
-            .withArgs(kittyAddress, iexecPoco.address, schedulerTaskStake)
             .to.emit(iexecPoco, 'Lock')
             .withArgs(kittyAddress, schedulerTaskStake);
         for (const worker of workers) {
