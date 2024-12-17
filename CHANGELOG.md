@@ -1,6 +1,12 @@
 # Changelog
 
 ## vNEXT
+
+### Updated contracts
+- [x] `IexecPoco2Delegate.sol`
+
+### Features
+- Remove reused code in `IexecPoco2Delegate` in `contribute(...)` function. (#168)
 - Remove references to blockscout v5. (#161)
 - Migrate integration test files to Typescript & Hardhat:
     - 000_fullchain.js (#156, #157)
