@@ -1,6 +1,12 @@
 # Changelog
 
 ## vNEXT
+
+### Updated contracts
+- [x] `IexecPoco2Delegate.sol`
+
+### Features
+- Remove unnecessary back and forth transfers in `IexecPoco2Delegate` happening during `claim(..)`. (#167)
 - Remove references to blockscout v5. (#161)
 - Migrate integration test files to Typescript & Hardhat:
     - 000_fullchain.js (#156, #157)
