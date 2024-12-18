@@ -168,7 +168,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         uint256 delta = Math.max(group, 1) * weight - group;
 
         contribution.weight = Math.log2(weight);
-        consensus.group[_resultHash] = consensus.group[_resultHash] + delta;
+        consensus.group[_resultHash] = group + delta;
         consensus.total = consensus.total + delta;
 
         // Check consensus
