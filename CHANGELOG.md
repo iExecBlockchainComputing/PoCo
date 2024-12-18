@@ -6,7 +6,7 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
-- Remove reused code in `IexecPoco2Delegate` in `contribute(...)` function. (#168)
+- Re-use variable in `IexecPoco2Delegate` in `contribute(...)` function. (#168)
 - Remove unnecessary back and forth transfers in `IexecPoco2Delegate` happening during `claim(..)`. (#167)
 - Remove references to blockscout v5. (#161)
 - Migrate integration test files to Typescript & Hardhat:
