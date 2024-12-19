@@ -136,7 +136,7 @@ export class IexecWrapper {
                 this.accounts.anyone,
             ).m_workerStakeRatioPolicy()
         ).toNumber();
-        return (workerpoolPrice * workerStakeRatio) / 100;
+        return Math.floor((workerpoolPrice * workerStakeRatio) / 100);
     }
 
     /**
@@ -174,10 +174,9 @@ export class IexecWrapper {
             this.proxyAddress,
             ethers.provider,
         ).viewDeal(dealId);
-        // (workerpoolPrice * workerRatio) / 100
-        return (
-            (deal.workerpool.price.toNumber() * (100 - deal.schedulerRewardRatio.toNumber())) / 100
-        );
+        // reward = (workerpoolPrice * workersRatio) / 100
+        const workersRewardRatio = 100 - deal.schedulerRewardRatio.toNumber();
+        return Math.floor((deal.workerpool.price.toNumber() * workersRewardRatio) / 100);
     }
 
     async setTeeBroker(brokerAddress: string) {
