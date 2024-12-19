@@ -61,8 +61,15 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
 
         unlock(deal.sponsor, taskPrice); // Refund the payer of the task
         seize(deal.workerpool.owner, poolstake, _taskid);
-        reward(KITTY_ADDRESS, poolstake, _taskid); // → Kitty / Burn
-        lock(KITTY_ADDRESS, poolstake); // → Kitty / Burn
+        /**
+         * Reward kitty and lock value on it.
+         * Next lines optimize simple `reward(kitty, ..)` and `lock(kitty, ..)` calls
+         * where functions would together uselessly transfer value from main PoCo
+         * proxy to kitty, then would transfer value back from kitty to main PoCo proxy.
+         */
+        m_frozens[KITTY_ADDRESS] += poolstake; // → Kitty / Burn
+        emit Reward(KITTY_ADDRESS, poolstake, _taskid);
+        emit Lock(KITTY_ADDRESS, poolstake);
     }
 
     /***************************************************************************
@@ -161,7 +168,7 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         uint256 delta = Math.max(group, 1) * weight - group;
 
         contribution.weight = Math.log2(weight);
-        consensus.group[_resultHash] = consensus.group[_resultHash] + delta;
+        consensus.group[_resultHash] = group + delta;
         consensus.total = consensus.total + delta;
 
         // Check consensus
