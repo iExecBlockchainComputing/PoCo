@@ -191,6 +191,13 @@ describe('Integration tests', function () {
             schedulerRewardPerTaskOfDeal2,
             workersRewardPerTaskOfDeal2,
         );
+        // Check remaining volumes.
+        expect(await iexecPoco.viewConsumed(iexecWrapper.hashOrder(workerpoolOrder1))).to.equal(
+            dealVolume1,
+        );
+        expect(await iexecPoco.viewConsumed(iexecWrapper.hashOrder(workerpoolOrder2))).to.equal(
+            dealVolume2,
+        );
     });
 
     async function runTaskThenCheckBalancesAndVolumes(
