@@ -26,8 +26,6 @@ import {
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 
-// TODO use a better file name.
-
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
