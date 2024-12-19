@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { AddressZero } from '@ethersproject/constants';
 import { loadFixture, mine } from '@nomicfoundation/hardhat-network-helpers';
 import { setNextBlockTimestamp } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -12,7 +13,6 @@ import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/
 import {
     TaskStatusEnum,
     buildAndSignContributionAuthorizationMessage,
-    buildAndSignPocoClassicEnclaveMessage,
     buildResultHashAndResultSeal,
     buildUtf8ResultAndDigest,
     getIexecAccounts,
@@ -20,8 +20,6 @@ import {
 import { IexecWrapper } from './utils/IexecWrapper';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
@@ -41,7 +39,6 @@ let [
     worker2,
     worker3,
     worker4,
-    enclave,
 ]: SignerWithAddress[] = [];
 let ordersActors: OrdersActors;
 let ordersAssets: OrdersAssets;
@@ -67,7 +64,6 @@ describe('Integration tests', function () {
             worker2,
             worker3,
             worker4,
-            enclave,
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
@@ -91,7 +87,19 @@ describe('Integration tests', function () {
         };
     }
 
-    it(`[1] `, async function () {
+    /*
+    This test simulates the full lifecycle of a task in iExec:
+    - Creates a deal with specific orders and initializes a task.
+    - Tests worker contributions:
+        - The first group of workers contributes, triggering the reveal phase.
+        - Task is reopened after the reveal deadline passes.
+        - Ensures that workers who already contributed cannot contribute again.
+        - The second group of workers contributes and reveals successfully.
+    - Finalizes the task, distributing rewards among workers and the scheduler.
+    - Validates token balance changes for all participants.
+    - Verifies that winning workers receive a positive score, while losing workers do not.
+*/
+    it(`[1] Task lifecycle with contributions and reopening`, async function () {
         const volume = 1;
         const workers = [worker1, worker2, worker3, worker4];
         const firstContribution = workers.slice(0, 2);
@@ -103,7 +111,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: teeDealTag,
+            tag: standardDealTag,
             volume,
             trust: 4,
         });
@@ -122,7 +130,7 @@ describe('Integration tests', function () {
             .viewDeal(dealId)
             .then((deal) => deal.workerStake.toNumber());
         for (const contributor of firstContribution) {
-            await iexecWrapper.contributeToTeeTask(dealId, 0, resultDigest, contributor);
+            await iexecWrapper.contributeToTask(dealId, 0, resultDigest, contributor);
         }
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.REVEALING);
@@ -137,33 +145,20 @@ describe('Integration tests', function () {
             resultDigest,
             worker1,
         );
-        const enclaveAddress = enclave.address;
-        const enclaveSignature = await buildAndSignPocoClassicEnclaveMessage(
-            resultHash,
-            resultSeal,
-            enclave,
-        );
         const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
             worker1.address,
             taskId,
-            enclaveAddress,
+            AddressZero,
             scheduler,
         );
         await expect(
             iexecPoco
                 .connect(worker1)
-                .contribute(
-                    taskId,
-                    resultHash,
-                    resultSeal,
-                    enclaveAddress,
-                    enclaveSignature,
-                    schedulerSignature,
-                ),
+                .contribute(taskId, resultHash, resultSeal, AddressZero, '0x', schedulerSignature),
         ).to.revertedWithoutReason();
 
         for (const contributor of secondContribution) {
-            await iexecWrapper.contributeToTeeTask(dealId, 0, resultDigest, contributor);
+            await iexecWrapper.contributeToTask(dealId, 0, resultDigest, contributor);
         }
         for (const contributor of secondContribution) {
             await iexecPoco
