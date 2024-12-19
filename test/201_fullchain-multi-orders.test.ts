@@ -76,7 +76,7 @@ describe('Integration tests', function () {
     }
 
     /**
-     * A test to run full workflow (matchOrder..finalize) with 2 orders having 2 different volumes
+     * A test to run full workflow (matchOrders..finalize) with 2 orders having 2 different volumes
      * for the same workerpool and only 1 request order.
      */
     it('[1] No sponsorship, no beneficiary, no callback, BoT, no replication, 2 workerpool orders', async function () {

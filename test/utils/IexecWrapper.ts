@@ -154,8 +154,8 @@ export class IexecWrapper {
     }
 
     /**
-     * Compute the amount of RLC tokens that all contributing workers receive
-     * when a task is finalized.
+     * Compute the amount of RLC tokens that are rewarded to workers when
+     * a task is finalized.
      * @param dealId
      * @param mode
      * @returns
@@ -262,7 +262,6 @@ export class IexecWrapper {
         ).toNumber();
         const dealId = getDealId(this.domain, requestOrder, taskIndex);
         const taskId = getTaskId(dealId, taskIndex);
-        // const volume = Number(requestOrder.volume);
         const volume = (
             await IexecPocoAccessors__factory.connect(
                 this.proxyAddress,
