@@ -3,10 +3,21 @@
 
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { expect } from 'hardhat';
+import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
-import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
+import {
+    IexecInterfaceNative,
+    IexecInterfaceNative__factory,
+    IexecPocoAccessors,
+    IexecPocoAccessors__factory,
+} from '../typechain';
+import {
+    IexecOrders,
+    OrdersActors,
+    OrdersAssets,
+    OrdersPrices,
+    buildOrders,
+} from '../utils/createOrders';
 import {
     PocoMode,
     TaskStatusEnum,
@@ -25,6 +36,7 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
 let iexecPoco: IexecInterfaceNative;
+let iexecPocoAccessors: IexecPocoAccessors; // To use `computeDealVolume()`
 let iexecWrapper: IexecWrapper;
 let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
 let [requester, appProvider, datasetProvider, scheduler, anyone, worker1]: SignerWithAddress[] = [];
@@ -46,6 +58,7 @@ describe('Integration tests', function () {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -73,14 +86,10 @@ describe('Integration tests', function () {
         const workerpoolOrderVolume1 = 2;
         const workerpoolOrderVolume2 = 10;
         const dealVolume1 = Math.min(workerpoolOrderVolume1, volume); // min(2, 3);
-        console.log('🚀 ~ dealVolume1:', dealVolume1);
         const dealVolume2 = Math.min(workerpoolOrderVolume2, volume - dealVolume1); // min(10, 1)
-        // console.log("🚀 ~ dealVolume2:", dealVolume2)
         const workerpoolPrice1 = workerpoolPrice + 15;
-        console.log('🚀 ~ workerpoolPrice1:', workerpoolPrice1);
         const workerpoolPrice2 = workerpoolPrice + 25;
         const taskPrice1 = appPrice + datasetPrice + workerpoolPrice1;
-        console.log('🚀 ~ taskPrice1:', taskPrice1);
         const taskPrice2 = appPrice + datasetPrice + workerpoolPrice2;
         // Create default orders.
         const {
@@ -104,10 +113,22 @@ describe('Integration tests', function () {
         workerpoolOrder2.workerpoolprice = workerpoolPrice2;
         requestOrder.workerpoolmaxprice = Math.max(workerpoolPrice1, workerpoolPrice2);
         // Match both workerpool orders with the same request order.
+        const dealOrders1 = new IexecOrders(
+            appOrder,
+            datasetOrder,
+            workerpoolOrder1,
+            requestOrder,
+        ).toArray();
+        const dealOrders2 = new IexecOrders(
+            appOrder,
+            datasetOrder,
+            workerpoolOrder2,
+            requestOrder,
+        ).toArray();
+        expect(await iexecPocoAccessors.computeDealVolume(...dealOrders1)).to.equal(dealVolume1);
         const {
             dealId: dealId1,
             taskIndex: taskIndex1,
-            dealPrice: dealPrice1,
             schedulerStakePerDeal: schedulerStakeForDeal1,
         } = await iexecWrapper.signAndMatchOrders(
             appOrder,
@@ -115,12 +136,10 @@ describe('Integration tests', function () {
             workerpoolOrder1,
             requestOrder,
         ); // First task index is 0.
-        console.log('🚀 ~ schedulerStakeForDeal1:', schedulerStakeForDeal1);
-        console.log('🚀 ~ dealPrice1:', dealPrice1);
+        expect(await iexecPocoAccessors.computeDealVolume(...dealOrders2)).to.equal(dealVolume2);
         const {
             dealId: dealId2,
             taskIndex: taskIndex2,
-            dealPrice: dealPrice2,
             schedulerStakePerDeal: schedulerStakeForDeal2,
         } = await iexecWrapper.signAndMatchOrders(
             appOrder,
@@ -128,7 +147,6 @@ describe('Integration tests', function () {
             workerpoolOrder2,
             requestOrder,
         ); // First task index is 2.
-        // console.log('🚀 ~ dealPrice2:', dealPrice2);
         const deal1 = await iexecPoco.viewDeal(dealId1);
         expect(deal1.botFirst).to.equal(0);
         expect(deal1.botSize).to.equal(dealVolume1);
@@ -137,27 +155,18 @@ describe('Integration tests', function () {
         expect(deal2.botSize).to.equal(dealVolume2);
         // Compute stakes and rewards for each deal.
         const schedulerStakePerTaskOfDeal1 = schedulerStakeForDeal1 / dealVolume1;
-        console.log('🚀 ~ schedulerStakePerTaskOfDeal1:', schedulerStakePerTaskOfDeal1);
         const schedulerStakePerTaskOfDeal2 = schedulerStakeForDeal2 / dealVolume2;
-        // console.log("🚀 ~ schedulerStakePerTaskOfDeal2:", schedulerStakePerTaskOfDeal2)
         const workersRewardPerTaskOfDeal1 = await iexecWrapper.computeWorkersRewardPerTask(
             dealId1,
             PocoMode.CLASSIC,
         );
-        console.log('🚀 ~ workersRewardPerTaskOfDeal1:', workersRewardPerTaskOfDeal1);
         const workersRewardPerTaskOfDeal2 = await iexecWrapper.computeWorkersRewardPerTask(
             dealId2,
             PocoMode.CLASSIC,
         );
-        // console.log("🚀 ~ workersRewardPerTaskOfDeal2:", workersRewardPerTaskOfDeal2)
-
         const schedulerRewardPerTaskOfDeal1 = workerpoolPrice1 - workersRewardPerTaskOfDeal1;
-        console.log('🚀 ~ schedulerRewardPerTaskOfDeal1:', schedulerRewardPerTaskOfDeal1);
         const schedulerRewardPerTaskOfDeal2 = workerpoolPrice2 - workersRewardPerTaskOfDeal2;
-        // console.log("🚀 ~ schedulerRewardPerTaskOfDeal2:", schedulerRewardPerTaskOfDeal2)
-
         // Finalize each task and run checks.
-        console.log('🚀 ~ run1');
         await runTaskThenCheckBalancesAndVolumes(
             dealId1,
             taskIndex1,
@@ -166,7 +175,6 @@ describe('Integration tests', function () {
             schedulerRewardPerTaskOfDeal1,
             workersRewardPerTaskOfDeal1,
         );
-        console.log('🚀 ~ run2');
         await runTaskThenCheckBalancesAndVolumes(
             dealId1,
             taskIndex1 + 1,
@@ -175,7 +183,6 @@ describe('Integration tests', function () {
             schedulerRewardPerTaskOfDeal1,
             workersRewardPerTaskOfDeal1,
         );
-        console.log('🚀 ~ run1');
         await runTaskThenCheckBalancesAndVolumes(
             dealId2,
             taskIndex2,
@@ -205,11 +212,6 @@ describe('Integration tests', function () {
             resultDigest,
             worker1,
         );
-        console.log('🚀 ~ taskPrice:', taskPrice);
-        console.log('🚀 ~ schedulerStake:', schedulerStake);
-        console.log('🚀 ~ schedulerReward:', schedulerReward);
-        console.log('🚀 ~ workerStake:', workerStake);
-        console.log('🚀 ~ workerReward:', workerReward);
         await iexecPoco
             .connect(worker1)
             .reveal(taskId, resultDigest)
@@ -221,10 +223,7 @@ describe('Integration tests', function () {
         expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
         expect(task.idx).to.equal(taskIndex);
         // Verify token balance changes.
-        const proxyBalance = await iexecPoco.balanceOf(proxyAddress);
-        console.log('🚀 ~ proxyBalance:', proxyBalance);
         const expectedProxyBalanceChange = -(taskPrice + schedulerStake + workerStake);
-        console.log('🚀 ~ expectedProxyBalanceChange:', expectedProxyBalanceChange);
         await expect(finalizeTx).to.changeTokenBalances(
             iexecPoco,
             [proxyAddress, requester, scheduler, appProvider, datasetProvider, worker1],
