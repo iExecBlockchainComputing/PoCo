@@ -15,6 +15,7 @@
     - 000_fullchain-5workers-1error.js (#160, #162)
     - Clean ToDo (#163)
     - 200_fullchain-bot.js (#164, #166)
+    - 201_fullchain-bot-dualPool.js (#171)
     - Fix balance checks in integration tests (#165)
 - Remove `smock` from unit tests:
     - IexecEscrow.v8 (#154, #155)
