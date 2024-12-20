@@ -17,6 +17,7 @@ import {
     IexecLibOrders_v5,
     IexecMaintenanceDelegate__factory,
     IexecPoco2__factory,
+    IexecPocoAccessors__factory,
     IexecPocoBoostAccessors__factory,
     RLC__factory,
     WorkerpoolRegistry,
@@ -135,7 +136,7 @@ export class IexecWrapper {
                 this.accounts.anyone,
             ).m_workerStakeRatioPolicy()
         ).toNumber();
-        return (workerpoolPrice * workerStakeRatio) / 100;
+        return Math.floor((workerpoolPrice * workerStakeRatio) / 100);
     }
 
     /**
@@ -153,8 +154,8 @@ export class IexecWrapper {
     }
 
     /**
-     * Compute the amount of RLC tokens that the worker receives
-     * as a reward per task.
+     * Compute the amount of RLC tokens that are rewarded to workers when
+     * a task is finalized.
      * @param dealId
      * @param mode
      * @returns
@@ -173,10 +174,9 @@ export class IexecWrapper {
             this.proxyAddress,
             ethers.provider,
         ).viewDeal(dealId);
-        // (workerpoolPrice * workerRatio) / 100
-        return (
-            (deal.workerpool.price.toNumber() * (100 - deal.schedulerRewardRatio.toNumber())) / 100
-        );
+        // reward = (workerpoolPrice * workersRatio) / 100
+        const workersRewardRatio = 100 - deal.schedulerRewardRatio.toNumber();
+        return Math.floor((deal.workerpool.price.toNumber() * workersRewardRatio) / 100);
     }
 
     async setTeeBroker(brokerAddress: string) {
@@ -256,14 +256,18 @@ export class IexecWrapper {
         const workerpoolOrder = orders.workerpool;
         const requestOrder = orders.requester;
         const taskIndex = (
-            await IexecAccessors__factory.connect(
-                this.proxyAddress,
-                this.accounts.anyone,
-            ).viewConsumed(this.hashOrder(requestOrder))
+            await IexecAccessors__factory.connect(this.proxyAddress, ethers.provider).viewConsumed(
+                this.hashOrder(requestOrder),
+            )
         ).toNumber();
         const dealId = getDealId(this.domain, requestOrder, taskIndex);
         const taskId = getTaskId(dealId, taskIndex);
-        const volume = Number(requestOrder.volume);
+        const volume = (
+            await IexecPocoAccessors__factory.connect(
+                this.proxyAddress,
+                ethers.provider,
+            ).computeDealVolume(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+        ).toNumber();
         const taskPrice =
             Number(appOrder.appprice) +
             Number(datasetOrder.datasetprice) +
