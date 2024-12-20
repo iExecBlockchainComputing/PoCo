@@ -29,7 +29,8 @@ import { IexecWrapper } from './utils/IexecWrapper';
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const workerpoolPrice1 = 1_000_000_015;
+const workerpoolPrice2 = 1_000_000_025;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
@@ -71,7 +72,7 @@ describe('Integration tests', function () {
         ordersPrices = {
             app: appPrice,
             dataset: datasetPrice,
-            workerpool: workerpoolPrice,
+            workerpool: 0, // Overridden below.
         };
     }
 
@@ -85,8 +86,6 @@ describe('Integration tests', function () {
         const workerpoolOrderVolume2 = 10;
         const dealVolume1 = Math.min(workerpoolOrderVolume1, volume); // min(2, 3);
         const dealVolume2 = Math.min(workerpoolOrderVolume2, volume - dealVolume1); // min(10, 1)
-        const workerpoolPrice1 = workerpoolPrice + 15;
-        const workerpoolPrice2 = workerpoolPrice + 25;
         const taskPrice1 = appPrice + datasetPrice + workerpoolPrice1;
         const taskPrice2 = appPrice + datasetPrice + workerpoolPrice2;
         // Create default orders.
@@ -103,8 +102,8 @@ describe('Integration tests', function () {
             volume,
         }).toObject();
         // Create 2 different orders for the same workerpool.
-        const workerpoolOrder1 = workerpoolOrder;
-        const workerpoolOrder2 = { ...workerpoolOrder }; // Shallow cloning is fine here.
+        const workerpoolOrder1 = { ...workerpoolOrder }; // Shallow cloning is fine here.
+        const workerpoolOrder2 = { ...workerpoolOrder };
         workerpoolOrder1.volume = workerpoolOrderVolume1;
         workerpoolOrder1.workerpoolprice = workerpoolPrice1;
         workerpoolOrder2.volume = workerpoolOrderVolume2;
@@ -190,6 +189,7 @@ describe('Integration tests', function () {
             workersRewardPerTaskOfDeal2,
         );
         // Check remaining volumes.
+        expect(await iexecPoco.viewConsumed(iexecWrapper.hashOrder(requestOrder))).to.equal(volume);
         expect(await iexecPoco.viewConsumed(iexecWrapper.hashOrder(workerpoolOrder1))).to.equal(
             dealVolume1,
         );
@@ -206,7 +206,7 @@ describe('Integration tests', function () {
         schedulerReward: number,
         workerReward: number,
     ) {
-        // Save frozens.
+        // Save frozens before task execution.
         const accounts = [requester, scheduler, appProvider, datasetProvider, worker1];
         const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         // Run task.
