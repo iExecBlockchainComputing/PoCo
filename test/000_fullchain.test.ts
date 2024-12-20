@@ -118,8 +118,9 @@ describe('Integration tests', function () {
             volume,
             trust: workers.length ** 2 - 1,
         });
-        const { dealId, dealPrice, schedulerStakePerDeal } =
-            await iexecWrapper.signAndSponsorMatchOrders(...orders.toArray());
+        const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndSponsorMatchOrders(
+            ...orders.toArray(),
+        );
         const taskPrice = appPrice + datasetPrice + workerpoolPrice;
         const schedulerStakePerTask = schedulerStakePerDeal / volume;
         const workersRewardPerTask = await iexecWrapper.computeWorkersRewardPerTask(
@@ -209,7 +210,7 @@ describe('Integration tests', function () {
             volume,
             trust: workers.length ** 2 - 1,
         });
-        const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
+        const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
         );
         const taskPrice = appPrice + datasetPrice + workerpoolPrice;
@@ -298,8 +299,9 @@ describe('Integration tests', function () {
             volume,
             trust: 1,
         });
-        const { dealId, dealPrice, schedulerStakePerDeal } =
-            await iexecWrapper.signAndSponsorMatchOrders(...orders.toArray());
+        const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndSponsorMatchOrders(
+            ...orders.toArray(),
+        );
         const taskPrice = appPrice + datasetPrice + workerpoolPrice;
         const schedulerStakePerTask = schedulerStakePerDeal / volume;
         const workersRewardPerTask = await iexecWrapper.computeWorkersRewardPerTask(
@@ -376,7 +378,7 @@ describe('Integration tests', function () {
             volume,
             trust: 1,
         });
-        const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
+        const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
         );
         const taskPrice = appPrice + datasetPrice + workerpoolPrice;
@@ -601,7 +603,8 @@ describe('Integration tests', function () {
             });
         }
     });
-    it(`[7] No sponsorship, no beneficiary, no callback, no BoT, up to 5 workers with 1 bad worker`, async function () {
+
+    it('[7] No sponsorship, no beneficiary, no callback, no BoT, up to 5 workers with 1 bad worker', async function () {
         const volume = 1;
         const allWorkers = [worker1, worker2, worker3, worker4, worker5];
         const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
