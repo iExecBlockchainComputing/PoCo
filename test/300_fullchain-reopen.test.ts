@@ -102,8 +102,8 @@ describe('Integration tests', function () {
     it(`[1] Task lifecycle with contributions and reopening`, async function () {
         const volume = 1;
         const workers = [worker1, worker2, worker3, worker4];
-        const firstContribution = workers.slice(0, 2);
-        const secondContribution = workers.slice(2, 4);
+        const firstContributors = workers.slice(0, 2);
+        const secondContributors = workers.slice(2, 4);
         const accounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
 
         // Create deal.
@@ -129,7 +129,7 @@ describe('Integration tests', function () {
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
             .then((deal) => deal.workerStake.toNumber());
-        for (const contributor of firstContribution) {
+        for (const contributor of firstContributors) {
             await iexecWrapper.contributeToTask(dealId, 0, resultDigest, contributor);
         }
         const task = await iexecPoco.viewTask(taskId);
@@ -139,28 +139,38 @@ describe('Integration tests', function () {
             .to.emit(iexecPoco, 'TaskReopen')
             .withArgs(taskId);
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.ACTIVE);
-        // test that the already contributed worker 1 can't contribute anymore
-        const { resultHash, resultSeal } = buildResultHashAndResultSeal(
-            taskId,
-            resultDigest,
-            worker1,
-        );
-        const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
-            worker1.address,
-            taskId,
-            AddressZero,
-            scheduler,
-        );
-        await expect(
-            iexecPoco
-                .connect(worker1)
-                .contribute(taskId, resultHash, resultSeal, AddressZero, '0x', schedulerSignature),
-        ).to.revertedWithoutReason();
 
-        for (const contributor of secondContribution) {
+        // test that the already contributed workers can't contribute anymore
+        for (const contributor of firstContributors) {
+            const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+                taskId,
+                resultDigest,
+                contributor,
+            );
+            const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
+                contributor.address,
+                taskId,
+                AddressZero,
+                scheduler,
+            );
+            await expect(
+                iexecPoco
+                    .connect(contributor)
+                    .contribute(
+                        taskId,
+                        resultHash,
+                        resultSeal,
+                        AddressZero,
+                        '0x',
+                        schedulerSignature,
+                    ),
+            ).to.revertedWithoutReason();
+        }
+
+        for (const contributor of secondContributors) {
             await iexecWrapper.contributeToTask(dealId, 0, resultDigest, contributor);
         }
-        for (const contributor of secondContribution) {
+        for (const contributor of secondContributors) {
             await iexecPoco
                 .connect(contributor)
                 .reveal(taskId, resultDigest)
@@ -169,17 +179,16 @@ describe('Integration tests', function () {
         const finalizeTx = await iexecPocoAsScheduler.finalize(taskId, results, '0x');
         await finalizeTx.wait();
         const totalWorkerPoolReward =
-            workerpoolPrice + workerStakePerTask * firstContribution.length; // bad wrokers lose their stake and add it to the pool price
+            workerpoolPrice + workerStakePerTask * firstContributors.length; // bad workers lose their stake and add it to the pool price
 
         const workersRewardPerTask = await iexecWrapper.computeWorkersRewardForCurrentTask(
             totalWorkerPoolReward,
             dealId,
         );
         const expectedWinningWorkerBalanceChange =
-            workerStakePerTask + workersRewardPerTask / secondContribution.length;
+            workerStakePerTask + workersRewardPerTask / secondContributors.length;
         // compute expected scheduler reward for current task
         const schedulerRewardPerTask = totalWorkerPoolReward - workersRewardPerTask;
-        const expectedSchedulerBalanceChange = schedulerStakePerTask + schedulerRewardPerTask;
 
         const expectedProxyBalanceChange = -(
             dealPrice +
@@ -192,11 +201,11 @@ describe('Integration tests', function () {
             [
                 expectedProxyBalanceChange,
                 0,
-                expectedSchedulerBalanceChange,
+                schedulerStakePerTask + schedulerRewardPerTask,
                 appPrice,
                 datasetPrice,
-                ...firstContribution.map(() => 0), // Workers
-                ...secondContribution.map(() => expectedWinningWorkerBalanceChange), // Workers
+                ...firstContributors.map(() => 0), // Workers
+                ...secondContributors.map(() => expectedWinningWorkerBalanceChange), // Workers
             ],
         );
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
@@ -211,11 +220,11 @@ describe('Integration tests', function () {
         await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
 
         // checks on losing worker
-        for (const contributor of firstContribution) {
+        for (const contributor of firstContributors) {
             expect(await iexecPoco.viewScore(contributor.address)).to.be.equal(0);
         }
         // checks on winning workers
-        for (const contributor of secondContribution) {
+        for (const contributor of secondContributors) {
             expect(await iexecPoco.viewScore(contributor.address)).to.be.equal(1);
         }
     });
