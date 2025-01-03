@@ -31,7 +31,7 @@ const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 const callbackAddress = ethers.Wallet.createRandom().address;
 const dealParams = 'params';
-const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+const { resultDigest } = buildUtf8ResultAndDigest('result');
 const taskIndex = 0;
 
 let proxyAddress: string;
@@ -53,7 +53,7 @@ let ordersAssets: OrdersAssets;
 let ordersPrices: OrdersPrices;
 let [dealId, taskId, resultHash, resultSeal]: string[] = [];
 
-describe('[ABILegacy] Integration tests', function () {
+describe('IexecAccessorsABILegacy', function () {
     beforeEach('Deploy', async () => {
         // Deploy all contracts
         proxyAddress = await loadHardhatFixtureDeployment();
