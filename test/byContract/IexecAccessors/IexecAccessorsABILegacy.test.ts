@@ -5,22 +5,22 @@ import { AddressZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers, expect } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
+import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceNative,
     IexecInterfaceNativeABILegacy,
     IexecInterfaceNativeABILegacy__factory,
     IexecInterfaceNative__factory,
-} from '../typechain';
-import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
+} from '../../../typechain';
+import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     ContributionStatusEnum,
     TaskStatusEnum,
     buildResultHashAndResultSeal,
     buildUtf8ResultAndDigest,
     getIexecAccounts,
-} from '../utils/poco-tools';
-import { IexecWrapper } from './utils/IexecWrapper';
+} from '../../../utils/poco-tools';
+import { IexecWrapper } from '../../utils/IexecWrapper';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const volume = 1;
