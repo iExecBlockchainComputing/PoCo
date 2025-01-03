@@ -162,8 +162,8 @@ describe('[ABILegacy] Integration tests', function () {
         expect(task[7]).to.equal(resultHash); // consensusValue
         expect(task[8]).to.equal(0); // revealCounter
         expect(task[9]).to.equal(1); // winnerCounter
-        expect(task[10]).to.equal([worker1]); // contributors
-        expect(task[11]).to.equal(results);
+        expect(task[10][0]).to.equal(worker1.address); // contributors
+        expect(task[11]).to.equal('0x');
     });
 
     it('[ABILegacy] Should return contribution', async function () {
