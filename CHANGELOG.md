@@ -18,7 +18,7 @@
     - 201_fullchain-bot-dualPool.js (#171, #172)
     - Fix balance checks in integration tests (#165)
     - 300_fullchain-reopen.js (#170, #173)
-    - 000_fullchain-ABILegacy.js (#174)
+    - 000_fullchain-ABILegacy.js (#174 )
 - Remove `smock` from unit tests:
     - IexecEscrow.v8 (#154, #155)
     - IexecPocoDelegate (#149, #151)
