@@ -87,18 +87,19 @@ describe('Integration tests', function () {
         };
     }
 
-    /*
-    This test simulates the full lifecycle of a task in iExec:
-    - Creates a deal with specific orders and initializes a task.
-    - Tests worker contributions:
-        - The first group of workers contributes, triggering the reveal phase.
-        - Task is reopened after the reveal deadline passes.
-        - Ensures that workers who already contributed cannot contribute again.
-        - The second group of workers contributes and reveals successfully.
-    - Finalizes the task, distributing rewards among workers and the scheduler.
-    - Validates token balance changes for all participants.
-    - Verifies that winning workers receive a positive score, while losing workers do not.
-*/
+    /**
+     * This test checks the full lifecycle of a task with reveal deadline reached
+     * and reopen operation taking place:
+     * - Create a deal with specific orders and initialize a task.
+     * - Test worker contributions:
+     *     - The first group of workers contributes, triggering the reveal phase.
+     *     - The task is reopened after the reveal deadline is reached.
+     *     - Ensure that workers who already contributed cannot contribute again.
+     *     - The second group of workers contributes and reveals successfully.
+     * - Finalize the task, distributing rewards among workers and the scheduler.
+     * - Validate token balance changes for all participants.
+     * - Verify that winning workers receive a positive score, while losing workers do not.
+     */
     it(`[1] Task lifecycle with contributions and reopening`, async function () {
         const volume = 1;
         const workers = [worker1, worker2, worker3, worker4];
@@ -122,8 +123,8 @@ describe('Integration tests', function () {
         const schedulerStakePerTask = schedulerStakePerDeal / volume;
         const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
 
-        for (let i = 0; i < 4; i++) {
-            expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
+        for (const worker of workers) {
+            expect(await iexecPoco.viewScore(worker.address)).to.be.equal(0);
         }
         const taskId = await iexecWrapper.initializeTask(dealId, 0);
         const workerStakePerTask = await iexecPoco
@@ -134,13 +135,13 @@ describe('Integration tests', function () {
         }
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.REVEALING);
+        // Time travel post reveal deadline and reopen task.
         await setNextBlockTimestamp(task.revealDeadline).then(() => mine());
         await expect(iexecPocoAsScheduler.reopen(taskId))
             .to.emit(iexecPoco, 'TaskReopen')
             .withArgs(taskId);
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.ACTIVE);
-
-        // test that the already contributed workers can't contribute anymore
+        // Check that the already contributed workers can't contribute anymore
         for (const contributor of firstContributors) {
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
@@ -153,6 +154,7 @@ describe('Integration tests', function () {
                 AddressZero,
                 scheduler,
             );
+            await iexecWrapper.depositInIexecAccount(contributor, workerStakePerTask); // Not a balance related revert.
             await expect(
                 iexecPoco
                     .connect(contributor)
@@ -166,7 +168,7 @@ describe('Integration tests', function () {
                     ),
             ).to.revertedWithoutReason();
         }
-
+        // Contribute and reveal with new workers.
         for (const contributor of secondContributors) {
             await iexecWrapper.contributeToTask(dealId, 0, resultDigest, contributor);
         }
@@ -178,8 +180,9 @@ describe('Integration tests', function () {
         }
         const finalizeTx = await iexecPocoAsScheduler.finalize(taskId, results, '0x');
         await finalizeTx.wait();
+        // Bad workers lose their stake and add it to the pool price
         const totalWorkerPoolReward =
-            workerpoolPrice + workerStakePerTask * firstContributors.length; // bad workers lose their stake and add it to the pool price
+            workerpoolPrice + workerStakePerTask * firstContributors.length;
 
         const workersRewardPerTask = await iexecWrapper.computeWorkersRewardForCurrentTask(
             totalWorkerPoolReward,
@@ -219,11 +222,11 @@ describe('Integration tests', function () {
         ];
         await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
 
-        // checks on losing worker
+        // Check losing workers scores.
         for (const contributor of firstContributors) {
             expect(await iexecPoco.viewScore(contributor.address)).to.be.equal(0);
         }
-        // checks on winning workers
+        // Check winning workers scores.
         for (const contributor of secondContributors) {
             expect(await iexecPoco.viewScore(contributor.address)).to.be.equal(1);
         }
