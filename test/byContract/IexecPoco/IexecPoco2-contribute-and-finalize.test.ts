@@ -4,7 +4,7 @@
 import { AddressZero, HashZero } from '@ethersproject/constants';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { expect } from 'hardhat';
+import { ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceNative,
@@ -20,6 +20,7 @@ import {
     buildAndSignPocoClassicEnclaveMessage,
     buildResultCallbackAndDigest,
     buildResultHashAndResultSeal,
+    buildUtf8ResultAndDigest,
     getIexecAccounts,
     setNextBlockTimestamp,
 } from '../../../utils/poco-tools';
@@ -31,10 +32,10 @@ const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
 const timeRef = CONFIG.categories[0].workClockTimeRef;
+const trust = 1;
 const volume = 1;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const standardDealTag = HashZero;
-// const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const emptyEnclaveAddress = AddressZero;
 const emptyEnclaveSignature = NULL.SIGNATURE;
 
@@ -106,7 +107,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 1,
+                    trust,
                     tag: teeDealTag,
                     callback: callbackConsumer.address,
                 }).toArray(),
@@ -142,23 +143,25 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 );
             await contributeAndFinalizeTx.wait();
             // Check state.
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.tag).to.equal(teeDealTag);
             const contribution = await iexecPoco.viewContribution(taskId, worker.address);
-            expect(contribution.status).equal(ContributionStatusEnum.PROVED);
-            expect(contribution.resultHash).equal(resultHash);
-            expect(contribution.resultSeal).equal(resultSeal);
-            expect(contribution.enclaveChallenge).equal(enclave.address);
-            expect(contribution.weight).equal(0);
+            expect(contribution.status).to.equal(ContributionStatusEnum.PROVED);
+            expect(contribution.resultHash).to.equal(resultHash);
+            expect(contribution.resultSeal).to.equal(resultSeal);
+            expect(contribution.enclaveChallenge).to.equal(enclave.address);
+            expect(contribution.weight).to.equal(0);
             const task = await iexecPoco.viewTask(taskId);
-            expect(task.status).equal(TaskStatusEnum.COMPLETED);
-            expect(task.consensusValue).equal(resultHash);
-            expect(task.revealDeadline).equal(contributeAndFinalizeBlockTimestamp + timeRef * 2);
-            expect(task.revealCounter).equal(1);
-            expect(task.winnerCounter).equal(1);
-            expect(task.resultDigest).equal(resultsCallbackDigest);
-            expect(task.results).equal('0x');
-            expect(task.resultsCallback).equal(resultsCallback);
-            expect(task.contributors.length).equal(1);
-            expect(task.contributors[0]).equal(worker.address);
+            expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
+            expect(task.consensusValue).to.equal(resultHash);
+            expect(task.revealDeadline).to.equal(contributeAndFinalizeBlockTimestamp + timeRef * 2);
+            expect(task.revealCounter).to.equal(1);
+            expect(task.winnerCounter).to.equal(1);
+            expect(task.resultDigest).to.equal(resultsCallbackDigest);
+            expect(task.results).to.equal('0x');
+            expect(task.resultsCallback).to.equal(resultsCallback);
+            expect(task.contributors.length).to.equal(1);
+            expect(task.contributors[0]).to.equal(worker.address);
             // Check balance changes.
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
                 workerpoolPrice,
@@ -231,73 +234,55 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 .withArgs(taskId, resultsCallback);
         });
 
-        it('Should contributeAndFinalize TEE task with a single worker', async () => {
+        it('Should contributeAndFinalize standard task with a single worker', async () => {
+            // Create deal and task.
             const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
                 ...buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 0,
-                    tag: teeDealTag,
+                    trust,
+                    tag: standardDealTag,
                 }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-            const workerTaskStake = await iexecPoco
-                .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
-            const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+            // ContributeAndFinalize task.
+            const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+            const { resultHash } = buildResultHashAndResultSeal(taskId, resultDigest, worker);
+            const contributeAndFinalizeTx = await iexecPoco.connect(worker).contributeAndFinalize(
                 taskId,
                 resultDigest,
-                worker,
-            );
-            await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
-            await expect(
-                iexecPocoAsWorker.contribute(
+                results,
+                '0x',
+                AddressZero, // enclave,
+                '0x',
+                await buildAndSignContributionAuthorizationMessage(
+                    worker.address,
                     taskId,
-                    resultHash,
-                    resultSeal,
-                    enclave.address,
-                    await buildAndSignPocoClassicEnclaveMessage(resultHash, resultSeal, enclave),
-                    await buildAndSignContributionAuthorizationMessage(
-                        worker.address,
-                        taskId,
-                        enclave.address,
-                        scheduler,
-                    ),
+                    AddressZero, // enclave
+                    scheduler,
                 ),
-            ).to.emit(iexecPoco, 'TaskConsensus');
-        });
-
-        it('Should contributeAndFinalize standard task with a single worker', async () => {
-            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
-                ...defaultOrders.toArray(),
             );
-            await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-            const workerTaskStake = await iexecPoco
-                .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
-            const { resultHash, resultSeal } = buildResultHashAndResultSeal(
-                taskId,
-                resultDigest,
-                worker,
-            );
-            await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
-            await expect(
-                iexecPocoAsWorker.contribute(
-                    taskId,
-                    resultHash,
-                    resultSeal,
-                    emptyEnclaveAddress,
-                    emptyEnclaveSignature,
-                    await buildAndSignContributionAuthorizationMessage(
-                        worker.address,
-                        taskId,
-                        emptyEnclaveAddress,
-                        scheduler,
-                    ),
-                ),
-            ).to.emit(iexecPoco, 'TaskConsensus');
+            await contributeAndFinalizeTx.wait();
+            // Check relevant state.
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.tag).to.equal(standardDealTag);
+            const task = await iexecPoco.viewTask(taskId);
+            expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
+            expect(task.resultDigest).to.equal(resultDigest);
+            expect(task.results).to.equal(ethers.utils.hexlify(results));
+            expect(task.resultsCallback).to.equal('0x');
+            // Check events.
+            await expect(contributeAndFinalizeTx)
+                .to.emit(iexecPoco, 'TaskContribute')
+                .withArgs(taskId, worker.address, resultHash)
+                .to.emit(iexecPoco, 'TaskConsensus')
+                .withArgs(taskId, resultHash)
+                .to.emit(iexecPoco, 'TaskReveal')
+                .withArgs(taskId, worker.address, resultDigest)
+                .to.emit(iexecPoco, 'TaskFinalize')
+                .withArgs(taskId, results);
         });
 
         it('Should not contributeAndFinalize when task is not active', async () => {
@@ -329,7 +314,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 ...defaultOrders.toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-            expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
+            expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.ACTIVE);
             const task = await iexecPoco.viewTask(taskId);
             await time.setNextBlockTimestamp(task.contributionDeadline);
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -392,7 +377,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                     ),
                 )
                 .then((tx) => tx.wait());
-            expect((await iexecPoco.viewContribution(taskId, worker.address)).status).equal(
+            expect((await iexecPoco.viewContribution(taskId, worker.address)).status).to.equal(
                 ContributionStatusEnum.CONTRIBUTED,
             );
             // active task, before deadline
