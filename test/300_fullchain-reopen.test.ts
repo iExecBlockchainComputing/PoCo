@@ -213,7 +213,6 @@ describe('Integration tests', function () {
         );
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
         const expectedFrozenChanges = [
-            0,
             -taskPrice,
             -schedulerStakePerTask,
             0,

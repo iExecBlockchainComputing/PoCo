@@ -471,12 +471,7 @@ export class IexecWrapper {
 
     async getInitialFrozens(accounts: SignerWithAddress[]) {
         let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
-        const initialFrozens = [
-            {
-                address: this.proxyAddress,
-                frozen: (await iexecPoco.frozenOf(this.proxyAddress)).toNumber(),
-            },
-        ];
+        const initialFrozens = [];
         for (const account of accounts) {
             initialFrozens.push({
                 address: account.address,
