@@ -125,22 +125,20 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 worker,
             );
             const contributeAndFinalizeBlockTimestamp = await setNextBlockTimestamp();
-            const contributeAndFinalizeTx = await iexecPoco
-                .connect(worker)
-                .contributeAndFinalize(
+            const contributeAndFinalizeTx = await iexecPoco.connect(worker).contributeAndFinalize(
+                taskId,
+                resultsCallbackDigest,
+                '0x', // Result data
+                resultsCallback,
+                enclave.address,
+                await buildAndSignPocoClassicEnclaveMessage(resultHash, resultSeal, enclave),
+                await buildAndSignContributionAuthorizationMessage(
+                    worker.address,
                     taskId,
-                    resultsCallbackDigest,
-                    '0x',
-                    resultsCallback,
                     enclave.address,
-                    await buildAndSignPocoClassicEnclaveMessage(resultHash, resultSeal, enclave),
-                    await buildAndSignContributionAuthorizationMessage(
-                        worker.address,
-                        taskId,
-                        enclave.address,
-                        sms,
-                    ),
-                );
+                    sms,
+                ),
+            );
             await contributeAndFinalizeTx.wait();
             // Check state.
             const deal = await iexecPoco.viewDeal(dealId);
@@ -298,22 +296,20 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             );
             // No initialize.
             await expect(
-                iexecPoco
-                    .connect(worker)
-                    .contributeAndFinalize(
+                iexecPoco.connect(worker).contributeAndFinalize(
+                    taskId,
+                    resultDigest,
+                    results,
+                    '0x', // callback data
+                    emptyEnclaveAddress,
+                    emptyEnclaveSignature,
+                    await buildAndSignContributionAuthorizationMessage(
+                        worker.address,
                         taskId,
-                        resultDigest,
-                        results,
-                        '0x',
                         emptyEnclaveAddress,
-                        '0x',
-                        await buildAndSignContributionAuthorizationMessage(
-                            worker.address,
-                            taskId,
-                            emptyEnclaveSignature,
-                            scheduler,
-                        ),
+                        scheduler,
                     ),
+                ),
             ).to.be.revertedWithoutReason(); // require#1
         });
 
@@ -334,22 +330,20 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             await time.setNextBlockTimestamp(task.contributionDeadline);
             // Task is active but after deadline.
             await expect(
-                iexecPoco
-                    .connect(worker)
-                    .contributeAndFinalize(
+                iexecPoco.connect(worker).contributeAndFinalize(
+                    taskId,
+                    resultDigest,
+                    results,
+                    '0x', // callback data
+                    emptyEnclaveAddress,
+                    emptyEnclaveSignature,
+                    await buildAndSignContributionAuthorizationMessage(
+                        worker.address,
                         taskId,
-                        resultDigest,
-                        results,
-                        '0x',
                         emptyEnclaveAddress,
-                        '0x',
-                        await buildAndSignContributionAuthorizationMessage(
-                            worker.address,
-                            taskId,
-                            emptyEnclaveSignature,
-                            scheduler,
-                        ),
+                        scheduler,
                     ),
+                ),
             ).to.be.revertedWithoutReason(); // require#2
         });
 
@@ -357,80 +351,71 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             // TODO require#3
         });
 
-        it('Should not contributeAndFinalize when trust is not 1', async () => {
-            // Trust == 0
-            const {
-                dealId: dealId1,
-                taskIndex: taskIndex1,
-                taskId: taskId1,
-            } = await iexecWrapper.signAndMatchOrders(
+        it('Should not contributeAndFinalize when trust is > 1', async () => {
+            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
                 ...buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 0,
+                    trust: 3,
                     tag: standardDealTag,
                 }).toArray(),
             );
-            await iexecPoco.initialize(dealId1, taskIndex1).then((tx) => tx.wait());
+            await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             // Task active, before deadline, but bad trust.
             await expect(
-                iexecPoco
-                    .connect(worker)
-                    .contributeAndFinalize(
-                        taskId1,
-                        resultDigest,
-                        results,
-                        '0x',
+                iexecPoco.connect(worker).contributeAndFinalize(
+                    taskId,
+                    resultDigest,
+                    results,
+                    '0x', // callback data
+                    emptyEnclaveAddress,
+                    emptyEnclaveSignature,
+                    await buildAndSignContributionAuthorizationMessage(
+                        worker.address,
+                        taskId,
                         emptyEnclaveAddress,
-                        '0x',
-                        await buildAndSignContributionAuthorizationMessage(
-                            worker.address,
-                            taskId1,
-                            emptyEnclaveSignature,
-                            scheduler,
-                        ),
+                        scheduler,
                     ),
+                ),
             ).to.be.revertedWithoutReason(); // require#4
-            // Trust > 1
-            const {
-                dealId: dealId2,
-                taskIndex: taskIndex2,
-                taskId: taskId2,
-            } = await iexecWrapper.signAndMatchOrders(
+        });
+
+        it('Should not contributeAndFinalize when callback data is missing', async () => {
+            // Create deal and task.
+            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
                 ...buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
                     prices: ordersPrices,
-                    volume: 3, // to create new orders.
-                    trust: 0,
+                    volume,
+                    trust,
                     tag: standardDealTag,
+                    callback: ethers.Wallet.createRandom().address, // Using callback
                 }).toArray(),
             );
-            await iexecPoco.initialize(dealId2, taskIndex2).then((tx) => tx.wait());
-            // Task active, before deadline, but bad trust.
+            await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+            // Task active, before deadline, good trust, but missing callback data.
+            const { callbackResultDigest: resultsCallbackDigest } =
+                buildResultCallbackAndDigest(123);
             await expect(
-                iexecPoco
-                    .connect(worker)
-                    .contributeAndFinalize(
-                        taskId2,
-                        resultDigest,
-                        results,
-                        '0x',
+                iexecPoco.connect(worker).contributeAndFinalize(
+                    taskId,
+                    resultsCallbackDigest,
+                    '0x', // Results
+                    '0x', // No callback data
+                    emptyEnclaveAddress,
+                    emptyEnclaveSignature,
+                    await buildAndSignContributionAuthorizationMessage(
+                        worker.address,
+                        taskId,
                         emptyEnclaveAddress,
-                        '0x',
-                        await buildAndSignContributionAuthorizationMessage(
-                            worker.address,
-                            taskId2,
-                            emptyEnclaveSignature,
-                            scheduler,
-                        ),
+                        scheduler,
                     ),
-            ).to.be.revertedWithoutReason(); // require#4
+                ),
+            ).to.be.revertedWithoutReason(); // require#5
         });
-
-        it('Should not contributeAndFinalize when callback data is missing', async () => {});
 
         it('Should not contributeAndFinalize when enclave challenge for TEE task is missing', async () => {});
 
