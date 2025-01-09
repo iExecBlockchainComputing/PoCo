@@ -22,8 +22,19 @@ jobs:
           node-version: 20
           cache: 'npm' # Cache dependencies
 
-      - name: Init
+      - name: Install dependencies
         run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Check storage layout
+        run: npm test-storage-layout
+
+      # Basic deployment to make sure everything is ok.
+      # Could be removed in the future if not relevant.
+      - name: Run deployment
+        run: npm run deploy
 
       - name: Run coverage
         run: npm run coverage
