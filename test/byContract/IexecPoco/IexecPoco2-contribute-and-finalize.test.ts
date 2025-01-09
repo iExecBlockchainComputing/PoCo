@@ -11,7 +11,7 @@ import {
     IexecInterfaceNative__factory,
     TestClient__factory,
 } from '../../../typechain';
-import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
+import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     ContributionStatusEnum,
     TaskStatusEnum,
@@ -56,7 +56,6 @@ let [
 ]: SignerWithAddress[] = [];
 let ordersAssets: OrdersAssets;
 let ordersPrices: OrdersPrices;
-let defaultOrders: IexecOrders;
 
 describe('IexecPoco2#contributeAndFinalize', () => {
     beforeEach(async () => {
@@ -85,14 +84,6 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
-        defaultOrders = buildOrders({
-            assets: ordersAssets,
-            requester: requester.address,
-            prices: ordersPrices,
-            volume,
-            trust: 1,
-            tag: standardDealTag,
-        });
     }
 
     describe('ContributeAndFinalize', () => {
