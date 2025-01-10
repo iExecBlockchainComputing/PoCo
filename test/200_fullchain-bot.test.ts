@@ -219,7 +219,6 @@ describe('Integration tests', function () {
             const completedTasks = taskIndex + 1;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
-                0, // Proxy
                 -taskPrice * completedTasks, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
                 0, // AppProvider

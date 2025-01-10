@@ -184,7 +184,6 @@ describe('Integration tests', function () {
             const completedTasks = taskIndex + 1;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
-                0, // Proxy
                 -taskPrice * completedTasks, // Sponsor
                 0, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
@@ -275,7 +274,6 @@ describe('Integration tests', function () {
             const completedTasks = taskIndex + 1;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
-                0, // Proxy
                 -taskPrice * completedTasks, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
                 0, // AppProvider
@@ -353,7 +351,6 @@ describe('Integration tests', function () {
             const completedTasks = taskIndex + 1;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
-                0, // Proxy
                 -taskPrice * completedTasks, // Sponsor
                 0, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
@@ -433,7 +430,6 @@ describe('Integration tests', function () {
             const completedTasks = taskIndex + 1;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
-                0, // Proxy
                 -taskPrice * completedTasks, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
                 0, // AppProvider
@@ -502,7 +498,6 @@ describe('Integration tests', function () {
         );
         // Calculate expected frozen changes
         const expectedFrozenChanges = [
-            0, // Proxy
             -dealPrice, // Requester
             -schedulerStakePerTask, // Scheduler
             0, // AppProvider
@@ -584,7 +579,6 @@ describe('Integration tests', function () {
                     TaskStatusEnum.COMPLETED,
                 );
                 const expectedFrozenChanges = [
-                    0,
                     -taskPrice,
                     -schedulerStakePerTask,
                     0,
@@ -707,7 +701,6 @@ describe('Integration tests', function () {
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
         // checks on frozen balance changes
         const expectedFrozenChanges = [
-            0,
             -dealPrice,
             -schedulerStakePerTask,
             0,

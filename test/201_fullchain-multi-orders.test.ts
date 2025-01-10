@@ -243,7 +243,6 @@ describe('Integration tests', function () {
         );
         // Calculate expected frozen changes
         const expectedFrozenChanges = [
-            0, // Proxy
             -taskPrice, // Requester
             -schedulerStake, // Scheduler
             0, // AppProvider
