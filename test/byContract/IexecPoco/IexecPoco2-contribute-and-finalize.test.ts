@@ -57,6 +57,8 @@ let [
 let ordersAssets: OrdersAssets;
 let ordersPrices: OrdersPrices;
 
+// TODO add an integration test for contributeAndFinalize
+
 describe('IexecPoco2#contributeAndFinalize', () => {
     beforeEach(async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
@@ -479,6 +481,43 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                     '0xbadd', // Bad scheduler signature
                 ),
             ).to.be.revertedWith('invalid-signature-format'); // require#7
+        });
+
+        it.only('Should not contributeAndFinalize when authorization is not signed by TEE broker', async () => {
+            await iexecWrapper.setTeeBroker(sms.address);
+            const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
+                ...buildOrders({
+                    assets: ordersAssets,
+                    requester: requester.address,
+                    prices: ordersPrices,
+                    volume,
+                    trust,
+                    tag: teeDealTag,
+                }).toArray(),
+            );
+            await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+            const { resultHash, resultSeal } = buildResultHashAndResultSeal(
+                taskId,
+                resultDigest,
+                worker,
+            );
+            // Task active, before deadline, good trust, good signature, but not signed by TEE broker.
+            await expect(
+                iexecPoco.connect(worker).contributeAndFinalize(
+                    taskId,
+                    resultDigest,
+                    results,
+                    noCallbackData,
+                    enclave.address,
+                    await buildAndSignPocoClassicEnclaveMessage(resultHash, resultSeal, enclave),
+                    await buildAndSignContributionAuthorizationMessage(
+                        worker.address,
+                        taskId,
+                        enclave.address,
+                        scheduler, // Signed by schedule when it must be signed by the sms.
+                    ),
+                ),
+            ).to.be.revertedWithoutReason(); // require#7
         });
 
         it('Should not contributeAndFinalize when enclave signature is invalid (TEE)', async () => {
