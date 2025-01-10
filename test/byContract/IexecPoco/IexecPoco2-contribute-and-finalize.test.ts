@@ -387,7 +387,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             ).to.be.revertedWithoutReason(); // require#4
         });
 
-        it('Should not contributeAndFinalize when callback data is missing', async () => {
+        it('Should not contributeAndFinalize when result digest does not match callback data hash', async () => {
             // Create deal and task.
             const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
                 ...buildOrders({
@@ -401,26 +401,24 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-            // Task active, before deadline, good trust, but missing callback data.
+            // Task active, before deadline, good trust, but bad callback data.
             const { callbackResultDigest: resultsCallbackDigest } =
                 buildResultCallbackAndDigest(123);
             await expect(
-                iexecPoco
-                    .connect(worker)
-                    .contributeAndFinalize(
+                iexecPoco.connect(worker).contributeAndFinalize(
+                    taskId,
+                    resultsCallbackDigest,
+                    noResultsData,
+                    ethers.utils.hexlify(ethers.utils.randomBytes(32)), // Bad callback data.
+                    emptyEnclaveAddress,
+                    emptyEnclaveSignature,
+                    await buildAndSignContributionAuthorizationMessage(
+                        worker.address,
                         taskId,
-                        resultsCallbackDigest,
-                        noResultsData,
-                        noCallbackData,
                         emptyEnclaveAddress,
-                        emptyEnclaveSignature,
-                        await buildAndSignContributionAuthorizationMessage(
-                            worker.address,
-                            taskId,
-                            emptyEnclaveAddress,
-                            scheduler,
-                        ),
+                        scheduler,
                     ),
+                ),
             ).to.be.revertedWithoutReason(); // require#5
         });
 
@@ -471,7 +469,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             // Task active, before deadline, good trust, but invalid scheduler signature.
             await expect(
-                iexecPoco.connect(worker).contributeAndFinalize(
+                iexecPocoAsWorker.contributeAndFinalize(
                     taskId,
                     resultDigest,
                     results,
@@ -483,7 +481,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             ).to.be.revertedWith('invalid-signature-format'); // require#7
         });
 
-        it.only('Should not contributeAndFinalize when authorization is not signed by TEE broker', async () => {
+        it('Should not contributeAndFinalize when authorization is not signed by TEE broker', async () => {
             await iexecWrapper.setTeeBroker(sms.address);
             const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
                 ...buildOrders({
@@ -503,7 +501,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             );
             // Task active, before deadline, good trust, good signature, but not signed by TEE broker.
             await expect(
-                iexecPoco.connect(worker).contributeAndFinalize(
+                iexecPocoAsWorker.contributeAndFinalize(
                     taskId,
                     resultDigest,
                     results,
@@ -534,7 +532,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             // Task active, before deadline, good trust, good enclave challenge, but invalid enclave signature.
             await expect(
-                iexecPoco.connect(worker).contributeAndFinalize(
+                iexecPocoAsWorker.contributeAndFinalize(
                     taskId,
                     resultDigest,
                     results,
