@@ -11,7 +11,7 @@ import {
     IexecInterfaceNative__factory,
     TestClient__factory,
 } from '../../../typechain';
-import { OrdersAssets, buildOrders } from '../../../utils/createOrders';
+import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     TaskStatusEnum,
     buildResultCallbackAndDigest,
@@ -25,6 +25,9 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
  * Test state view functions.
  */
 
+const appPrice = 1000;
+const datasetPrice = 1_000_000;
+const workerpoolPrice = 1_000_000_000;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
@@ -34,6 +37,7 @@ let iexecWrapper: IexecWrapper;
 let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
 let [requester, scheduler, worker1, anyone]: SignerWithAddress[] = [];
 let ordersAssets: OrdersAssets;
+let ordersPrices: OrdersPrices;
 let callbackAddress: string;
 
 describe('IexecAccessors', async () => {
@@ -54,6 +58,11 @@ describe('IexecAccessors', async () => {
             app: appAddress,
             dataset: datasetAddress,
             workerpool: workerpoolAddress,
+        };
+        ordersPrices = {
+            app: appPrice,
+            dataset: datasetPrice,
+            workerpool: workerpoolPrice,
         };
         callbackAddress = await new TestClient__factory()
             .connect(anyone)
@@ -224,6 +233,7 @@ describe('IexecAccessors', async () => {
 async function createDeal(volume: number = 1) {
     const orders = buildOrders({
         assets: ordersAssets,
+        prices: ordersPrices,
         requester: requester.address,
         volume,
         callback: callbackAddress,
