@@ -1,18 +1,21 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { HashZero } from '@ethersproject/constants';
+import { AddressZero, HashZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers, expect } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
+import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
-    TestClient__factory,
-} from '../../../typechain';
-import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
+    OrdersAssets,
+    OrdersPrices,
+    buildOrders,
+    createOrderOperation,
+} from '../../../utils/createOrders';
 import {
+    ContributionStatusEnum,
+    OrderOperationEnum,
     TaskStatusEnum,
     buildResultCallbackAndDigest,
     buildUtf8ResultAndDigest,
@@ -35,10 +38,9 @@ let proxyAddress: string;
 let iexecPoco: IexecInterfaceNative;
 let iexecWrapper: IexecWrapper;
 let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
-let [requester, scheduler, worker1, anyone]: SignerWithAddress[] = [];
+let [requester, appProvider, datasetProvider, scheduler, worker1, anyone]: SignerWithAddress[] = [];
 let ordersAssets: OrdersAssets;
 let ordersPrices: OrdersPrices;
-let callbackAddress: string;
 
 describe('IexecAccessors', async () => {
     beforeEach('Deploy', async () => {
@@ -50,7 +52,7 @@ describe('IexecAccessors', async () => {
 
     async function initFixture() {
         const accounts = await getIexecAccounts();
-        ({ requester, scheduler, worker1, anyone } = accounts);
+        ({ requester, appProvider, datasetProvider, scheduler, worker1, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
@@ -64,11 +66,6 @@ describe('IexecAccessors', async () => {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
-        callbackAddress = await new TestClient__factory()
-            .connect(anyone)
-            .deploy()
-            .then((contract) => contract.deployed())
-            .then((contract) => contract.address);
     }
 
     it('name', async function () {
@@ -87,9 +84,87 @@ describe('IexecAccessors', async () => {
         expect(await iexecPoco.totalSupply()).to.equal(0n);
     });
 
+    it('balanceOf', async function () {
+        const amount = 3;
+        await iexecWrapper.depositInIexecAccount(anyone, amount);
+        expect(await iexecPoco.balanceOf(anyone.address)).to.equal(amount);
+    });
+
+    it('frozenOf', async function () {
+        await createDeal(); // Lock some requester funds.
+        const dealPrice = appPrice + datasetPrice + workerpoolPrice; // volume == 1
+        expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealPrice);
+    });
+
+    it('allowance', async function () {
+        const amount = 10;
+        const spender = ethers.Wallet.createRandom().address;
+        await iexecWrapper.depositInIexecAccount(anyone, amount);
+        await iexecPoco.connect(anyone).approve(spender, amount);
+        expect(await iexecPoco.allowance(anyone.address, spender)).to.equal(amount);
+    });
+
+    it('viewAccount', async function () {
+        await createDeal(); // Lock some requester funds.
+        const dealPrice = appPrice + datasetPrice + workerpoolPrice;
+        // Stake some funds.
+        const stakedBalance = 3;
+        await iexecWrapper.depositInIexecAccount(requester, stakedBalance);
+        // Check staked and locked amounts.
+        const account = await iexecPoco.viewAccount(requester.address);
+        expect(account.stake).to.equal(stakedBalance);
+        expect(account.locked).to.equal(dealPrice);
+    });
+
     // TODO test the case where token() == 0x0 in native mode.
     it('token', async function () {
         expect(await iexecPoco.token()).to.equal('0x5FbDB2315678afecb367f032d93F642f64180aa3');
+    });
+
+    it('viewDeal', async function () {
+        const { dealId } = await createDeal();
+        const deal = await iexecPoco.viewDeal(dealId);
+        console.log('🚀 ~ deal sponsor:', deal.sponsor);
+        expect(deal.app.pointer).to.equal(appAddress);
+        expect(deal.app.owner).to.equal(appProvider.address);
+        expect(deal.app.price).to.equal(appPrice);
+        expect(deal.dataset.pointer).to.equal(datasetAddress);
+        expect(deal.dataset.owner).to.equal(datasetProvider.address);
+        expect(deal.dataset.price).to.equal(datasetPrice);
+        expect(deal.workerpool.pointer).to.equal(workerpoolAddress);
+        expect(deal.workerpool.owner).to.equal(scheduler.address);
+        expect(deal.workerpool.price).to.equal(workerpoolPrice);
+        expect(deal.trust).to.equal(1);
+        expect(deal.category).to.equal(0);
+        expect(deal.tag).to.equal(HashZero); // Standard
+        expect(deal.requester).to.equal(requester.address);
+        expect(deal.beneficiary).to.equal(AddressZero);
+        expect(deal.callback).to.equal(AddressZero);
+        expect(deal.params).to.equal('');
+        expect(deal.startTime).to.be.greaterThan(0);
+        expect(deal.botFirst).to.equal(0);
+        expect(deal.botSize).to.equal(1);
+        expect(deal.workerStake).to.be.greaterThan(0);
+        expect(deal.schedulerRewardRatio).to.be.greaterThan(0);
+        expect(deal.sponsor).to.equal(requester.address);
+    });
+
+    it('viewConsumed', async function () {
+        const { orders } = await createDeal();
+        expect(await iexecPoco.viewConsumed(iexecWrapper.hashOrder(orders.app))).to.equal(1);
+    });
+
+    it('viewPresigned', async function () {
+        const appOrder = buildOrders({ assets: ordersAssets, requester: requester.address }).app;
+        const orderOperation = createOrderOperation(appOrder, OrderOperationEnum.SIGN);
+        await iexecWrapper.signOrderOperation(orderOperation, appProvider);
+        await iexecPoco
+            .connect(appProvider)
+            .manageAppOrder(orderOperation)
+            .then((tx) => tx.wait());
+        expect(await iexecPoco.viewPresigned(iexecWrapper.hashOrder(appOrder))).equal(
+            appProvider.address,
+        );
     });
 
     it('viewTask', async function () {
@@ -117,6 +192,25 @@ describe('IexecAccessors', async () => {
         expect(task.results).to.equal('0x');
         expect(task.resultsTimestamp).to.equal(0);
         expect(task.resultsCallback).to.equal('0x');
+    });
+
+    it('viewContribution', async function () {
+        const { dealId, taskIndex, taskId } = await createDeal();
+        await iexecWrapper.initializeTask(dealId, taskIndex);
+        await iexecWrapper.contributeToTask(dealId, taskIndex, resultDigest, worker1);
+        const contribution = await iexecPoco.viewContribution(taskId, worker1.address);
+        expect(contribution.status).to.equal(ContributionStatusEnum.CONTRIBUTED);
+        expect(contribution.resultHash.length).to.equal(66);
+        expect(contribution.resultSeal.length).to.equal(66);
+        expect(contribution.enclaveChallenge).to.equal(AddressZero);
+        expect(contribution.weight).to.equal(1);
+        console.log('score:', await iexecPoco.viewScore(worker1.address));
+    });
+
+    // viewScore(address _worker)
+    it('viewScore', async function () {
+        // TODO
+        expect(await iexecPoco.viewScore(worker1.address)).to.equal(0);
     });
 
     it('countCategory', async function () {
@@ -236,14 +330,13 @@ async function createDeal(volume: number = 1) {
         prices: ordersPrices,
         requester: requester.address,
         volume,
-        callback: callbackAddress,
     });
     const { dealId, taskId, taskIndex, startTime } = await iexecWrapper.signAndMatchOrders(
         ...orders.toArray(),
     );
     const dealCategory = (await iexecPoco.viewDeal(dealId)).category;
     const timeRef = (await iexecPoco.viewCategory(dealCategory)).workClockTimeRef.toNumber();
-    return { dealId, taskId, taskIndex, startTime, timeRef };
+    return { dealId, taskId, taskIndex, startTime, timeRef, orders };
 }
 
 async function verifyTaskStatusAndResult(taskId: string, expectedStatus: number) {
