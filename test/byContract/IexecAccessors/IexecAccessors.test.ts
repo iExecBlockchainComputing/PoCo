@@ -55,7 +55,7 @@ describe('IexecAccessors', async () => {
         ({ requester, appProvider, datasetProvider, scheduler, worker1, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -124,7 +124,6 @@ describe('IexecAccessors', async () => {
     it('viewDeal', async function () {
         const { dealId } = await createDeal();
         const deal = await iexecPoco.viewDeal(dealId);
-        console.log('🚀 ~ deal sponsor:', deal.sponsor);
         expect(deal.app.pointer).to.equal(appAddress);
         expect(deal.app.owner).to.equal(appProvider.address);
         expect(deal.app.price).to.equal(appPrice);
@@ -204,10 +203,8 @@ describe('IexecAccessors', async () => {
         expect(contribution.resultSeal.length).to.equal(66);
         expect(contribution.enclaveChallenge).to.equal(AddressZero);
         expect(contribution.weight).to.equal(1);
-        console.log('score:', await iexecPoco.viewScore(worker1.address));
     });
 
-    // viewScore(address _worker)
     it('viewScore', async function () {
         // TODO
         expect(await iexecPoco.viewScore(worker1.address)).to.equal(0);
