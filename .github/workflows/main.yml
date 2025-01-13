@@ -44,7 +44,7 @@ jobs:
           solc-version: '0.8.21'
           slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
           fail-on: none # TODO set this to high or other
-          sarif: results.sarif
+          sarif: results-new.sarif
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
