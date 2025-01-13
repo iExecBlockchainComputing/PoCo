@@ -19,7 +19,7 @@
     - Fix balance checks in integration tests (#165)
     - 300_fullchain-reopen.js (#170, #173)
     - 000_fullchain-ABILegacy.js (#174, #175)
-    - 400_contributeAndCallback.js (#176)
+    - 400_contributeAndCallback.js (#176, #177)
 - Remove `smock` from unit tests:
     - IexecEscrow.v8 (#154, #155)
     - IexecPocoDelegate (#149, #151)
