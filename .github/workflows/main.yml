@@ -10,6 +10,12 @@ on:
       - v5
 
 jobs:
+  # Note: changing the name of the job disables Slither checks with the error:
+  # Warning: Code scanning cannot determine the alerts introduced by this pull
+  # request, because 1 configuration present on refs/heads/develop was not found:
+  #
+  # Actions workflow (main.yml)
+  # ❓ .github/workflows/main.yml:coverage
   coverage:
     runs-on: ubuntu-latest
     steps:
@@ -22,21 +28,21 @@ jobs:
           cache: 'npm' # Cache dependencies
       - name: Install dependencies
         run: npm ci
-      # - name: Build
-      #   run: npm run build
-      # - name: Check storage layout
-      #   run: npm run test-storage-layout
-      # - name: Run deployment
-      #   # Basic deployment to make sure everything is ok.
-      #   # Could be removed in the future if not relevant.
-      #   run: npm run deploy
-      # - name: Run coverage
-      #   run: npm run coverage
-      # - name: Upload coverage reports to Codecov
-      #   uses: codecov/codecov-action@v4.0.1
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     slug: iExecBlockchainComputing/PoCo
+      - name: Build
+        run: npm run build
+      - name: Check storage layout
+        run: npm run test-storage-layout
+      - name: Run deployment
+        # Basic deployment to make sure everything is ok.
+        # Could be removed in the future if not relevant.
+        run: npm run deploy
+      - name: Run coverage
+        run: npm run coverage
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: iExecBlockchainComputing/PoCo
       - name: Run static analysis with Slither
         uses: crytic/slither-action@v0.4.0
         with:
