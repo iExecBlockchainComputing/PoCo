@@ -10,7 +10,7 @@ on:
       - v5
 
 jobs:
-  default:
+  coverage:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
