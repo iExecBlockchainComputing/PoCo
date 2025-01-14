@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+const { assert } = require('chai');
 const { ethers } = require('ethers');
 
 function _extractEvents(data, address, name) {

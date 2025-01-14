@@ -5,7 +5,8 @@ import { AddressZero, HashZero } from '@ethersproject/constants';
 import { Contract, ContractTransaction } from '@ethersproject/contracts';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { ethers, expect } from 'hardhat';
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     ERC1271Mock,
@@ -19,8 +20,8 @@ import {
     OwnableMock,
     OwnableMock__factory,
 } from '../../../typechain';
-import { IexecPoco1 } from '../../../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol';
-import { IexecPoco1__factory } from '../../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
+import { IexecPoco1 } from '../../../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol/IexecPoco1';
+import { IexecPoco1__factory } from '../../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
 import {
     IexecOrders,
     OrdersActors,

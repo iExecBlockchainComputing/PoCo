@@ -4,7 +4,7 @@
 import { AddressZero, HashZero } from '@ethersproject/constants';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { assert, expect } from 'hardhat';
+import { assert, expect } from 'chai';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { NULL } from '../../../utils/constants';

@@ -4,7 +4,8 @@
 import { BytesLike } from '@ethersproject/bytes';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { deployments, ethers, expect } from 'hardhat';
+import { expect } from 'chai';
+import { deployments, ethers } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     App,

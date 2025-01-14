@@ -4,8 +4,9 @@
 import { AddressZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { BigNumber } from 'ethers';
-import { ethers, expect } from 'hardhat';
+import { ethers } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceToken,

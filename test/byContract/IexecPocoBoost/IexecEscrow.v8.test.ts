@@ -4,8 +4,8 @@
 import { HashZero } from '@ethersproject/constants';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { constants } from 'ethers';
-import { expect } from 'hardhat';
 import { IexecEscrowTestContract, IexecEscrowTestContract__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 

@@ -5,7 +5,7 @@ import { AddressZero, HashZero } from '@ethersproject/constants';
 import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helpers';
 import { setNextBlockTimestamp } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { expect } from 'hardhat';
+import { expect } from 'chai';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';

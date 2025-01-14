@@ -3,7 +3,8 @@
 
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { ethers, expect } from 'hardhat';
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceNative,
