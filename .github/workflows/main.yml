@@ -10,13 +10,32 @@ on:
       - v5
 
 jobs:
+  # Note: changing the name of the job disables Slither checks with the error:
+  # Warning: Code scanning cannot determine the alerts introduced by this pull
+  # request, because 1 configuration present on refs/heads/develop was not found:
+  #
+  # Actions workflow (main.yml)
+  # ❓ .github/workflows/main.yml:coverage
   coverage:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Init
+      - name: Set up Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # Cache dependencies
+      - name: Install dependencies
         run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Check storage layout
+        run: npm run test-storage-layout
+      - name: Run deployment
+        # Basic deployment to make sure everything is ok.
+        # Could be removed in the future if not relevant.
+        run: npm run deploy
       - name: Run coverage
         run: npm run coverage
       - name: Upload coverage reports to Codecov
@@ -24,17 +43,15 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: iExecBlockchainComputing/PoCo
-      - name: Run static analysis with slither
+      - name: Run static analysis with Slither
         uses: crytic/slither-action@v0.4.0
-        id: slither
         with:
           target: "contracts/tools/testing/slither/"
           solc-version: '0.8.21'
           slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
-          node-version: "20"
           fail-on: none # TODO set this to high or other
           sarif: results.sarif
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: ${{ steps.slither.outputs.sarif }}
+          sarif_file: results.sarif
