@@ -134,11 +134,4 @@ class EthersDeployer {
     }
 }
 
-class TruffleDeployer extends EthersDeployer {
-    constructor(web3, wallet = 0, options = {}) {
-        const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-        super(provider.getSigner(wallet), options);
-    }
-}
-
-module.exports = { EthersDeployer, TruffleDeployer, factoryAddress: FACTORY.address };
+module.exports = { EthersDeployer, factoryAddress: FACTORY.address };
