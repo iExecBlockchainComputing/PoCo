@@ -7,6 +7,8 @@ var GenericFactory = artifacts.require('@iexec/solidity/GenericFactory');
 var ERC1538Proxy = artifacts.require('@iexec/solidity/ERC1538Proxy');
 var ERC1538Update = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate');
 
+// TODO replace `web3` by `ethers`.
+
 /*****************************************************************************
  *                               Configuration                               *
  *****************************************************************************/

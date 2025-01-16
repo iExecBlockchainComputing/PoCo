@@ -6,6 +6,8 @@ var PublicResolver = artifacts.require(
     '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver',
 );
 
+// TODO remove.
+
 module.exports = {
     labelhash: function (label) {
         return web3.utils.keccak256(label.toLowerCase());

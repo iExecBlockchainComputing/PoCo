@@ -4,6 +4,9 @@
 const constants = require('./constants');
 const ethers = require('ethers');
 
+// TODO remove except `signStruct` and `hashStruct`
+// both used in createOrders.ts.
+
 const TYPES = {
     EIP712Domain: [
         { type: 'string', name: 'name' },
