@@ -6,7 +6,7 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
-- Purge Truffle leftovers (#180)
+- Purge Truffle leftovers (#180, #181)
 - Sunset Jenkins pipeline (#178)
 - Re-use variable in `IexecPoco2Delegate` in `contribute(...)` function. (#168)
 - Remove unnecessary back and forth transfers in `IexecPoco2Delegate` happening during `claim(..)`. (#167)
