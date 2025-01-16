@@ -1,4 +1,5 @@
 import '@nomicfoundation/hardhat-toolbox';
+import '@nomiclabs/hardhat-truffle5';
 import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
