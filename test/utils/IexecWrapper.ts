@@ -25,7 +25,7 @@ import {
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../typechain';
-import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol';
+import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
 import {
     IexecOrders,
     OrderOperation,
