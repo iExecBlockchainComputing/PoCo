@@ -4,7 +4,6 @@
 import { assert } from 'chai';
 import type { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
-
 import { ContractReceipt, Event } from '@ethersproject/contracts';
 
 export function extractEventsFromReceipt(
