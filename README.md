@@ -2,6 +2,7 @@
 
 # Introduction
 
+
 This repository contains the smart contract implementation of iExec's PoCo protocol.
 
 ## Related articles on medium
@@ -104,7 +105,7 @@ The automatic testing command uses the Hardhat network by default to run the tes
     ```
     - Or run any other blockchain client.
 2. **[Optional]** Update the configuration
-    
+
     If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `hardhat.config.ts` configuration (network ports, accounts with mnemonic, ..) accordingly to the [Hardhat Configuration](https://hardhat.org/hardhat-runner/docs/config) documentation.
 3. Run tests
 ```
