@@ -4,8 +4,9 @@
 import { AddressZero } from '@ethersproject/constants';
 import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import { BigNumber } from 'ethers';
-import { ethers, expect } from 'hardhat';
+import { ethers } from 'hardhat';
 import CONFIG from '../../../config/config.json';
 import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
