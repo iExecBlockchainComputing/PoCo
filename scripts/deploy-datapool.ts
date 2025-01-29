@@ -25,7 +25,7 @@ export async function deploy() {
         provider,
     ).connect(deployer) as Datapool;
 
-    const datasets = 5;
+    const datasets = 100;
     await addDatasets(datasets);
     await getDatasets();
 
