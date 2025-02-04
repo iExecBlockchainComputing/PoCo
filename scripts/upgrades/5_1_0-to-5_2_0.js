@@ -1,15 +1,11 @@
 // SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-const assert = require('assert');
 const CONFIG = require('../../config/config.json');
+const { ethers } = require('ethers');
 var GenericFactory = artifacts.require('@iexec/solidity/GenericFactory');
 var ERC1538Proxy = artifacts.require('@iexec/solidity/ERC1538Proxy');
 var ERC1538Update = artifacts.require('@iexec/solidity/ERC1538UpdateDelegate');
-
-// TODO replace `web3` by `ethers`.
-
-const { ethers } = require('ethers');
 
 /*****************************************************************************
  *                               Configuration                               *
@@ -65,8 +61,8 @@ async function factoryDeployer(contract, options = {}) {
         contract.bytecode,
     );
     const argsCode = constructorABI
-        ? web3.eth.abi
-              .encodeParameters(
+        ? ethers.utils.defaultAbiCoder
+              .encode(
                   constructorABI.inputs.map((e) => e.type),
                   options.args || [],
               )
@@ -80,7 +76,7 @@ async function factoryDeployer(contract, options = {}) {
         ? await factory.predictAddressWithCall(code, salt, options.call)
         : await factory.predictAddress(code, salt);
 
-    if ((await web3.eth.getCode(contract.address)) == '0x') {
+    if ((await ethers.provider.getCode(contract.address)) == '0x') {
         console.log(`[factory] Preparing to deploy ${contract.contractName} ...`);
         options.call
             ? await factory.createContractAndCall(code, salt, options.call)
@@ -97,15 +93,14 @@ async function factoryDeployer(contract, options = {}) {
  *****************************************************************************/
 module.exports = async (callback) => {
     try {
-        console.log('# web3 version:', web3.version);
-        const chainid = await web3.eth.net.getId();
-        const chaintype = await web3.eth.net.getNetworkType();
-        console.log('Chainid is:', chainid);
-        console.log('Chaintype is:', chaintype);
+        const network = await ethers.provider.getNetwork();
+        console.log('# ethers version:', ethers.version);
+        console.log('Chainid is:', network.chainId);
+        console.log('Network name is:', network.name);
 
         // Load config
-        const deploymentOptions = CONFIG.chains[chainid] || CONFIG.chains.default;
-        const factoryOptions = { salt: deploymentOptions.v5.salt || web3.utils.randomHex(32) };
+        const deploymentOptions = CONFIG.chains[network.chainId] || CONFIG.chains.default;
+        const factoryOptions = { salt: deploymentOptions.v5.salt || ethers.utils.randomBytes(32) };
 
         // Load core
         const proxy = await ERC1538Update.at((await ERC1538Proxy.deployed()).address);
@@ -171,9 +166,9 @@ module.exports = async (callback) => {
             // ))
             // .forEach((details, i) => console.log(`[${i}] ${details.delegate} ${details.signature}`));
 
-            const accounts = await web3.eth.getAccounts();
+            const accounts = await ethers.provider.listAccounts();
             console.log('Before:');
-            console.log('- ETH balance:  ', await web3.eth.getBalance(iexec.address));
+            console.log('- ETH balance:  ', await ethers.provider.getBalance(iexec.address));
             console.log('- RLC balance:  ', (await rlc.balanceOf(iexec.address)).toString());
             console.log('- Total supply: ', (await iexec.totalSupply()).toString());
 
@@ -278,7 +273,7 @@ module.exports = async (callback) => {
             await iexec.manageWorkerpoolOrder({ order: workerpoolorder, operation: 0, sign: '0x' });
             await iexec.manageRequestOrder({ order: requestorder, operation: 0, sign: '0x' });
 
-            // const tx = await web3.eth.sendTransaction({ from: accounts[0], to: iexec.address, value: "100000000000000000" });
+            // const tx = await ethers.provider.getSigner(accounts[0]).sendTransaction({ to: iexec.address, value: ethers.utils.parseEther("0.1") });
             // const tx = await iexec.depositEth({ value: "10000000000000000" })
             // const tx = await iexec.withdrawEth(126492)
             // const tx = await iexec.requestToken(10, { value: "10000000000000000" })
@@ -300,7 +295,7 @@ module.exports = async (callback) => {
                 });
 
             console.log('After:');
-            console.log('- ETH balance:  ', await web3.eth.getBalance(iexec.address));
+            console.log('- ETH balance:  ', await ethers.provider.getBalance(iexec.address));
             console.log('- RLC balance:  ', (await rlc.balanceOf(iexec.address)).toString());
             console.log('- Total supply: ', (await iexec.totalSupply()).toString());
         }
