@@ -7,7 +7,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
 import * as constants from './constants';
-import { utils } from './odb-tools';
+import { hashStruct, signStruct } from './odb-tools';
 import { OrderOperationEnum } from './poco-tools';
 
 export interface OrdersAssets {
@@ -295,7 +295,7 @@ export async function signOrder(
     order: Record<string, any>,
     signer: SignerWithAddress,
 ): Promise<void> {
-    return utils.signStruct(getTypeOf(order), order, domain, signer);
+    return signStruct(getTypeOf(order), order, domain, signer);
 }
 
 /**
@@ -307,7 +307,7 @@ export async function signOrderOperation(
     orderOperation: OrderOperation,
     signer: SignerWithAddress,
 ): Promise<void> {
-    return utils.signStruct(
+    return signStruct(
         getTypeOf(orderOperation.order) + 'Operation',
         orderOperation,
         domain,
@@ -320,7 +320,7 @@ export async function signOrderOperation(
  * @returns order hash
  */
 export function hashOrder(domain: TypedDataDomain, order: Record<string, any>): string {
-    return utils.hashStruct(getTypeOf(order), order, domain);
+    return hashStruct(getTypeOf(order), order, domain);
 }
 
 /**
