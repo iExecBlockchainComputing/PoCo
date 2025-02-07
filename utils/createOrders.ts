@@ -6,7 +6,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
-import constants, { NULL } from './constants';
+import * as constants from './constants';
 import { utils } from './odb-tools';
 import { OrderOperationEnum } from './poco-tools';
 
@@ -168,7 +168,7 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
  * Create an order operation from an existing order.
  */
 export function createOrderOperation<OrderType>(order: OrderType, operation: OrderOperationEnum) {
-    return { order, operation: BigNumber.from(operation), sign: NULL.SIGNATURE };
+    return { order, operation: BigNumber.from(operation), sign: constants.NULL.SIGNATURE };
 }
 
 export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {

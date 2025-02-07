@@ -17,7 +17,7 @@ import {
     getTaskId,
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
-import constants from './../../../utils/constants';
+import * as constants from './../../../utils/constants';
 
 const categoryTime = 300;
 const maxDealDuration = 10 * categoryTime;
