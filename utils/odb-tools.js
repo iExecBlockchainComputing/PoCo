@@ -1,11 +1,7 @@
-// SPDX-FileCopyrightText: 2020 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-const constants = require('./constants');
 const ethers = require('ethers');
-
-// TODO remove except `signStruct` and `hashStruct`
-// both used in createOrders.ts.
 
 const TYPES = {
     EIP712Domain: [
@@ -81,16 +77,6 @@ const TYPES = {
     ],
 };
 
-function eth_sign(hash, wallet) {
-    return new Promise((resolve, reject) => {
-        if (wallet.sign) {
-            resolve(wallet.sign(hash).signature);
-        } else {
-            web3.eth.sign(hash, wallet.address).then(resolve).catch(reject);
-        }
-    });
-}
-
 function buildTypes(primaryType) {
     const OPERATION = 'Operation';
     const types = {
@@ -132,13 +118,6 @@ function eth_signTypedData(primaryType, message, domain, wallet) {
     });
 }
 
-function signMessage(obj, hash, wallet) {
-    return eth_sign(hash, wallet).then((sign) => {
-        obj.sign = sign;
-        return obj;
-    });
-}
-
 function signStruct(primaryType, message, domain, wallet) {
     return eth_signTypedData(primaryType, message, domain, wallet).then((sign) => {
         message.sign = sign;
@@ -160,243 +139,12 @@ function hashStruct(primaryType, message, domain) {
     return ethers.utils._TypedDataEncoder.hash(typedDataDomain, types, message);
 }
 
-/* NOT EIP712 compliant */
-function hashAuthorization(authorization) {
-    return web3.utils.soliditySha3(
-        { t: 'address', v: authorization.worker },
-        { t: 'bytes32', v: authorization.taskid },
-        { t: 'address', v: authorization.enclave },
-    );
-}
-
-/* NOT EIP712 compliant */
-function hashContribution(result) {
-    return web3.utils.soliditySha3(
-        { t: 'bytes32', v: result.hash },
-        { t: 'bytes32', v: result.seal },
-    );
-}
-
-function signAuthorization(obj, wallet) {
-    return signMessage(obj, hashAuthorization(obj), wallet);
-}
-
-function signContribution(obj, wallet) {
-    return signMessage(obj, hashContribution(obj), wallet);
-}
-
-function hashByteResult(taskid, byteresult) {
-    return {
-        digest: byteresult,
-        hash: web3.utils.soliditySha3({ t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
-    };
-}
-
-function sealByteResult(taskid, byteresult, address) {
-    return {
-        digest: byteresult,
-        hash: web3.utils.soliditySha3({ t: 'bytes32', v: taskid }, { t: 'bytes32', v: byteresult }),
-        seal: web3.utils.soliditySha3(
-            { t: 'address', v: address },
-            { t: 'bytes32', v: taskid },
-            { t: 'bytes32', v: byteresult },
-        ),
-    };
-}
-
-function hashResult(taskid, result) {
-    return hashByteResult(taskid, web3.utils.soliditySha3({ t: 'string', v: result }));
-}
-
-function sealResult(taskid, result, address) {
-    return sealByteResult(taskid, web3.utils.soliditySha3({ t: 'string', v: result }), address);
-}
-
-async function requestToDeal(IexecClerk, requestHash) {
-    let idx = 0;
-    let dealids = [];
-    while (true) {
-        let dealid = web3.utils.soliditySha3(
-            { t: 'bytes32', v: requestHash },
-            { t: 'uint256', v: idx },
-        );
-        let deal = await IexecClerk.viewDeal(dealid);
-        if (deal.botSize == 0) {
-            return dealids;
-        } else {
-            dealids.push(dealid);
-            idx += deal.botSize;
-        }
-    }
-}
-
-/*****************************************************************************
- *                                 MOCK AGENT                                *
- *****************************************************************************/
-class iExecAgent {
-    constructor(iexec, account) {
-        this.iexec = iexec;
-        this.wallet = account ? { address: account } : web3.eth.accounts.create();
-        this.address = this.wallet.address;
-    }
-    async domain() {
-        return await this.iexec.domain();
-    }
-    async signMessage(obj, hash) {
-        return signMessage(obj, hash, this.wallet);
-    }
-    async signAppOrder(struct) {
-        return signStruct('AppOrder', struct, await this.domain(), this.wallet);
-    }
-    async signDatasetOrder(struct) {
-        return signStruct('DatasetOrder', struct, await this.domain(), this.wallet);
-    }
-    async signWorkerpoolOrder(struct) {
-        return signStruct('WorkerpoolOrder', struct, await this.domain(), this.wallet);
-    }
-    async signRequestOrder(struct) {
-        return signStruct('RequestOrder', struct, await this.domain(), this.wallet);
-    }
-    async signAppOrderOperation(struct) {
-        return signStruct('AppOrderOperation', struct, await this.domain(), this.wallet);
-    }
-    async signDatasetOrderOperation(struct) {
-        return signStruct('DatasetOrderOperation', struct, await this.domain(), this.wallet);
-    }
-    async signWorkerpoolOrderOperation(struct) {
-        return signStruct('WorkerpoolOrderOperation', struct, await this.domain(), this.wallet);
-    }
-    async signRequestOrderOperation(struct) {
-        return signStruct('RequestOrderOperation', struct, await this.domain(), this.wallet);
-    }
-
-    async viewAccount() {
-        return Object.extract(await this.iexec.viewAccount(this.wallet.address), [
-            'stake',
-            'locked',
-        ]).map((bn) => Number(bn));
-    }
-    async viewScore() {
-        return Number(await this.iexec.viewScore(this.wallet.address));
-    }
-}
-/*****************************************************************************
- *                                MOCK BROKER                                *
- *****************************************************************************/
-class Broker extends iExecAgent {
-    constructor(iexec) {
-        super(iexec);
-    }
-
-    async initialize() {
-        await this.iexec.setTeeBroker(this.wallet.address);
-    }
-
-    async signAuthorization(preauth) {
-        const task = await this.iexec.viewTask(preauth.taskid);
-        const deal = await this.iexec.viewDeal(task.dealid);
-        const signer = web3.eth.accounts.recover(hashAuthorization(preauth), preauth.sign);
-        if (signer == deal.workerpool.owner) {
-            const enclaveWallet = web3.eth.accounts.create();
-            const auth = await signAuthorization(
-                { ...preauth, enclave: enclaveWallet.address },
-                this.wallet,
-            );
-            return [auth, enclaveWallet];
-        } else {
-            return [null, null];
-        }
-    }
-}
-/*****************************************************************************
- *                               MOCK SCHEDULER                              *
- *****************************************************************************/
-class Scheduler extends iExecAgent {
-    constructor(iexec, wallet) {
-        super(iexec, wallet);
-    }
-
-    async signPreAuthorization(taskid, worker) {
-        return await signAuthorization(
-            { taskid, worker, enclave: constants.NULL.ADDRESS },
-            this.wallet,
-        );
-    }
-}
-/*****************************************************************************
- *                                MOCK WORKER                                *
- *****************************************************************************/
-class Worker extends iExecAgent {
-    constructor(iexec, wallet) {
-        super(iexec, wallet);
-    }
-
-    async run(auth, enclaveWallet, result, callback) {
-        const contribution = sealByteResult(
-            auth.taskid,
-            callback
-                ? web3.utils.soliditySha3({ t: 'bytes', v: callback })
-                : web3.utils.soliditySha3({ t: 'string', v: result }),
-            this.wallet.address,
-        );
-        if (auth.enclave == constants.NULL.ADDRESS) {
-            // Classic
-            contribution.sign = constants.NULL.SIGNATURE;
-        } // TEE
-        else {
-            await signContribution(contribution, enclaveWallet);
-        }
-        return contribution;
-    }
-}
-
 /*****************************************************************************
  *                                  MODULE                                   *
  *****************************************************************************/
 module.exports = {
-    /* mocks */
-    iExecAgent,
-    Scheduler,
-    Broker,
-    Worker,
-    /* utils */
     utils: {
         signStruct,
         hashStruct,
-        signMessage,
-        hashAuthorization,
-        hashContribution,
-        signAuthorization,
-        signContribution,
-        hashByteResult,
-        sealByteResult,
-        hashResult,
-        sealResult,
-        hashConsensus: hashResult,
-        hashAppOrder: function (domain, struct) {
-            return hashStruct('AppOrder', struct, domain);
-        },
-        hashDatasetOrder: function (domain, struct) {
-            return hashStruct('DatasetOrder', struct, domain);
-        },
-        hashWorkerpoolOrder: function (domain, struct) {
-            return hashStruct('WorkerpoolOrder', struct, domain);
-        },
-        hashRequestOrder: function (domain, struct) {
-            return hashStruct('RequestOrder', struct, domain);
-        },
-        hashAppOrderOperation: function (domain, struct) {
-            return hashStruct('AppOrderOperation', struct, domain);
-        },
-        hashDatasetOrderOperation: function (domain, struct) {
-            return hashStruct('DatasetOrderOperation', struct, domain);
-        },
-        hashWorkerpoolOrderOperation: function (domain, struct) {
-            return hashStruct('WorkerpoolOrderOperation', struct, domain);
-        },
-        hashRequestOrderOperation: function (domain, struct) {
-            return hashStruct('RequestOrderOperation', struct, domain);
-        },
-        requestToDeal,
     },
 };
