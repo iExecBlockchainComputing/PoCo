@@ -1,25 +1,67 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-const { ethers } = require('ethers');
-const FACTORY =
-    require('../config/config.json').chains.default.asset == 'Token' &&
-    hre.network.name.includes('hardhat') // Required until dev-token chain EIPs are updated
-        ? require('@amxx/factory/deployments/GenericFactory_shanghai.json')
-        : require('@amxx/factory/deployments/GenericFactory.json');
+import { Contract, ethers } from 'ethers';
+import hre from 'hardhat';
 
-async function waitTx(txPromise) {
+import factoryJson from '@amxx/factory/deployments/GenericFactory.json';
+import factoryShanghaiJson from '@amxx/factory/deployments/GenericFactory_shanghai.json';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import config from '../config/config.json';
+
+interface FactoryConfig {
+    address: string;
+    deployer: string;
+    cost: string;
+    tx: string;
+    abi: any[];
+}
+
+interface DeployOptions {
+    libraries?: any[];
+    salt?: string;
+    call?: string;
+    [key: string]: any;
+}
+
+interface Artefact {
+    contractName: string;
+    abi: any[];
+    bytecode: string;
+    at: (address: string) => Promise<any>;
+    setAsDeployed: (instance: any) => void;
+    _hArtifact: {
+        sourceName: string;
+        contractName: string;
+        linkReferences?: {
+            [key: string]: {
+                [key: string]: Array<{
+                    start: number;
+                    length: number;
+                }>;
+            };
+        };
+    };
+}
+
+const FACTORY: FactoryConfig =
+    config.chains.default.asset === 'Token' && hre.network.name.includes('hardhat')
+        ? factoryShanghaiJson
+        : factoryJson;
+
+async function waitTx(txPromise: Promise<ethers.ContractTransaction>): Promise<void> {
     await (await txPromise).wait();
 }
 
-class EthersDeployer {
-    // factory: ethers.Contract
-    // factoryAsPromise: Promise<ethers.Contract>
+export class EthersDeployer {
+    private factory!: Contract;
+    private factoryAsPromise: Promise<Contract>;
+    private options: DeployOptions;
 
-    constructor(wallet, options = {}) {
+    constructor(wallet: SignerWithAddress, options: DeployOptions = {}) {
         this.options = options;
         this.factoryAsPromise = new Promise(async (resolve, reject) => {
-            if ((await wallet.provider.getCode(FACTORY.address)) !== '0x') {
+            if ((await wallet.provider!.getCode(FACTORY.address)) !== '0x') {
                 console.debug(`→ Factory is available on this network`);
             } else {
                 try {
@@ -27,7 +69,7 @@ class EthersDeployer {
                     await waitTx(
                         wallet.sendTransaction({ to: FACTORY.deployer, value: FACTORY.cost }),
                     );
-                    await waitTx(wallet.provider.sendTransaction(FACTORY.tx));
+                    await waitTx(wallet.provider!.sendTransaction(FACTORY.tx));
                     console.debug(`→ Factory successfully deployed`);
                 } catch (e) {
                     console.debug(`→ Error deploying the factory`);
@@ -39,39 +81,43 @@ class EthersDeployer {
         });
     }
 
-    async ready() {
+    async ready(): Promise<void> {
         await this.factoryAsPromise;
     }
 
-    async deploy(artefact, ...extra) {
+    async deploy(artefact: Artefact, ...extra: any[]): Promise<void> {
         await this.ready();
         console.log(`[factoryDeployer] ${artefact.contractName}`);
-        const constructorABI = artefact.abi.find((e) => e.type == 'constructor');
+
+        const constructorABI = artefact.abi.find((e) => e.type === 'constructor');
         const argsCount = constructorABI ? constructorABI.inputs.length : 0;
         const args = extra.slice(0, argsCount);
-        const options = { ...this.options, ...extra[argsCount] };
-        var librariesLinkPlaceHolderAndAddress = [];
+        const options: DeployOptions = { ...this.options, ...extra[argsCount] };
+
+        let librariesLinkPlaceHolderAndAddress: any[] = [];
         if (options.libraries) {
             librariesLinkPlaceHolderAndAddress = await Promise.all(
                 options.libraries.map(async (library) => {
                     const linkPlaceholder = this.getLinkPlaceholder(library, artefact);
                     if (linkPlaceholder) {
                         return {
-                            linkPlaceholder: linkPlaceholder,
+                            linkPlaceholder,
                             address: (await library.deployed()).address,
                         };
                     }
+                    return undefined;
                 }),
             );
         }
-        var coreCode = artefact.bytecode;
+
+        let coreCode = artefact.bytecode;
         librariesLinkPlaceHolderAndAddress
-            .filter((data) => data != undefined)
+            .filter(
+                (data): data is { linkPlaceholder: string; address: string } => data !== undefined,
+            )
             .forEach((element) => {
-                // Replace `__$9d824026d0515d8abd681f0f0f4707f16a$__`
-                // by address library without 0x prefix
-                coreCode = coreCode.replaceAll(
-                    element.linkPlaceholder,
+                coreCode = coreCode.replace(
+                    new RegExp(element.linkPlaceholder, 'g'),
                     element.address.slice(2).toLowerCase(),
                 );
             });
@@ -79,18 +125,19 @@ class EthersDeployer {
         const argsCode = constructorABI
             ? ethers.utils.defaultAbiCoder
                   .encode(
-                      constructorABI.inputs.map((e) => e.type),
+                      constructorABI.inputs.map((e: { type: string }) => e.type),
                       args,
                   )
                   .slice(2)
             : '';
+
         const code = coreCode + argsCode;
         const salt = options.salt || ethers.constants.HashZero;
         const contractAddress = options.call
             ? await this.factory.predictAddressWithCall(code, salt, options.call)
             : await this.factory.predictAddress(code, salt);
 
-        if ((await this.factory.provider.getCode(contractAddress)) == '0x') {
+        if ((await this.factory.provider.getCode(contractAddress)) === '0x') {
             console.log(`[factory] Preparing to deploy ${artefact.contractName} ...`);
             await waitTx(
                 options.call
@@ -105,17 +152,12 @@ class EthersDeployer {
                 `[factory] ${artefact.contractName} already deployed at ${contractAddress}`,
             );
         }
+
         const instance = await artefact.at(contractAddress);
         artefact.setAsDeployed(instance);
     }
 
-    /**
-     * Get placeholder to be replaced with library address for a given contract.
-     * @param libraryArtefact artefact of the library
-     * @param contractArtefact artefact of the contract to be linked with the library
-     * @returns the placeholder to be replaced
-     */
-    getLinkPlaceholder(libraryArtefact, contractArtefact) {
+    getLinkPlaceholder(libraryArtefact: Artefact, contractArtefact: Artefact): string | undefined {
         const hardhatLibraryArtifact = libraryArtefact._hArtifact;
         const hardhatContractArtifact = contractArtefact._hArtifact;
         if (hardhatContractArtifact.linkReferences) {
@@ -123,15 +165,14 @@ class EthersDeployer {
                 hardhatContractArtifact.linkReferences[hardhatLibraryArtifact.sourceName];
             if (linkSourceName) {
                 const firstLinkData = linkSourceName[hardhatLibraryArtifact.contractName][0];
-                // linkPlaceholder code from:
-                // https://github.com/NomicFoundation/hardhat/blob/v1.3.3/packages/buidler-truffle5/src/artifacts.ts#L123
                 return contractArtefact.bytecode.substr(
                     firstLinkData.start * 2 + 2,
                     firstLinkData.length * 2,
                 );
             }
         }
+        return undefined;
     }
 }
 
-module.exports = { EthersDeployer, factoryAddress: FACTORY.address };
+export const factoryAddress = FACTORY.address;
