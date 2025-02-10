@@ -16,7 +16,7 @@ interface FactoryConfig {
     abi: any[];
 }
 
-const FACTORY: FactoryConfig =
+const factoryConfig: FactoryConfig =
     config.chains.default.asset === 'Token' && hre.network.name.includes('hardhat')
         ? factoryShanghaiJson
         : factoryJson;
@@ -31,22 +31,25 @@ export class EthersDeployer {
 
     constructor(wallet: SignerWithAddress) {
         this.factoryAsPromise = new Promise(async (resolve, reject) => {
-            if ((await wallet.provider!.getCode(FACTORY.address)) !== '0x') {
+            if ((await wallet.provider!.getCode(factoryConfig.address)) !== '0x') {
                 console.log(`→ Factory is available on this network`);
             } else {
                 try {
                     console.log(`→ Factory is not yet deployed on this network`);
                     await waitTx(
-                        wallet.sendTransaction({ to: FACTORY.deployer, value: FACTORY.cost }),
+                        wallet.sendTransaction({
+                            to: factoryConfig.deployer,
+                            value: factoryConfig.cost,
+                        }),
                     );
-                    await waitTx(wallet.provider!.sendTransaction(FACTORY.tx));
+                    await waitTx(wallet.provider!.sendTransaction(factoryConfig.tx));
                     console.log(`→ Factory successfully deployed`);
                 } catch (e) {
                     console.log(`→ Error deploying the factory`);
                     reject(e);
                 }
             }
-            this.factory = new ethers.Contract(FACTORY.address, FACTORY.abi, wallet);
+            this.factory = new ethers.Contract(factoryConfig.address, factoryConfig.abi, wallet);
             resolve(this.factory);
         });
     }
@@ -56,4 +59,4 @@ export class EthersDeployer {
     }
 }
 
-export const factoryAddress = FACTORY.address;
+export const factoryAddress = factoryConfig.address;
