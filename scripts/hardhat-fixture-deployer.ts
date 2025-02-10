@@ -6,7 +6,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
 import { IexecInterfaceNative__factory } from '../typechain';
 import { getIexecAccounts } from '../utils/poco-tools';
-const { resetNetworkToInitialState } = require('./common-test-snapshot');
+import { resetNetworkToInitialState } from './common-test-snapshot';
 const deploy = require('../deploy/0_deploy');
 const deployEns = require('../deploy/1_deploy-ens');
 
