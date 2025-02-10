@@ -32,17 +32,17 @@ export class EthersDeployer {
     constructor(wallet: SignerWithAddress) {
         this.factoryAsPromise = new Promise(async (resolve, reject) => {
             if ((await wallet.provider!.getCode(FACTORY.address)) !== '0x') {
-                console.debug(`→ Factory is available on this network`);
+                console.log(`→ Factory is available on this network`);
             } else {
                 try {
-                    console.debug(`→ Factory is not yet deployed on this network`);
+                    console.log(`→ Factory is not yet deployed on this network`);
                     await waitTx(
                         wallet.sendTransaction({ to: FACTORY.deployer, value: FACTORY.cost }),
                     );
                     await waitTx(wallet.provider!.sendTransaction(FACTORY.tx));
-                    console.debug(`→ Factory successfully deployed`);
+                    console.log(`→ Factory successfully deployed`);
                 } catch (e) {
-                    console.debug(`→ Error deploying the factory`);
+                    console.log(`→ Error deploying the factory`);
                     reject(e);
                 }
             }
