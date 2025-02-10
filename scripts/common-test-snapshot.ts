@@ -1,9 +1,7 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-
-declare const hre: HardhatRuntimeEnvironment;
+import hre from 'hardhat';
 
 export async function resetNetworkToInitialState(): Promise<void> {
     console.log(
