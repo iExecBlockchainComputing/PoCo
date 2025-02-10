@@ -6,6 +6,11 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+- Migrate scripts to TypeScript: (#184)
+    - getFunctionSignatures.js
+    - common-test-snapshot.js
+    - test-storage.js
+    - timelock.js
 - Purge Truffle leftovers (#180, #181, #182)
 - Sunset Jenkins pipeline (#178)
 - Re-use variable in `IexecPoco2Delegate` in `contribute(...)` function. (#168)
