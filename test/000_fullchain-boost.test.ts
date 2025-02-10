@@ -17,7 +17,7 @@ import {
     TestClient__factory,
     WorkerpoolInterface__factory,
 } from '../typechain';
-import constants from '../utils/constants';
+import * as constants from '../utils/constants';
 import {
     OrdersActors,
     OrdersAssets,

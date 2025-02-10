@@ -33,7 +33,7 @@ import {
     TestClient,
     TestClient__factory,
 } from '../../../typechain';
-import constants from '../../../utils/constants';
+import * as constants from '../../../utils/constants';
 import {
     IexecOrders,
     OrdersActors,

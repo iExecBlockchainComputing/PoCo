@@ -1,9 +1,19 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-const ethers = require('ethers');
+import { TypedDataDomain, TypedDataField, ethers } from 'ethers';
+import hre from 'hardhat';
 
-const TYPES = {
+interface WalletInfo {
+    privateKey?: string;
+    address?: string;
+}
+
+interface Types {
+    [key: string]: Array<TypedDataField>;
+}
+
+const TYPES: Types = {
     EIP712Domain: [
         { type: 'string', name: 'name' },
         { type: 'string', name: 'version' },
@@ -77,9 +87,9 @@ const TYPES = {
     ],
 };
 
-function buildTypes(primaryType) {
+function buildTypes(primaryType: string): Types {
     const OPERATION = 'Operation';
-    const types = {
+    const types: Types = {
         [primaryType]: TYPES[primaryType],
     };
 
@@ -92,7 +102,12 @@ function buildTypes(primaryType) {
     return types;
 }
 
-function eth_signTypedData(primaryType, message, domain, wallet) {
+async function eth_signTypedData(
+    primaryType: string,
+    message: Record<string, any>,
+    domain: TypedDataDomain,
+    wallet: WalletInfo,
+): Promise<string> {
     return new Promise((resolve, reject) => {
         const typedDataDomain = {
             name: domain.name,
@@ -108,7 +123,12 @@ function eth_signTypedData(primaryType, message, domain, wallet) {
             const walletInstance = new ethers.Wallet(wallet.privateKey, hre.ethers.provider);
             signerPromise = Promise.resolve(walletInstance);
         } else {
-            signerPromise = hre.ethers.getSigner(wallet.address);
+            if (wallet.address) {
+                signerPromise = hre.ethers.getSigner(wallet.address);
+            } else {
+                reject(new Error('Wallet address is undefined'));
+                return;
+            }
         }
 
         signerPromise
@@ -118,15 +138,24 @@ function eth_signTypedData(primaryType, message, domain, wallet) {
     });
 }
 
-function signStruct(primaryType, message, domain, wallet) {
+export async function signStruct(
+    primaryType: string,
+    message: Record<string, any>,
+    domain: TypedDataDomain,
+    wallet: WalletInfo,
+): Promise<Record<string, any>> {
     return eth_signTypedData(primaryType, message, domain, wallet).then((sign) => {
         message.sign = sign;
         return message;
     });
 }
 
-function hashStruct(primaryType, message, domain) {
-    let typedDataDomain = {
+export function hashStruct(
+    primaryType: string,
+    message: Record<string, any>,
+    domain: TypedDataDomain,
+): string {
+    const typedDataDomain: TypedDataDomain = {
         name: domain.name,
         version: domain.version,
         chainId: domain.chainId,
@@ -138,13 +167,3 @@ function hashStruct(primaryType, message, domain) {
 
     return ethers.utils._TypedDataEncoder.hash(typedDataDomain, types, message);
 }
-
-/*****************************************************************************
- *                                  MODULE                                   *
- *****************************************************************************/
-module.exports = {
-    utils: {
-        signStruct,
-        hashStruct,
-    },
-};
