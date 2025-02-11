@@ -1,13 +1,15 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { duration } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
 import hre, { ethers } from 'hardhat';
 import { TimelockController__factory } from '../typechain';
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
 const CONFIG = require('../config/config.json');
 
 /**
- * Deploy TimelockController contract
+ * Deploy TimelockController contract using the generic factory.  
+
  */
 module.exports = async function () {
     console.log('Deploying TimelockController..');
@@ -20,8 +22,9 @@ module.exports = async function () {
     const factoryDeployer = new FactoryDeployerHelper(owner, salt);
 
     // Deploy TimelockController
-    const WEEK_IN_SECONDS = 86400 * 7; // 7 days
-    const PROPOSERS_AND_EXECUTORS = [
+    const ONE_WEEK_IN_SECONDS = duration.days(7);
+    // Proposers and executors.
+    const ADMINISTRATORS = [
         '0x9ED07B5DB7dAD3C9a0baA3E320E68Ce779063249',
         '0x36e19bc6374c9cea5eb86622cf04c6b144b5b59c',
         '0x56fa2d29a54b5349cd5d88ffa584bffb2986a656',
@@ -29,8 +32,6 @@ module.exports = async function () {
         '0xb5ad0c32fc5fcb5e4cba4c81f523e6d47a82ecd7',
         '0xb906dc99340d0f3162dbc5b2539b0ad075649bcf',
     ];
-
-    const ADMINISTRATORS = PROPOSERS_AND_EXECUTORS;
     const PROPOSERS = [
         '0x0B3a38b0A47aB0c5E8b208A703de366751Df5916', // v5 deployer
     ];
@@ -38,10 +39,10 @@ module.exports = async function () {
         '0x0B3a38b0A47aB0c5E8b208A703de366751Df5916', // v5 deployer
     ];
 
-    const constructorArgs = [WEEK_IN_SECONDS, ADMINISTRATORS, PROPOSERS, EXECUTORS];
+    const constructorArgs = [ONE_WEEK_IN_SECONDS, ADMINISTRATORS, PROPOSERS, EXECUTORS];
 
     console.log('Constructor Arguments:', {
-        minDelay: WEEK_IN_SECONDS,
+        minDelay: ONE_WEEK_IN_SECONDS,
         administrators: ADMINISTRATORS,
         proposers: PROPOSERS,
         executors: EXECUTORS,
