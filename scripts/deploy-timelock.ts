@@ -8,10 +8,10 @@ import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
 const CONFIG = require('../config/config.json');
 
 /**
- * Deploy TimelockController contract using the generic factory.  
-
+ * Deploy TimelockController contract using the generic factory.
  */
-module.exports = async function () {
+
+export const deploy = async () => {
     console.log('Deploying TimelockController..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
@@ -23,7 +23,6 @@ module.exports = async function () {
 
     // Deploy TimelockController
     const ONE_WEEK_IN_SECONDS = duration.days(7);
-    // Proposers and executors.
     const ADMINISTRATORS = [
         '0x9ED07B5DB7dAD3C9a0baA3E320E68Ce779063249',
         '0x36e19bc6374c9cea5eb86622cf04c6b144b5b59c',
@@ -38,20 +37,14 @@ module.exports = async function () {
     const EXECUTORS = [
         '0x0B3a38b0A47aB0c5E8b208A703de366751Df5916', // v5 deployer
     ];
-
     const constructorArgs = [ONE_WEEK_IN_SECONDS, ADMINISTRATORS, PROPOSERS, EXECUTORS];
-
-    console.log('Constructor Arguments:', {
-        minDelay: ONE_WEEK_IN_SECONDS,
-        administrators: ADMINISTRATORS,
-        proposers: PROPOSERS,
-        executors: EXECUTORS,
-    });
-
     const timelockFactory = new TimelockController__factory(owner);
-
     await factoryDeployer.deployWithFactory(timelockFactory, constructorArgs);
 };
 
-// Add deployment tags
-module.exports.tags = ['TimelockController'];
+if (require.main === module) {
+    deploy().catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
+}
