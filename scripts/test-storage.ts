@@ -55,7 +55,7 @@ export function checkStorageLayoutCompatibility(): boolean {
         }
     }
 
-    let hasCompatibleLayouts = true;
+    let hasIncompatibleLayouts = false;
 
     // Check compatibility between versions
     for (const [name, versions] of Object.entries(layouts)) {
@@ -76,14 +76,14 @@ export function checkStorageLayoutCompatibility(): boolean {
                         console.log(`- ${v} → ${keys[i + 1]}: storage layout is compatible`);
                     } else {
                         console.log(report.explain());
-                        hasCompatibleLayouts = false;
+                        hasIncompatibleLayouts = true;
                     }
                 });
                 break;
         }
     }
 
-    return hasCompatibleLayouts;
+    return !hasIncompatibleLayouts;
 }
 
 // Run the check if this file is being run directly
