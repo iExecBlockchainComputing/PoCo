@@ -1,9 +1,13 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
 import { ERC1538Update } from '../typechain';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
+
+interface AbiParameter {
+    type: string;
+    components?: AbiParameter[];
+}
 
 /**
  * Link a contract to an ERC1538 proxy.
@@ -29,4 +33,25 @@ export async function linkContractToProxy(
         .catch(() => {
             throw new Error(`Failed to link ${contractName}`);
         });
+}
+
+function getSerializedObject(entry: AbiParameter): string {
+    return entry.type === 'tuple'
+        ? `(${entry.components?.map(getSerializedObject).join(',') ?? ''})`
+        : entry.type;
+}
+
+function getFunctionSignatures(abi: any[]): string {
+    return [
+        ...abi.filter((entry) => entry.type === 'receive').map(() => 'receive;'),
+        ...abi.filter((entry) => entry.type === 'fallback').map(() => 'fallback;'),
+        ...abi
+            .filter((entry) => entry.type === 'function')
+            .map(
+                (entry) =>
+                    `${entry.name}(${entry.inputs?.map(getSerializedObject).join(',') ?? ''});`,
+            ),
+    ]
+        .filter(Boolean)
+        .join('');
 }
