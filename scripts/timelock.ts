@@ -30,12 +30,26 @@ module.exports = async function () {
         '0xb906dc99340d0f3162dbc5b2539b0ad075649bcf',
     ];
 
-    await factoryDeployer.deployWithFactory(new TimelockController__factory(), [
-        WEEK_IN_SECONDS,
-        PROPOSERS_AND_EXECUTORS,
-        PROPOSERS_AND_EXECUTORS,
-        owner.address,
-    ]);
+    const ADMINISTRATORS = PROPOSERS_AND_EXECUTORS;
+    const PROPOSERS = [
+        '0x0B3a38b0A47aB0c5E8b208A703de366751Df5916', // v5 deployer
+    ];
+    const EXECUTORS = [
+        '0x0B3a38b0A47aB0c5E8b208A703de366751Df5916', // v5 deployer
+    ];
+
+    const constructorArgs = [WEEK_IN_SECONDS, ADMINISTRATORS, PROPOSERS, EXECUTORS];
+
+    console.log('Constructor Arguments:', {
+        minDelay: WEEK_IN_SECONDS,
+        administrators: ADMINISTRATORS,
+        proposers: PROPOSERS,
+        executors: EXECUTORS,
+    });
+
+    const timelockFactory = new TimelockController__factory(owner);
+
+    await factoryDeployer.deployWithFactory(timelockFactory, constructorArgs);
 };
 
 // Add deployment tags
