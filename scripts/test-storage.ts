@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { ValidationOptions } from '@openzeppelin/upgrades-core';
 import { solcInputOutputDecoder } from '@openzeppelin/upgrades-core/dist/src-decoder';
 import { getStorageUpgradeReport } from '@openzeppelin/upgrades-core/dist/storage';
 import { extractStorageLayout } from '@openzeppelin/upgrades-core/dist/storage/extract';
@@ -66,18 +67,10 @@ export function checkStorageLayoutCompatibility(): boolean {
             default:
                 console.log(`[${name}]`);
                 keys.slice(0, -1).forEach((v, i) => {
-                    const validationOptions = {
-                        unsafeAllowRenames: true,
-                        unsafeSkipStorageCheck: true,
-                        unsafeAllowCustomTypes: true,
-                        unsafeAllowLinkedLibraries: true,
-                        unsafeAllow: [],
-                        kind: 'transparent' as const,
-                    };
                     const report = getStorageUpgradeReport(
                         versions[v],
                         versions[keys[i + 1]],
-                        validationOptions,
+                        {} as Required<ValidationOptions>,
                     );
                     if (report.ok) {
                         console.log(`- ${v} → ${keys[i + 1]}: storage layout is compatible`);
