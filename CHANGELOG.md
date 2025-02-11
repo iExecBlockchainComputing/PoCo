@@ -6,6 +6,8 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+- Migrate scripts to TypeScript: (#184)
+    - `getFunctionSignatures.js`, `common-test-snapshot.js`, `test-storage.js`, `timelock.js`
 - Migrated utility files to TypeScript : (#183)
   - `FactoryDeployer.js`, `constants.js`, `odb-tools.js`
   - Removed deprecated `scripts/ens/sidechain.js`
