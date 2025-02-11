@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { ValidationOptions } from '@openzeppelin/upgrades-core';
@@ -55,7 +55,7 @@ export function checkStorageLayoutCompatibility(): boolean {
         }
     }
 
-    let hasIncompatibleLayouts = false;
+    let hasCompatibleLayouts = true;
 
     // Check compatibility between versions
     for (const [name, versions] of Object.entries(layouts)) {
@@ -76,14 +76,14 @@ export function checkStorageLayoutCompatibility(): boolean {
                         console.log(`- ${v} → ${keys[i + 1]}: storage layout is compatible`);
                     } else {
                         console.log(report.explain());
-                        hasIncompatibleLayouts = true;
+                        hasCompatibleLayouts = false;
                     }
                 });
                 break;
         }
     }
 
-    return !hasIncompatibleLayouts;
+    return hasCompatibleLayouts;
 }
 
 // Run the check if this file is being run directly
