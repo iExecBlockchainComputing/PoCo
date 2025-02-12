@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { ContractFactory } from '@ethersproject/contracts';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { ContractFactory } from 'ethers';
 import { deployments } from 'hardhat';
 
 /**
@@ -22,14 +22,15 @@ export async function deploy(
     const contractInstance = await contractFactory
         .connect(deployer)
         .deploy(...(constructorArgs ?? []))
-        .then((x) => x.deployed());
+        .then((x) => x.waitForDeployment());
     const contractName = getBaseNameFromContractFactory(contractFactory);
+    const contractAddress = await contractInstance.getAddress();
     await deployments.save(contractName, {
         abi: (contractFactory as any).constructor.abi,
-        address: contractInstance.address,
+        address: contractAddress,
     });
     if (!opts || (opts && !opts.quiet)) {
-        console.log(`${contractName}: ${contractInstance.address}`);
+        console.log(`${contractName}: ${contractAddress}`);
     }
     return contractInstance;
 }

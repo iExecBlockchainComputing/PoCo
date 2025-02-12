@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { ContractFactory } from '@ethersproject/contracts';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { ContractFactory } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { GenericFactory, GenericFactory__factory } from '../typechain';
 import { getBaseNameFromContractFactory } from './deploy-tools';
@@ -28,7 +28,8 @@ export class FactoryDeployerHelper {
         call?: string,
     ) {
         await this.init.ready(); // Deploy GenericFactory if not already done
-        let bytecode = contractFactory.getDeployTransaction(...(constructorArgs ?? [])).data;
+        let bytecode = (await contractFactory.getDeployTransaction(...(constructorArgs ?? [])))
+            .data;
         if (!bytecode) {
             throw new Error('Failed to prepare bytecode');
         }
