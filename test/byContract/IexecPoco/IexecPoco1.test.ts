@@ -7,7 +7,6 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     ERC1271Mock,
     ERC1271Mock__factory,
@@ -41,6 +40,7 @@ import {
 } from '../../../utils/poco-tools';
 import { compactSignature } from '../../../utils/tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 /*
  * TODO add Standard tests.

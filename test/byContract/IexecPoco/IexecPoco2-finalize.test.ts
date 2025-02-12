@@ -6,7 +6,6 @@ import { loadFixture, setStorageAt, time } from '@nomicfoundation/hardhat-networ
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
@@ -23,6 +22,7 @@ import {
     getIexecAccounts,
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const hexResults = ethers.utils.hexlify(results);

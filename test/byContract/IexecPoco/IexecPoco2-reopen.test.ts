@@ -6,7 +6,6 @@ import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helper
 import { setNextBlockTimestamp } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
@@ -19,6 +18,7 @@ import {
     getIexecAccounts,
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const appPrice = 1000;
 const datasetPrice = 1_000_000;

@@ -5,7 +5,6 @@ import { AddressZero, HashZero } from '@ethersproject/constants';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { assert, expect } from 'chai';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { NULL } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -21,6 +20,7 @@ import {
     setNextBlockTimestamp,
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 const CONFIG = require('../../../config/config.json');
 
 const timeRef = CONFIG.categories[0].workClockTimeRef;
