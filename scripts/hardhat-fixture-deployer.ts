@@ -4,15 +4,13 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
+import deploy from '../deploy/0_deploy';
+import deployEns from '../deploy/1_deploy-ens';
 import { IexecInterfaceNative__factory } from '../typechain';
 import { getIexecAccounts } from '../utils/poco-tools';
-const deploy = require('../deploy/0_deploy');
-const deployEns = require('../deploy/1_deploy-ens');
 
 // TODO update and move to test/utils/
 
-// Anonymous functions cannot be used as fixtures, hence we need to wrap body
-// in a method which will be called by `loadFixture`.
 async function deployAll() {
     await deploy();
     await deployEns();

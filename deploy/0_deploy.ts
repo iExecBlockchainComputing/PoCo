@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import fs from 'fs';
 import hre, { ethers } from 'hardhat';
-import path from 'path';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
@@ -53,7 +51,7 @@ const CONFIG = require('../config/config.json');
  * The`hardhat-deploy` plugin is currently being under used compared to all
  * features available in it.
  */
-module.exports = async function () {
+export default async function deploy() {
     console.log('Deploying PoCo..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
@@ -84,8 +82,6 @@ module.exports = async function () {
         [erc1538UpdateAddress],
         transferOwnershipCall,
     );
-    // Save addresses of deployed PoCo contracts for later use
-    saveDeployedAddress('ERC1538Proxy', erc1538ProxyAddress);
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${erc1538.address}`);
     // Deploy library & modules
@@ -216,7 +212,7 @@ module.exports = async function () {
     for (let i = 0; i < catCountAfter.toNumber(); i++) {
         console.log(`Category ${i}: ${await iexecAccessorsInstance.viewCategory(i)}`);
     }
-};
+}
 
 async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
     return token // token
@@ -229,29 +225,3 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
                   return contract.address;
               });
 }
-
-// TODO [optional]: Use hardhat-deploy to save addresses automatically
-// https://github.com/wighawag/hardhat-deploy/tree/master#hardhat-deploy-in-a-nutshell
-// TODO remove this.
-/**
- * Save addresses of deployed contracts (since hardhat does not do it for us).
- * @param contractName contract name to deploy
- * @param deployedAddress address where contract where deployed
- */
-function saveDeployedAddress(contractName: string, deployedAddress: string) {
-    const chainId = hre.network.config.chainId || 0;
-    const BUILD_DIR = '../build';
-    fs.writeFileSync(
-        path.resolve(__dirname, BUILD_DIR, `${contractName}.json`),
-        JSON.stringify({
-            networks: {
-                [chainId]: {
-                    address: deployedAddress,
-                },
-            },
-        }),
-    );
-    console.log(`Saved deployment at ${deployedAddress} for ${contractName}`);
-}
-
-module.exports.tags = ['IexecPocoBoostDelegate'];

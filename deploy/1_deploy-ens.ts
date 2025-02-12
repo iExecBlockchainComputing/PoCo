@@ -16,7 +16,7 @@ import {
 } from '../typechain';
 import { deploy } from '../utils/deploy-tools';
 
-module.exports = async function () {
+export default async function deployEns() {
     console.log('Deploying and configuring ENS..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     if (chainId < 1000) {
@@ -138,4 +138,4 @@ module.exports = async function () {
     function labelhash(label: string) {
         return ethers.utils.id(label.toLowerCase());
     }
-};
+}
