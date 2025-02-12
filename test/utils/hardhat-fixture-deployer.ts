@@ -4,12 +4,11 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import deploy from '../deploy/0_deploy';
-import deployEns from '../deploy/1_deploy-ens';
-import { IexecInterfaceNative__factory } from '../typechain';
-import { getIexecAccounts } from '../utils/poco-tools';
-
-// TODO update and move to test/utils/
+import config from '../../config/config.json';
+import deploy from '../../deploy/0_deploy';
+import deployEns from '../../deploy/1_deploy-ens';
+import { IexecInterfaceNative__factory } from '../../typechain';
+import { getIexecAccounts } from '../../utils/poco-tools';
 
 async function deployAll() {
     await deploy();
@@ -18,7 +17,8 @@ async function deployAll() {
 }
 
 async function setUpLocalFork() {
-    const proxyAddress = '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f';
+    const chainId = (await ethers.provider.getNetwork()).chainId;
+    const proxyAddress = config.chains[chainId].v5.ERC1538Proxy;
     // Send RLCs to default accounts
     const srlcRichSigner = await ethers.getImpersonatedSigner(proxyAddress);
     const otherAccountInitAmount =

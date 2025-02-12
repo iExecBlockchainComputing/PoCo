@@ -4,13 +4,13 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const appPrice = 1;
 const datasetPrice = 2;

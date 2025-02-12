@@ -6,7 +6,6 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     App,
     AppRegistry,
@@ -30,6 +29,7 @@ import {
 } from '../../../typechain';
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 describe('Assets', () => {
     let proxyAddress: string;

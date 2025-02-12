@@ -4,11 +4,11 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import { TaskStatusEnum, buildUtf8ResultAndDigest, getIexecAccounts } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const appPrice = 1000;

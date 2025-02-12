@@ -6,7 +6,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
 import hre, { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
 import {
     IexecAccessors,
     IexecAccessors__factory,
@@ -37,6 +36,7 @@ import {
     setNextBlockTimestamp,
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
 
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0;

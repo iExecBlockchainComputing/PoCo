@@ -7,7 +7,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceToken,
     IexecInterfaceToken__factory,
@@ -15,6 +14,7 @@ import {
     RLC__factory,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const amount = ethers.utils.parseUnits(BigNumber.from(100).toString(), 9);
 

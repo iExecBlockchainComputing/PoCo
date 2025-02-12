@@ -4,9 +4,9 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { Category, getIexecAccounts } from '../../../utils/poco-tools';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 const CONFIG = require('../../../config/config.json');
 
 const name = 'name';

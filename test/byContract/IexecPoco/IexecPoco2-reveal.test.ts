@@ -6,7 +6,6 @@ import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { NULL } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -20,6 +19,7 @@ import {
     getIexecAccounts,
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const volume = 1;
 const standardDealTag = HashZero;

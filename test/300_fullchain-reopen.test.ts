@@ -6,9 +6,9 @@ import { loadFixture, mine } from '@nomicfoundation/hardhat-network-helpers';
 import { setNextBlockTimestamp } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { loadHardhatFixtureDeployment } from '../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
+import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
 
 import {
     TaskStatusEnum,
