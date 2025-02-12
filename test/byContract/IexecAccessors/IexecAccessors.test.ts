@@ -6,7 +6,6 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { deployments, ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import {
     OrdersAssets,
@@ -24,6 +23,7 @@ import {
     getTaskId,
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 /**
  * Test state view functions.

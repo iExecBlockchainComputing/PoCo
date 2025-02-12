@@ -6,7 +6,6 @@ import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-help
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
@@ -15,6 +14,7 @@ import {
     IexecMaintenanceExtra__factory,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const randomAddress = () => ethers.Wallet.createRandom().address;
 const configureParams = {

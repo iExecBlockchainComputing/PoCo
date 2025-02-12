@@ -4,13 +4,11 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import config from '../config/config.json';
-import deploy from '../deploy/0_deploy';
-import deployEns from '../deploy/1_deploy-ens';
-import { IexecInterfaceNative__factory } from '../typechain';
-import { getIexecAccounts } from '../utils/poco-tools';
-
-// TODO update and move to test/utils/
+import config from '../../config/config.json';
+import deploy from '../../deploy/0_deploy';
+import deployEns from '../../deploy/1_deploy-ens';
+import { IexecInterfaceNative__factory } from '../../typechain';
+import { getIexecAccounts } from '../../utils/poco-tools';
 
 async function deployAll() {
     await deploy();

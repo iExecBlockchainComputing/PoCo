@@ -8,7 +8,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import hre, { deployments, ethers } from 'hardhat';
 import CONFIG from '../../../config/config.json';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     AppRegistry,
     AppRegistry__factory,
@@ -31,6 +30,7 @@ import {
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { BN2Address } from '../../../utils/tools';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 const randomAddress = () => ethers.Wallet.createRandom().address;
 
 describe('Registries', () => {

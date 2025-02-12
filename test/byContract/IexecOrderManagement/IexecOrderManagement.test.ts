@@ -5,7 +5,6 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
@@ -15,6 +14,7 @@ import { NULL } from '../../../utils/constants';
 import { buildOrders, createOrderOperation } from '../../../utils/createOrders';
 import { OrderOperationEnum, getIexecAccounts } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const volume = 3;
 const someSignature = ethers.utils.hexZeroPad('0x1', 65); // non empty signature

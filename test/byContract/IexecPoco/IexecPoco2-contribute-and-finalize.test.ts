@@ -6,7 +6,6 @@ import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
@@ -25,6 +24,7 @@ import {
     setNextBlockTimestamp,
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 const CONFIG = require('../../../config/config.json');
 
 const appPrice = 1000;

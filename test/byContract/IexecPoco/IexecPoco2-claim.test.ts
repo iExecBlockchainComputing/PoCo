@@ -5,7 +5,6 @@ import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helper
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
@@ -17,6 +16,7 @@ import {
     getTaskId,
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import * as constants from './../../../utils/constants';
 
 const categoryTime = 300;
