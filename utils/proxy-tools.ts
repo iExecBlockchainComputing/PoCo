@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { ERC1538Update } from '../typechain';
@@ -24,9 +24,7 @@ export async function linkContractToProxy(
     await proxy
         .updateContract(
             contractAddress,
-            // TODO: Use contractFactory.interface.functions when moving to ethers@v6
-            // https://github.com/ethers-io/ethers.js/issues/1069
-            getFunctionSignatures(contractFactory.constructor.abi),
+            contractFactory.interface.functions,
             'Linking ' + contractName,
         )
         .then((tx) => tx.wait())
@@ -39,19 +37,4 @@ function getSerializedObject(entry: AbiParameter): string {
     return entry.type === 'tuple'
         ? `(${entry.components?.map(getSerializedObject).join(',') ?? ''})`
         : entry.type;
-}
-
-function getFunctionSignatures(abi: any[]): string {
-    return [
-        ...abi.filter((entry) => entry.type === 'receive').map(() => 'receive;'),
-        ...abi.filter((entry) => entry.type === 'fallback').map(() => 'fallback;'),
-        ...abi
-            .filter((entry) => entry.type === 'function')
-            .map(
-                (entry) =>
-                    `${entry.name}(${entry.inputs?.map(getSerializedObject).join(',') ?? ''});`,
-            ),
-    ]
-        .filter(Boolean)
-        .join('');
 }

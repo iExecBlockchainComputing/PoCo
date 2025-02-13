@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain, TypedDataField, ethers } from 'ethers';
-import hre from 'hardhat';
+import { TypedDataDomain, TypedDataEncoder, TypedDataField, Wallet } from 'ethers';
+import { ethers } from 'hardhat';
 
 interface WalletInfo {
     privateKey?: string;
@@ -120,11 +120,11 @@ async function eth_signTypedData(
         let signerPromise;
 
         if (wallet.privateKey) {
-            const walletInstance = new ethers.Wallet(wallet.privateKey, hre.ethers.provider);
+            const walletInstance = new Wallet(wallet.privateKey, ethers.provider);
             signerPromise = Promise.resolve(walletInstance);
         } else {
             if (wallet.address) {
-                signerPromise = hre.ethers.getSigner(wallet.address);
+                signerPromise = ethers.getSigner(wallet.address);
             } else {
                 reject(new Error('Wallet address is undefined'));
                 return;
@@ -132,7 +132,7 @@ async function eth_signTypedData(
         }
 
         signerPromise
-            .then((signer) => signer._signTypedData(typedDataDomain, types, message))
+            .then((signer) => signer.signTypedData(typedDataDomain, types, message))
             .then(resolve)
             .catch(reject);
     });
@@ -165,5 +165,5 @@ export function hashStruct(
         [primaryType]: TYPES[primaryType],
     };
 
-    return ethers.utils._TypedDataEncoder.hash(typedDataDomain, types, message);
+    return TypedDataEncoder.hash(typedDataDomain, types, message);
 }

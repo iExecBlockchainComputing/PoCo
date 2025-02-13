@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain } from '@ethersproject/abstract-signer';
-import { BigNumber } from '@ethersproject/bignumber';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { BigNumberish, TypedDataDomain, TypedDataEncoder } from 'ethers';
 import { IexecLibOrders_v5 } from '../typechain';
 import * as constants from './constants';
 import { hashStruct, signStruct } from './odb-tools';
@@ -95,7 +93,7 @@ export class IexecOrders {
 
 export interface OrderOperation {
     order: Record<string, any>;
-    operation: BigNumber;
+    operation: BigNumberish;
     sign: string;
 }
 
@@ -168,7 +166,7 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
  * Create an order operation from an existing order.
  */
 export function createOrderOperation<OrderType>(order: OrderType, operation: OrderOperationEnum) {
-    return { order, operation: BigNumber.from(operation), sign: constants.NULL.SIGNATURE };
+    return { order, operation: BigInt(operation), sign: constants.NULL.SIGNATURE };
 }
 
 export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
@@ -263,7 +261,7 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
             verifyingContract: '0x0000000000000000000000000000000000000001',
         }; // testing purposes
     }
-    const domainSeparator = ethers.utils._TypedDataEncoder.hashDomain(domain);
+    const domainSeparator = TypedDataEncoder.hashDomain(domain);
     return { domain, domainSeparator };
 }
 
@@ -294,7 +292,7 @@ export async function signOrder(
     domain: TypedDataDomain,
     order: Record<string, any>,
     signer: SignerWithAddress,
-): Promise<void> {
+): Promise<Record<string, any>> {
     return signStruct(getTypeOf(order), order, domain, signer);
 }
 
@@ -306,7 +304,7 @@ export async function signOrderOperation(
     domain: TypedDataDomain,
     orderOperation: OrderOperation,
     signer: SignerWithAddress,
-): Promise<void> {
+): Promise<Record<string, any>> {
     return signStruct(
         getTypeOf(orderOperation.order) + 'Operation',
         orderOperation,

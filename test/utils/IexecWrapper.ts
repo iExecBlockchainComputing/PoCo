@@ -517,7 +517,7 @@ async function extractRegistryEntryAddress(
     receipt: ContractReceipt,
     registryInstanceAddress: string,
 ): Promise<string> {
-    const events = extractEventsFromReceipt(receipt, registryInstanceAddress, 'Transfer');
+    const events = extractEventsFromReceipt(receipt.logs, 'Transfer');
     if (events && events[0].args) {
         const lowercaseAddress = ethers.utils.hexZeroPad(
             BigNumber.from(events[0].args['tokenId']).toHexString(),
