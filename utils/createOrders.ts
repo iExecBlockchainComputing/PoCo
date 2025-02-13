@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { BigNumber } from '@ethersproject/bignumber';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { TypedDataDomain, TypedDataEncoder } from 'ethers';
 import { IexecLibOrders_v5 } from '../typechain';
@@ -94,7 +93,7 @@ export class IexecOrders {
 
 export interface OrderOperation {
     order: Record<string, any>;
-    operation: BigNumber;
+    operation: number;
     sign: string;
 }
 
