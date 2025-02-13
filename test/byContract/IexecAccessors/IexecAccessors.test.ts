@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero, HashZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
+import { ZeroAddress, ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
     IexecInterfaceNative,
@@ -141,10 +141,10 @@ describe('IexecAccessors', async () => {
         expect(deal.workerpool.price).to.equal(workerpoolPrice);
         expect(deal.trust).to.equal(1);
         expect(deal.category).to.equal(0);
-        expect(deal.tag).to.equal(HashZero); // Standard
+        expect(deal.tag).to.equal(ZeroHash); // Standard
         expect(deal.requester).to.equal(requester.address);
-        expect(deal.beneficiary).to.equal(AddressZero);
-        expect(deal.callback).to.equal(AddressZero);
+        expect(deal.beneficiary).to.equal(ZeroAddress);
+        expect(deal.callback).to.equal(ZeroAddress);
         expect(deal.params).to.equal('');
         expect(deal.startTime).to.be.greaterThan(0);
         expect(deal.botFirst).to.equal(0);
@@ -187,11 +187,11 @@ describe('IexecAccessors', async () => {
         expect(task.contributionDeadline).to.equal(startTime + timeRef * contributionDeadlineRatio);
         expect(task.revealDeadline).to.equal(0);
         expect(task.finalDeadline).to.equal(startTime + timeRef * finalDeadlineRatio);
-        expect(task.consensusValue).to.equal(HashZero);
+        expect(task.consensusValue).to.equal(ZeroHash);
         expect(task.revealCounter).to.equal(0);
         expect(task.winnerCounter).to.equal(0);
         expect(task.contributors.length).to.equal(0);
-        expect(task.resultDigest).to.equal(HashZero);
+        expect(task.resultDigest).to.equal(ZeroHash);
         expect(task.results).to.equal('0x');
         expect(task.resultsTimestamp).to.equal(0);
         expect(task.resultsCallback).to.equal('0x');
@@ -205,7 +205,7 @@ describe('IexecAccessors', async () => {
         expect(contribution.status).to.equal(ContributionStatusEnum.CONTRIBUTED);
         expect(contribution.resultHash.length).to.equal(66);
         expect(contribution.resultSeal.length).to.equal(66);
-        expect(contribution.enclaveChallenge).to.equal(AddressZero);
+        expect(contribution.enclaveChallenge).to.equal(ZeroAddress);
         expect(contribution.weight).to.equal(1);
     });
 

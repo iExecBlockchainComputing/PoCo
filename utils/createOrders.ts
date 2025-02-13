@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { BigNumber } from '@ethersproject/bignumber';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { TypedDataDomain, TypedDataEncoder } from 'ethers';
 import { IexecLibOrders_v5 } from '../typechain';
 import * as constants from './constants';
 import { hashStruct, signStruct } from './odb-tools';
@@ -263,7 +262,7 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
             verifyingContract: '0x0000000000000000000000000000000000000001',
         }; // testing purposes
     }
-    const domainSeparator = ethers.TypedDataEncoder.hashDomain(domain);
+    const domainSeparator = TypedDataEncoder.hashDomain(domain);
     return { domain, domainSeparator };
 }
 

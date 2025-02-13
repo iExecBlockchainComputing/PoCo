@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { HashZero as hashZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
+import { TypedDataEncoder, ZeroHash } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     IexecInterfaceNative,
@@ -197,7 +197,7 @@ describe('Maintenance', async () => {
     });
 
     async function clearDomainSeparator() {
-        await setDomainSeparatorInStorage(hashZero);
+        await setDomainSeparatorInStorage(ZeroHash);
     }
 
     async function setDomainSeparatorInStorage(domainSeparator: string) {
@@ -213,7 +213,7 @@ describe('Maintenance', async () => {
 
 //TODO: Move to utils
 export async function hashDomain(domain: IexecLibOrders_v5.EIP712DomainStructOutput) {
-    return ethers.TypedDataEncoder.hashDomain({
+    return TypedDataEncoder.hashDomain({
         name: domain.name,
         version: domain.version,
         chainId: domain.chainId,

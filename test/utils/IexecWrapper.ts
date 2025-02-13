@@ -1,12 +1,15 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { LogDescription } from '@ethersproject/abi';
-import { TypedDataDomain } from '@ethersproject/abstract-signer';
-import { AddressZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { ContractTransactionReceipt, Log } from 'ethers';
+import {
+    ContractTransactionReceipt,
+    Log,
+    LogDescription,
+    TypedDataDomain,
+    ZeroAddress,
+} from 'ethers';
 import hre, { ethers } from 'hardhat';
 import config from '../../config/config.json';
 import {
@@ -432,7 +435,7 @@ export class IexecWrapper {
             resultDigest,
             contributor,
         );
-        const enclaveAddress = useEnclave ? this.accounts.enclave.address : AddressZero;
+        const enclaveAddress = useEnclave ? this.accounts.enclave.address : ZeroAddress;
         const enclaveSignature = useEnclave
             ? await buildAndSignPocoClassicEnclaveMessage(
                   resultHash,

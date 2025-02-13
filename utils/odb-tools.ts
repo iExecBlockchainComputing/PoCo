@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain, TypedDataField, ethers } from 'ethers';
+import { TypedDataDomain, TypedDataEncoder, TypedDataField, ethers } from 'ethers';
 import hre from 'hardhat';
 
 interface WalletInfo {
@@ -165,5 +165,5 @@ export function hashStruct(
         [primaryType]: TYPES[primaryType],
     };
 
-    return ethers.TypedDataEncoder.hash(typedDataDomain, types, message);
+    return TypedDataEncoder.hash(typedDataDomain, types, message);
 }
