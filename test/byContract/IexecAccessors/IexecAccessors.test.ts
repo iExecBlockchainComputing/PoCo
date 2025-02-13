@@ -183,6 +183,7 @@ describe('IexecAccessors', async () => {
         expect(task.status).to.equal(TaskStatusEnum.ACTIVE);
         expect(task.dealid).to.equal(dealId);
         expect(task.idx).to.equal(taskIndex);
+        expect(task.timeref).to.equal(timeRef);
         expect(task.contributionDeadline).to.equal(startTime + timeRef * contributionDeadlineRatio);
         expect(task.revealDeadline).to.equal(0);
         expect(task.finalDeadline).to.equal(startTime + timeRef * finalDeadlineRatio);
