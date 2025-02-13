@@ -44,7 +44,6 @@ import {
     getTaskId,
     setNextBlockTimestamp,
 } from '../../utils/poco-tools';
-import { extractEventsFromReceipt } from '../../utils/tools';
 const DEPLOYMENT_CONFIG = config.chains.default;
 
 export class IexecWrapper {
