@@ -32,9 +32,3 @@ export async function linkContractToProxy(
             throw new Error(`Failed to link ${contractName}`);
         });
 }
-
-function getSerializedObject(entry: AbiParameter): string {
-    return entry.type === 'tuple'
-        ? `(${entry.components?.map(getSerializedObject).join(',') ?? ''})`
-        : entry.type;
-}
