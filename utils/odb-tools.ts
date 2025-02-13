@@ -132,7 +132,7 @@ async function eth_signTypedData(
         }
 
         signerPromise
-            .then((signer) => signer._signTypedData(typedDataDomain, types, message))
+            .then((signer) => signer.signTypedData(typedDataDomain, types, message))
             .then(resolve)
             .catch(reject);
     });
@@ -165,5 +165,5 @@ export function hashStruct(
         [primaryType]: TYPES[primaryType],
     };
 
-    return ethers.utils._TypedDataEncoder.hash(typedDataDomain, types, message);
+    return ethers.TypedDataEncoder.hash(typedDataDomain, types, message);
 }

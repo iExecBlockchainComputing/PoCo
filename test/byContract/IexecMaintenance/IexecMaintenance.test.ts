@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HashZero as hashZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import {
@@ -120,9 +120,9 @@ describe('Maintenance', async () => {
             await expect(iexecPoco.importScore(worker.address)).to.be.revertedWithoutReason();
         });
         it('Should not import score when already imported', async () => {
-            const workerScoreImportedSlot = ethers.utils.hexStripZeros(
-                ethers.utils.keccak256(
-                    ethers.utils.defaultAbiCoder.encode(
+            const workerScoreImportedSlot = ethers.stripZerosLeft(
+                ethers.keccak256(
+                    ethers.AbiCoder.defaultAbiCoder().encode(
                         ['address', 'uint256'],
                         [
                             worker.address,
@@ -211,8 +211,9 @@ describe('Maintenance', async () => {
     }
 });
 
-async function hashDomain(domain: IexecLibOrders_v5.EIP712DomainStructOutput) {
-    return ethers.utils._TypedDataEncoder.hashDomain({
+//TODO: Move to utils
+export async function hashDomain(domain: IexecLibOrders_v5.EIP712DomainStructOutput) {
+    return ethers.TypedDataEncoder.hashDomain({
         name: domain.name,
         version: domain.version,
         chainId: domain.chainId,

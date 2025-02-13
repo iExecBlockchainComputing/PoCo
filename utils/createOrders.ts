@@ -168,7 +168,7 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
  * Create an order operation from an existing order.
  */
 export function createOrderOperation<OrderType>(order: OrderType, operation: OrderOperationEnum) {
-    return { order, operation: BigNumber.from(operation), sign: constants.NULL.SIGNATURE };
+    return { order, operation: Number(operation), sign: constants.NULL.SIGNATURE };
 }
 
 export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
@@ -263,7 +263,7 @@ export function buildDomain(domain?: TypedDataDomain | undefined) {
             verifyingContract: '0x0000000000000000000000000000000000000001',
         }; // testing purposes
     }
-    const domainSeparator = ethers.utils._TypedDataEncoder.hashDomain(domain);
+    const domainSeparator = ethers.TypedDataEncoder.hashDomain(domain);
     return { domain, domainSeparator };
 }
 

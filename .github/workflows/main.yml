@@ -38,6 +38,9 @@ jobs:
         run: npm run deploy
       - name: Test Timelock Deployment
         run: npm run deploy:timelock
+      # TODO: Remove before merging to develop
+      - name: Run test
+        run: npm run test test/byContract/IexecAccessors/**
       - name: Run coverage
         run: npm run coverage
       - name: Upload coverage reports to Codecov
