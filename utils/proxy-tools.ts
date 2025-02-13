@@ -4,11 +4,6 @@
 import { ERC1538Update } from '../typechain';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 
-interface AbiParameter {
-    type: string;
-    components?: AbiParameter[];
-}
-
 /**
  * Link a contract to an ERC1538 proxy.
  * @param proxy contract to ERC1538 proxy.
