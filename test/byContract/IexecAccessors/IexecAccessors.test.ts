@@ -281,6 +281,7 @@ describe('IexecAccessors', async () => {
     it('eip712domainSeparator', async function () {
         expect(await iexecPoco.eip712domain_separator()).equal(
             await hashDomain({
+                // TODO use IexecWrapper.getDomain() (with some modifications).
                 name: 'iExecODB',
                 version: '5.0.0',
                 chainId: (await ethers.provider.getNetwork()).chainId,
