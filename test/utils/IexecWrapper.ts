@@ -5,6 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { expect } from 'chai';
 import {
     ContractTransactionReceipt,
+    EventFragment,
     EventLog,
     Interface,
     TypedDataDomain,
@@ -25,6 +26,7 @@ import {
     IexecPocoAccessors__factory,
     IexecPocoBoostAccessors__factory,
     RLC__factory,
+    Registry__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
     Workerpool__factory,
@@ -521,10 +523,11 @@ async function extractRegistryEntryAddress(
     if (!receipt) {
         throw new Error('Undefined tx receipt');
     }
+    const registryInterface = Registry__factory.createInterface();
     const event = extractEventFromReceipt(
         receipt,
-        WorkerpoolRegistry__factory.createInterface(),
-        'Transfer',
+        registryInterface,
+        registryInterface.getEvent('Transfer'),
     ) as any as TransferEvent.OutputObject;
     if (!event) {
         throw new Error('No event extracted from registry tx');
@@ -539,17 +542,17 @@ async function extractRegistryEntryAddress(
  * Extract a specific event of a contract from tx receipt.
  * @param txReceipt
  * @param contractInterface
- * @param eventName
+ * @param eventFragment
  * @returns event
  */
 function extractEventFromReceipt(
     txReceipt: ContractTransactionReceipt,
     contractInterface: Interface,
-    eventName: string,
+    eventFragment: EventFragment,
 ) {
     return (
         txReceipt.logs.find(
-            (log) => contractInterface.parseLog(log)?.name === eventName,
+            (log) => contractInterface.parseLog(log)?.topic === eventFragment.topicHash,
         ) as EventLog
     ).args;
 }
