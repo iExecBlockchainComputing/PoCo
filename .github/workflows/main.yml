@@ -34,10 +34,11 @@ jobs:
         run: npm run test-storage-layout
       # TODO: Remove before merging to develop
       - name: Run test
-        run: npm run test |
-          test/byContract/IexecAccessors/**
-          test/byContract/IexecCategoryManager/**
-          test/byContract/IexecERC20/**
+        run: |
+          npm run test
+            test/byContract/IexecAccessors/**
+            test/byContract/IexecCategoryManager/**
+            test/byContract/IexecERC20/**
       - name: Run deployment
         # Basic deployment to make sure everything is ok.
         # Could be removed in the future if not relevant.
