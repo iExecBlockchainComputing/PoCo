@@ -4,7 +4,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ZeroAddress } from 'ethers';
+import { AddressLike, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     IexecInterfaceNative,
@@ -132,9 +132,8 @@ describe('ERC20', async () => {
         });
 
         it('Should approve and call', async () => {
-            const testReceiverAddress = await testReceiver.getAddress();
-            const approveAndCallArgs = [testReceiverAddress, value, extraData] as [
-                string,
+            const approveAndCallArgs = [testReceiver, value, extraData] as [
+                AddressLike,
                 number,
                 string,
             ];
@@ -142,10 +141,10 @@ describe('ERC20', async () => {
                 .true;
             await expect(iexecPocoAsHolder.approveAndCall(...approveAndCallArgs))
                 .to.emit(iexecPoco, 'Approval')
-                .withArgs(holder.address, testReceiver, value) // testReceiverAddress
+                .withArgs(holder.address, testReceiver, value)
                 .to.emit(testReceiver, 'GotApproval')
                 .withArgs(holder.address, value, proxyAddress, extraData);
-            expect(await iexecPoco.allowance(holder.address, testReceiver)).equal(value); // testReceiverAddress
+            expect(await iexecPoco.allowance(holder.address, testReceiver)).equal(value);
         });
         it('Should not approve and call from the zero address', async () => {
             await expect(

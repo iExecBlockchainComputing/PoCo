@@ -35,9 +35,9 @@ jobs:
       # TODO: Remove before merging to develop
       - name: Run test
         run: |
-          npm run test
-            test/byContract/IexecAccessors/**
-            test/byContract/IexecCategoryManager/**
+          npm run test \
+            test/byContract/IexecAccessors/** \
+            test/byContract/IexecCategoryManager/** \
             test/byContract/IexecERC20/**
       - name: Run deployment
         # Basic deployment to make sure everything is ok.
