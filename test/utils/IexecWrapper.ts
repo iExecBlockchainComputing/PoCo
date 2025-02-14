@@ -134,12 +134,12 @@ export class IexecWrapper {
      */
     async computeWorkerTaskStake(workerpoolAddress: string, workerpoolPrice: number) {
         // TODO make "m_workerStakeRatioPolicy()" as view function in IWorkerpool.v8 and use it.
-        const workerStakeRatio = (
+        const workerStakeRatio = Number(
             await Workerpool__factory.connect(
                 workerpoolAddress,
                 this.accounts.anyone,
-            ).m_workerStakeRatioPolicy()
-        ).toNumber();
+            ).m_workerStakeRatioPolicy(),
+        );
         return Math.floor((workerpoolPrice * workerStakeRatio) / 100);
     }
 
@@ -149,12 +149,12 @@ export class IexecWrapper {
      * @returns value of the reward
      */
     async getSchedulerRewardRatio(workerpoolAddress: string) {
-        return (
+        return Number(
             await Workerpool__factory.connect(
                 workerpoolAddress,
                 this.accounts.anyone,
-            ).m_schedulerRewardRatioPolicy()
-        ).toNumber();
+            ).m_schedulerRewardRatioPolicy(),
+        );
     }
 
     /**
@@ -166,12 +166,14 @@ export class IexecWrapper {
      */
     async computeWorkersRewardPerTask(dealId: string, mode: PocoMode) {
         if (mode === PocoMode.BOOST) {
-            return (
-                await IexecPocoBoostAccessors__factory.connect(
-                    this.proxyAddress,
-                    ethers.provider,
-                ).viewDealBoost(dealId)
-            ).workerReward.toNumber();
+            return Number(
+                (
+                    await IexecPocoBoostAccessors__factory.connect(
+                        this.proxyAddress,
+                        ethers.provider,
+                    ).viewDealBoost(dealId)
+                ).workerReward,
+            );
         }
         // CLASSIC mode.
         const deal = await IexecAccessors__factory.connect(
@@ -179,8 +181,8 @@ export class IexecWrapper {
             ethers.provider,
         ).viewDeal(dealId);
         // reward = (workerpoolPrice * workersRatio) / 100
-        const workersRewardRatio = 100 - deal.schedulerRewardRatio.toNumber();
-        return Math.floor((deal.workerpool.price.toNumber() * workersRewardRatio) / 100);
+        const workersRewardRatio = 100 - Number(deal.schedulerRewardRatio);
+        return Math.floor((Number(deal.workerpool.price) * workersRewardRatio) / 100);
     }
 
     async setTeeBroker(brokerAddress: string) {
@@ -263,8 +265,8 @@ export class IexecWrapper {
             this.proxyAddress,
             ethers.provider,
         ).viewConsumed(this.hashOrder(requestOrder));
-        const dealId = getDealId(this.domain, requestOrder, taskIndex);
-        const taskId = getTaskId(dealId, taskIndex);
+        const dealId = getDealId(this.domain, requestOrder, Number(taskIndex));
+        const taskId = getTaskId(dealId, Number(taskIndex));
         const volume = Number(
             await IexecPocoAccessors__factory.connect(
                 this.proxyAddress,
@@ -484,7 +486,7 @@ export class IexecWrapper {
         for (const account of accounts) {
             initialFrozens.push({
                 address: account.address,
-                frozen: (await iexecPoco.frozenOf(account.address)).toNumber(),
+                frozen: Number(await iexecPoco.frozenOf(account.address)),
             });
         }
         return initialFrozens;
@@ -496,9 +498,9 @@ export class IexecWrapper {
     ) {
         let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
         for (let i = 0; i < accountsInitialFrozens.length; i++) {
-            const actualFrozen = (
-                await iexecPoco.frozenOf(accountsInitialFrozens[i].address)
-            ).toNumber();
+            const actualFrozen = Number(
+                await iexecPoco.frozenOf(accountsInitialFrozens[i].address),
+            );
 
             const expectedFrozen = accountsInitialFrozens[i].frozen + expectedFrozenChanges[i];
             expect(actualFrozen).to.equal(expectedFrozen, `Mismatch at index ${i}`);
@@ -510,7 +512,7 @@ export class IexecWrapper {
             this.proxyAddress,
             ethers.provider,
         ).viewDeal(dealId);
-        return (totalPoolReward * (100 - deal.schedulerRewardRatio.toNumber())) / 100;
+        return (totalPoolReward * (100 - Number(deal.schedulerRewardRatio))) / 100;
     }
 }
 
