@@ -2,11 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import factoryJson from '@amxx/factory/deployments/GenericFactory.json';
-import factoryShanghaiJson from '@amxx/factory/deployments/GenericFactory_shanghai.json';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { Contract, ethers } from 'ethers';
-import hre from 'hardhat';
-import config from '../config/config.json';
 
 interface FactoryConfig {
     address: string;
@@ -16,10 +13,7 @@ interface FactoryConfig {
     abi: any[];
 }
 
-const factoryConfig: FactoryConfig =
-    config.chains.default.asset === 'Token' && hre.network.name.includes('hardhat')
-        ? factoryShanghaiJson
-        : factoryJson;
+const factoryConfig: FactoryConfig = factoryJson;
 
 export class EthersDeployer {
     private factory!: Contract;
