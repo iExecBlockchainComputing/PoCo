@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain, TypedDataEncoder, TypedDataField, ethers } from 'ethers';
+import { TypedDataDomain, TypedDataEncoder, TypedDataField, Wallet } from 'ethers';
+import { ethers } from 'hardhat';
 
 interface WalletInfo {
     privateKey?: string;
