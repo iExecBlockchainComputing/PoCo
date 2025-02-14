@@ -513,7 +513,6 @@ export class IexecWrapper {
  * Extract address of a newly created entry in a registry contract
  * from the tx receipt.
  * @param receipt contract receipt
- * @param registryInstanceAddress address of the registry contract
  * @returns address of the entry in checksum format.
  */
 async function extractRegistryEntryAddress(
@@ -539,8 +538,8 @@ async function extractRegistryEntryAddress(
 /**
  * Extract a specific event of a contract from tx receipt.
  * @param txReceipt
- * @param eventName
  * @param contractInterface
+ * @param eventName
  * @returns event
  */
 function extractEventFromReceipt(
