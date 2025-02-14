@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
@@ -135,7 +135,7 @@ describe('Integration tests', function () {
         const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         // Finalize each task and check balance changes.
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
@@ -227,7 +227,7 @@ describe('Integration tests', function () {
         // Finalize each task and check balance changes.
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
             for (const worker of workers) {
@@ -542,7 +542,7 @@ describe('Integration tests', function () {
                 // Finalize each task and check balance changes.
                 const workerStakePerTask = await iexecPoco
                     .viewDeal(dealId)
-                    .then((deal) => deal.workerStake.toNumber());
+                    .then((deal) => Number(deal.workerStake));
 
                 for (let i = 0; i < workerNumber; i++) {
                     await iexecWrapper.contributeToTask(dealId, 0, resultDigest, workers[i]);
@@ -640,7 +640,7 @@ describe('Integration tests', function () {
         // Finalize task and check balance changes.
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         for (const contributor of contributions) {
             await iexecWrapper.contributeToTask(
                 dealId,

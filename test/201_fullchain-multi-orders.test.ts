@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import {
@@ -167,7 +167,7 @@ describe('Integration tests', function () {
         // Finalize each task and run checks.
         await runTaskThenCheckBalancesAndVolumes(
             dealId1,
-            taskIndex1,
+            Number(taskIndex1),
             taskPrice1,
             schedulerStakePerTaskOfDeal1,
             schedulerRewardPerTaskOfDeal1,
@@ -175,7 +175,7 @@ describe('Integration tests', function () {
         );
         await runTaskThenCheckBalancesAndVolumes(
             dealId1,
-            taskIndex1 + 1,
+            Number(taskIndex1) + 1,
             taskPrice1,
             schedulerStakePerTaskOfDeal1,
             schedulerRewardPerTaskOfDeal1,
@@ -183,7 +183,7 @@ describe('Integration tests', function () {
         );
         await runTaskThenCheckBalancesAndVolumes(
             dealId2,
-            taskIndex2,
+            Number(taskIndex2),
             taskPrice2,
             schedulerStakePerTaskOfDeal2,
             schedulerRewardPerTaskOfDeal2,
