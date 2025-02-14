@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     IexecInterfaceNative,
@@ -176,7 +176,7 @@ describe('IexecAccessorsABILegacy', function () {
         expect(contribution[0]).to.equal(ContributionStatusEnum.CONTRIBUTED);
         expect(contribution[1]).to.equal(resultHash);
         expect(contribution[2]).to.equal(resultSeal);
-        expect(contribution[3]).to.equal(AddressZero); // enclaveChallenge
+        expect(contribution[3]).to.equal(ZeroAddress); // enclaveChallenge
     });
 
     it('[ABILegacy] Should return category', async function () {

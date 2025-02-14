@@ -1,11 +1,15 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain } from '@ethersproject/abstract-signer';
-import { AddressZero } from '@ethersproject/constants';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { BigNumber, ContractReceipt } from 'ethers';
+import {
+    ContractTransactionReceipt,
+    Log,
+    LogDescription,
+    TypedDataDomain,
+    ZeroAddress,
+} from 'ethers';
 import hre, { ethers } from 'hardhat';
 import config from '../../config/config.json';
 import {
@@ -43,7 +47,6 @@ import {
     getTaskId,
     setNextBlockTimestamp,
 } from '../../utils/poco-tools';
-import { extractEventsFromReceipt } from '../../utils/tools';
 const DEPLOYMENT_CONFIG = config.chains.default;
 
 export class IexecWrapper {
@@ -113,12 +116,12 @@ export class IexecWrapper {
      * @returns total amount to stake by the scheduler
      */
     async computeSchedulerDealStake(workerpoolPrice: number, volume: number): Promise<number> {
-        const stakeRatio = (
+        const stakeRatio = Number(
             await IexecAccessors__factory.connect(
                 this.proxyAddress,
                 this.accounts.anyone,
-            ).workerpool_stake_ratio()
-        ).toNumber();
+            ).workerpool_stake_ratio(),
+        );
         return Math.floor((workerpoolPrice * stakeRatio) / 100) * volume;
     }
 
@@ -256,19 +259,18 @@ export class IexecWrapper {
         const datasetOrder = orders.dataset;
         const workerpoolOrder = orders.workerpool;
         const requestOrder = orders.requester;
-        const taskIndex = (
-            await IexecAccessors__factory.connect(this.proxyAddress, ethers.provider).viewConsumed(
-                this.hashOrder(requestOrder),
-            )
-        ).toNumber();
+        const taskIndex = await IexecAccessors__factory.connect(
+            this.proxyAddress,
+            ethers.provider,
+        ).viewConsumed(this.hashOrder(requestOrder));
         const dealId = getDealId(this.domain, requestOrder, taskIndex);
         const taskId = getTaskId(dealId, taskIndex);
-        const volume = (
+        const volume = Number(
             await IexecPocoAccessors__factory.connect(
                 this.proxyAddress,
                 ethers.provider,
-            ).computeDealVolume(appOrder, datasetOrder, workerpoolOrder, requestOrder)
-        ).toNumber();
+            ).computeDealVolume(appOrder, datasetOrder, workerpoolOrder, requestOrder),
+        );
         const taskPrice =
             Number(appOrder.appprice) +
             Number(datasetOrder.datasetprice) +
@@ -310,12 +312,12 @@ export class IexecWrapper {
                 this.accounts.appProvider.address,
                 'my-app',
                 'APP_TYPE_0',
-                ethers.constants.HashZero,
-                ethers.constants.HashZero,
-                ethers.constants.HashZero,
+                ethers.ZeroHash,
+                ethers.ZeroHash,
+                ethers.ZeroHash,
             )
             .then((tx) => tx.wait());
-        return await extractRegistryEntryAddress(appReceipt, appRegistry.address);
+        return await extractRegistryEntryAddress(appReceipt, await appRegistry.getAddress());
     }
 
     async createDataset() {
@@ -328,11 +330,14 @@ export class IexecWrapper {
             .createDataset(
                 this.accounts.datasetProvider.address,
                 'my-dataset',
-                ethers.constants.HashZero,
-                ethers.constants.HashZero,
+                ethers.ZeroHash,
+                ethers.ZeroHash,
             )
             .then((tx) => tx.wait());
-        return await extractRegistryEntryAddress(datasetReceipt, datasetRegistry.address);
+        return await extractRegistryEntryAddress(
+            datasetReceipt,
+            await datasetRegistry.getAddress(),
+        );
     }
 
     /**
@@ -424,13 +429,13 @@ export class IexecWrapper {
             ethers.provider,
         )
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             resultDigest,
             contributor,
         );
-        const enclaveAddress = useEnclave ? this.accounts.enclave.address : AddressZero;
+        const enclaveAddress = useEnclave ? this.accounts.enclave.address : ZeroAddress;
         const enclaveSignature = useEnclave
             ? await buildAndSignPocoClassicEnclaveMessage(
                   resultHash,
@@ -467,7 +472,10 @@ export class IexecWrapper {
         const workerpoolReceipt = await workerpoolRegistry
             .createWorkerpool(this.accounts.scheduler.address, 'my-workerpool')
             .then((tx) => tx.wait());
-        return await extractRegistryEntryAddress(workerpoolReceipt, workerpoolRegistry.address);
+        return await extractRegistryEntryAddress(
+            workerpoolReceipt,
+            await workerpoolRegistry.getAddress(),
+        );
     }
 
     async getInitialFrozens(accounts: SignerWithAddress[]) {
@@ -514,16 +522,77 @@ export class IexecWrapper {
  * @returns address of the entry in checksum format.
  */
 async function extractRegistryEntryAddress(
-    receipt: ContractReceipt,
+    receipt: ContractTransactionReceipt | null,
     registryInstanceAddress: string,
 ): Promise<string> {
-    const events = extractEventsFromReceipt(receipt, registryInstanceAddress, 'Transfer');
-    if (events && events[0].args) {
-        const lowercaseAddress = ethers.utils.hexZeroPad(
-            BigNumber.from(events[0].args['tokenId']).toHexString(),
-            20,
-        );
-        return ethers.utils.getAddress(lowercaseAddress);
+    if (!receipt) {
+        throw new Error('Undefined tx receipt');
     }
-    return '';
+    const eventName = 'Transfer';
+    const eventAbi = [
+        'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)',
+    ];
+    const events = extractEventsFromReceipt(receipt, registryInstanceAddress, eventName, eventAbi);
+    if (events.length === 0) {
+        throw new Error('No event extracted from registry tx');
+    }
+    // Get registry address from event.
+    const lowercaseAddress = ethers.zeroPadValue(
+        ethers.toBeHex(BigInt(events[0].args.tokenId)),
+        20,
+    );
+    // To checksum address.
+    return ethers.getAddress(lowercaseAddress);
+}
+
+/**
+ * Extract a specific event of a contract from tx receipt.
+ * @param txReceipt
+ * @param address
+ * @param eventName
+ * @param eventAbi
+ * @returns array of events or empty array.
+ */
+function extractEventsFromReceipt(
+    txReceipt: ContractTransactionReceipt,
+    address: string,
+    eventName: string,
+    eventAbi: string[],
+): LogDescription[] {
+    return extractEvents(txReceipt.logs, address, eventName, eventAbi);
+}
+
+/**
+ * Extract a specific event of a contract from tx logs.
+ * @param logs
+ * @param address
+ * @param eventName
+ * @param eventAbi
+ * @returns array of events or empty array.
+ */
+function extractEvents(
+    logs: Log[],
+    address: string,
+    eventName: string,
+    eventAbi: string[],
+): LogDescription[] {
+    const eventInterface = new ethers.Interface(eventAbi);
+    const event = eventInterface.getEvent(eventName);
+    if (!event) {
+        throw new Error('Event name and abi mismatch');
+    }
+    const eventId = event.topicHash;
+    let extractedEvents = logs
+        // Get logs of the target contract.
+        .filter((log) => log.address === address && log.topics.includes(eventId))
+        // Parse logs to events.
+        .map((log) => eventInterface.parseLog(log))
+        // Get events with the target name.
+        .filter((event) => event && event.name === eventName);
+    // Get only non null elements.
+    // Note: using .filter(...) returns (LogDescription | null)[]
+    // which is not desired.
+    const events: LogDescription[] = [];
+    extractedEvents.forEach((element) => element && events.push(element));
+    return events;
 }

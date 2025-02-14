@@ -1,12 +1,16 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero, HashZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import { ZeroAddress, ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import {
+    IexecInterfaceNative,
+    IexecInterfaceNative__factory,
+    IexecLibOrders_v5,
+} from '../../../typechain';
 import {
     OrdersAssets,
     OrdersPrices,
@@ -24,6 +28,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { hashDomain } from '../IexecMaintenance/IexecMaintenance.test';
 
 /**
  * Test state view functions.
@@ -136,10 +141,10 @@ describe('IexecAccessors', async () => {
         expect(deal.workerpool.price).to.equal(workerpoolPrice);
         expect(deal.trust).to.equal(1);
         expect(deal.category).to.equal(0);
-        expect(deal.tag).to.equal(HashZero); // Standard
+        expect(deal.tag).to.equal(ZeroHash); // Standard
         expect(deal.requester).to.equal(requester.address);
-        expect(deal.beneficiary).to.equal(AddressZero);
-        expect(deal.callback).to.equal(AddressZero);
+        expect(deal.beneficiary).to.equal(ZeroAddress);
+        expect(deal.callback).to.equal(ZeroAddress);
         expect(deal.params).to.equal('');
         expect(deal.startTime).to.be.greaterThan(0);
         expect(deal.botFirst).to.equal(0);
@@ -171,10 +176,8 @@ describe('IexecAccessors', async () => {
         const { dealId, taskId, taskIndex, startTime, timeRef } = await createDeal();
         await iexecWrapper.initializeTask(dealId, taskIndex);
 
-        const contributionDeadlineRatio = (
-            await iexecPoco.contribution_deadline_ratio()
-        ).toNumber();
-        const finalDeadlineRatio = (await iexecPoco.final_deadline_ratio()).toNumber();
+        const contributionDeadlineRatio = Number(await iexecPoco.contribution_deadline_ratio());
+        const finalDeadlineRatio = Number(await iexecPoco.final_deadline_ratio());
 
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.ACTIVE);
@@ -184,11 +187,11 @@ describe('IexecAccessors', async () => {
         expect(task.contributionDeadline).to.equal(startTime + timeRef * contributionDeadlineRatio);
         expect(task.revealDeadline).to.equal(0);
         expect(task.finalDeadline).to.equal(startTime + timeRef * finalDeadlineRatio);
-        expect(task.consensusValue).to.equal(HashZero);
+        expect(task.consensusValue).to.equal(ZeroHash);
         expect(task.revealCounter).to.equal(0);
         expect(task.winnerCounter).to.equal(0);
         expect(task.contributors.length).to.equal(0);
-        expect(task.resultDigest).to.equal(HashZero);
+        expect(task.resultDigest).to.equal(ZeroHash);
         expect(task.results).to.equal('0x');
         expect(task.resultsTimestamp).to.equal(0);
         expect(task.resultsCallback).to.equal('0x');
@@ -202,7 +205,7 @@ describe('IexecAccessors', async () => {
         expect(contribution.status).to.equal(ContributionStatusEnum.CONTRIBUTED);
         expect(contribution.resultHash.length).to.equal(66);
         expect(contribution.resultSeal.length).to.equal(66);
-        expect(contribution.enclaveChallenge).to.equal(AddressZero);
+        expect(contribution.enclaveChallenge).to.equal(ZeroAddress);
         expect(contribution.weight).to.equal(1);
     });
 
@@ -234,7 +237,7 @@ describe('IexecAccessors', async () => {
     });
 
     it('teeBroker', async function () {
-        expect(await iexecPoco.teebroker()).to.equal(ethers.constants.AddressZero);
+        expect(await iexecPoco.teebroker()).to.equal(ethers.ZeroAddress);
     });
 
     it('callbackGas', async function () {
@@ -276,8 +279,15 @@ describe('IexecAccessors', async () => {
     });
 
     it('eip712domainSeparator', async function () {
-        expect(await iexecPoco.eip712domain_separator()).to.equal(
-            '0xfc2178d8b8300e657cb9f8b5a4d1957174cf1392e294f3575b82a9cea1da1c4b',
+        expect(await iexecPoco.eip712domain_separator()).equal(
+            await hashDomain({
+                // TODO use IexecWrapper.getDomain() (with some modifications).
+                name: 'iExecODB',
+                version: '5.0.0',
+                chainId: (await ethers.provider.getNetwork()).chainId,
+                // address is different between `test` and `coverage` deployment
+                verifyingContract: proxyAddress,
+            } as IexecLibOrders_v5.EIP712DomainStructOutput),
         );
     });
 
@@ -300,7 +310,7 @@ describe('IexecAccessors', async () => {
                 .then((tx) => tx.wait());
             const task = await iexecPoco.viewTask(taskId);
             expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
-            expect(await iexecPoco.callStatic.resultFor(taskId)).to.equal(resultsCallback);
+            expect(await iexecPoco.resultFor(taskId)).to.equal(resultsCallback);
         });
 
         it('Should not get result when task is not completed', async function () {
@@ -333,7 +343,7 @@ async function createDeal(volume: number = 1) {
         ...orders.toArray(),
     );
     const dealCategory = (await iexecPoco.viewDeal(dealId)).category;
-    const timeRef = (await iexecPoco.viewCategory(dealCategory)).workClockTimeRef.toNumber();
+    const timeRef = Number((await iexecPoco.viewCategory(dealCategory)).workClockTimeRef);
     return { dealId, taskId, taskIndex, startTime, timeRef, orders };
 }
 
