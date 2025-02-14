@@ -1,12 +1,8 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { BigNumberish, toBeHex } from 'ethers';
+import { toBeHex, type BigNumberish } from 'ethers';
 import { ethers } from 'hardhat';
-
-export function extractEventsFromReceipt(logs: any[], eventName: string) {
-    return logs.find((log) => log.eventName === eventName);
-}
 
 export function compactSignature(signature: string): string {
     const split = ethers.Signature.from(signature);

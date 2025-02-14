@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { BigNumberish, TypedDataDomain, TypedDataEncoder } from 'ethers';
+import { TypedDataDomain, TypedDataEncoder } from 'ethers';
 import { IexecLibOrders_v5 } from '../typechain';
 import * as constants from './constants';
 import { hashStruct, signStruct } from './odb-tools';
@@ -93,7 +93,7 @@ export class IexecOrders {
 
 export interface OrderOperation {
     order: Record<string, any>;
-    operation: BigNumberish;
+    operation: number;
     sign: string;
 }
 
@@ -166,7 +166,7 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
  * Create an order operation from an existing order.
  */
 export function createOrderOperation<OrderType>(order: OrderType, operation: OrderOperationEnum) {
-    return { order, operation: BigInt(operation), sign: constants.NULL.SIGNATURE };
+    return { order, operation: Number(operation), sign: constants.NULL.SIGNATURE };
 }
 
 export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
