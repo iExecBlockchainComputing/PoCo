@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
@@ -128,7 +128,7 @@ describe('Integration tests', function () {
         // Finalize each task and check balance changes.
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
             const initialScores = await getInitialScores(workers);
@@ -240,7 +240,7 @@ describe('Integration tests', function () {
     ): Promise<{ [address: string]: number }> {
         const scores: { [address: string]: number } = {};
         for (const worker of workers) {
-            scores[worker.address] = (await iexecPoco.viewScore(worker.address)).toNumber();
+            scores[worker.address] = Number(await iexecPoco.viewScore(worker.address));
         }
         return scores;
     }
@@ -253,19 +253,19 @@ async function validateScores(
     nonParticipantWorkers: SignerWithAddress[],
 ) {
     for (const winningWorker of winningWorkers) {
-        const currentScore = (await iexecPoco.viewScore(winningWorker.address)).toNumber();
+        const currentScore = Number(await iexecPoco.viewScore(winningWorker.address));
         expect(currentScore, `Worker ${winningWorker.address} score mismatch`).to.equal(
             initialScores[winningWorker.address] + 1,
         );
     }
     for (const loosingWorker of loosingWorkers) {
-        const currentScore = (await iexecPoco.viewScore(loosingWorker.address)).toNumber();
+        const currentScore = Number(await iexecPoco.viewScore(loosingWorker.address));
         expect(currentScore, `Worker ${loosingWorker.address} score mismatch`).to.equal(
             initialScores[loosingWorker.address] - 1,
         );
     }
     for (const nonParticipantWorker of nonParticipantWorkers) {
-        const currentScore = (await iexecPoco.viewScore(nonParticipantWorker.address)).toNumber();
+        const currentScore = Number(await iexecPoco.viewScore(nonParticipantWorker.address));
         expect(currentScore, `Worker ${nonParticipantWorker.address} score mismatch`).to.equal(
             initialScores[nonParticipantWorker.address],
         );
