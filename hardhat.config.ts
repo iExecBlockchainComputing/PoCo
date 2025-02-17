@@ -9,7 +9,9 @@ import {
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
 import 'solidity-docgen';
+import chainConfig from './config/config.json';
 
+const isNativeChainType = chainConfig.chains.default.asset == 'Native';
 const isLocalFork = process.env.LOCAL_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
 
@@ -72,7 +74,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            ...bellecourBaseConfig,
+            ...((isNativeChainType || isLocalFork) && bellecourBaseConfig),
             ...(isLocalFork && {
                 forking: {
                     url: 'https://bellecour.iex.ec',

@@ -38,6 +38,7 @@ describe('ERC20', async () => {
         ({ requester: holder, beneficiary: recipient, anyone } = accounts);
         spender = recipient;
         zeroAddressSigner = await ethers.getImpersonatedSigner(ZeroAddress);
+        await fundTheZeroAddress();
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsHolder = iexecPoco.connect(holder);
@@ -271,4 +272,17 @@ describe('ERC20', async () => {
             );
         });
     });
+
+    /**
+     * Send some ETH the zero address to allow sending transactions using
+     * Hardhat's impersonation mechanism.
+     * Fixes the error:
+     * ProviderError: Sender doesn't have enough funds to send tx ...
+     */
+    async function fundTheZeroAddress() {
+        await ethers.provider.send('hardhat_setBalance', [
+            ZeroAddress,
+            ethers.toBeHex(ethers.parseEther('10')),
+        ]);
+    }
 });
