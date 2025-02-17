@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
-import { toUtf8Bytes, TypedDataDomain } from 'ethers';
+import { TypedDataDomain } from 'ethers';
 import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
 import { hashOrder } from './createOrders';
@@ -117,7 +117,7 @@ function buildContributionAuthorizationMessage(
 }
 
 export function buildUtf8ResultAndDigest(resultPayload: string) {
-    const results = toUtf8Bytes(resultPayload);
+    const results = ethers.toUtf8Bytes(resultPayload);
     const resultDigest = ethers.keccak256(results);
     return { results, resultDigest };
 }
