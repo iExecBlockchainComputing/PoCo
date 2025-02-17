@@ -9,6 +9,7 @@
 - Migrate to Ethers v6:
     - Deployment scripts (#187)
     - Tests
+        - ENSIntegration, IexecOrderManagement, IexecRelay (#195)
         - test/*fullchain* (#190)
         - IexecAccessors (#189, #191)
 - Migrate scripts to TypeScript: (#184)
