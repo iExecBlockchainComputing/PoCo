@@ -88,7 +88,6 @@ describe('IexecPocoBoostDelegate (IT)', function () {
         };
         iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
-        proxyAddress = await iexecInstance.getAddress();
         domain = {
             name: 'iExecODB',
             version: '5.0.0',
