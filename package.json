@@ -8,7 +8,7 @@
   "main": "",
   "scripts": {
     "prepare": "husky",
-    "build": "npx hardhat clean && npx hardhat compile",
+    "build": "npx hardhat compile",
     "deploy": "npx hardhat deploy",
     "deploy:timelock": "hardhat run scripts/deploy-timelock.ts",
     "test-storage-layout": "npx hardhat run scripts/test-storage.ts",
