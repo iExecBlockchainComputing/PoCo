@@ -7,7 +7,8 @@ import { ethers } from 'hardhat';
 export function compactSignature(signature: string): string {
     const split = ethers.Signature.from(signature);
     let vs = ethers.getBytes(split.s);
-    if (split.v == 27 || split.v == 28) {
+    // Check if we need to set the high bit
+    if (split.yParity === 1) {
         vs[0] |= 0x80;
     }
     return ethers.hexlify(ethers.concat([split.r, vs]));
