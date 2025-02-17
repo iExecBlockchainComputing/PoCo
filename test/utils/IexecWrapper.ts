@@ -5,8 +5,9 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { expect } from 'chai';
 import {
     ContractTransactionReceipt,
-    Log,
-    LogDescription,
+    EventFragment,
+    EventLog,
+    Interface,
     TypedDataDomain,
     ZeroAddress,
 } from 'ethers';
@@ -25,10 +26,12 @@ import {
     IexecPocoAccessors__factory,
     IexecPocoBoostAccessors__factory,
     RLC__factory,
+    Registry__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../typechain';
+import { TransferEvent } from '../../typechain/contracts/registries/IRegistry';
 import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
 import {
     IexecOrders,
@@ -319,7 +322,7 @@ export class IexecWrapper {
                 ethers.ZeroHash,
             )
             .then((tx) => tx.wait());
-        return await extractRegistryEntryAddress(appReceipt, await appRegistry.getAddress());
+        return await extractRegistryEntryAddress(appReceipt);
     }
 
     async createDataset() {
@@ -336,10 +339,7 @@ export class IexecWrapper {
                 ethers.ZeroHash,
             )
             .then((tx) => tx.wait());
-        return await extractRegistryEntryAddress(
-            datasetReceipt,
-            await datasetRegistry.getAddress(),
-        );
+        return await extractRegistryEntryAddress(datasetReceipt);
     }
 
     /**
@@ -474,10 +474,7 @@ export class IexecWrapper {
         const workerpoolReceipt = await workerpoolRegistry
             .createWorkerpool(this.accounts.scheduler.address, 'my-workerpool')
             .then((tx) => tx.wait());
-        return await extractRegistryEntryAddress(
-            workerpoolReceipt,
-            await workerpoolRegistry.getAddress(),
-        );
+        return await extractRegistryEntryAddress(workerpoolReceipt);
     }
 
     async getInitialFrozens(accounts: SignerWithAddress[]) {
@@ -520,29 +517,25 @@ export class IexecWrapper {
  * Extract address of a newly created entry in a registry contract
  * from the tx receipt.
  * @param receipt contract receipt
- * @param registryInstanceAddress address of the registry contract
  * @returns address of the entry in checksum format.
  */
 async function extractRegistryEntryAddress(
     receipt: ContractTransactionReceipt | null,
-    registryInstanceAddress: string,
 ): Promise<string> {
     if (!receipt) {
         throw new Error('Undefined tx receipt');
     }
-    const eventName = 'Transfer';
-    const eventAbi = [
-        'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)',
-    ];
-    const events = extractEventsFromReceipt(receipt, registryInstanceAddress, eventName, eventAbi);
-    if (events.length === 0) {
+    const registryInterface = Registry__factory.createInterface();
+    const event = extractEventFromReceipt(
+        receipt,
+        registryInterface,
+        registryInterface.getEvent('Transfer'),
+    ) as any as TransferEvent.OutputObject;
+    if (!event) {
         throw new Error('No event extracted from registry tx');
     }
     // Get registry address from event.
-    const lowercaseAddress = ethers.zeroPadValue(
-        ethers.toBeHex(BigInt(events[0].args.tokenId)),
-        20,
-    );
+    const lowercaseAddress = ethers.zeroPadValue(ethers.toBeHex(BigInt(event.tokenId)), 20);
     // To checksum address.
     return ethers.getAddress(lowercaseAddress);
 }
@@ -550,51 +543,18 @@ async function extractRegistryEntryAddress(
 /**
  * Extract a specific event of a contract from tx receipt.
  * @param txReceipt
- * @param address
- * @param eventName
- * @param eventAbi
- * @returns array of events or empty array.
+ * @param contractInterface
+ * @param eventFragment
+ * @returns event
  */
-function extractEventsFromReceipt(
+function extractEventFromReceipt(
     txReceipt: ContractTransactionReceipt,
-    address: string,
-    eventName: string,
-    eventAbi: string[],
-): LogDescription[] {
-    return extractEvents(txReceipt.logs, address, eventName, eventAbi);
-}
-
-/**
- * Extract a specific event of a contract from tx logs.
- * @param logs
- * @param address
- * @param eventName
- * @param eventAbi
- * @returns array of events or empty array.
- */
-function extractEvents(
-    logs: Log[],
-    address: string,
-    eventName: string,
-    eventAbi: string[],
-): LogDescription[] {
-    const eventInterface = new ethers.Interface(eventAbi);
-    const event = eventInterface.getEvent(eventName);
-    if (!event) {
-        throw new Error('Event name and abi mismatch');
-    }
-    const eventId = event.topicHash;
-    let extractedEvents = logs
-        // Get logs of the target contract.
-        .filter((log) => log.address === address && log.topics.includes(eventId))
-        // Parse logs to events.
-        .map((log) => eventInterface.parseLog(log))
-        // Get events with the target name.
-        .filter((event) => event && event.name === eventName);
-    // Get only non null elements.
-    // Note: using .filter(...) returns (LogDescription | null)[]
-    // which is not desired.
-    const events: LogDescription[] = [];
-    extractedEvents.forEach((element) => element && events.push(element));
-    return events;
+    contractInterface: Interface,
+    eventFragment: EventFragment,
+) {
+    return (
+        txReceipt.logs.find(
+            (log) => contractInterface.parseLog(log)?.topic === eventFragment.topicHash,
+        ) as EventLog
+    ).args;
 }
