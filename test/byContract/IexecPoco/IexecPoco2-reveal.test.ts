@@ -199,7 +199,7 @@ describe('IexecPoco2#reveal', () => {
                 volume,
                 trust: 3,
                 tag: standardDealTag,
-                salt: ethers.zeroPadValue(ethers.toBeHex(Date.now().toString()), 32), // make
+                salt: ethers.zeroPadValue(ethers.toBeHex(Date.now()), 32), // make
             }).toArray(), // app and dataset orders unique since already matched in
             // beforeEach. A useless salt is also added to workerpool and request
             // orders to get an easy one-liner declaration.
