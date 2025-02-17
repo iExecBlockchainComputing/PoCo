@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
@@ -71,7 +71,7 @@ describe('IexecPoco2#initialize', async () => {
             );
             expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
 
-            expect(await iexecPocoAsAnyone.callStatic.initialize(dealId, taskIndex)).to.equal(
+            expect(await iexecPocoAsAnyone.initialize.staticCall(dealId, taskIndex)).to.equal(
                 taskId,
             );
             const initialize = await iexecPocoAsAnyone.initialize(dealId, taskIndex);
@@ -178,7 +178,7 @@ describe('IexecPoco2#initialize', async () => {
                 expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
             }
 
-            expect(await iexecPocoAsAnyone.callStatic.initializeArray(dealIds, taskIndexes)).to.be
+            expect(await iexecPocoAsAnyone.initializeArray.staticCall(dealIds, taskIndexes)).to.be
                 .true;
             const initializeArrayTx = await iexecPocoAsAnyone.initializeArray(dealIds, taskIndexes);
             await initializeArrayTx.wait();
@@ -192,7 +192,7 @@ describe('IexecPoco2#initialize', async () => {
         });
 
         it('Should not initialize array if incompatible length of inputs', async function () {
-            const dealId = ethers.utils.hashMessage('dealId');
+            const dealId = ethers.hashMessage('dealId');
             await expect(
                 iexecPoco.initializeArray([dealId, dealId], [0]),
             ).to.be.revertedWithoutReason();

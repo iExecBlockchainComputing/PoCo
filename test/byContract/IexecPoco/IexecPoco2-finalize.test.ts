@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, setStorageAt, time } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import { AbiCoder, Wallet, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     IexecInterfaceNative,
@@ -25,14 +25,14 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
-const hexResults = ethers.utils.hexlify(results);
+const hexResults = ethers.hexlify(results);
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
 const appPrice = 1000;
 const datasetPrice = 1_000_000;
 const workerpoolPrice = 1_000_000_000;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
-const emptyEnclaveAddress = AddressZero;
+const emptyEnclaveAddress = ZeroAddress;
 const emptyEnclaveSignature = '0x';
 
 describe('IexecPoco2#finalize', async () => {
@@ -96,7 +96,7 @@ describe('IexecPoco2#finalize', async () => {
         const oracleConsumerInstance = await new TestClient__factory()
             .connect(anyone)
             .deploy()
-            .then((contract) => contract.deployed());
+            .then((contract) => contract.waitForDeployment());
         const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
         const orders = buildOrders({
             assets: ordersAssets,
@@ -117,7 +117,7 @@ describe('IexecPoco2#finalize', async () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const { callbackResultDigest: wrongCallbackResultDigest } =
             buildResultCallbackAndDigest(567);
         const workers = [
@@ -167,14 +167,14 @@ describe('IexecPoco2#finalize', async () => {
                 .then((tx) => tx.wait());
         }
         const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
-        const sponsorFrozenBefore = (await iexecPoco.frozenOf(sponsor.address)).toNumber();
-        const schedulerFrozenBefore = (await iexecPoco.frozenOf(scheduler.address)).toNumber();
+        const sponsorFrozenBefore = Number(await iexecPoco.frozenOf(sponsor.address));
+        const schedulerFrozenBefore = Number(await iexecPoco.frozenOf(scheduler.address));
         const workersFrozenBefore: { [name: string]: number } = {};
         for (const worker of workers) {
             const workerAddress = worker.signer.address;
             workersFrozenBefore[workerAddress] = await iexecPoco
                 .frozenOf(workerAddress)
-                .then((frozen) => frozen.toNumber());
+                .then((frozen) => Number(frozen));
             expect(await iexecPoco.viewScore(workerAddress)).to.be.equal(1);
         }
         const kittyFrozenBefore = await iexecPoco.frozenOf(kittyAddress);
@@ -294,7 +294,7 @@ describe('IexecPoco2#finalize', async () => {
         const orders = buildOrders({
             assets: {
                 app: appAddress,
-                dataset: AddressZero,
+                dataset: ZeroAddress,
                 workerpool: workerpoolAddress,
             },
             requester: requester.address,
@@ -307,7 +307,7 @@ describe('IexecPoco2#finalize', async () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             resultDigest,
@@ -359,7 +359,7 @@ describe('IexecPoco2#finalize', async () => {
     });
 
     it('Should finalize task when callback address is EOA', async () => {
-        const callbackEOAAddress = ethers.Wallet.createRandom().address;
+        const callbackEOAAddress = Wallet.createRandom().address;
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -373,7 +373,7 @@ describe('IexecPoco2#finalize', async () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             callbackResultDigest,
@@ -411,7 +411,7 @@ describe('IexecPoco2#finalize', async () => {
         const nonEip1154RandomContract = await new OwnableMock__factory()
             .connect(anyone)
             .deploy()
-            .then((contract) => contract.deployed());
+            .then((contract) => contract.waitForDeployment());
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -425,7 +425,7 @@ describe('IexecPoco2#finalize', async () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             callbackResultDigest,
@@ -507,13 +507,13 @@ describe('IexecPoco2#finalize', async () => {
                             workerpool: workerpoolPriceToFillKitty, // 30% will go to kitty
                         },
                         volume: kittyFillingDealVolume,
-                        salt: ethers.utils.id(new Date().toISOString()),
+                        salt: ethers.id(new Date().toISOString()),
                     }).toArray(),
                 );
                 await iexecPoco
                     .initialize(kittyFillingDeal.dealId, kittyFillingDeal.taskIndex)
                     .then((tx) => tx.wait());
-                const kittyFrozenBeforeClaim = (await iexecPoco.frozenOf(kittyAddress)).toNumber();
+                const kittyFrozenBeforeClaim = Number(await iexecPoco.frozenOf(kittyAddress));
                 await time.setNextBlockTimestamp(
                     (await iexecPoco.viewTask(kittyFillingDeal.taskId)).finalDeadline,
                 );
@@ -530,7 +530,7 @@ describe('IexecPoco2#finalize', async () => {
                     .withArgs(kittyAddress, kittyFillingSchedulerTaskStake, kittyFillingDeal.taskId)
                     .to.emit(iexecPoco, 'Lock')
                     .withArgs(kittyAddress, kittyFillingSchedulerTaskStake);
-                const kittyFrozenAfterClaim = (await iexecPoco.frozenOf(kittyAddress)).toNumber();
+                const kittyFrozenAfterClaim = Number(await iexecPoco.frozenOf(kittyAddress));
                 expect(kittyFrozenAfterClaim).to.equal(
                     kittyFrozenBeforeClaim + kittyFillingSchedulerTaskStake,
                 );
@@ -546,7 +546,7 @@ describe('IexecPoco2#finalize', async () => {
                             workerpool: 0,
                         },
                         volume: 1,
-                        salt: ethers.utils.id(new Date().toISOString()),
+                        salt: ethers.id(new Date().toISOString()),
                     }).toArray(),
                 );
                 await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -566,7 +566,7 @@ describe('IexecPoco2#finalize', async () => {
                         await buildAndSignContributionAuthorizationMessage(
                             worker1.address,
                             taskId,
-                            AddressZero,
+                            ZeroAddress,
                             scheduler,
                         ),
                     )
@@ -614,7 +614,7 @@ describe('IexecPoco2#finalize', async () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const workers = [worker1, worker2];
         for (const worker of workers) {
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -699,7 +699,7 @@ describe('IexecPoco2#finalize', async () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             resultDigest,
@@ -744,7 +744,7 @@ describe('IexecPoco2#finalize', async () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const workers = [worker1, worker2];
         for (const worker of workers) {
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -793,7 +793,7 @@ describe('IexecPoco2#finalize', async () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             resultDigest,
@@ -836,7 +836,7 @@ describe('IexecPoco2#finalize', async () => {
         const oracleConsumerInstance = await new TestClient__factory()
             .connect(anyone)
             .deploy()
-            .then((contract) => contract.deployed());
+            .then((contract) => contract.waitForDeployment());
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -850,7 +850,7 @@ describe('IexecPoco2#finalize', async () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             callbackResultDigest,
@@ -891,9 +891,9 @@ describe('IexecPoco2#finalize', async () => {
     });
 
     async function setWorkerScoreInStorage(worker: string, score: number) {
-        const workerScoreSlot = ethers.utils.hexStripZeros(
-            ethers.utils.keccak256(
-                ethers.utils.defaultAbiCoder.encode(
+        const workerScoreSlot = ethers.stripZerosLeft(
+            ethers.keccak256(
+                AbiCoder.defaultAbiCoder().encode(
                     ['address', 'uint256'],
                     [
                         worker,

@@ -36,8 +36,9 @@ jobs:
       - name: Run test
         run: |
           npm run test \
+          test/*fullchain* \
           test/byContract/IexecAccessors/** \
-          test/*fullchain*
+          test/byContract/IexecPoco/** 
       - name: Run deployment
         # Basic deployment to make sure everything is ok.
         # Could be removed in the future if not relevant.

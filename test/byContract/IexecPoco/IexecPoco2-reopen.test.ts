@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero, HashZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helpers';
 import { setNextBlockTimestamp } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import { ZeroAddress, ZeroHash } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
@@ -125,7 +125,7 @@ describe('IexecPoco2#reopen', async () => {
         // No getter for m_consensus.
         const taskAfter = await iexecPoco.viewTask(taskId);
         expect(taskAfter.status).to.equal(TaskStatusEnum.ACTIVE);
-        expect(taskAfter.consensusValue).to.equal(HashZero);
+        expect(taskAfter.consensusValue).to.equal(ZeroHash);
         expect(taskAfter.revealCounter).to.equal(0);
         expect(taskAfter.winnerCounter).to.equal(0);
     });
@@ -242,11 +242,11 @@ describe('IexecPoco2#reopen', async () => {
      * @param resultDigest
      */
     async function contribute(worker: SignerWithAddress, resultDigest: string) {
-        const emptyEnclaveAddress = AddressZero;
+        const emptyEnclaveAddress = ZeroAddress;
         const emptyEnclaveSignature = '0x';
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,

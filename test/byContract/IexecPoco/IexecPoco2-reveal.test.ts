@@ -1,11 +1,10 @@
 // SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero, HashZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { ZeroAddress, ZeroHash, ethers } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { NULL } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -22,10 +21,10 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const volume = 1;
-const standardDealTag = HashZero;
+const standardDealTag = ZeroHash;
 const { resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
-const emptyEnclaveAddress = AddressZero;
+const emptyEnclaveAddress = ZeroAddress;
 const emptyEnclaveSignature = NULL.SIGNATURE;
 
 describe('IexecPoco2#reveal', () => {
@@ -89,7 +88,7 @@ describe('IexecPoco2#reveal', () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
         ({ resultHash, resultSeal } = buildResultHashAndResultSeal(taskId, resultDigest, worker));
         schedulerSignature = await buildAndSignContributionAuthorizationMessage(
@@ -200,7 +199,7 @@ describe('IexecPoco2#reveal', () => {
                 volume,
                 trust: 3,
                 tag: standardDealTag,
-                salt: ethers.utils.hexZeroPad('0x' + Date.now().toString(), 32), // make
+                salt: ethers.zeroPadValue('0x' + Date.now().toString(), 32), // make
             }).toArray(), // app and dataset orders unique since already matched in
             // beforeEach. A useless salt is also added to workerpool and request
             // orders to get an easy one-liner declaration.
@@ -208,7 +207,7 @@ describe('IexecPoco2#reveal', () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const workerTaskStake = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         const workers = [
             { signer: worker1, resultDigest: resultDigest },
             { signer: worker2, resultDigest: badResultDigest },
