@@ -5,8 +5,9 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { expect } from 'chai';
 import {
     ContractTransactionReceipt,
-    Log,
-    LogDescription,
+    EventFragment,
+    EventLog,
+    Interface,
     TypedDataDomain,
     ZeroAddress,
 } from 'ethers';
@@ -25,10 +26,12 @@ import {
     IexecPocoAccessors__factory,
     IexecPocoBoostAccessors__factory,
     RLC__factory,
+    Registry__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../typechain';
+import { TransferEvent } from '../../typechain/contracts/registries/IRegistry';
 import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
 import {
     IexecOrders,
@@ -134,12 +137,12 @@ export class IexecWrapper {
      */
     async computeWorkerTaskStake(workerpoolAddress: string, workerpoolPrice: number) {
         // TODO make "m_workerStakeRatioPolicy()" as view function in IWorkerpool.v8 and use it.
-        const workerStakeRatio = (
+        const workerStakeRatio = Number(
             await Workerpool__factory.connect(
                 workerpoolAddress,
                 this.accounts.anyone,
-            ).m_workerStakeRatioPolicy()
-        ).toNumber();
+            ).m_workerStakeRatioPolicy(),
+        );
         return Math.floor((workerpoolPrice * workerStakeRatio) / 100);
     }
 
@@ -149,12 +152,12 @@ export class IexecWrapper {
      * @returns value of the reward
      */
     async getSchedulerRewardRatio(workerpoolAddress: string) {
-        return (
+        return Number(
             await Workerpool__factory.connect(
                 workerpoolAddress,
                 this.accounts.anyone,
-            ).m_schedulerRewardRatioPolicy()
-        ).toNumber();
+            ).m_schedulerRewardRatioPolicy(),
+        );
     }
 
     /**
@@ -166,12 +169,14 @@ export class IexecWrapper {
      */
     async computeWorkersRewardPerTask(dealId: string, mode: PocoMode) {
         if (mode === PocoMode.BOOST) {
-            return (
-                await IexecPocoBoostAccessors__factory.connect(
-                    this.proxyAddress,
-                    ethers.provider,
-                ).viewDealBoost(dealId)
-            ).workerReward.toNumber();
+            return Number(
+                (
+                    await IexecPocoBoostAccessors__factory.connect(
+                        this.proxyAddress,
+                        ethers.provider,
+                    ).viewDealBoost(dealId)
+                ).workerReward,
+            );
         }
         // CLASSIC mode.
         const deal = await IexecAccessors__factory.connect(
@@ -179,8 +184,8 @@ export class IexecWrapper {
             ethers.provider,
         ).viewDeal(dealId);
         // reward = (workerpoolPrice * workersRatio) / 100
-        const workersRewardRatio = 100 - deal.schedulerRewardRatio.toNumber();
-        return Math.floor((deal.workerpool.price.toNumber() * workersRewardRatio) / 100);
+        const workersRewardRatio = 100 - Number(deal.schedulerRewardRatio);
+        return Math.floor((Number(deal.workerpool.price) * workersRewardRatio) / 100);
     }
 
     async setTeeBroker(brokerAddress: string) {
@@ -263,8 +268,8 @@ export class IexecWrapper {
             this.proxyAddress,
             ethers.provider,
         ).viewConsumed(this.hashOrder(requestOrder));
-        const dealId = getDealId(this.domain, requestOrder, taskIndex);
-        const taskId = getTaskId(dealId, taskIndex);
+        const dealId = getDealId(this.domain, requestOrder, Number(taskIndex));
+        const taskId = getTaskId(dealId, Number(taskIndex));
         const volume = Number(
             await IexecPocoAccessors__factory.connect(
                 this.proxyAddress,
@@ -317,7 +322,7 @@ export class IexecWrapper {
                 ethers.ZeroHash,
             )
             .then((tx) => tx.wait());
-        return await extractRegistryEntryAddress(appReceipt, await appRegistry.getAddress());
+        return await extractRegistryEntryAddress(appReceipt);
     }
 
     async createDataset() {
@@ -334,10 +339,7 @@ export class IexecWrapper {
                 ethers.ZeroHash,
             )
             .then((tx) => tx.wait());
-        return await extractRegistryEntryAddress(
-            datasetReceipt,
-            await datasetRegistry.getAddress(),
-        );
+        return await extractRegistryEntryAddress(datasetReceipt);
     }
 
     /**
@@ -472,10 +474,7 @@ export class IexecWrapper {
         const workerpoolReceipt = await workerpoolRegistry
             .createWorkerpool(this.accounts.scheduler.address, 'my-workerpool')
             .then((tx) => tx.wait());
-        return await extractRegistryEntryAddress(
-            workerpoolReceipt,
-            await workerpoolRegistry.getAddress(),
-        );
+        return await extractRegistryEntryAddress(workerpoolReceipt);
     }
 
     async getInitialFrozens(accounts: SignerWithAddress[]) {
@@ -484,7 +483,7 @@ export class IexecWrapper {
         for (const account of accounts) {
             initialFrozens.push({
                 address: account.address,
-                frozen: (await iexecPoco.frozenOf(account.address)).toNumber(),
+                frozen: Number(await iexecPoco.frozenOf(account.address)),
             });
         }
         return initialFrozens;
@@ -496,9 +495,9 @@ export class IexecWrapper {
     ) {
         let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
         for (let i = 0; i < accountsInitialFrozens.length; i++) {
-            const actualFrozen = (
-                await iexecPoco.frozenOf(accountsInitialFrozens[i].address)
-            ).toNumber();
+            const actualFrozen = Number(
+                await iexecPoco.frozenOf(accountsInitialFrozens[i].address),
+            );
 
             const expectedFrozen = accountsInitialFrozens[i].frozen + expectedFrozenChanges[i];
             expect(actualFrozen).to.equal(expectedFrozen, `Mismatch at index ${i}`);
@@ -510,7 +509,7 @@ export class IexecWrapper {
             this.proxyAddress,
             ethers.provider,
         ).viewDeal(dealId);
-        return (totalPoolReward * (100 - deal.schedulerRewardRatio.toNumber())) / 100;
+        return (totalPoolReward * (100 - Number(deal.schedulerRewardRatio))) / 100;
     }
 }
 
@@ -518,29 +517,25 @@ export class IexecWrapper {
  * Extract address of a newly created entry in a registry contract
  * from the tx receipt.
  * @param receipt contract receipt
- * @param registryInstanceAddress address of the registry contract
  * @returns address of the entry in checksum format.
  */
 async function extractRegistryEntryAddress(
     receipt: ContractTransactionReceipt | null,
-    registryInstanceAddress: string,
 ): Promise<string> {
     if (!receipt) {
         throw new Error('Undefined tx receipt');
     }
-    const eventName = 'Transfer';
-    const eventAbi = [
-        'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)',
-    ];
-    const events = extractEventsFromReceipt(receipt, registryInstanceAddress, eventName, eventAbi);
-    if (events.length === 0) {
+    const registryInterface = Registry__factory.createInterface();
+    const event = extractEventFromReceipt(
+        receipt,
+        registryInterface,
+        registryInterface.getEvent('Transfer'),
+    ) as any as TransferEvent.OutputObject;
+    if (!event) {
         throw new Error('No event extracted from registry tx');
     }
     // Get registry address from event.
-    const lowercaseAddress = ethers.zeroPadValue(
-        ethers.toBeHex(BigInt(events[0].args.tokenId)),
-        20,
-    );
+    const lowercaseAddress = ethers.zeroPadValue(ethers.toBeHex(BigInt(event.tokenId)), 20);
     // To checksum address.
     return ethers.getAddress(lowercaseAddress);
 }
@@ -548,51 +543,18 @@ async function extractRegistryEntryAddress(
 /**
  * Extract a specific event of a contract from tx receipt.
  * @param txReceipt
- * @param address
- * @param eventName
- * @param eventAbi
- * @returns array of events or empty array.
+ * @param contractInterface
+ * @param eventFragment
+ * @returns event
  */
-function extractEventsFromReceipt(
+function extractEventFromReceipt(
     txReceipt: ContractTransactionReceipt,
-    address: string,
-    eventName: string,
-    eventAbi: string[],
-): LogDescription[] {
-    return extractEvents(txReceipt.logs, address, eventName, eventAbi);
-}
-
-/**
- * Extract a specific event of a contract from tx logs.
- * @param logs
- * @param address
- * @param eventName
- * @param eventAbi
- * @returns array of events or empty array.
- */
-function extractEvents(
-    logs: Log[],
-    address: string,
-    eventName: string,
-    eventAbi: string[],
-): LogDescription[] {
-    const eventInterface = new ethers.Interface(eventAbi);
-    const event = eventInterface.getEvent(eventName);
-    if (!event) {
-        throw new Error('Event name and abi mismatch');
-    }
-    const eventId = event.topicHash;
-    let extractedEvents = logs
-        // Get logs of the target contract.
-        .filter((log) => log.address === address && log.topics.includes(eventId))
-        // Parse logs to events.
-        .map((log) => eventInterface.parseLog(log))
-        // Get events with the target name.
-        .filter((event) => event && event.name === eventName);
-    // Get only non null elements.
-    // Note: using .filter(...) returns (LogDescription | null)[]
-    // which is not desired.
-    const events: LogDescription[] = [];
-    extractedEvents.forEach((element) => element && events.push(element));
-    return events;
+    contractInterface: Interface,
+    eventFragment: EventFragment,
+) {
+    return (
+        txReceipt.logs.find(
+            (log) => contractInterface.parseLog(log)?.topic === eventFragment.topicHash,
+        ) as EventLog
+    ).args;
 }
