@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
@@ -45,7 +45,7 @@ describe('IexecPoco2#reveal', () => {
     let ordersPrices: OrdersPrices;
     let orders: IexecOrders;
     let [dealId, taskId]: string[] = [];
-    let taskIndex: number;
+    let taskIndex: bigint;
     let [resultHash, resultSeal]: string[] = [];
     let schedulerSignature: string;
 

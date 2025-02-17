@@ -43,7 +43,7 @@ describe('IexecPoco2#reopen', async () => {
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
     let [dealId, taskId]: string[] = [];
-    let taskIndex: number;
+    let taskIndex: bigint;
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts

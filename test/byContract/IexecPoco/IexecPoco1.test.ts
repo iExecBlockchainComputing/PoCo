@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { Contract, ContractTransactionResponse, ZeroAddress, ZeroHash, ethers } from 'ethers';
+import { Contract, ContractTransactionResponse, Wallet, ZeroAddress, ZeroHash } from 'ethers';
+import { ethers } from 'hardhat';
 import { Address } from 'hardhat-deploy/dist/types';
 import {
     ERC1271Mock,
@@ -52,7 +53,7 @@ const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000
 const volume = 1;
 const botVolume = 321;
 const someMessage = 'some-message';
-const someWallet = ethers.Wallet.createRandom();
+const someWallet = Wallet.createRandom();
 
 /**
  * Note: TEE is the default in tests.

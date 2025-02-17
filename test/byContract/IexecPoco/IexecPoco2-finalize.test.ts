@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
@@ -97,6 +97,7 @@ describe('IexecPoco2#finalize', async () => {
             .connect(anyone)
             .deploy()
             .then((contract) => contract.waitForDeployment());
+        const oracleConsumerInstanceAddress = await oracleConsumerInstance.getAddress();
         const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
         const orders = buildOrders({
             assets: ordersAssets,
@@ -104,7 +105,7 @@ describe('IexecPoco2#finalize', async () => {
             prices: ordersPrices,
             volume: expectedVolume,
             trust: 3,
-            callback: oracleConsumerInstance.address,
+            callback: oracleConsumerInstanceAddress,
         });
         const { dealId, taskId, taskIndex, dealPrice } =
             await iexecWrapper.signAndSponsorMatchOrders(...orders.toArray());
@@ -184,30 +185,31 @@ describe('IexecPoco2#finalize', async () => {
 
         const finalizeTx = await iexecPocoAsScheduler.finalize(taskId, results, resultsCallback);
         await finalizeTx.wait();
+        const iexecPocoAddress = await iexecPoco.getAddress();
         await expect(finalizeTx)
             .to.emit(iexecPoco, 'Seize')
             .withArgs(sponsor.address, taskPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, appProvider.address, appPrice)
+            .withArgs(iexecPocoAddress, appProvider.address, appPrice)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(appProvider.address, appPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, datasetProvider.address, datasetPrice)
+            .withArgs(iexecPocoAddress, datasetProvider.address, datasetPrice)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(datasetProvider.address, datasetPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, scheduler.address, schedulerTaskStake)
+            .withArgs(iexecPocoAddress, scheduler.address, schedulerTaskStake)
             .to.emit(iexecPoco, 'Unlock')
             .withArgs(scheduler.address, schedulerTaskStake);
         const workerReward = 429000000;
         for (const worker of winningWorkers) {
             await expect(finalizeTx)
                 .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPoco.address, worker.address, workerTaskStake)
+                .withArgs(iexecPocoAddress, worker.address, workerTaskStake)
                 .to.emit(iexecPoco, 'Unlock')
                 .withArgs(worker.address, workerTaskStake)
                 .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPoco.address, worker.address, workerReward)
+                .withArgs(iexecPocoAddress, worker.address, workerReward)
                 .to.emit(iexecPoco, 'Reward')
                 .withArgs(worker.address, workerReward, taskId)
                 .to.emit(iexecPoco, 'AccurateContribution')
@@ -224,7 +226,7 @@ describe('IexecPoco2#finalize', async () => {
             workerTaskStake; // losing worker stake
         await expect(finalizeTx)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, scheduler.address, schedulerReward)
+            .withArgs(iexecPocoAddress, scheduler.address, schedulerReward)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(scheduler.address, schedulerReward, taskId)
             .to.emit(iexecPoco, 'TaskFinalize')
@@ -335,21 +337,22 @@ describe('IexecPoco2#finalize', async () => {
             .connect(worker1)
             .reveal(taskId, resultDigest)
             .then((tx) => tx.wait());
-        const requesterFrozenBefore = (await iexecPoco.frozenOf(requester.address)).toNumber();
+        const requesterFrozenBefore = Number(await iexecPoco.frozenOf(requester.address));
         const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
 
-        await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
-            .to.changeTokenBalances(
-                iexecPoco,
-                [requester, sponsor, appProvider, datasetProvider],
-                [
-                    0, // requester balance is unchanged, only frozen is changed
-                    0,
-                    appPrice, // app provider is rewarded
-                    0, // but dataset provider is not rewarded
-                ],
-            )
-            .to.emit(iexecPoco, 'TaskFinalize');
+        // The matcher 'emit' cannot be chained after 'changeTokenBalances' - https://hardhat.org/chaining-async-matchers
+        const txFinalize = iexecPocoAsScheduler.finalize(taskId, results, '0x');
+        await expect(txFinalize).to.changeTokenBalances(
+            iexecPoco,
+            [requester, sponsor, appProvider, datasetProvider],
+            [
+                0, // requester balance is unchanged, only frozen is changed
+                0,
+                appPrice, // app provider is rewarded
+                0, // but dataset provider is not rewarded
+            ],
+        );
+        await expect(txFinalize).to.emit(iexecPoco, 'TaskFinalize');
         expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(
             requesterFrozenBefore - taskPrice,
         );
@@ -408,15 +411,16 @@ describe('IexecPoco2#finalize', async () => {
     });
 
     it('Should finalize task when callback address is non-EIP1154 contract', async () => {
-        const nonEip1154RandomContract = await new OwnableMock__factory()
+        const nonEip1154RandomContractAddress = await new OwnableMock__factory()
             .connect(anyone)
             .deploy()
-            .then((contract) => contract.waitForDeployment());
+            .then((contract) => contract.waitForDeployment())
+            .then((deployedContract) => deployedContract.getAddress());
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
-            callback: nonEip1154RandomContract.address,
+            callback: nonEip1154RandomContractAddress,
         });
 
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
@@ -517,15 +521,17 @@ describe('IexecPoco2#finalize', async () => {
                 await time.setNextBlockTimestamp(
                     (await iexecPoco.viewTask(kittyFillingDeal.taskId)).finalDeadline,
                 );
-                await expect(iexecPoco.claim(kittyFillingDeal.taskId))
-                    .to.changeTokenBalances(
-                        iexecPoco,
-                        [iexecPoco, kittyAddress],
-                        [
-                            -workerpoolPriceToFillKitty, // deal payer is refunded
-                            0,
-                        ],
-                    )
+                const tx = iexecPoco.claim(kittyFillingDeal.taskId);
+                // The matcher 'emit' cannot be chained after 'changeTokenBalances' - https://hardhat.org/chaining-async-matchers
+                await expect(tx).to.changeTokenBalances(
+                    iexecPoco,
+                    [iexecPoco, kittyAddress],
+                    [
+                        -workerpoolPriceToFillKitty, // deal payer is refunded
+                        0,
+                    ],
+                );
+                await expect(tx)
                     .to.emit(iexecPoco, 'Reward')
                     .withArgs(kittyAddress, kittyFillingSchedulerTaskStake, kittyFillingDeal.taskId)
                     .to.emit(iexecPoco, 'Lock')
@@ -575,21 +581,20 @@ describe('IexecPoco2#finalize', async () => {
                     .connect(worker1)
                     .reveal(taskId, resultDigest)
                     .then((tx) => tx.wait());
-                await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
-                    .to.changeTokenBalances(
-                        iexecPoco,
-                        [iexecPoco, scheduler, kittyAddress],
-                        [-expectedSchedulerKittyPartReward, expectedSchedulerKittyPartReward, 0],
-                    )
+                const iexecPocoAddress = await iexecPoco.getAddress();
+                // The matcher 'emit' cannot be chained after 'changeTokenBalances' - https://hardhat.org/chaining-async-matchers
+                const txFinalize = iexecPocoAsScheduler.finalize(taskId, results, '0x');
+                await expect(txFinalize).to.changeTokenBalances(
+                    iexecPoco,
+                    [iexecPoco, scheduler, kittyAddress],
+                    [-expectedSchedulerKittyPartReward, expectedSchedulerKittyPartReward, 0],
+                );
+                await expect(txFinalize)
                     .to.emit(iexecPoco, 'TaskFinalize')
                     .to.emit(iexecPoco, 'Seize')
                     .withArgs(kittyAddress, expectedSchedulerKittyPartReward, taskId)
                     .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(
-                        iexecPoco.address,
-                        scheduler.address,
-                        expectedSchedulerKittyPartReward,
-                    )
+                    .withArgs(iexecPocoAddress, scheduler.address, expectedSchedulerKittyPartReward)
                     .to.emit(iexecPoco, 'Reward')
                     .withArgs(scheduler.address, expectedSchedulerKittyPartReward, taskId);
                 expect(await iexecPoco.frozenOf(kittyAddress)).to.equal(
@@ -833,15 +838,16 @@ describe('IexecPoco2#finalize', async () => {
     });
 
     it('Should not finalize task when result callback is bad', async () => {
-        const oracleConsumerInstance = await new TestClient__factory()
+        const oracleConsumerInstanceAddress = await new TestClient__factory()
             .connect(anyone)
             .deploy()
-            .then((contract) => contract.waitForDeployment());
+            .then((contract) => contract.waitForDeployment())
+            .then((deployedContract) => deployedContract.getAddress());
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
-            callback: oracleConsumerInstance.address,
+            callback: oracleConsumerInstanceAddress,
         });
 
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(

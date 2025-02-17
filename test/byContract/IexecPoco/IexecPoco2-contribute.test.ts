@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
@@ -166,12 +166,14 @@ describe('IexecPoco2#contribute', () => {
                 task = await iexecPoco.viewTask(taskId);
                 expect(task.contributors.length).equal(i + 1);
                 expect(task.contributors[i]).equal(workerAddress);
+
+                // The matcher 'emit' cannot be chained after 'changeTokenBalances' - https://hardhat.org/chaining-async-matchers
+                await expect(tx).to.changeTokenBalances(
+                    iexecPoco,
+                    [workerAddress, proxyAddress],
+                    [-workerTaskStake, workerTaskStake],
+                );
                 await expect(tx)
-                    .to.changeTokenBalances(
-                        iexecPoco,
-                        [workerAddress, proxyAddress],
-                        [-workerTaskStake, workerTaskStake],
-                    )
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(workerAddress, proxyAddress, workerTaskStake);
                 expect(await viewFrozenOf(workerAddress)).equal(frozenBefore + workerTaskStake);
