@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, mine } from '@nomicfoundation/hardhat-network-helpers';
 import { setNextBlockTimestamp } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import { ZeroAddress } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
@@ -129,7 +129,7 @@ describe('Integration tests', function () {
         const taskId = await iexecWrapper.initializeTask(dealId, 0);
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => Number(deal.workerStake));
         for (const contributor of firstContributors) {
             await iexecWrapper.contributeToTask(dealId, 0, resultDigest, contributor);
         }
@@ -151,7 +151,7 @@ describe('Integration tests', function () {
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 contributor.address,
                 taskId,
-                AddressZero,
+                ZeroAddress,
                 scheduler,
             );
             await iexecWrapper.depositInIexecAccount(contributor, workerStakePerTask); // Not a balance related revert.
@@ -162,7 +162,7 @@ describe('Integration tests', function () {
                         taskId,
                         resultHash,
                         resultSeal,
-                        AddressZero,
+                        ZeroAddress,
                         '0x',
                         schedulerSignature,
                     ),
