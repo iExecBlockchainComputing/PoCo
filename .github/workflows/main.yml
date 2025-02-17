@@ -37,7 +37,10 @@ jobs:
         run: |
           npm run test \
           test/*fullchain* \
+          test/byContract/ENSIntegration/** \
           test/byContract/IexecAccessors/** \
+          test/byContract/IexecOrderManagement/** \
+          test/byContract/IexecRelay/** \
           test/byContract/IexecPoco/** 
       - name: Run deployment
         # Basic deployment to make sure everything is ok.
