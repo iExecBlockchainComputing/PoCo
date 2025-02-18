@@ -28,7 +28,7 @@ import {
 } from '../../../typechain';
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
-import { BN2Address } from '../../../utils/tools';
+import { bigintToAddress } from '../../../utils/tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 const randomAddress = () => ethers.Wallet.createRandom().address;
 
@@ -327,9 +327,7 @@ describe('Registries', () => {
             expect(await appRegistry.ownerOf(predictedAddress)).to.equal(appProvider.address);
 
             const tokenAtIndex = await appRegistry.tokenOfOwnerByIndex(appProvider.address, 0);
-            expect(bigintToAddress(tokenAtIndex)).to.equal(
-                ethers.getAddress(predictedAddress),
-            );
+            expect(bigintToAddress(tokenAtIndex)).to.equal(ethers.getAddress(predictedAddress));
 
             const tokenURI = await appRegistry.tokenURI(predictedAddress);
             const baseURI = await appRegistry.baseURI();
@@ -438,9 +436,7 @@ describe('Registries', () => {
                 datasetProvider.address,
                 0,
             );
-            expect(ethers.getAddress(BN2Address(tokenAtIndex))).to.equal(
-                ethers.getAddress(predictedAddress),
-            );
+            expect(bigintToAddress(tokenAtIndex)).to.equal(ethers.getAddress(predictedAddress));
 
             const tokenURI = await datasetRegistry.tokenURI(predictedAddress);
             const baseURI = await datasetRegistry.baseURI();
@@ -524,9 +520,7 @@ describe('Registries', () => {
             expect(await workerpoolRegistry.ownerOf(predictedAddress)).to.equal(scheduler.address);
 
             const tokenAtIndex = await workerpoolRegistry.tokenOfOwnerByIndex(scheduler.address, 0);
-            expect(ethers.getAddress(BN2Address(tokenAtIndex))).to.equal(
-                ethers.getAddress(predictedAddress),
-            );
+            expect(bigintToAddress(tokenAtIndex)).to.equal(ethers.getAddress(predictedAddress));
 
             const tokenURI = await workerpoolRegistry.tokenURI(predictedAddress);
             const baseURI = await workerpoolRegistry.baseURI();
