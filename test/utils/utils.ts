@@ -16,6 +16,8 @@ export async function hashDomain(domain: IexecLibOrders_v5.EIP712DomainStructOut
  * Hardhat's impersonation mechanism.
  * Fixes the error:
  * ProviderError: Sender doesn't have enough funds to send tx ...
+ *
+ * Note: sending ETH to address(0) does not increment its balance.
  */
 export async function setZeroAddressBalance(amount: bigint) {
     await ethers.provider.send('hardhat_setBalance', [

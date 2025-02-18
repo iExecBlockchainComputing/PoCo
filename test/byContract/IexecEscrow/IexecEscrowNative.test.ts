@@ -317,7 +317,7 @@ if (CONFIG.chains.default.asset === 'Native') {
 }
 
 function getTotalAmount(amounts: bigint[]) {
-    return amounts.reduce((a: bigint, b: bigint) => a + b, 0n);
+    return amounts.reduce((a, b) => a + b, 0n);
 }
 
 function toNativeAmount(depositAmount: bigint) {
