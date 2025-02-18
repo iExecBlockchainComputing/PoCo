@@ -949,7 +949,7 @@ describe('IexecPoco1', () => {
             // await setStorageAt(
             //     iexecPoco.address,
             //     appOrderConsumedSlotIndex,
-            //     ethers.hexlify(Number(orders.app.volume)),
+            //     ethers.toBeHex(orders.app.volume),
             // );
             await depositForRequesterAndSchedulerWithDefaultPrices(botVolume);
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
