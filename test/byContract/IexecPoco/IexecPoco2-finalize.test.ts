@@ -185,31 +185,30 @@ describe('IexecPoco2#finalize', async () => {
 
         const finalizeTx = await iexecPocoAsScheduler.finalize(taskId, results, resultsCallback);
         await finalizeTx.wait();
-        const iexecPocoAddress = await iexecPoco.getAddress();
         await expect(finalizeTx)
             .to.emit(iexecPoco, 'Seize')
             .withArgs(sponsor.address, taskPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, appProvider.address, appPrice)
+            .withArgs(proxyAddress, appProvider.address, appPrice)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(appProvider.address, appPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, datasetProvider.address, datasetPrice)
+            .withArgs(proxyAddress, datasetProvider.address, datasetPrice)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(datasetProvider.address, datasetPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, scheduler.address, schedulerTaskStake)
+            .withArgs(proxyAddress, scheduler.address, schedulerTaskStake)
             .to.emit(iexecPoco, 'Unlock')
             .withArgs(scheduler.address, schedulerTaskStake);
         const workerReward = 429000000;
         for (const worker of winningWorkers) {
             await expect(finalizeTx)
                 .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPocoAddress, worker.address, workerTaskStake)
+                .withArgs(proxyAddress, worker.address, workerTaskStake)
                 .to.emit(iexecPoco, 'Unlock')
                 .withArgs(worker.address, workerTaskStake)
                 .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPocoAddress, worker.address, workerReward)
+                .withArgs(proxyAddress, worker.address, workerReward)
                 .to.emit(iexecPoco, 'Reward')
                 .withArgs(worker.address, workerReward, taskId)
                 .to.emit(iexecPoco, 'AccurateContribution')
@@ -226,7 +225,7 @@ describe('IexecPoco2#finalize', async () => {
             workerTaskStake; // losing worker stake
         await expect(finalizeTx)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, scheduler.address, schedulerReward)
+            .withArgs(proxyAddress, scheduler.address, schedulerReward)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(scheduler.address, schedulerReward, taskId)
             .to.emit(iexecPoco, 'TaskFinalize')
@@ -581,7 +580,7 @@ describe('IexecPoco2#finalize', async () => {
                     .connect(worker1)
                     .reveal(taskId, resultDigest)
                     .then((tx) => tx.wait());
-                const iexecPocoAddress = await iexecPoco.getAddress();
+                const proxyAddress = await iexecPoco.getAddress();
                 // The matcher 'emit' cannot be chained after 'changeTokenBalances' - https://hardhat.org/chaining-async-matchers
                 const txFinalize = iexecPocoAsScheduler.finalize(taskId, results, '0x');
                 await expect(txFinalize).to.changeTokenBalances(
@@ -594,7 +593,7 @@ describe('IexecPoco2#finalize', async () => {
                     .to.emit(iexecPoco, 'Seize')
                     .withArgs(kittyAddress, expectedSchedulerKittyPartReward, taskId)
                     .to.emit(iexecPoco, 'Transfer')
-                    .withArgs(iexecPocoAddress, scheduler.address, expectedSchedulerKittyPartReward)
+                    .withArgs(proxyAddress, scheduler.address, expectedSchedulerKittyPartReward)
                     .to.emit(iexecPoco, 'Reward')
                     .withArgs(scheduler.address, expectedSchedulerKittyPartReward, taskId);
                 expect(await iexecPoco.frozenOf(kittyAddress)).to.equal(

@@ -31,7 +31,6 @@ const enclaveAddress = ZeroAddress;
 describe('IexecPoco2#claim', async () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
-    let iexecPocoAddress: string;
     let iexecPocoAsAnyone: IexecInterfaceNative;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
@@ -54,7 +53,7 @@ describe('IexecPoco2#claim', async () => {
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
-        iexecPocoAddress = await iexecPoco.getAddress();
+        proxyAddress = await iexecPoco.getAddress();
         iexecPocoAsAnyone = iexecPoco.connect(anyone);
         ordersAssets = {
             app: appAddress,
@@ -113,7 +112,7 @@ describe('IexecPoco2#claim', async () => {
                 .contribute(taskId, resultHash, resultSeal, ZeroAddress, '0x', schedulerSignature)
                 .then((tx) => tx.wait());
         }
-        expect(await iexecPoco.balanceOf(iexecPocoAddress)).to.be.equal(
+        expect(await iexecPoco.balanceOf(proxyAddress)).to.be.equal(
             dealPrice + schedulerDealStake + workerTaskStake * workers.length,
         );
         expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
@@ -135,7 +134,7 @@ describe('IexecPoco2#claim', async () => {
         await claimTx.wait();
         await expect(claimTx)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, sponsor.address, taskPrice)
+            .withArgs(proxyAddress, sponsor.address, taskPrice)
             .to.emit(iexecPoco, 'Unlock')
             .withArgs(sponsor.address, taskPrice)
             .to.emit(iexecPoco, 'Seize')
@@ -147,7 +146,7 @@ describe('IexecPoco2#claim', async () => {
         for (const worker of workers) {
             await expect(claimTx)
                 .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPocoAddress, worker.address, workerTaskStake)
+                .withArgs(proxyAddress, worker.address, workerTaskStake)
                 .to.emit(iexecPoco, 'Unlock')
                 .withArgs(worker.address, workerTaskStake);
         }
@@ -155,7 +154,7 @@ describe('IexecPoco2#claim', async () => {
 
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.FAILED);
         const remainingTasksToClaim = expectedVolume - claimedTasks;
-        expect(await iexecPoco.balanceOf(iexecPocoAddress)).to.be.equal(
+        expect(await iexecPoco.balanceOf(proxyAddress)).to.be.equal(
             taskPrice * remainingTasksToClaim + // sponsor has 2nd & 3rd task locked
                 schedulerDealStake, // kitty value since 1st task seized
         );
@@ -199,7 +198,7 @@ describe('IexecPoco2#claim', async () => {
 
         await expect(iexecPocoAsAnyone.claim(taskId))
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, requester.address, taskPrice)
+            .withArgs(proxyAddress, requester.address, taskPrice)
             .to.emit(iexecPoco, 'Unlock')
             .withArgs(requester.address, taskPrice)
             .to.emit(iexecPoco, 'TaskClaimed');
