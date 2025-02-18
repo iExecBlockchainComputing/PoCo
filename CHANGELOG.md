@@ -9,6 +9,7 @@
 - Migrate to Ethers v6:
     - Deployment scripts (#187)
     - Tests
+        - IexecEscrow (#199)
         - ENSIntegration, IexecOrderManagement, IexecRelay (#195)
         - IexecCategoryManager, IexecERC20 (#192)
         - test/*fullchain* (#190)
