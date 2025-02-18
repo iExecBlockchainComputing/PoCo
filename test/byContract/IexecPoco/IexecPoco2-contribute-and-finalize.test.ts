@@ -190,28 +190,27 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         ];
         await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         // Check events.
-        const iexecPocoAddress = await iexecPoco.getAddress();
         await expect(contributeAndFinalizeTx)
             .to.emit(iexecPoco, 'Seize')
             .withArgs(requester.address, taskPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, appProvider.address, appPrice)
+            .withArgs(proxyAddress, appProvider.address, appPrice)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(appProvider.address, appPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, datasetProvider.address, datasetPrice)
+            .withArgs(proxyAddress, datasetProvider.address, datasetPrice)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(datasetProvider.address, datasetPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, scheduler.address, schedulerStake)
+            .withArgs(proxyAddress, scheduler.address, schedulerStake)
             .to.emit(iexecPoco, 'Unlock')
             .withArgs(scheduler.address, schedulerStake)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, worker.address, workersReward)
+            .withArgs(proxyAddress, worker.address, workersReward)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(worker.address, workersReward, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPocoAddress, scheduler.address, schedulerReward)
+            .withArgs(proxyAddress, scheduler.address, schedulerReward)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(scheduler.address, schedulerReward, taskId);
         // Task events.
