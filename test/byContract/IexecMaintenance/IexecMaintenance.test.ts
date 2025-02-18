@@ -15,6 +15,7 @@ import {
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { hashDomain } from '../../utils/utils';
 
 const randomAddress = () => ethers.Wallet.createRandom().address;
 const configureParams = {
@@ -39,7 +40,7 @@ const configureArgs = Object.values(configureParams) as [
 ];
 const someDomainSeparator = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-describe('Maintenance', async () => {
+describe('IexecMaintenance', async () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
     let iexecMaintenanceExtra: IexecMaintenanceExtra;
@@ -210,13 +211,3 @@ describe('Maintenance', async () => {
         expect(await iexecPoco.eip712domain_separator()).equal(domainSeparator);
     }
 });
-
-//TODO: Move to utils
-export async function hashDomain(domain: IexecLibOrders_v5.EIP712DomainStructOutput) {
-    return TypedDataEncoder.hashDomain({
-        name: domain.name,
-        version: domain.version,
-        chainId: domain.chainId,
-        verifyingContract: domain.verifyingContract,
-    });
-}
