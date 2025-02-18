@@ -43,13 +43,13 @@ import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deploy
  * TODO add Standard tests.
  */
 
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const volume = 1;
-const botVolume = 321;
+const volume = 1n;
+const botVolume = 321n;
 const someMessage = 'some-message';
 const someWallet = Wallet.createRandom();
 
@@ -383,8 +383,8 @@ describe('IexecPoco1', () => {
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Save frozen balances before match.
-            const requesterFrozenBefore = Number(await iexecPoco.frozenOf(requester.address));
-            const schedulerFrozenBefore = Number(await iexecPoco.frozenOf(scheduler.address));
+            const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
+            const schedulerFrozenBefore = await iexecPoco.frozenOf(scheduler.address);
             // Sign and match orders.
             const startTime = await setNextBlockTimestamp();
             await signOrders(iexecWrapper.getDomain(), fullConfigOrders, ordersActors);
@@ -408,10 +408,10 @@ describe('IexecPoco1', () => {
             // TODO use predicate `(change) => boolean` when migrating to a recent version of Hardhat.
             // See https://github.com/NomicFoundation/hardhat/blob/main/packages/hardhat-chai-matchers/src/internal/changeTokenBalance.ts#L42
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(
-                requesterFrozenBefore + dealPrice,
+                requesterFrozenBefore + BigInt(dealPrice),
             );
             expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(
-                schedulerFrozenBefore + schedulerStake,
+                schedulerFrozenBefore + BigInt(schedulerStake),
             );
             // Check events.
             await expect(tx)
@@ -530,7 +530,7 @@ describe('IexecPoco1', () => {
             orders.requester.dataset = ZeroAddress;
             // Set dataset volume lower than other assets to make sure
             // it does not impact final volume computation.
-            orders.dataset.volume = botVolume - 1;
+            orders.dataset.volume = botVolume - 1n;
             orders.app.volume = botVolume;
             orders.workerpool.volume = botVolume;
             orders.requester.volume = botVolume;
@@ -544,7 +544,7 @@ describe('IexecPoco1', () => {
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Save frozen balances before match.
-            const requesterFrozenBefore = Number(await iexecPoco.frozenOf(requester.address));
+            const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
@@ -641,44 +641,44 @@ describe('IexecPoco1', () => {
         //   - multiple matches of the same order
 
         it('Should fail when categories are different', async () => {
-            orders.requester.category = Number(orders.workerpool.category) + 1; // Valid but different category.
+            orders.requester.category = BigInt(orders.workerpool.category) + 1n; // Valid but different category.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x00',
             );
         });
 
         it('Should fail when category is unknown', async () => {
-            const lastCategoryIndex = Number(await iexecPoco.countCategory()) - 1;
-            orders.requester.category = lastCategoryIndex + 1;
-            orders.workerpool.category = lastCategoryIndex + 1;
+            const lastCategoryIndex = (await iexecPoco.countCategory()) - 1n;
+            orders.requester.category = lastCategoryIndex + 1n;
+            orders.workerpool.category = lastCategoryIndex + 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x01',
             );
         });
 
         it('Should fail when requested trust is above workerpool trust', async () => {
-            orders.requester.trust = Number(orders.workerpool.trust) + 1;
+            orders.requester.trust = BigInt(orders.workerpool.trust) + 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x02',
             );
         });
 
         it('Should fail when app max price is less than app price', async () => {
-            orders.requester.appmaxprice = Number(orders.app.appprice) - 1;
+            orders.requester.appmaxprice = BigInt(orders.app.appprice) - 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x03',
             );
         });
 
         it('Should fail when dataset max price is less than dataset price', async () => {
-            orders.requester.datasetmaxprice = Number(orders.dataset.datasetprice) - 1;
+            orders.requester.datasetmaxprice = BigInt(orders.dataset.datasetprice) - 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x04',
             );
         });
 
         it('Should fail when workerpool max price is less than workerpool price', async () => {
-            orders.requester.workerpoolmaxprice = Number(orders.workerpool.workerpoolprice) - 1;
+            orders.requester.workerpoolmaxprice = BigInt(orders.workerpool.workerpoolprice) - 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x05',
             );
@@ -965,7 +965,7 @@ describe('IexecPoco1', () => {
                 volume,
             );
             // Deposit less than deal price in the requester's account.
-            await iexecWrapper.depositInIexecAccount(requester, dealPrice - 1);
+            await iexecWrapper.depositInIexecAccount(requester, dealPrice - 1n);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             expect(await iexecPoco.balanceOf(requester.address)).to.be.lessThan(dealPrice);
             expect(await iexecPoco.balanceOf(scheduler.address)).to.equal(schedulerStake);
@@ -983,7 +983,7 @@ describe('IexecPoco1', () => {
             );
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             // Deposit less than stake value in the scheduler's account.
-            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake - 1);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake - 1n);
             expect(await iexecPoco.balanceOf(requester.address)).to.equal(dealPrice);
             expect(await iexecPoco.balanceOf(scheduler.address)).to.be.lessThan(schedulerStake);
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -999,7 +999,7 @@ describe('IexecPoco1', () => {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             // override volumes and set different value for each order
             // to make sure the smallest volume is considered.
-            const expectedVolume = 2;
+            const expectedVolume = 2n;
             appOrder.volume = 2; // smallest unconsumed volume among all orders
             datasetOrder.volume = 3;
             workerpoolOrder.volume = 4;
@@ -1016,7 +1016,7 @@ describe('IexecPoco1', () => {
             await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Save frozen balances before match.
-            const sponsorFrozenBefore = Number(await iexecPoco.frozenOf(sponsor.address));
+            const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
             // Sign and match orders.
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester);
@@ -1035,7 +1035,7 @@ describe('IexecPoco1', () => {
             );
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(0);
             expect(await iexecPoco.frozenOf(sponsor.address)).to.equal(
-                sponsorFrozenBefore + dealPrice,
+                sponsorFrozenBefore + BigInt(dealPrice),
             );
             // Check events.
             await expect(tx)
@@ -1065,7 +1065,7 @@ describe('IexecPoco1', () => {
                 volume,
             );
             // Deposit less than deal price in the sponsor's account.
-            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice - 1);
+            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice - 1n);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -1079,7 +1079,7 @@ describe('IexecPoco1', () => {
      * Helper function to deposit requester and scheduler stakes with
      * default prices for tests that do not rely on custom prices.
      */
-    async function depositForRequesterAndSchedulerWithDefaultPrices(volume: number) {
+    async function depositForRequesterAndSchedulerWithDefaultPrices(volume: bigint) {
         const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
         const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
             workerpoolPrice,

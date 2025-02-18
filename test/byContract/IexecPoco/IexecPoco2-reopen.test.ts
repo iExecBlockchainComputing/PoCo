@@ -20,9 +20,9 @@ import {
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const resultDigest = buildUtf8ResultAndDigest('result').resultDigest;
 
 describe('IexecPoco2#reopen', async () => {
@@ -244,9 +244,7 @@ describe('IexecPoco2#reopen', async () => {
     async function contribute(worker: SignerWithAddress, resultDigest: string) {
         const emptyEnclaveAddress = ZeroAddress;
         const emptyEnclaveSignature = '0x';
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,

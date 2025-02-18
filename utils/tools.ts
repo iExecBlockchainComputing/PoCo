@@ -11,3 +11,11 @@ export function compactSignature(signature: string): string {
 export function bigintToAddress(bigint: bigint) {
     return ethers.getAddress(ethers.toBeHex(bigint));
 }
+
+export function minBigInt(a: bigint, b: bigint) {
+    return a < b ? a : b;
+}
+
+export function maxBigInt(a: bigint, b: bigint) {
+    return a > b ? a : b;
+}

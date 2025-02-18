@@ -81,12 +81,12 @@ export class IexecWrapper {
      * @param value The value to deposit.
      * @param account Deposit value for an account.
      */
-    async depositInIexecAccount(account: SignerWithAddress, value: number) {
+    async depositInIexecAccount(account: SignerWithAddress, value: bigint) {
         switch (DEPLOYMENT_CONFIG.asset) {
             case 'Native':
                 await IexecInterfaceNative__factory.connect(this.proxyAddress, account)
                     .deposit({
-                        value: (value * 10 ** 9).toString(),
+                        value: (value * 10n ** 9n).toString(),
                     })
                     .then((tx) => tx.wait());
                 break;
@@ -99,9 +99,12 @@ export class IexecWrapper {
                     this.accounts.iexecAdmin,
                 );
                 // Transfer RLC from owner to recipient
-                await rlc.transfer(account.address, value);
+                await rlc.transfer(account.address, value).then((tx) => tx.wait());
                 // Deposit
-                await rlc.connect(account).approveAndCall(this.proxyAddress, value, '0x');
+                await rlc
+                    .connect(account)
+                    .approveAndCall(this.proxyAddress, value, '0x')
+                    .then((tx) => tx.wait());
                 break;
             default:
                 break;
@@ -118,14 +121,12 @@ export class IexecWrapper {
      * @param volume number of tasks of a deal
      * @returns total amount to stake by the scheduler
      */
-    async computeSchedulerDealStake(workerpoolPrice: number, volume: number): Promise<number> {
-        const stakeRatio = Number(
-            await IexecAccessors__factory.connect(
-                this.proxyAddress,
-                this.accounts.anyone,
-            ).workerpool_stake_ratio(),
-        );
-        return Math.floor((workerpoolPrice * stakeRatio) / 100) * volume;
+    async computeSchedulerDealStake(workerpoolPrice: bigint, volume: bigint): Promise<bigint> {
+        const stakeRatio = await IexecAccessors__factory.connect(
+            this.proxyAddress,
+            this.accounts.anyone,
+        ).workerpool_stake_ratio();
+        return ((workerpoolPrice * stakeRatio) / 100n) * volume;
     }
 
     /**
@@ -135,15 +136,13 @@ export class IexecWrapper {
      * @param workerpoolPrice price of the workerpool
      * @returns value of worker stake
      */
-    async computeWorkerTaskStake(workerpoolAddress: string, workerpoolPrice: number) {
+    async computeWorkerTaskStake(workerpoolAddress: string, workerpoolPrice: bigint) {
         // TODO make "m_workerStakeRatioPolicy()" as view function in IWorkerpool.v8 and use it.
-        const workerStakeRatio = Number(
-            await Workerpool__factory.connect(
-                workerpoolAddress,
-                this.accounts.anyone,
-            ).m_workerStakeRatioPolicy(),
-        );
-        return Math.floor((workerpoolPrice * workerStakeRatio) / 100);
+        const workerStakeRatio = await Workerpool__factory.connect(
+            workerpoolAddress,
+            this.accounts.anyone,
+        ).m_workerStakeRatioPolicy();
+        return (workerpoolPrice * workerStakeRatio) / 100n;
     }
 
     /**
@@ -169,14 +168,12 @@ export class IexecWrapper {
      */
     async computeWorkersRewardPerTask(dealId: string, mode: PocoMode) {
         if (mode === PocoMode.BOOST) {
-            return Number(
-                (
-                    await IexecPocoBoostAccessors__factory.connect(
-                        this.proxyAddress,
-                        ethers.provider,
-                    ).viewDealBoost(dealId)
-                ).workerReward,
-            );
+            return (
+                await IexecPocoBoostAccessors__factory.connect(
+                    this.proxyAddress,
+                    ethers.provider,
+                ).viewDealBoost(dealId)
+            ).workerReward;
         }
         // CLASSIC mode.
         const deal = await IexecAccessors__factory.connect(
@@ -184,8 +181,8 @@ export class IexecWrapper {
             ethers.provider,
         ).viewDeal(dealId);
         // reward = (workerpoolPrice * workersRatio) / 100
-        const workersRewardRatio = 100 - Number(deal.schedulerRewardRatio);
-        return Math.floor((Number(deal.workerpool.price) * workersRewardRatio) / 100);
+        const workersRewardRatio = 100n - deal.schedulerRewardRatio;
+        return (deal.workerpool.price * workersRewardRatio) / 100n;
     }
 
     async setTeeBroker(brokerAddress: string) {
@@ -268,27 +265,25 @@ export class IexecWrapper {
             this.proxyAddress,
             ethers.provider,
         ).viewConsumed(this.hashOrder(requestOrder));
-        const dealId = getDealId(this.domain, requestOrder, Number(taskIndex));
-        const taskId = getTaskId(dealId, Number(taskIndex));
-        const volume = Number(
-            await IexecPocoAccessors__factory.connect(
-                this.proxyAddress,
-                ethers.provider,
-            ).computeDealVolume(appOrder, datasetOrder, workerpoolOrder, requestOrder),
-        );
+        const dealId = getDealId(this.domain, requestOrder, taskIndex);
+        const taskId = getTaskId(dealId, taskIndex);
+        const volume = await IexecPocoAccessors__factory.connect(
+            this.proxyAddress,
+            ethers.provider,
+        ).computeDealVolume(appOrder, datasetOrder, workerpoolOrder, requestOrder);
         const taskPrice =
-            Number(appOrder.appprice) +
-            Number(datasetOrder.datasetprice) +
-            Number(workerpoolOrder.workerpoolprice);
+            BigInt(appOrder.appprice) +
+            BigInt(datasetOrder.datasetprice) +
+            BigInt(workerpoolOrder.workerpoolprice);
         const dealPrice = taskPrice * volume;
         const dealPayer = withSponsor ? this.accounts.sponsor : this.accounts.requester;
         await this.depositInIexecAccount(dealPayer, dealPrice);
         const schedulerStakePerDeal = await this.computeSchedulerDealStake(
-            Number(workerpoolOrder.workerpoolprice),
+            BigInt(workerpoolOrder.workerpoolprice),
             volume,
         );
         await this.depositInIexecAccount(this.accounts.scheduler, schedulerStakePerDeal);
-        const startTime = await setNextBlockTimestamp();
+        const startTime = BigInt(await setNextBlockTimestamp());
         const iexecPocoAsDealPayer = IexecPoco1__factory.connect(this.proxyAddress, dealPayer);
         await (
             withSponsor
@@ -348,7 +343,7 @@ export class IexecWrapper {
      * @param taskIndex index of the task
      * @returns
      */
-    async initializeTask(dealId: string, taskIndex: number) {
+    async initializeTask(dealId: string, taskIndex: bigint) {
         await IexecPoco2__factory.connect(this.proxyAddress, this.accounts.anyone)
             .initialize(dealId, taskIndex)
             .then((tx) => tx.wait());
@@ -367,7 +362,7 @@ export class IexecWrapper {
      */
     async contributeToTask(
         dealId: string,
-        taskIndex: number,
+        taskIndex: bigint,
         resultDigest: string,
         contributor: SignerWithAddress,
     ) {
@@ -393,7 +388,7 @@ export class IexecWrapper {
      */
     async contributeToTeeTask(
         dealId: string,
-        taskIndex: number,
+        taskIndex: bigint,
         resultDigest: string,
         contributor: SignerWithAddress,
     ) {
@@ -420,7 +415,7 @@ export class IexecWrapper {
      */
     async _contributeToTask(
         dealId: string,
-        taskIndex: number,
+        taskIndex: bigint,
         resultDigest: string,
         contributor: SignerWithAddress,
         useEnclave: Boolean,
@@ -431,7 +426,7 @@ export class IexecWrapper {
             ethers.provider,
         )
             .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+            .then((deal) => deal.workerStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             resultDigest,
@@ -483,33 +478,30 @@ export class IexecWrapper {
         for (const account of accounts) {
             initialFrozens.push({
                 address: account.address,
-                frozen: Number(await iexecPoco.frozenOf(account.address)),
+                frozen: await iexecPoco.frozenOf(account.address),
             });
         }
         return initialFrozens;
     }
 
     async checkFrozenChanges(
-        accountsInitialFrozens: { address: string; frozen: number }[],
-        expectedFrozenChanges: number[],
+        accountsInitialFrozens: { address: string; frozen: bigint }[],
+        expectedFrozenChanges: bigint[],
     ) {
         let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
         for (let i = 0; i < accountsInitialFrozens.length; i++) {
-            const actualFrozen = Number(
-                await iexecPoco.frozenOf(accountsInitialFrozens[i].address),
-            );
-
+            const actualFrozen = await iexecPoco.frozenOf(accountsInitialFrozens[i].address);
             const expectedFrozen = accountsInitialFrozens[i].frozen + expectedFrozenChanges[i];
             expect(actualFrozen).to.equal(expectedFrozen, `Mismatch at index ${i}`);
         }
     }
 
-    async computeWorkersRewardForCurrentTask(totalPoolReward: number, dealId: string) {
+    async computeWorkersRewardForCurrentTask(totalPoolReward: bigint, dealId: string) {
         const deal = await IexecInterfaceNative__factory.connect(
             this.proxyAddress,
             ethers.provider,
         ).viewDeal(dealId);
-        return (totalPoolReward * (100 - Number(deal.schedulerRewardRatio))) / 100;
+        return (totalPoolReward * (100n - deal.schedulerRewardRatio)) / 100n;
     }
 }
 

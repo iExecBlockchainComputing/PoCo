@@ -20,9 +20,9 @@ import {
 import { IexecWrapper } from './utils/IexecWrapper';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
@@ -101,7 +101,7 @@ describe('Integration tests', function () {
      * - Verify that winning workers receive a positive score, while losing workers do not.
      */
     it(`[1] Task lifecycle with contributions and reopening`, async function () {
-        const volume = 1;
+        const volume = 1n;
         const workers = [worker1, worker2, worker3, worker4];
         const firstContributors = workers.slice(0, 2);
         const secondContributors = workers.slice(2, 4);
@@ -126,12 +126,12 @@ describe('Integration tests', function () {
         for (const worker of workers) {
             expect(await iexecPoco.viewScore(worker.address)).to.be.equal(0);
         }
-        const taskId = await iexecWrapper.initializeTask(dealId, 0);
+        const taskId = await iexecWrapper.initializeTask(dealId, 0n);
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+            .then((deal) => deal.workerStake);
         for (const contributor of firstContributors) {
-            await iexecWrapper.contributeToTask(dealId, 0, resultDigest, contributor);
+            await iexecWrapper.contributeToTask(dealId, 0n, resultDigest, contributor);
         }
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.REVEALING);
@@ -170,7 +170,7 @@ describe('Integration tests', function () {
         }
         // Contribute and reveal with new workers.
         for (const contributor of secondContributors) {
-            await iexecWrapper.contributeToTask(dealId, 0, resultDigest, contributor);
+            await iexecWrapper.contributeToTask(dealId, 0n, resultDigest, contributor);
         }
         for (const contributor of secondContributors) {
             await iexecPoco
@@ -182,20 +182,20 @@ describe('Integration tests', function () {
         await finalizeTx.wait();
         // Bad workers lose their stake and add it to the pool price
         const totalWorkerPoolReward =
-            workerpoolPrice + workerStakePerTask * firstContributors.length;
+            workerpoolPrice + workerStakePerTask * BigInt(firstContributors.length);
 
         const workersRewardPerTask = await iexecWrapper.computeWorkersRewardForCurrentTask(
             totalWorkerPoolReward,
             dealId,
         );
         const expectedWinningWorkerBalanceChange =
-            workerStakePerTask + workersRewardPerTask / secondContributors.length;
+            workerStakePerTask + workersRewardPerTask / BigInt(secondContributors.length);
         // compute expected scheduler reward for current task
         const schedulerRewardPerTask = totalWorkerPoolReward - workersRewardPerTask;
 
         const expectedProxyBalanceChange = -(
             dealPrice +
-            workerStakePerTask * workers.length +
+            workerStakePerTask * BigInt(workers.length) +
             schedulerStakePerTask
         );
         await expect(finalizeTx).to.changeTokenBalances(
@@ -215,9 +215,9 @@ describe('Integration tests', function () {
         const expectedFrozenChanges = [
             -taskPrice,
             -schedulerStakePerTask,
-            0,
-            0,
-            ...workers.map(() => 0),
+            0n,
+            0n,
+            ...workers.map(() => 0n),
         ];
         await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
 

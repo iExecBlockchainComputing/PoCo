@@ -26,13 +26,13 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 const CONFIG = require('../../../config/config.json');
 
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
 const timeRef = CONFIG.categories[0].workClockTimeRef;
 const trust = 1;
-const volume = 1;
+const volume = 1n;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const standardDealTag = ZeroHash;
 const emptyEnclaveAddress = ZeroAddress;
@@ -73,9 +73,9 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
-        const appPrice = 1000;
-        const datasetPrice = 1_000_000;
-        const workerpoolPrice = 1_000_000_000;
+        const appPrice = 1000n;
+        const datasetPrice = 1_000_000n;
+        const workerpoolPrice = 1_000_000_000n;
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -183,10 +183,10 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         // Check frozen changes.
         const expectedFrozenChanges = [
             -taskPrice, // Requester (dealPrice)
-            0, // App provider
-            0, // Dataset provider
+            0n, // App provider
+            0n, // Dataset provider
             -schedulerStake, // Scheduler
-            0, // Worker
+            0n, // Worker
         ];
         await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         // Check events.
