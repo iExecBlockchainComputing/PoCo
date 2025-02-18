@@ -5,10 +5,7 @@ import { toBeHex, type BigNumberish } from 'ethers';
 import { ethers } from 'hardhat';
 
 export function compactSignature(signature: string): string {
-    const split = ethers.Signature.from(signature);
-    let vs = ethers.getBytes(split.s);
-    // Check if we need to set the high bit
-    if (split.yParity === 1) {
+    return Signature.from(signature).compactSerialized;
         vs[0] |= 0x80;
     }
     return ethers.toBeHex(ethers.concat([split.r, vs]));
