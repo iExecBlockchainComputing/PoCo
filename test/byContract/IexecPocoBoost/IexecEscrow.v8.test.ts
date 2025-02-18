@@ -9,8 +9,8 @@ import { ZeroAddress } from 'ethers';
 import { IexecEscrowTestContract, IexecEscrowTestContract__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 
-const accountBalance = 1000;
-const amount = 3;
+const accountBalance = 1000n;
+const amount = 3n;
 
 let iexecEscrow: IexecEscrowTestContract;
 let iexecEscrowAddress: string;
@@ -36,7 +36,7 @@ describe('IexecEscrow.v8', function () {
 
     describe('Lock', function () {
         it('Should lock funds', async function () {
-            const frozenBefore = Number(await iexecEscrow.frozenOf(account.address));
+            const frozenBefore = await iexecEscrow.frozenOf(account.address);
             const tx = await iexecEscrow.lock_(account.address, amount);
             await expect(tx).to.changeTokenBalances(
                 iexecEscrow,
@@ -58,9 +58,9 @@ describe('IexecEscrow.v8', function () {
         });
 
         it('Should not lock funds when insufficient balance', async function () {
-            await expect(iexecEscrow.lock_(account.address, accountBalance + 1)).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
-            );
+            await expect(
+                iexecEscrow.lock_(account.address, accountBalance + 1n),
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
     });
 
@@ -69,7 +69,7 @@ describe('IexecEscrow.v8', function () {
             // Lock some funds to be able to unlock.
             await iexecEscrow.lock_(account.address, accountBalance).then((tx) => tx.wait());
 
-            const frozenBefore = Number(await iexecEscrow.frozenOf(account.address));
+            const frozenBefore = await iexecEscrow.frozenOf(account.address);
             const tx = await iexecEscrow.unlock_(account.address, amount);
             await expect(tx).to.changeTokenBalances(
                 iexecEscrow,
@@ -133,7 +133,7 @@ describe('IexecEscrow.v8', function () {
             // Lock some funds to be able to seize.
             await iexecEscrow.lock_(account.address, accountBalance).then((tx) => tx.wait());
 
-            const frozenBefore = Number(await iexecEscrow.frozenOf(account.address));
+            const frozenBefore = await iexecEscrow.frozenOf(account.address);
             const tx = await iexecEscrow.seize_(account.address, amount, HashZero);
             await expect(tx).to.changeTokenBalances(
                 iexecEscrow,
