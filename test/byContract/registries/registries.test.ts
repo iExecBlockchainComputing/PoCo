@@ -327,7 +327,7 @@ describe('Registries', () => {
             expect(await appRegistry.ownerOf(predictedAddress)).to.equal(appProvider.address);
 
             const tokenAtIndex = await appRegistry.tokenOfOwnerByIndex(appProvider.address, 0);
-            expect(ethers.getAddress(BN2Address(tokenAtIndex))).to.equal(
+            expect(bigintToAddress(tokenAtIndex)).to.equal(
                 ethers.getAddress(predictedAddress),
             );
 
