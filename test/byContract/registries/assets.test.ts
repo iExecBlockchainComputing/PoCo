@@ -6,7 +6,6 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { BytesLike } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { Address } from 'hardhat-deploy/dist/types';
 import {
     App,
     AppRegistry,
@@ -38,7 +37,7 @@ describe('Assets', () => {
     let [appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let ensRegistry: ENSRegistry;
-    let ensRegistryAddress: Address;
+    let ensRegistryAddress: string;
     let reverseResolver: PublicResolver;
     let appRegistry: AppRegistry;
     let datasetRegistry: DatasetRegistry;

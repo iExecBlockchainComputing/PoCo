@@ -6,7 +6,6 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { BytesLike, ZeroAddress } from 'ethers';
 import hre, { deployments, ethers } from 'hardhat';
-import { Address } from 'hardhat-deploy/dist/types';
 import CONFIG from '../../../config/config.json';
 import {
     AppRegistry,
@@ -39,13 +38,13 @@ describe('Registries', () => {
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let ensRegistry: ENSRegistry;
-    let ensRegistryAddress: Address;
+    let ensRegistryAddress: string;
     let [appRegistry, appRegistryAsAdmin]: AppRegistry[] = [];
-    let appRegistryAddress: Address;
+    let appRegistryAddress: string;
     let [datasetRegistry, datasetRegistryAsAdmin]: DatasetRegistry[] = [];
-    let datasetRegistryAddress: Address;
+    let datasetRegistryAddress: string;
     let [workerpoolRegistry, workerpoolRegistryAsAdmin]: WorkerpoolRegistry[] = [];
-    let workerpoolRegistryAddress: Address;
+    let workerpoolRegistryAddress: string;
 
     beforeEach(async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
