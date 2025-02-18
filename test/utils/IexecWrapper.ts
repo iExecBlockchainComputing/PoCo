@@ -99,9 +99,12 @@ export class IexecWrapper {
                     this.accounts.iexecAdmin,
                 );
                 // Transfer RLC from owner to recipient
-                await rlc.transfer(account.address, value);
+                await rlc.transfer(account.address, value).then((tx) => tx.wait());
                 // Deposit
-                await rlc.connect(account).approveAndCall(this.proxyAddress, value, '0x');
+                await rlc
+                    .connect(account)
+                    .approveAndCall(this.proxyAddress, value, '0x')
+                    .then((tx) => tx.wait());
                 break;
             default:
                 break;
