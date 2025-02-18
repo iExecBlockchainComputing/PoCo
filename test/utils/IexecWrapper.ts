@@ -81,12 +81,12 @@ export class IexecWrapper {
      * @param value The value to deposit.
      * @param account Deposit value for an account.
      */
-    async depositInIexecAccount(account: SignerWithAddress, value: number) {
+    async depositInIexecAccount(account: SignerWithAddress, value: bigint) {
         switch (DEPLOYMENT_CONFIG.asset) {
             case 'Native':
                 await IexecInterfaceNative__factory.connect(this.proxyAddress, account)
                     .deposit({
-                        value: (value * 10 ** 9).toString(),
+                        value: (value * 10n ** 9n).toString(),
                     })
                     .then((tx) => tx.wait());
                 break;
@@ -99,9 +99,12 @@ export class IexecWrapper {
                     this.accounts.iexecAdmin,
                 );
                 // Transfer RLC from owner to recipient
-                await rlc.transfer(account.address, value);
+                await rlc.transfer(account.address, value).then((tx) => tx.wait());
                 // Deposit
-                await rlc.connect(account).approveAndCall(this.proxyAddress, value, '0x');
+                await rlc
+                    .connect(account)
+                    .approveAndCall(this.proxyAddress, value, '0x')
+                    .then((tx) => tx.wait());
                 break;
             default:
                 break;
