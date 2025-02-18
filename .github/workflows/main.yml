@@ -36,12 +36,12 @@ jobs:
       - name: Run test
         run: |
           npm run test \
-          test/byContract/IexecPocoBoost/** \ 
           test/byContract/ENSIntegration/** \
           test/byContract/IexecAccessors/** \
           test/byContract/IexecOrderManagement/** \
           test/byContract/IexecRelay/** \
-          test/*fullchain*
+          test/*fullchain* \
+          test/byContract/IexecPocoBoost/**
       - name: Run deployment
         # Basic deployment to make sure everything is ok.
         # Could be removed in the future if not relevant.
