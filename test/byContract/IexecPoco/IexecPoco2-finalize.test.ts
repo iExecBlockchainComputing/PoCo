@@ -520,7 +520,7 @@ describe('IexecPoco2#finalize', async () => {
                     (await iexecPoco.viewTask(kittyFillingDeal.taskId)).finalDeadline,
                 );
                 const tx = iexecPoco.claim(kittyFillingDeal.taskId);
-                // The matcher 'emit' cannot be chained after 'changeTokenBalances' - https://hardhat.org/chaining-async-matchers
+
                 await expect(tx).to.changeTokenBalances(
                     iexecPoco,
                     [iexecPoco, kittyAddress],
@@ -580,7 +580,7 @@ describe('IexecPoco2#finalize', async () => {
                     .reveal(taskId, resultDigest)
                     .then((tx) => tx.wait());
                 const proxyAddress = await iexecPoco.getAddress();
-                // The matcher 'emit' cannot be chained after 'changeTokenBalances' - https://hardhat.org/chaining-async-matchers
+
                 const txFinalize = iexecPocoAsScheduler.finalize(taskId, results, '0x');
                 await expect(txFinalize).to.changeTokenBalances(
                     iexecPoco,
