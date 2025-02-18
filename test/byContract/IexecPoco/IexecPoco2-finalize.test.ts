@@ -519,7 +519,6 @@ describe('IexecPoco2#finalize', async () => {
                     (await iexecPoco.viewTask(kittyFillingDeal.taskId)).finalDeadline,
                 );
                 const tx = iexecPoco.claim(kittyFillingDeal.taskId);
-
                 await expect(tx).to.changeTokenBalances(
                     iexecPoco,
                     [iexecPoco, kittyAddress],
