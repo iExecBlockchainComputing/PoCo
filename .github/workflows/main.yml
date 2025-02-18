@@ -36,6 +36,7 @@ jobs:
       - name: Run test
         run: |
           npm run test \
+          test/byContract/IexecPocoBoost/** \ 
           test/byContract/ENSIntegration/** \
           test/byContract/IexecAccessors/** \
           test/byContract/IexecOrderManagement/** \
