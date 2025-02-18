@@ -338,7 +338,6 @@ describe('IexecPoco2#finalize', async () => {
         const requesterFrozenBefore = Number(await iexecPoco.frozenOf(requester.address));
         const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
 
-        // The matcher 'emit' cannot be chained after 'changeTokenBalances' - https://hardhat.org/chaining-async-matchers
         const txFinalize = iexecPocoAsScheduler.finalize(taskId, results, '0x');
         await expect(txFinalize).to.changeTokenBalances(
             iexecPoco,
