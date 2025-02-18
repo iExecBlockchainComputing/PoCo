@@ -13,6 +13,6 @@ export function compactSignature(signature: string): string {
     return ethers.hexlify(ethers.concat([split.r, vs]));
 }
 
-export function BN2Address(bignumber: BigNumberish) {
-    return ethers.getAddress(toBeHex(bignumber));
+export function bigintToAddress(bigint: bigint) {
+    return ethers.getAddress(ethers.toBeHex(bigint));
 }
