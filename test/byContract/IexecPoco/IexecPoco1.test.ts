@@ -6,7 +6,6 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { Contract, ContractTransactionResponse, Wallet, ZeroAddress, ZeroHash } from 'ethers';
 import { ethers } from 'hardhat';
-import { Address } from 'hardhat-deploy/dist/types';
 import {
     ERC1271Mock,
     ERC1271Mock__factory,
@@ -83,9 +82,9 @@ describe('IexecPoco1', () => {
     let ordersPrices: OrdersPrices;
     let orders: IexecOrders;
     let [randomAddress, randomSignature]: string[] = [];
-    let randomContractAddress: Address;
+    let randomContractAddress: string;
     let erc1271MockContract: ERC1271Mock;
-    let erc1271MockContractAddress: Address;
+    let erc1271MockContractAddress: string;
     let orderManagement: {
         [key: string]: {
             iexecPocoSignManageOrder: () => Promise<ContractTransactionResponse>;

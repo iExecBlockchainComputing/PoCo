@@ -5,7 +5,6 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ZeroAddress, ethers } from 'ethers';
-import { Address } from 'hardhat-deploy/dist/types';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
@@ -32,7 +31,7 @@ const enclaveAddress = ZeroAddress;
 describe('IexecPoco2#claim', async () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
-    let iexecPocoAddress: Address;
+    let iexecPocoAddress: string;
     let iexecPocoAsAnyone: IexecInterfaceNative;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
