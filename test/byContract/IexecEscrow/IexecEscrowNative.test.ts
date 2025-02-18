@@ -5,11 +5,13 @@ import { AddressZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
+import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import CONFIG from '../../../config/config.json';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { setZeroAddressBalance } from '../../utils/utils';
 
 const depositAmount = 100n;
 const nativeDepositAmount = toNativeAmount(depositAmount);
@@ -40,17 +42,16 @@ if (CONFIG.chains.default.asset === 'Native') {
 
         describe('Receive and Fallback', () => {
             it('Should receive', async () => {
-                await expect(
-                    accountA.sendTransaction({
-                        to: proxyAddress,
-                        value: nativeDepositAmount,
-                    }),
-                )
-                    .to.changeEtherBalances(
-                        [accountA, iexecPoco],
-                        [-nativeDepositAmount, nativeDepositAmount],
-                    )
-                    .to.changeTokenBalances(iexecPoco, [accountA], [depositAmount])
+                const tx = accountA.sendTransaction({
+                    to: proxyAddress,
+                    value: nativeDepositAmount,
+                });
+                await expect(tx).to.changeEtherBalances(
+                    [accountA, iexecPoco],
+                    [-nativeDepositAmount, nativeDepositAmount],
+                );
+                await expect(tx).to.changeTokenBalances(iexecPoco, [accountA], [depositAmount]);
+                await expect(tx)
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountA.address, depositAmount);
             });
@@ -59,19 +60,17 @@ if (CONFIG.chains.default.asset === 'Native') {
                 const randomData = ethers.hexlify(
                     ethers.toUtf8Bytes((Math.random() * 0xfffff).toString(16)),
                 );
-
-                await expect(
-                    accountA.sendTransaction({
-                        to: proxyAddress,
-                        value: nativeDepositAmount,
-                        data: randomData,
-                    }),
-                )
-                    .to.changeEtherBalances(
-                        [accountA, iexecPoco],
-                        [-nativeDepositAmount, nativeDepositAmount],
-                    )
-                    .to.changeTokenBalances(iexecPoco, [accountA], [depositAmount])
+                const tx = accountA.sendTransaction({
+                    to: proxyAddress,
+                    value: nativeDepositAmount,
+                    data: randomData,
+                });
+                await expect(tx).to.changeEtherBalances(
+                    [accountA, iexecPoco],
+                    [-nativeDepositAmount, nativeDepositAmount],
+                );
+                await expect(tx).to.changeTokenBalances(iexecPoco, [accountA], [depositAmount]);
+                await expect(tx)
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountA.address, depositAmount);
             });
@@ -81,12 +80,13 @@ if (CONFIG.chains.default.asset === 'Native') {
         describe('Deposit', () => {
             it('Should deposit native tokens', async () => {
                 expect(await iexecPocoAsAccountA.deposit.staticCall(...depositArgs)).to.be.true;
-                await expect(iexecPocoAsAccountA.deposit(...depositArgs))
-                    .to.changeEtherBalances(
-                        [accountA, iexecPoco],
-                        [-nativeDepositAmount, nativeDepositAmount],
-                    )
-                    .to.changeTokenBalances(iexecPoco, [accountA], [depositAmount])
+                const tx = iexecPocoAsAccountA.deposit(...depositArgs);
+                await expect(tx).to.changeEtherBalances(
+                    [accountA, iexecPoco],
+                    [-nativeDepositAmount, nativeDepositAmount],
+                );
+                await expect(tx).to.changeTokenBalances(iexecPoco, [accountA], [depositAmount]);
+                await expect(tx)
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountA.address, depositAmount);
             });
@@ -107,14 +107,12 @@ if (CONFIG.chains.default.asset === 'Native') {
             });
 
             it('Should not deposit native tokens when caller is address 0', async () => {
-                const iexecPocoAsAddress0 = iexecPoco.connect(await ethers.getSigner(AddressZero));
-
-                await expect(iexecPocoAsAddress0.deposit(...depositArgs))
-                    .to.changeEtherBalances(
-                        [accountA, iexecPoco],
-                        [-nativeDepositAmount, nativeDepositAmount],
-                    )
-                    .to.be.revertedWith('ERC20: mint to the zero address');
+                const zeroAddressSigner = await ethers.getImpersonatedSigner(ZeroAddress);
+                const iexecPocoAsAddress0 = iexecPoco.connect(zeroAddressSigner);
+                await setZeroAddressBalance(10n);
+                await expect(iexecPocoAsAddress0.deposit(...depositArgs)).to.be.revertedWith(
+                    'ERC20: mint to the zero address',
+                );
             });
         });
 
@@ -126,12 +124,13 @@ if (CONFIG.chains.default.asset === 'Native') {
                 ];
                 expect(await iexecPocoAsAccountA.depositFor.staticCall(...depositForArgs)).to.be
                     .true;
-                await expect(iexecPocoAsAccountA.depositFor(...depositForArgs))
-                    .to.changeEtherBalances(
-                        [accountA, iexecPoco],
-                        [-nativeDepositAmount, nativeDepositAmount],
-                    )
-                    .to.changeTokenBalances(iexecPoco, [accountB], [depositAmount])
+                const tx = iexecPocoAsAccountA.depositFor(...depositForArgs);
+                await expect(tx).to.changeEtherBalances(
+                    [accountA, iexecPoco],
+                    [-nativeDepositAmount, nativeDepositAmount],
+                );
+                await expect(tx).to.changeTokenBalances(iexecPoco, [accountB], [depositAmount]);
+                await expect(tx)
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountB.address, depositAmount);
             });
@@ -157,12 +156,17 @@ if (CONFIG.chains.default.asset === 'Native') {
 
                 expect(await iexecPocoAsAccountA.depositForArray.staticCall(...depositForArrayArgs))
                     .to.be.true;
-                await expect(iexecPocoAsAccountA.depositForArray(...depositForArrayArgs))
-                    .to.changeEtherBalances(
-                        [accountA, iexecPoco],
-                        [-nativeDepositTotalAmount, nativeDepositTotalAmount],
-                    )
-                    .to.changeTokenBalances(iexecPoco, [iexecAdmin, accountB], [...depositAmounts])
+                const tx = iexecPocoAsAccountA.depositForArray(...depositForArrayArgs);
+                await expect(tx).to.changeEtherBalances(
+                    [accountA, iexecPoco],
+                    [-nativeDepositTotalAmount, nativeDepositTotalAmount],
+                );
+                await expect(tx).to.changeTokenBalances(
+                    iexecPoco,
+                    [iexecAdmin, accountB],
+                    [...depositAmounts],
+                );
+                await expect(tx)
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, iexecAdmin.address, depositAmounts[0])
                     .to.emit(iexecPoco, 'Transfer')
@@ -171,20 +175,17 @@ if (CONFIG.chains.default.asset === 'Native') {
 
             it('Should depositForArray with good array lengths and remainder value sent', async () => {
                 const depositAmounts = [depositAmount * 2n, depositAmount];
-                const remainderNativeAmount = toNativeAmount(depositAmount);
-                const nativeDepositTotalAmount = toNativeAmount(
-                    getTotalAmount(depositAmounts) + remainderNativeAmount,
-                );
+                const remainder = 333n;
+                const nativeDepositTotalAmount =
+                    toNativeAmount(getTotalAmount(depositAmounts)) + remainder;
+                expect(nativeDepositTotalAmount).to.be.greaterThan(getTotalAmount(depositAmounts));
                 const targets = [iexecAdmin.address, accountB.address];
                 const tx = iexecPocoAsAccountA.depositForArray(depositAmounts, targets, {
                     value: nativeDepositTotalAmount,
                 });
                 await expect(tx).to.changeEtherBalances(
                     [accountA, iexecPoco],
-                    [
-                        -nativeDepositTotalAmount + remainderNativeAmount,
-                        nativeDepositTotalAmount + remainderNativeAmount,
-                    ],
+                    [-(nativeDepositTotalAmount - remainder), nativeDepositTotalAmount - remainder],
                 );
                 await expect(tx).to.changeTokenBalances(
                     iexecPoco,
@@ -220,12 +221,13 @@ if (CONFIG.chains.default.asset === 'Native') {
                 await iexecPocoAsAccountA.deposit(...depositArgs);
 
                 expect(await iexecPocoAsAccountA.withdraw.staticCall(...withdrawArg)).to.be.true;
-                await expect(iexecPocoAsAccountA.withdraw(...withdrawArg))
-                    .to.changeEtherBalances(
-                        [accountA, iexecPoco],
-                        [nativeDepositAmount, -nativeDepositAmount],
-                    )
-                    .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount])
+                const tx = iexecPocoAsAccountA.withdraw(...withdrawArg);
+                await expect(tx).to.changeEtherBalances(
+                    [accountA, iexecPoco],
+                    [nativeDepositAmount, -nativeDepositAmount],
+                );
+                await expect(tx).to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount]);
+                await expect(tx)
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(accountA.address, AddressZero, withdrawAmount);
             });
@@ -251,12 +253,13 @@ if (CONFIG.chains.default.asset === 'Native') {
                 const withdrawToArgs = [...withdrawArg, accountB.address] as [bigint, string];
                 expect(await iexecPocoAsAccountA.withdrawTo.staticCall(...withdrawToArgs)).to.be
                     .true;
-                await expect(iexecPocoAsAccountA.withdrawTo(...withdrawToArgs))
-                    .to.changeEtherBalances(
-                        [accountB, iexecPoco],
-                        [nativeDepositAmount, -nativeDepositAmount],
-                    )
-                    .to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount])
+                const tx = iexecPocoAsAccountA.withdrawTo(...withdrawToArgs);
+                await expect(tx).to.changeEtherBalances(
+                    [accountB, iexecPoco],
+                    [nativeDepositAmount, -nativeDepositAmount],
+                );
+                await expect(tx).to.changeTokenBalances(iexecPoco, [accountA], [-withdrawAmount]);
+                await expect(tx)
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(accountA.address, AddressZero, withdrawAmount);
             });
