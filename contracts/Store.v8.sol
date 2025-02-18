@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -170,4 +170,5 @@ abstract contract Store is ERC1538Store {
      * @dev A mapping to store PoCo Boost deals.
      */
     mapping(bytes32 => IexecLibCore_v5.DealBoost) internal m_dealsBoost;
+    IRegistry internal m_datapoolRegistry;
 }

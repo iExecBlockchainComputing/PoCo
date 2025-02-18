@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity >=0.6.0;
@@ -72,6 +72,7 @@ library IexecLibCore_v5 {
         bytes3 shortTag; // Max: 0b111111111111111111111111 (0xFFFFFF)
         // Offset 5
         address sponsor;
+        uint160 datapoolVersion;
     }
     /**
      * Tasks

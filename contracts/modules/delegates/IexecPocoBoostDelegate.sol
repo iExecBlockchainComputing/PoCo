@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -211,11 +211,27 @@ contract IexecPocoBoostDelegate is
             "PocoBoost: Invalid app order signature"
         );
         bool hasDataset = dataset != address(0);
-        address datasetOwner;
+        address datasetOwner; // eventually rename to datasetRewardReceiver
         bytes32 datasetOrderTypedDataHash;
+        uint160 datapoolVersion;
         if (hasDataset) {
-            require(m_datasetregistry.isRegistered(dataset), "PocoBoost: Dataset not registered");
-            datasetOwner = IERC5313(dataset).owner();
+            if (m_datasetregistry.isRegistered(dataset)) {
+                // data is simple dataset
+                datasetOwner = IERC5313(dataset).owner();
+            } else if (m_datapoolRegistry.isRegistered(dataset)) {
+                // data is datapool
+                uint160 requestedVersion = uint160(uint256(requestOrder.salt)); // last 20 bytes
+                datapoolVersion = uint160(uint256(datasetOrder.salt));
+                require(
+                    requestedVersion == datapoolVersion,
+                    "PocoBoost: Datapool version mismatch"
+                );
+                datasetOwner = dataset; // keep setting field here if reward logic is not updated
+                // Not setting field should save gas
+                // Verifying only presignature here shall also be cheaper
+            } else {
+                revert("PocoBoost: Data not registered");
+            }
             datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
             require(
                 _verifySignatureOrPresignature(
@@ -320,6 +336,7 @@ contract IexecPocoBoostDelegate is
             m_consumed[datasetOrderTypedDataHash] += volume;
         }
         deal.sponsor = sponsor;
+        deal.datapoolVersion = datapoolVersion;
         /**
          * Update consumed.
          * @dev Update all consumed after external call on workerpool contract

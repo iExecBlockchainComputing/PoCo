@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -59,15 +59,15 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
                 ),
             "invalid-sender-or-signature"
         );
+        _manageDatasetOrder(_datasetorderoperation, owner);
+    }
 
-        bytes32 datasetorderHash = _toTypedDataHash(_datasetorderoperation.order.hash());
-        if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
-            m_presigned[datasetorderHash] = owner;
-            emit SignedDatasetOrder(datasetorderHash);
-        } else if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE) {
-            m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
-            emit ClosedDatasetOrder(datasetorderHash);
-        }
+    function manageDatapoolOrder(
+        IexecLibOrders_v5.DatasetOrderOperation calldata _datasetorderoperation
+    ) external {
+        address datapool = _datasetorderoperation.order.dataset;
+        require(datapool == _msgSender(), "invalid-sender");
+        _manageDatasetOrder(_datasetorderoperation, datapool);
     }
 
     function manageWorkerpoolOrder(
@@ -117,6 +117,20 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
         } else if (_requestorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE) {
             m_consumed[requestorderHash] = _requestorderoperation.order.volume;
             emit ClosedRequestOrder(requestorderHash);
+        }
+    }
+
+    function _manageDatasetOrder(
+        IexecLibOrders_v5.DatasetOrderOperation calldata _datasetorderoperation,
+        address signer
+    ) private {
+        bytes32 datasetorderHash = _toTypedDataHash(_datasetorderoperation.order.hash());
+        if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
+            m_presigned[datasetorderHash] = signer;
+            emit SignedDatasetOrder(datasetorderHash);
+        } else if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE) {
+            m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
+            emit ClosedDatasetOrder(datasetorderHash);
         }
     }
 }
