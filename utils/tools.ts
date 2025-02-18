@@ -11,7 +11,7 @@ export function compactSignature(signature: string): string {
     if (split.yParity === 1) {
         vs[0] |= 0x80;
     }
-    return ethers.hexlify(ethers.concat([split.r, vs]));
+    return ethers.toBeHex(ethers.concat([split.r, vs]));
 }
 
 export function BN2Address(bignumber: BigNumberish) {
