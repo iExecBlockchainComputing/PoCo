@@ -7,7 +7,6 @@ import { expect } from 'chai';
 import { Contract, ContractTransactionResponse, Wallet, ZeroAddress, ZeroHash } from 'ethers';
 import { ethers } from 'hardhat';
 import {
-    ERC1271Mock,
     ERC1271Mock__factory,
     IERC721__factory,
     IexecInterfaceNative,
@@ -83,7 +82,6 @@ describe('IexecPoco1', () => {
     let orders: IexecOrders;
     let [randomAddress, randomSignature]: string[] = [];
     let randomContractAddress: string;
-    let erc1271MockContract: ERC1271Mock;
     let erc1271MockContractAddress: string;
     let orderManagement: {
         [key: string]: {
@@ -146,11 +144,11 @@ describe('IexecPoco1', () => {
             .deploy()
             .then((contract) => contract.waitForDeployment())
             .then((deployedContract) => deployedContract.getAddress());
-        erc1271MockContract = await new ERC1271Mock__factory()
+        erc1271MockContractAddress = await new ERC1271Mock__factory()
             .connect(anyone)
             .deploy()
-            .then((contract) => contract.waitForDeployment());
-        erc1271MockContractAddress = await erc1271MockContract.getAddress();
+            .then((contract) => contract.waitForDeployment())
+            .then((deployedContract) => deployedContract.getAddress());
     }
 
     describe('Verify signature', () => {

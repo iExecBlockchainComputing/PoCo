@@ -53,7 +53,6 @@ describe('IexecPoco2#claim', async () => {
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
-        proxyAddress = await iexecPoco.getAddress();
         iexecPocoAsAnyone = iexecPoco.connect(anyone);
         ordersAssets = {
             app: appAddress,
