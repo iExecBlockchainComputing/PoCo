@@ -62,6 +62,21 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
         _manageDatasetOrder(_datasetorderoperation, owner);
     }
 
+    // TODO: Move to bottom
+    function _manageDatasetOrder(
+        IexecLibOrders_v5.DatasetOrderOperation calldata _datasetorderoperation,
+        address signer
+    ) private {
+        bytes32 datasetorderHash = _toTypedDataHash(_datasetorderoperation.order.hash());
+        if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
+            m_presigned[datasetorderHash] = signer;
+            emit SignedDatasetOrder(datasetorderHash);
+        } else if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE) {
+            m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
+            emit ClosedDatasetOrder(datasetorderHash);
+        }
+    }
+
     function manageDatapoolOrder(
         IexecLibOrders_v5.DatasetOrderOperation calldata _datasetorderoperation
     ) external {
@@ -117,20 +132,6 @@ contract IexecOrderManagementDelegate is IexecOrderManagement, DelegateBase, Sig
         } else if (_requestorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE) {
             m_consumed[requestorderHash] = _requestorderoperation.order.volume;
             emit ClosedRequestOrder(requestorderHash);
-        }
-    }
-
-    function _manageDatasetOrder(
-        IexecLibOrders_v5.DatasetOrderOperation calldata _datasetorderoperation,
-        address signer
-    ) private {
-        bytes32 datasetorderHash = _toTypedDataHash(_datasetorderoperation.order.hash());
-        if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
-            m_presigned[datasetorderHash] = signer;
-            emit SignedDatasetOrder(datasetorderHash);
-        } else if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE) {
-            m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
-            emit ClosedDatasetOrder(datasetorderHash);
         }
     }
 }
