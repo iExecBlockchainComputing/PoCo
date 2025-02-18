@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
 
 contract DatapoolRegistry {
     address private implementation;
-    mapping(address => bool registered) datapools;
+    mapping(address => bool) datapools;
 
     constructor(address _implementation) {
         implementation = _implementation;
