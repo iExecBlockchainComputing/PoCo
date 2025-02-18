@@ -15,9 +15,9 @@ export interface OrdersAssets {
 }
 
 export interface OrdersPrices {
-    app?: number;
-    dataset?: number;
-    workerpool?: number;
+    app?: bigint;
+    dataset?: bigint;
+    workerpool?: bigint;
 }
 
 export interface MatchOrdersArgs {
@@ -100,7 +100,7 @@ export interface OrderOperation {
 export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
     return {
         app: constants.NULL.ADDRESS,
-        appprice: 0,
+        appprice: 0n,
         volume: 1,
         tag: constants.NULL.BYTES32,
         datasetrestrict: constants.NULL.ADDRESS,
