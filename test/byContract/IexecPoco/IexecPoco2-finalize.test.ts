@@ -97,7 +97,6 @@ describe('IexecPoco2#finalize', async () => {
             .connect(anyone)
             .deploy()
             .then((contract) => contract.waitForDeployment());
-        const oracleConsumerInstanceAddress = await oracleConsumerInstance.getAddress();
         const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
         const orders = buildOrders({
             assets: ordersAssets,
@@ -105,7 +104,7 @@ describe('IexecPoco2#finalize', async () => {
             prices: ordersPrices,
             volume: expectedVolume,
             trust: 3,
-            callback: oracleConsumerInstanceAddress,
+            callback: await oracleConsumerInstance.getAddress(),
         });
         const { dealId, taskId, taskIndex, dealPrice } =
             await iexecWrapper.signAndSponsorMatchOrders(...orders.toArray());
