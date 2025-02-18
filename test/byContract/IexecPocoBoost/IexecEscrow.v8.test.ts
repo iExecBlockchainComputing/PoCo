@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HashZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { constants } from 'ethers';
+import { ZeroAddress } from 'ethers';
 import { IexecEscrowTestContract, IexecEscrowTestContract__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 
@@ -13,6 +13,7 @@ const accountBalance = 1000;
 const amount = 3;
 
 let iexecEscrow: IexecEscrowTestContract;
+let iexecEscrowAddress: string;
 let account: SignerWithAddress;
 
 describe('IexecEscrow.v8', function () {
@@ -27,29 +28,31 @@ describe('IexecEscrow.v8', function () {
         iexecEscrow = await new IexecEscrowTestContract__factory()
             .connect(account) // Anyone works.
             .deploy()
-            .then((contract) => contract.deployed());
+            .then((contract) => contract.waitForDeployment());
+        iexecEscrowAddress = await iexecEscrow.getAddress();
         // Initialize account with some funds.
         await iexecEscrow.setBalance(account.address, accountBalance).then((tx) => tx.wait());
     }
 
     describe('Lock', function () {
         it('Should lock funds', async function () {
-            const frozenBefore = (await iexecEscrow.frozenOf(account.address)).toNumber();
-            await expect(iexecEscrow.lock_(account.address, amount))
-                .to.changeTokenBalances(
-                    iexecEscrow,
-                    [iexecEscrow.address, account.address],
-                    [amount, -amount],
-                )
+            const frozenBefore = Number(await iexecEscrow.frozenOf(account.address));
+            const tx = await iexecEscrow.lock_(account.address, amount);
+            await expect(tx).to.changeTokenBalances(
+                iexecEscrow,
+                [iexecEscrowAddress, account.address],
+                [amount, -amount],
+            );
+            await expect(tx)
                 .to.emit(iexecEscrow, 'Transfer')
-                .withArgs(account.address, iexecEscrow.address, amount)
+                .withArgs(account.address, iexecEscrowAddress, amount)
                 .to.emit(iexecEscrow, 'Lock')
                 .withArgs(account.address, amount);
             expect(await iexecEscrow.frozenOf(account.address)).to.equal(frozenBefore + amount);
         });
 
         it('Should not lock funds for empty address', async function () {
-            await expect(iexecEscrow.lock_(constants.AddressZero, amount)).to.be.revertedWith(
+            await expect(iexecEscrow.lock_(ZeroAddress, amount)).to.be.revertedWith(
                 'IexecEscrow: Transfer from empty address',
             );
         });
@@ -66,22 +69,23 @@ describe('IexecEscrow.v8', function () {
             // Lock some funds to be able to unlock.
             await iexecEscrow.lock_(account.address, accountBalance).then((tx) => tx.wait());
 
-            const frozenBefore = (await iexecEscrow.frozenOf(account.address)).toNumber();
-            await expect(iexecEscrow.unlock_(account.address, amount))
-                .to.changeTokenBalances(
-                    iexecEscrow,
-                    [iexecEscrow.address, account.address],
-                    [-amount, amount],
-                )
+            const frozenBefore = Number(await iexecEscrow.frozenOf(account.address));
+            const tx = await iexecEscrow.unlock_(account.address, amount);
+            await expect(tx).to.changeTokenBalances(
+                iexecEscrow,
+                [iexecEscrowAddress, account.address],
+                [-amount, amount],
+            );
+            await expect(tx)
                 .to.emit(iexecEscrow, 'Transfer')
-                .withArgs(iexecEscrow.address, account.address, amount)
+                .withArgs(iexecEscrowAddress, account.address, amount)
                 .to.emit(iexecEscrow, 'Unlock')
                 .withArgs(account.address, amount);
             expect(await iexecEscrow.frozenOf(account.address)).to.equal(frozenBefore - amount);
         });
 
         it('Should not unlock funds for empty address', async function () {
-            await expect(iexecEscrow.unlock_(constants.AddressZero, amount)).to.be.revertedWith(
+            await expect(iexecEscrow.unlock_(ZeroAddress, amount)).to.be.revertedWith(
                 'IexecEscrow: Transfer to empty address',
             );
         });
@@ -96,24 +100,25 @@ describe('IexecEscrow.v8', function () {
     describe('Reward', function () {
         it('Should reward', async function () {
             // Fund iexecEscrow so it can reward.
-            await iexecEscrow.setBalance(iexecEscrow.address, amount).then((tx) => tx.wait());
+            await iexecEscrow.setBalance(iexecEscrowAddress, amount).then((tx) => tx.wait());
 
-            await expect(iexecEscrow.reward_(account.address, amount, HashZero))
-                .to.changeTokenBalances(
-                    iexecEscrow,
-                    [iexecEscrow.address, account.address],
-                    [-amount, amount],
-                )
+            const tx = await iexecEscrow.reward_(account.address, amount, HashZero);
+            await expect(tx).to.changeTokenBalances(
+                iexecEscrow,
+                [iexecEscrowAddress, account.address],
+                [-amount, amount],
+            );
+            await expect(tx)
                 .to.emit(iexecEscrow, 'Transfer')
-                .withArgs(iexecEscrow.address, account.address, amount)
+                .withArgs(iexecEscrowAddress, account.address, amount)
                 .to.emit(iexecEscrow, 'Reward')
                 .withArgs(account.address, amount, HashZero);
         });
 
         it('Should not reward empty address', async function () {
-            await expect(
-                iexecEscrow.reward_(constants.AddressZero, amount, HashZero),
-            ).to.be.revertedWith('IexecEscrow: Transfer to empty address');
+            await expect(iexecEscrow.reward_(ZeroAddress, amount, HashZero)).to.be.revertedWith(
+                'IexecEscrow: Transfer to empty address',
+            );
         });
 
         it('Should not reward when insufficient balance', async function () {
@@ -128,18 +133,23 @@ describe('IexecEscrow.v8', function () {
             // Lock some funds to be able to seize.
             await iexecEscrow.lock_(account.address, accountBalance).then((tx) => tx.wait());
 
-            const frozenBefore = (await iexecEscrow.frozenOf(account.address)).toNumber();
-            await expect(iexecEscrow.seize_(account.address, amount, HashZero))
-                .to.changeTokenBalances(iexecEscrow, [iexecEscrow.address, account.address], [0, 0])
+            const frozenBefore = Number(await iexecEscrow.frozenOf(account.address));
+            const tx = await iexecEscrow.seize_(account.address, amount, HashZero);
+            await expect(tx).to.changeTokenBalances(
+                iexecEscrow,
+                [iexecEscrowAddress, account.address],
+                [0, 0],
+            );
+            await expect(tx)
                 .to.emit(iexecEscrow, 'Seize')
                 .withArgs(account.address, amount, HashZero);
             expect(await iexecEscrow.frozenOf(account.address)).to.equal(frozenBefore - amount);
         });
 
         it('Should not seize funds for empty address', async function () {
-            await expect(
-                iexecEscrow.seize_(constants.AddressZero, amount, HashZero),
-            ).to.be.revertedWithPanic(0x11);
+            await expect(iexecEscrow.seize_(ZeroAddress, amount, HashZero)).to.be.revertedWithPanic(
+                0x11,
+            );
         });
 
         it('Should not seize funds when insufficient balance', async function () {
