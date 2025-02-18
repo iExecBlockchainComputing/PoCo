@@ -81,12 +81,12 @@ export class IexecWrapper {
      * @param value The value to deposit.
      * @param account Deposit value for an account.
      */
-    async depositInIexecAccount(account: SignerWithAddress, value: number) {
+    async depositInIexecAccount(account: SignerWithAddress, value: bigint) {
         switch (DEPLOYMENT_CONFIG.asset) {
             case 'Native':
                 await IexecInterfaceNative__factory.connect(this.proxyAddress, account)
                     .deposit({
-                        value: (value * 10 ** 9).toString(),
+                        value: (value * 10n ** 9n).toString(),
                     })
                     .then((tx) => tx.wait());
                 break;

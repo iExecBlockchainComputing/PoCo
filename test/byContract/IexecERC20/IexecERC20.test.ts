@@ -17,14 +17,14 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import { setZeroAddressBalance } from '../../utils/utils';
 
-const value = 100;
+const value = 100n;
 
 describe('ERC20', async () => {
     let proxyAddress: string;
     let iexecWrapper: IexecWrapper;
     let [iexecPoco, iexecPocoAsHolder, iexecPocoAsSpender]: IexecInterfaceNative[] = [];
     let [holder, recipient, spender, anyone, zeroAddressSigner]: SignerWithAddress[] = [];
-    let totalSupplyBeforeFirstDeposit: number;
+    let totalSupplyBeforeFirstDeposit: bigint;
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
@@ -44,7 +44,7 @@ describe('ERC20', async () => {
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsHolder = iexecPoco.connect(holder);
         iexecPocoAsSpender = iexecPoco.connect(spender);
-        totalSupplyBeforeFirstDeposit = Number(await iexecPoco.totalSupply());
+        totalSupplyBeforeFirstDeposit = await iexecPoco.totalSupply();
         await iexecWrapper.depositInIexecAccount(holder, value);
     }
 
@@ -65,7 +65,7 @@ describe('ERC20', async () => {
 
     describe('Transfer', () => {
         it('Should transfer tokens', async () => {
-            const transferArgs = [recipient.address, value] as [string, number];
+            const transferArgs = [recipient.address, value] as [string, bigint];
             expect(await iexecPocoAsHolder.transfer.staticCall(...transferArgs)).to.be.true;
             const tx = iexecPocoAsHolder.transfer(...transferArgs);
             await expect(tx).to.changeTokenBalances(
@@ -96,14 +96,14 @@ describe('ERC20', async () => {
         });
         it('Should not transfer when sender balance is too low', async () => {
             await expect(
-                iexecPocoAsHolder.transfer(recipient.address, value + 1),
+                iexecPocoAsHolder.transfer(recipient.address, value + 1n),
             ).to.be.revertedWithoutReason();
         });
     });
 
     describe('Approve', () => {
         it('Should approve tokens', async () => {
-            const approveArgs = [spender.address, value] as [string, number];
+            const approveArgs = [spender.address, value] as [string, bigint];
             expect(await iexecPocoAsHolder.approve.staticCall(...approveArgs)).to.be.true;
             await expect(iexecPocoAsHolder.approve(...approveArgs))
                 .to.emit(iexecPoco, 'Approval')
@@ -136,7 +136,7 @@ describe('ERC20', async () => {
         it('Should approve and call', async () => {
             const approveAndCallArgs = [testReceiver, value, extraData] as [
                 AddressLike,
-                number,
+                bigint,
                 string,
             ];
             expect(await iexecPocoAsHolder.approveAndCall.staticCall(...approveAndCallArgs)).to.be
@@ -175,7 +175,7 @@ describe('ERC20', async () => {
             const transferFromArgs = [holder.address, spender.address, value] as [
                 string,
                 string,
-                number,
+                bigint,
             ];
             expect(await iexecPocoAsSpender.transferFrom.staticCall(...transferFromArgs)).to.be
                 .true;
@@ -200,11 +200,11 @@ describe('ERC20', async () => {
         });
         it('Should not transferFrom when owner balance is too low', async () => {
             await expect(
-                iexecPocoAsSpender.transferFrom(holder.address, spender.address, value + 1),
+                iexecPocoAsSpender.transferFrom(holder.address, spender.address, value + 1n),
             ).to.be.revertedWithoutReason();
         });
         it('Should not transferFrom when spender allowance is too low', async () => {
-            await iexecPocoAsHolder.approve(spender.address, value - 1).then((tx) => tx.wait());
+            await iexecPocoAsHolder.approve(spender.address, value - 1n).then((tx) => tx.wait());
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, spender.address, value),
             ).to.be.revertedWithoutReason();
@@ -214,10 +214,10 @@ describe('ERC20', async () => {
     describe('Increase allowance', () => {
         it('Should increase allowance', async () => {
             await iexecPocoAsHolder.approve(spender.address, value).then((tx) => tx.wait());
-            const allowanceToIncrease = 1;
+            const allowanceToIncrease = 1n;
             const increaseAllowanceArgs = [spender.address, allowanceToIncrease] as [
                 string,
-                number,
+                bigint,
             ];
             expect(await iexecPocoAsHolder.increaseAllowance.staticCall(...increaseAllowanceArgs))
                 .to.be.true;
@@ -243,10 +243,10 @@ describe('ERC20', async () => {
     describe('Decrease allowance', () => {
         it('Should decrease allowance', async () => {
             await iexecPocoAsHolder.approve(spender.address, value).then((tx) => tx.wait());
-            const allowanceToDecrease = 1;
+            const allowanceToDecrease = 1n;
             const decreaseAllowanceArgs = [spender.address, allowanceToDecrease] as [
                 string,
-                number,
+                bigint,
             ];
             expect(await iexecPocoAsHolder.decreaseAllowance.staticCall(...decreaseAllowanceArgs))
                 .to.be.true;
