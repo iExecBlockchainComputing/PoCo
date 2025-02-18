@@ -577,7 +577,6 @@ describe('IexecPoco2#finalize', async () => {
                     .connect(worker1)
                     .reveal(taskId, resultDigest)
                     .then((tx) => tx.wait());
-                const proxyAddress = await iexecPoco.getAddress();
 
                 const txFinalize = iexecPocoAsScheduler.finalize(taskId, results, '0x');
                 await expect(txFinalize).to.changeTokenBalances(
