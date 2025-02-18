@@ -93,11 +93,9 @@ if (CONFIG.chains.default.asset === 'Native') {
             });
 
             it('Should deposit native tokens and return remainder', async () => {
-                // Create a small remainder value using BigNumber, bypassing underflow error
-                const depositRemainder = BigNumber.from(10).div(BigNumber.from(100));
-                const depositAmountWithRemainder = depositAmount.add(depositRemainder);
-                const nativeDepositAmountWithRemainder = toNativeAmount(depositAmountWithRemainder);
-
+                const depositRemainder = 333;
+                const nativeDepositAmountWithRemainder = nativeDepositAmount.add(depositRemainder);
+                expect(nativeDepositAmountWithRemainder).to.be.greaterThan(nativeDepositAmount);
                 await expect(
                     iexecPocoAsAccountA.deposit({ value: nativeDepositAmountWithRemainder }),
                 )
