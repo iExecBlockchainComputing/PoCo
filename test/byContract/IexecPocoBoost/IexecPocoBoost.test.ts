@@ -188,7 +188,7 @@ describe('IexecPocoBoost', function () {
             workerpoolOrder.volume = 4n;
             requestOrder.volume = 5n;
             const expectedVolume = 2n;
-            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * BigInt(expectedVolume);
+            const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * expectedVolume;
             const schedulerStake = computeSchedulerDealStake(workerpoolPrice, expectedVolume);
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
@@ -2182,15 +2182,15 @@ describe('IexecPocoBoost', function () {
                 );
                 await expectFrozen(
                     requester.address,
-                    initialRequesterFrozen - taskPrice * BigInt(claimedTasks),
+                    initialRequesterFrozen - taskPrice * claimedTasks,
                 );
                 await expectFrozen(
                     scheduler.address,
-                    initialSchedulerFrozen - schedulerTaskStake * BigInt(claimedTasks),
+                    initialSchedulerFrozen - schedulerTaskStake * claimedTasks,
                 );
                 await expectFrozen(
                     kittyAddress,
-                    initialKittyFrozen + schedulerTaskStake * BigInt(claimedTasks),
+                    initialKittyFrozen + schedulerTaskStake * claimedTasks,
                 );
             }
         });
@@ -2198,7 +2198,7 @@ describe('IexecPocoBoost', function () {
         it('Should claim by anyone when match orders is sponsored', async function () {
             const expectedVolume = 3n; // > 1 to explicit taskPrice vs dealPrice
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
-            const dealPrice = taskPrice * BigInt(expectedVolume);
+            const dealPrice = taskPrice * expectedVolume;
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -2207,7 +2207,7 @@ describe('IexecPocoBoost', function () {
             });
             await signOrders(domain, orders, ordersActors);
             const schedulerDealStake = computeSchedulerDealStake(workerpoolPrice, expectedVolume);
-            const schedulerTaskStake = schedulerDealStake / BigInt(expectedVolume);
+            const schedulerTaskStake = schedulerDealStake / expectedVolume;
             await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerDealStake);
             const dealId = getDealId(domain, orders.requester, taskIndex);
