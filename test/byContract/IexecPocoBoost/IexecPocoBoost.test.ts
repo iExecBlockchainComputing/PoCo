@@ -259,7 +259,7 @@ describe('IexecPocoBoost', function () {
             );
             expect(deal.workerReward).to.be.equal(
                 (workerpoolPrice * // reward depends on
-                    (100n - BigInt(schedulerRewardRatio))) / // worker ratio
+                    BigInt(100 - schedulerRewardRatio)) / // worker ratio
                     100n,
             );
             expect(deal.deadline).to.be.equal(
@@ -392,7 +392,7 @@ describe('IexecPocoBoost', function () {
             expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
             expect(deal.workerReward).to.be.equal(
                 (workerpoolPrice * // reward depends on
-                    (100n - BigInt(schedulerRewardRatio))) / // worker ratio
+                    BigInt(100 - schedulerRewardRatio)) / // worker ratio
                     100n,
             );
             expect(deal.deadline).to.be.equal(
@@ -2036,18 +2036,17 @@ describe('IexecPocoBoost', function () {
                 constants.NULL.ADDRESS,
                 scheduler,
             );
-            const pushResultArgs = [
-                ethers.Typed.bytes32(dealId), // If dealId is bytes32 in the contract
-                ethers.Typed.uint256(taskIndex), // Explicitly type taskIndex as uint256
-                ethers.Typed.bytes(results),
-                ethers.Typed.bytes(resultsCallback),
-                ethers.Typed.bytes(schedulerSignature),
-                ethers.Typed.address(constants.NULL.ADDRESS),
-                ethers.Typed.bytes(constants.NULL.SIGNATURE),
-            ] as const;
             const successfulTxGasLimit = await iexecPocoBoostInstance
                 .connect(worker)
-                .pushResultBoost.estimateGas(...pushResultArgs);
+                .pushResultBoost.estimateGas(
+                    dealId,
+                    taskIndex,
+                    results,
+                    resultsCallback,
+                    schedulerSignature,
+                    constants.NULL.ADDRESS,
+                    constants.NULL.SIGNATURE,
+                );
             const failingTxGaslimit =
                 successfulTxGasLimit - (await iexecAccessor.callbackgas()) / 63n;
             // Forward to consumer contract less gas than it has the right to consume
@@ -2055,7 +2054,16 @@ describe('IexecPocoBoost', function () {
             await expect(
                 iexecPocoBoostInstance
                     .connect(worker)
-                    .pushResultBoost(...pushResultArgs, { gasLimit: failingTxGaslimit }),
+                    .pushResultBoost(
+                        dealId,
+                        taskIndex,
+                        results,
+                        resultsCallback,
+                        schedulerSignature,
+                        constants.NULL.ADDRESS,
+                        constants.NULL.SIGNATURE,
+                        { gasLimit: failingTxGaslimit },
+                    ),
             ).to.be.revertedWith('PocoBoost: Not enough gas after callback');
         });
     });
@@ -2428,7 +2436,7 @@ function addressToBytes32(address: string): string {
  * @returns amount of total stake
  */
 function computeSchedulerDealStake(workerpoolPrice: bigint, volume: number) {
-    return ((workerpoolPrice * BigInt(workerpoolStakeRatio.toString())) / 100n) * BigInt(volume);
+    return (workerpoolPrice * BigInt(workerpoolStakeRatio * volume)) / 100n;
 }
 
 async function expectOrderConsumed(orderHash: string, expectedConsumedVolume: number) {
