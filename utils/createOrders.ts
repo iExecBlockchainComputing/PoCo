@@ -26,7 +26,7 @@ export interface MatchOrdersArgs {
     beneficiary?: string;
     tag?: string;
     prices?: OrdersPrices;
-    volume?: number;
+    volume?: bigint;
     callback?: string;
     trust?: number;
     category?: number;
