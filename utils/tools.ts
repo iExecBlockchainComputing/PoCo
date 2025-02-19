@@ -1,19 +1,21 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import type { BigNumber } from 'ethers';
+import { Signature } from 'ethers';
 import { ethers } from 'hardhat';
 
 export function compactSignature(signature: string): string {
-    const split = ethers.utils.splitSignature(signature);
-    let vs = ethers.utils.arrayify(split.s);
-    if (split.v == 1 || split.v == 28) {
-        vs[0] |= 0x80;
-    }
-    return ethers.utils.hexlify(ethers.utils.concat([split.r, vs]));
+    return Signature.from(signature).compactSerialized;
 }
 
-export function BN2Address(bignumber: BigNumber) {
-    const lowercaseAddress = ethers.utils.hexZeroPad(bignumber.toHexString(), 20);
-    return ethers.utils.getAddress(lowercaseAddress);
+export function bigintToAddress(bigint: bigint) {
+    return ethers.getAddress(ethers.toBeHex(bigint));
+}
+
+export function minBigInt(a: bigint, b: bigint) {
+    return a < b ? a : b;
+}
+
+export function maxBigInt(a: bigint, b: bigint) {
+    return a > b ? a : b;
 }

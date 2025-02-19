@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero, HashZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { assert, expect } from 'chai';
+import { ZeroAddress, ZeroHash } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { NULL } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -24,12 +24,12 @@ import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deploy
 const CONFIG = require('../../../config/config.json');
 
 const timeRef = CONFIG.categories[0].workClockTimeRef;
-const volume = 3;
+const volume = 3n;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const standardDealTag = HashZero;
+const standardDealTag = ZeroHash;
 const { resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
-const emptyEnclaveAddress = AddressZero;
+const emptyEnclaveAddress = ZeroAddress;
 const emptyEnclaveSignature = NULL.SIGNATURE;
 
 describe('IexecPoco2#contribute', () => {
@@ -75,9 +75,9 @@ describe('IexecPoco2#contribute', () => {
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
-        const appPrice = 1000;
-        const datasetPrice = 1_000_000;
-        const workerpoolPrice = 1_000_000_000;
+        const appPrice = 1000n;
+        const datasetPrice = 1_000_000n;
+        const workerpoolPrice = 1_000_000_000n;
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -114,7 +114,7 @@ describe('IexecPoco2#contribute', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
+                .then((deal) => deal.workerStake);
             const workers = [
                 { signer: worker1, resultDigest: resultDigest },
                 { signer: worker2, resultDigest: badResultDigest },
@@ -126,7 +126,7 @@ describe('IexecPoco2#contribute', () => {
             let task;
             let contributeBlockTimestamp;
             const viewFrozenOf = (address: string) =>
-                iexecPoco.frozenOf(address).then((frozen) => frozen.toNumber());
+                iexecPoco.frozenOf(address);
             for (let i = 0; i < workers.length; i++) {
                 const worker = workers[i];
                 const workerAddress = worker.signer.address;
@@ -166,12 +166,14 @@ describe('IexecPoco2#contribute', () => {
                 task = await iexecPoco.viewTask(taskId);
                 expect(task.contributors.length).equal(i + 1);
                 expect(task.contributors[i]).equal(workerAddress);
+
+                // The matcher 'emit' cannot be chained after 'changeTokenBalances' - https://hardhat.org/chaining-async-matchers
+                await expect(tx).to.changeTokenBalances(
+                    iexecPoco,
+                    [workerAddress, proxyAddress],
+                    [-workerTaskStake, workerTaskStake],
+                );
                 await expect(tx)
-                    .to.changeTokenBalances(
-                        iexecPoco,
-                        [workerAddress, proxyAddress],
-                        [-workerTaskStake, workerTaskStake],
-                    )
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(workerAddress, proxyAddress, workerTaskStake);
                 expect(await viewFrozenOf(workerAddress)).equal(frozenBefore + workerTaskStake);
@@ -218,7 +220,7 @@ describe('IexecPoco2#contribute', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
+                .then((deal) => deal.workerStake);
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,
@@ -249,7 +251,7 @@ describe('IexecPoco2#contribute', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
+                .then((deal) => deal.workerStake);
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,
@@ -343,7 +345,7 @@ describe('IexecPoco2#contribute', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
-                .then((deal) => deal.workerStake.toNumber());
+                .then((deal) => deal.workerStake);
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,
