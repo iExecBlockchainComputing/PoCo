@@ -126,7 +126,7 @@ describe('IexecPoco2#contribute', () => {
             let task;
             let contributeBlockTimestamp;
             const viewFrozenOf = (address: string) =>
-                iexecPoco.frozenOf(address).then((frozen) => frozen);
+                iexecPoco.frozenOf(address);
             for (let i = 0; i < workers.length; i++) {
                 const worker = workers[i];
                 const workerAddress = worker.signer.address;
