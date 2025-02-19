@@ -1,11 +1,10 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero, HashZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { Wallet, ZeroAddress, ZeroHash, ethers } from 'ethers';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
@@ -27,16 +26,16 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 const CONFIG = require('../../../config/config.json');
 
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
 const timeRef = CONFIG.categories[0].workClockTimeRef;
 const trust = 1;
-const volume = 1;
+const volume = 1n;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const standardDealTag = HashZero;
-const emptyEnclaveAddress = AddressZero;
+const standardDealTag = ZeroHash;
+const emptyEnclaveAddress = ZeroAddress;
 const emptyEnclaveSignature = '0x';
 const noCallbackData = '0x';
 const noResultsData = '0x';
@@ -74,9 +73,9 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
-        const appPrice = 1000;
-        const datasetPrice = 1_000_000;
-        const workerpoolPrice = 1_000_000_000;
+        const appPrice = 1000n;
+        const datasetPrice = 1_000_000n;
+        const workerpoolPrice = 1_000_000_000n;
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -94,7 +93,8 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         const callbackConsumer = await new TestClient__factory()
             .connect(anyone)
             .deploy()
-            .then((contract) => contract.deployed());
+            .then((contract) => contract.waitForDeployment());
+        const callbackConsumerAddress = await callbackConsumer.getAddress();
         // Create deal and task.
         const { dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
             ...buildOrders({
@@ -104,7 +104,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 volume,
                 trust,
                 tag: teeDealTag,
-                callback: callbackConsumer.address,
+                callback: callbackConsumerAddress,
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -183,10 +183,10 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         // Check frozen changes.
         const expectedFrozenChanges = [
             -taskPrice, // Requester (dealPrice)
-            0, // App provider
-            0, // Dataset provider
+            0n, // App provider
+            0n, // Dataset provider
             -schedulerStake, // Scheduler
-            0, // Worker
+            0n, // Worker
         ];
         await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         // Check events.
@@ -194,23 +194,23 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             .to.emit(iexecPoco, 'Seize')
             .withArgs(requester.address, taskPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, appProvider.address, appPrice)
+            .withArgs(proxyAddress, appProvider.address, appPrice)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(appProvider.address, appPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, datasetProvider.address, datasetPrice)
+            .withArgs(proxyAddress, datasetProvider.address, datasetPrice)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(datasetProvider.address, datasetPrice, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, scheduler.address, schedulerStake)
+            .withArgs(proxyAddress, scheduler.address, schedulerStake)
             .to.emit(iexecPoco, 'Unlock')
             .withArgs(scheduler.address, schedulerStake)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, worker.address, workersReward)
+            .withArgs(proxyAddress, worker.address, workersReward)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(worker.address, workersReward, taskId)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, scheduler.address, schedulerReward)
+            .withArgs(proxyAddress, scheduler.address, schedulerReward)
             .to.emit(iexecPoco, 'Reward')
             .withArgs(scheduler.address, schedulerReward, taskId);
         // Task events.
@@ -267,7 +267,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
         expect(task.resultDigest).to.equal(resultDigest);
-        expect(task.results).to.equal(ethers.utils.hexlify(results));
+        expect(task.results).to.equal(ethers.hexlify(results));
         expect(task.resultsCallback).to.equal(noCallbackData);
         // Check events.
         await expect(contributeAndFinalizeTx)
@@ -397,7 +397,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 volume,
                 trust,
                 tag: standardDealTag,
-                callback: ethers.Wallet.createRandom().address, // Using callback
+                callback: Wallet.createRandom().address, // Using callback
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -408,7 +408,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 taskId,
                 resultsCallbackDigest,
                 noResultsData,
-                ethers.utils.hexlify(ethers.utils.randomBytes(32)), // Bad callback data.
+                ethers.hexlify(ethers.randomBytes(32)), // Bad callback data.
                 emptyEnclaveAddress,
                 emptyEnclaveSignature,
                 await buildAndSignContributionAuthorizationMessage(

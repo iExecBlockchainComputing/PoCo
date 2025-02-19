@@ -9,8 +9,11 @@
 - Migrate to Ethers v6:
     - Deployment scripts (#187)
     - Tests
-        - test/*fullchain* (#190)
-        - IexecAccessors (#189, #191)
+        - ENSIntegration, IexecOrderManagement, IexecRelay (#195)
+        - IexecCategoryManager, IexecERC20 (#192)
+        - test/*fullchain* (#190, #196)
+        - IexecAccessors (#189, #191, #196)
+        - IexecPoco (#196)
 - Migrate scripts to TypeScript: (#184)
     - `getFunctionSignatures.js`, `common-test-snapshot.js`, `test-storage.js`, `timelock.js`
 - Migrated utility files to TypeScript : (#183)

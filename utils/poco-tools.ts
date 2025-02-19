@@ -83,7 +83,7 @@ export async function getIexecAccounts(): Promise<IexecAccounts> {
 export function getDealId(
     domain: TypedDataDomain,
     requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-    firstTaskIndex: number = 0,
+    firstTaskIndex: bigint = 0n,
 ): string {
     return ethers.solidityPackedKeccak256(
         ['bytes32', 'uint256'],
@@ -91,7 +91,7 @@ export function getDealId(
     );
 }
 
-export function getTaskId(dealId: string, taskIndex: number): string {
+export function getTaskId(dealId: string, taskIndex: bigint): string {
     return ethers.solidityPackedKeccak256(['bytes32', 'uint256'], [dealId, taskIndex]);
 }
 
