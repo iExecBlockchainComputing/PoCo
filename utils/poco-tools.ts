@@ -221,5 +221,5 @@ export async function signMessage(signerAccount: SignerWithAddress, message: str
 export async function setNextBlockTimestamp() {
     const startTime = (await time.latest()) + 10;
     await time.setNextBlockTimestamp(startTime);
-    return BigInt(startTime);
+    return startTime;
 }

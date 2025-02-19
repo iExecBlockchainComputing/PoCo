@@ -283,7 +283,7 @@ export class IexecWrapper {
             volume,
         );
         await this.depositInIexecAccount(this.accounts.scheduler, schedulerStakePerDeal);
-        const startTime = await setNextBlockTimestamp();
+        const startTime = BigInt(await setNextBlockTimestamp());
         const iexecPocoAsDealPayer = IexecPoco1__factory.connect(this.proxyAddress, dealPayer);
         await (
             withSponsor
