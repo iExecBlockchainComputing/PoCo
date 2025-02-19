@@ -816,7 +816,7 @@ describe('IexecPoco2#finalize', async () => {
     });
 
     it('Should not finalize task when result callback is bad', async () => {
-        const oracleConsumerInstanceAddress = await new TestClient__factory()
+        const oracleConsumerAddress = await new TestClient__factory()
             .connect(anyone)
             .deploy()
             .then((contract) => contract.waitForDeployment())
@@ -825,7 +825,7 @@ describe('IexecPoco2#finalize', async () => {
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
-            callback: oracleConsumerInstanceAddress,
+            callback: oracleConsumerAddress,
         });
 
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
