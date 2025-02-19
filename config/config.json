@@ -1,165 +1,165 @@
 {
-    "categories": [
-        {
-            "name": "XS",
-            "description": {},
-            "workClockTimeRef": 300
-        },
-        {
-            "name": "S",
-            "description": {},
-            "workClockTimeRef": 1200
-        },
-        {
-            "name": "M",
-            "description": {},
-            "workClockTimeRef": 3600
-        },
-        {
-            "name": "L",
-            "description": {},
-            "workClockTimeRef": 10800
-        },
-        {
-            "name": "XL",
-            "description": {},
-            "workClockTimeRef": 36000
-        }
-    ],
-    "registriesBaseUri": {
-        "app": "https://nfts-metadata.iex.ec/app",
-        "dataset": "https://nfts-metadata.iex.ec/dataset",
-        "workerpool": "https://nfts-metadata.iex.ec/workerpool"
+  "categories": [
+    {
+      "name": "XS",
+      "description": {},
+      "workClockTimeRef": 300
     },
-    "chains": {
-        "1": {
-            "_comment": "asset should be Token or Native",
-            "asset": "Token",
-            "token": "0x607F4C5BB672230e8672085532f7e901544a7375",
-            "uniswap": true,
-            "v3": {
-                "Hub": "0x1383c16c927c4A853684d1a9c676986f25E22111",
-                "AppRegistry": "0x3322D449A43E01178672A5FBEA9E7aF3b8c7bB29",
-                "DatasetRegistry": "0xC28F63b8379087F02E09da1BC62148874E730Ffd",
-                "WorkerpoolRegistry": "0xc398052563469e6Ea7C442aBf124aADE7ec2CC92"
-            },
-            "v5": {
-                "usefactory": true,
-                "salt": "0x0000000000000000000000000000000000000000000000000000000000000000",
-                "AppRegistry": "0xB1C52075b276f87b1834919167312221d50c9D16",
-                "DatasetRegistry": "0x799DAa22654128d0C64d5b79eac9283008158730",
-                "WorkerpoolRegistry": "0xC76A18c78B7e530A165c5683CB1aB134E21938B4"
-            }
-        },
-        "3": {
-            "_comment": "asset should be Token or Native",
-            "asset": "Token",
-            "token": "0x7314Dc4d7794b5E7894212CA1556ae8e3De58621",
-            "uniswap": true,
-            "v3": {
-                "Hub": null,
-                "AppRegistry": null,
-                "DatasetRegistry": null,
-                "WorkerpoolRegistry": null
-            },
-            "v5": {
-                "usefactory": true,
-                "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
-            }
-        },
-        "4": {
-            "_comment": "asset should be Token or Native",
-            "asset": "Token",
-            "token": "0xf1e6Ad3a7eF0c86c915F0feDF80eD851809bEA90",
-            "uniswap": true,
-            "v3": {
-                "Hub": null,
-                "AppRegistry": null,
-                "DatasetRegistry": null,
-                "WorkerpoolRegistry": null
-            },
-            "v5": {
-                "usefactory": true,
-                "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
-            }
-        },
-        "5": {
-            "_comment": "asset should be Token or Native",
-            "asset": "Token",
-            "uniswap": true,
-            "token": "0xe0d00540a3729B4fdB96f92534dA97DC7973Af8b",
-            "etoken": "0x381790F5602401F46C2a447355d84715d744f273",
-            "v3": {
-                "Hub": "0x99d8717A84d1E97422d04d9a2a82694038470753",
-                "AppRegistry": "0x221b9a91320a601b30992610425A960B1949B22d",
-                "DatasetRegistry": "0x8Dc0a7d917aeF68E340DBF68eF4ECB36d1Ca941b",
-                "WorkerpoolRegistry": "0xdAD30AAb14F569830bFd26EdF72df876dc30D20c"
-            },
-            "v5": {
-                "usefactory": true,
-                "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
-            }
-        },
-        "42": {
-            "_comment": "asset should be Token or Native",
-            "asset": "Token",
-            "uniswap": true,
-            "token": "0xc57538846Ec405Ea25Deb00e0f9B29a432D53507",
-            "v3": {
-                "Hub": "0xb3901d04CF645747b99DBbe8f2eE9cb41A89CeBF",
-                "AppRegistry": "0xd4945a24566AbF3517F81230Ff89820C3Dd39E33",
-                "DatasetRegistry": "0x1d7b69669e5781c3bCe590da74Ecf88Da5e12A9D",
-                "WorkerpoolRegistry": "0x3f4C18C322064576C048b1284b700288ffEf126B"
-            },
-            "v5": {
-                "usefactory": true,
-                "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
-            }
-        },
-        "133": {
-            "_comment": "asset should be Token or Native",
-            "asset": "Native",
-            "v3": {
-                "Hub": "0x4735e4BC6B143099fDF14224a82429aA34ba4d04",
-                "AppRegistry": "0x65313a6EDD5fF1E7d8C6cb235C09A82DbC159798",
-                "DatasetRegistry": "0x4D9080a52F13f6a1794Fd849Adb6e77DF35EBfA5",
-                "WorkerpoolRegistry": "0x1Cae59C7745A61dD37CD17f174745959D0f3f400"
-            },
-            "v5": {
-                "usefactory": true,
-                "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
-            }
-        },
-        "134": {
-            "_comment": "asset should be Token or Native",
-            "asset": "Native",
-            "v3": {
-                "Hub": "0xD5125A2d186E5266dA60e958043d32fE6fBA662f",
-                "AppRegistry": "0x6BC8657E0697728482418bD1a809598785C9E970",
-                "DatasetRegistry": "0x0BfDa3f68D836A99761205B20f6fa1C673bbF6Dd",
-                "WorkerpoolRegistry": "0x7E5459dC143cd51F7e1eCb644707Ee64aF24b6a6"
-            },
-            "v5": {
-                "ERC1538Proxy": "0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f",
-                "IexecLibOrders_v5": "0xE8b04c85C47fcEc0e9eE30D4034e2997f6519123",
-                "usefactory": true,
-                "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
-            }
-        },
-        "default": {
-            "_comment": "asset should be Token or Native",
-            "asset": "Token",
-            "token": null,
-            "uniswap": false,
-            "v3": {
-                "Hub": null,
-                "AppRegistry": null,
-                "DatasetRegistry": null,
-                "WorkerpoolRegistry": null
-            },
-            "v5": {
-                "usefactory": true
-            }
-        }
+    {
+      "name": "S",
+      "description": {},
+      "workClockTimeRef": 1200
+    },
+    {
+      "name": "M",
+      "description": {},
+      "workClockTimeRef": 3600
+    },
+    {
+      "name": "L",
+      "description": {},
+      "workClockTimeRef": 10800
+    },
+    {
+      "name": "XL",
+      "description": {},
+      "workClockTimeRef": 36000
     }
+  ],
+  "registriesBaseUri": {
+    "app": "https://nfts-metadata.iex.ec/app",
+    "dataset": "https://nfts-metadata.iex.ec/dataset",
+    "workerpool": "https://nfts-metadata.iex.ec/workerpool"
+  },
+  "chains": {
+    "1": {
+      "_comment": "asset should be Token or Native",
+      "asset": "Token",
+      "token": "0x607F4C5BB672230e8672085532f7e901544a7375",
+      "uniswap": true,
+      "v3": {
+        "Hub": "0x1383c16c927c4A853684d1a9c676986f25E22111",
+        "AppRegistry": "0x3322D449A43E01178672A5FBEA9E7aF3b8c7bB29",
+        "DatasetRegistry": "0xC28F63b8379087F02E09da1BC62148874E730Ffd",
+        "WorkerpoolRegistry": "0xc398052563469e6Ea7C442aBf124aADE7ec2CC92"
+      },
+      "v5": {
+        "usefactory": true,
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "AppRegistry": "0xB1C52075b276f87b1834919167312221d50c9D16",
+        "DatasetRegistry": "0x799DAa22654128d0C64d5b79eac9283008158730",
+        "WorkerpoolRegistry": "0xC76A18c78B7e530A165c5683CB1aB134E21938B4"
+      }
+    },
+    "3": {
+      "_comment": "asset should be Token or Native",
+      "asset": "Token",
+      "token": "0x7314Dc4d7794b5E7894212CA1556ae8e3De58621",
+      "uniswap": true,
+      "v3": {
+        "Hub": null,
+        "AppRegistry": null,
+        "DatasetRegistry": null,
+        "WorkerpoolRegistry": null
+      },
+      "v5": {
+        "usefactory": true,
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "4": {
+      "_comment": "asset should be Token or Native",
+      "asset": "Token",
+      "token": "0xf1e6Ad3a7eF0c86c915F0feDF80eD851809bEA90",
+      "uniswap": true,
+      "v3": {
+        "Hub": null,
+        "AppRegistry": null,
+        "DatasetRegistry": null,
+        "WorkerpoolRegistry": null
+      },
+      "v5": {
+        "usefactory": true,
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "5": {
+      "_comment": "asset should be Token or Native",
+      "asset": "Token",
+      "uniswap": true,
+      "token": "0xe0d00540a3729B4fdB96f92534dA97DC7973Af8b",
+      "etoken": "0x381790F5602401F46C2a447355d84715d744f273",
+      "v3": {
+        "Hub": "0x99d8717A84d1E97422d04d9a2a82694038470753",
+        "AppRegistry": "0x221b9a91320a601b30992610425A960B1949B22d",
+        "DatasetRegistry": "0x8Dc0a7d917aeF68E340DBF68eF4ECB36d1Ca941b",
+        "WorkerpoolRegistry": "0xdAD30AAb14F569830bFd26EdF72df876dc30D20c"
+      },
+      "v5": {
+        "usefactory": true,
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "42": {
+      "_comment": "asset should be Token or Native",
+      "asset": "Token",
+      "uniswap": true,
+      "token": "0xc57538846Ec405Ea25Deb00e0f9B29a432D53507",
+      "v3": {
+        "Hub": "0xb3901d04CF645747b99DBbe8f2eE9cb41A89CeBF",
+        "AppRegistry": "0xd4945a24566AbF3517F81230Ff89820C3Dd39E33",
+        "DatasetRegistry": "0x1d7b69669e5781c3bCe590da74Ecf88Da5e12A9D",
+        "WorkerpoolRegistry": "0x3f4C18C322064576C048b1284b700288ffEf126B"
+      },
+      "v5": {
+        "usefactory": true,
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "133": {
+      "_comment": "asset should be Token or Native",
+      "asset": "Native",
+      "v3": {
+        "Hub": "0x4735e4BC6B143099fDF14224a82429aA34ba4d04",
+        "AppRegistry": "0x65313a6EDD5fF1E7d8C6cb235C09A82DbC159798",
+        "DatasetRegistry": "0x4D9080a52F13f6a1794Fd849Adb6e77DF35EBfA5",
+        "WorkerpoolRegistry": "0x1Cae59C7745A61dD37CD17f174745959D0f3f400"
+      },
+      "v5": {
+        "usefactory": true,
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "134": {
+      "_comment": "asset should be Token or Native",
+      "asset": "Native",
+      "v3": {
+        "Hub": "0xD5125A2d186E5266dA60e958043d32fE6fBA662f",
+        "AppRegistry": "0x6BC8657E0697728482418bD1a809598785C9E970",
+        "DatasetRegistry": "0x0BfDa3f68D836A99761205B20f6fa1C673bbF6Dd",
+        "WorkerpoolRegistry": "0x7E5459dC143cd51F7e1eCb644707Ee64aF24b6a6"
+      },
+      "v5": {
+        "ERC1538Proxy": "0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f",
+        "IexecLibOrders_v5": "0xE8b04c85C47fcEc0e9eE30D4034e2997f6519123",
+        "usefactory": true,
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "default": {
+      "_comment": "asset should be Token or Native",
+      "asset": "Token",
+      "token": null,
+      "uniswap": false,
+      "v3": {
+        "Hub": null,
+        "AppRegistry": null,
+        "DatasetRegistry": null,
+        "WorkerpoolRegistry": null
+      },
+      "v5": {
+        "usefactory": true
+      }
+    }
+  }
 }
