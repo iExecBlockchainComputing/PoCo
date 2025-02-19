@@ -12,7 +12,7 @@
         - ENSIntegration, IexecOrderManagement, IexecRelay (#195)
         - IexecCategoryManager, IexecERC20 (#192)
         - test/*fullchain* (#190, #196)
-        - IexecAccessors (#189, #191)
+        - IexecAccessors (#189, #191, #196)
         - IexecPoco (#196)
 - Migrate scripts to TypeScript: (#184)
     - `getFunctionSignatures.js`, `common-test-snapshot.js`, `test-storage.js`, `timelock.js`
