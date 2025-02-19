@@ -24,7 +24,7 @@ import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deploy
 const CONFIG = require('../../../config/config.json');
 
 const timeRef = CONFIG.categories[0].workClockTimeRef;
-const volume = 3;
+const volume = 3n;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const standardDealTag = ZeroHash;
 const { resultDigest } = buildUtf8ResultAndDigest('result');
@@ -75,9 +75,9 @@ describe('IexecPoco2#contribute', () => {
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
-        const appPrice = 1000;
-        const datasetPrice = 1_000_000;
-        const workerpoolPrice = 1_000_000_000;
+        const appPrice = 1000n;
+        const datasetPrice = 1_000_000n;
+        const workerpoolPrice = 1_000_000_000n;
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -114,7 +114,7 @@ describe('IexecPoco2#contribute', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
-                .then((deal) => Number(deal.workerStake));
+                .then((deal) => deal.workerStake);
             const workers = [
                 { signer: worker1, resultDigest: resultDigest },
                 { signer: worker2, resultDigest: badResultDigest },
@@ -126,7 +126,7 @@ describe('IexecPoco2#contribute', () => {
             let task;
             let contributeBlockTimestamp;
             const viewFrozenOf = (address: string) =>
-                iexecPoco.frozenOf(address).then((frozen) => Number(frozen));
+                iexecPoco.frozenOf(address).then((frozen) => frozen);
             for (let i = 0; i < workers.length; i++) {
                 const worker = workers[i];
                 const workerAddress = worker.signer.address;
@@ -220,7 +220,7 @@ describe('IexecPoco2#contribute', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
-                .then((deal) => Number(deal.workerStake));
+                .then((deal) => deal.workerStake);
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,
@@ -251,7 +251,7 @@ describe('IexecPoco2#contribute', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
-                .then((deal) => Number(deal.workerStake));
+                .then((deal) => deal.workerStake);
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,
@@ -345,7 +345,7 @@ describe('IexecPoco2#contribute', () => {
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
             const workerTaskStake = await iexecPoco
                 .viewDeal(dealId)
-                .then((deal) => Number(deal.workerStake));
+                .then((deal) => deal.workerStake);
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,

@@ -28,9 +28,9 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const hexResults = ethers.hexlify(results);
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
 const emptyEnclaveAddress = ZeroAddress;
 const emptyEnclaveSignature = '0x';
@@ -97,7 +97,7 @@ describe('IexecPoco2#finalize', async () => {
             .connect(anyone)
             .deploy()
             .then((contract) => contract.waitForDeployment());
-        const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
+        const expectedVolume = 3n; // > 1 to explicit taskPrice vs dealPrice
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -115,9 +115,7 @@ describe('IexecPoco2#finalize', async () => {
         const schedulerTaskStake = schedulerDealStake / expectedVolume;
         const kittyAddress = await iexecPoco.kitty_address();
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const { callbackResultDigest: wrongCallbackResultDigest } =
             buildResultCallbackAndDigest(567);
         const workers = [
@@ -167,14 +165,14 @@ describe('IexecPoco2#finalize', async () => {
                 .then((tx) => tx.wait());
         }
         const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
-        const sponsorFrozenBefore = Number(await iexecPoco.frozenOf(sponsor.address));
-        const schedulerFrozenBefore = Number(await iexecPoco.frozenOf(scheduler.address));
-        const workersFrozenBefore: { [name: string]: number } = {};
+        const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
+        const schedulerFrozenBefore = await iexecPoco.frozenOf(scheduler.address);
+        const workersFrozenBefore: { [name: string]: bigint } = {};
         for (const worker of workers) {
             const workerAddress = worker.signer.address;
             workersFrozenBefore[workerAddress] = await iexecPoco
                 .frozenOf(workerAddress)
-                .then((frozen) => Number(frozen));
+                .then((frozen) => frozen);
             expect(await iexecPoco.viewScore(workerAddress)).to.be.equal(1);
         }
         const kittyFrozenBefore = await iexecPoco.frozenOf(kittyAddress);
@@ -199,7 +197,7 @@ describe('IexecPoco2#finalize', async () => {
             .withArgs(proxyAddress, scheduler.address, schedulerTaskStake)
             .to.emit(iexecPoco, 'Unlock')
             .withArgs(scheduler.address, schedulerTaskStake);
-        const workerReward = 429000000;
+        const workerReward = 429000000n;
         for (const worker of winningWorkers) {
             await expect(finalizeTx)
                 .to.emit(iexecPoco, 'Transfer')
@@ -220,7 +218,7 @@ describe('IexecPoco2#finalize', async () => {
             .withArgs(losingWorker.address, taskId);
         const schedulerReward =
             workerpoolPrice -
-            winningWorkers.length * workerReward + // winning workers rewards
+            BigInt(winningWorkers.length) * workerReward + // winning workers rewards
             workerTaskStake; // losing worker stake
         await expect(finalizeTx)
             .to.emit(iexecPoco, 'Transfer')
@@ -256,7 +254,7 @@ describe('IexecPoco2#finalize', async () => {
                     datasetPrice +
                     workerpoolPrice +
                     schedulerTaskStake +
-                    workerTaskStake * workers.length
+                    workerTaskStake * BigInt(workers.length)
                 ),
                 0, // requester is unrelated to this test
                 0, // sponsor balance is unchanged, only frozen is changed
@@ -305,9 +303,7 @@ describe('IexecPoco2#finalize', async () => {
             ...orders.toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             resultDigest,
@@ -335,7 +331,7 @@ describe('IexecPoco2#finalize', async () => {
             .connect(worker1)
             .reveal(taskId, resultDigest)
             .then((tx) => tx.wait());
-        const requesterFrozenBefore = Number(await iexecPoco.frozenOf(requester.address));
+        const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
         const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
 
         const txFinalize = iexecPocoAsScheduler.finalize(taskId, results, '0x');
@@ -371,9 +367,7 @@ describe('IexecPoco2#finalize', async () => {
             ...orders.toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             callbackResultDigest,
@@ -424,9 +418,7 @@ describe('IexecPoco2#finalize', async () => {
             ...orders.toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             callbackResultDigest,
@@ -465,21 +457,21 @@ describe('IexecPoco2#finalize', async () => {
             {
                 testInfo:
                     'scheduler gets 10% of the kitty when these 10% are greater than MIN_KITTY', // (MIN_KITTY=1RLC)
-                workerpoolPriceToFillKitty: 33_333_333_367,
-                expectedKittyBeforeFinalize: 10_000_000_010, // ~10 RLC
-                expectedSchedulerKittyPartReward: 1_000_000_001, // ~1.01 RLC (expectedKittyBeforeFinalize x 10%)
+                workerpoolPriceToFillKitty: 33_333_333_367n,
+                expectedKittyBeforeFinalize: 10_000_000_010n, // ~10 RLC
+                expectedSchedulerKittyPartReward: 1_000_000_001n, // ~1.01 RLC (expectedKittyBeforeFinalize x 10%)
             },
             {
                 testInfo: 'scheduler gets at least MIN_KITTY if available',
-                workerpoolPriceToFillKitty: 3_333_333_334,
-                expectedKittyBeforeFinalize: 1_000_000_000, // 1 RLC
-                expectedSchedulerKittyPartReward: 1_000_000_000,
+                workerpoolPriceToFillKitty: 3_333_333_334n,
+                expectedKittyBeforeFinalize: 1_000_000_000n, // 1 RLC
+                expectedSchedulerKittyPartReward: 1_000_000_000n,
             },
             {
                 testInfo: 'scheduler gets all kitty when the kitty is lower than MIN_KITTY',
-                workerpoolPriceToFillKitty: 3_333_333_330,
-                expectedKittyBeforeFinalize: 999_999_999, // ~0.99 RLC
-                expectedSchedulerKittyPartReward: 999_999_999,
+                workerpoolPriceToFillKitty: 3_333_333_330n,
+                expectedKittyBeforeFinalize: 999_999_999n, // ~0.99 RLC
+                expectedSchedulerKittyPartReward: 999_999_999n,
             },
         ].forEach((testArgs) => {
             const {
@@ -491,7 +483,7 @@ describe('IexecPoco2#finalize', async () => {
             it(`Should finalize task with scheduler kitty part reward where ${testInfo}`, async () => {
                 // Fill kitty
                 const kittyAddress = await iexecPoco.kitty_address();
-                const kittyFillingDealVolume = 1;
+                const kittyFillingDealVolume = 1n;
                 const kittyFillingSchedulerDealStake = await iexecWrapper.computeSchedulerDealStake(
                     workerpoolPriceToFillKitty,
                     kittyFillingDealVolume,
@@ -503,8 +495,8 @@ describe('IexecPoco2#finalize', async () => {
                         assets: ordersAssets,
                         requester: requester.address,
                         prices: {
-                            app: 0,
-                            dataset: 0,
+                            app: 0n,
+                            dataset: 0n,
                             workerpool: workerpoolPriceToFillKitty, // 30% will go to kitty
                         },
                         volume: kittyFillingDealVolume,
@@ -514,7 +506,7 @@ describe('IexecPoco2#finalize', async () => {
                 await iexecPoco
                     .initialize(kittyFillingDeal.dealId, kittyFillingDeal.taskIndex)
                     .then((tx) => tx.wait());
-                const kittyFrozenBeforeClaim = Number(await iexecPoco.frozenOf(kittyAddress));
+                const kittyFrozenBeforeClaim = await iexecPoco.frozenOf(kittyAddress);
                 await time.setNextBlockTimestamp(
                     (await iexecPoco.viewTask(kittyFillingDeal.taskId)).finalDeadline,
                 );
@@ -532,7 +524,7 @@ describe('IexecPoco2#finalize', async () => {
                     .withArgs(kittyAddress, kittyFillingSchedulerTaskStake, kittyFillingDeal.taskId)
                     .to.emit(iexecPoco, 'Lock')
                     .withArgs(kittyAddress, kittyFillingSchedulerTaskStake);
-                const kittyFrozenAfterClaim = Number(await iexecPoco.frozenOf(kittyAddress));
+                const kittyFrozenAfterClaim = await iexecPoco.frozenOf(kittyAddress);
                 expect(kittyFrozenAfterClaim).to.equal(
                     kittyFrozenBeforeClaim + kittyFillingSchedulerTaskStake,
                 );
@@ -543,11 +535,11 @@ describe('IexecPoco2#finalize', async () => {
                         assets: ordersAssets,
                         requester: requester.address,
                         prices: {
-                            app: 0,
-                            dataset: 0,
-                            workerpool: 0,
+                            app: 0n,
+                            dataset: 0n,
+                            workerpool: 0n,
                         },
-                        volume: 1,
+                        volume: 1n,
                         salt: ethers.id(new Date().toISOString()),
                     }).toArray(),
                 );
@@ -600,21 +592,18 @@ describe('IexecPoco2#finalize', async () => {
     });
 
     it('Should finalize task after reveal deadline with at least one reveal', async () => {
-        const volume = 1;
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
-            volume,
+            volume: 1n,
             trust: 3,
         });
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const workers = [worker1, worker2];
         for (const worker of workers) {
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -697,9 +686,7 @@ describe('IexecPoco2#finalize', async () => {
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             resultDigest,
@@ -742,9 +729,7 @@ describe('IexecPoco2#finalize', async () => {
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const workers = [worker1, worker2];
         for (const worker of workers) {
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -791,9 +776,7 @@ describe('IexecPoco2#finalize', async () => {
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             resultDigest,
@@ -849,9 +832,7 @@ describe('IexecPoco2#finalize', async () => {
             ...orders.toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
             taskId,
             callbackResultDigest,

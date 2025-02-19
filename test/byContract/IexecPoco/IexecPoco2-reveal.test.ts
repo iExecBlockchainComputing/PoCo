@@ -20,7 +20,7 @@ import {
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
-const volume = 1;
+const volume = 1n;
 const standardDealTag = ZeroHash;
 const { resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
@@ -61,9 +61,9 @@ describe('IexecPoco2#reveal', () => {
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
-        const appPrice = 1000;
-        const datasetPrice = 1_000_000;
-        const workerpoolPrice = 1_000_000_000;
+        const appPrice = 1000n;
+        const datasetPrice = 1_000_000n;
+        const workerpoolPrice = 1_000_000_000n;
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -86,9 +86,7 @@ describe('IexecPoco2#reveal', () => {
             ...orders.toArray(),
         ));
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
         ({ resultHash, resultSeal } = buildResultHashAndResultSeal(taskId, resultDigest, worker));
         schedulerSignature = await buildAndSignContributionAuthorizationMessage(
@@ -205,9 +203,7 @@ describe('IexecPoco2#reveal', () => {
             // orders to get an easy one-liner declaration.
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => Number(deal.workerStake));
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const workers = [
             { signer: worker1, resultDigest: resultDigest },
             { signer: worker2, resultDigest: badResultDigest },
