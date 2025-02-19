@@ -112,7 +112,7 @@ describe('IexecPoco1', () => {
         iexecPocoAsRequester = iexecPoco.connect(requester);
         iexecPocoAsSponsor = IexecPoco1__factory.connect(proxyAddress, sponsor);
         iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);
-        iexecPocoContract = iexecPoco as unknown as Contract;
+        iexecPocoContract = iexecPoco as Contract;
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -408,10 +408,10 @@ describe('IexecPoco1', () => {
             // TODO use predicate `(change) => boolean` when migrating to a recent version of Hardhat.
             // See https://github.com/NomicFoundation/hardhat/blob/main/packages/hardhat-chai-matchers/src/internal/changeTokenBalance.ts#L42
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(
-                requesterFrozenBefore + BigInt(dealPrice),
+                requesterFrozenBefore + dealPrice,
             );
             expect(await iexecPoco.frozenOf(scheduler.address)).to.equal(
-                schedulerFrozenBefore + BigInt(schedulerStake),
+                schedulerFrozenBefore + schedulerStake,
             );
             // Check events.
             await expect(tx)
@@ -1035,7 +1035,7 @@ describe('IexecPoco1', () => {
             );
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(0);
             expect(await iexecPoco.frozenOf(sponsor.address)).to.equal(
-                sponsorFrozenBefore + BigInt(dealPrice),
+                sponsorFrozenBefore + dealPrice,
             );
             // Check events.
             await expect(tx)
