@@ -267,7 +267,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
         expect(task.resultDigest).to.equal(resultDigest);
-        expect(task.results).to.equal(ethers.toBeHex(ethers.toBigInt(results)));
+        expect(task.results).to.equal(ethers.hexlify(results));
         expect(task.resultsCallback).to.equal(noCallbackData);
         // Check events.
         await expect(contributeAndFinalizeTx)
