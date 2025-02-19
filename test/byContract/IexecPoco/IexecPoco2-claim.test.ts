@@ -78,7 +78,7 @@ describe('IexecPoco2#claim', async () => {
             requester: requester.address,
             prices: ordersPrices,
             volume: expectedVolume,
-            trust: 4, // Consensus is reachable with 2 fresh workers
+            trust: 4n, // Consensus is reachable with 2 fresh workers
         });
         const { dealId, taskId, taskIndex, dealPrice, startTime } =
             await iexecWrapper.signAndSponsorMatchOrders(...orders.toArray());
@@ -238,7 +238,7 @@ describe('IexecPoco2#claim', async () => {
             assets: ordersAssets,
             requester: requester.address,
             prices: ordersPrices,
-            trust: 0,
+            trust: 0n,
         });
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),

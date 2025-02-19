@@ -31,7 +31,7 @@ const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
 const timeRef = CONFIG.categories[0].workClockTimeRef;
-const trust = 1;
+const trust = 1n;
 const volume = 1n;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const standardDealTag = ZeroHash;
@@ -361,7 +361,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 requester: requester.address,
                 prices: ordersPrices,
                 volume,
-                trust: 3,
+                trust: 3n,
                 tag: standardDealTag,
             }).toArray(),
         );
