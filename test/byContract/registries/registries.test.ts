@@ -62,14 +62,12 @@ describe('Registries', () => {
         appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
         appRegistryAddress = await appRegistry.getAddress();
         appRegistryAsAdmin = appRegistry.connect(iexecAdmin);
-
         datasetRegistry = DatasetRegistry__factory.connect(
             await iexecPoco.datasetregistry(),
             anyone,
         );
         datasetRegistryAddress = await datasetRegistry.getAddress();
         datasetRegistryAsAdmin = datasetRegistry.connect(iexecAdmin);
-
         workerpoolRegistry = WorkerpoolRegistry__factory.connect(
             await iexecPoco.workerpoolregistry(),
             anyone,
