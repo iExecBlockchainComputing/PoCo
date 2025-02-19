@@ -408,7 +408,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 taskId,
                 resultsCallbackDigest,
                 noResultsData,
-                ethers.toBeHex(ethers.toBigInt(ethers.randomBytes(32))), // Bad callback data.
+                ethers.hexlify(ethers.randomBytes(32)), // Bad callback data.
                 emptyEnclaveAddress,
                 emptyEnclaveSignature,
                 await buildAndSignContributionAuthorizationMessage(
