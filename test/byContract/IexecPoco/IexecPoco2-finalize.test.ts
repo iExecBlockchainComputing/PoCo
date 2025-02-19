@@ -103,7 +103,7 @@ describe('IexecPoco2#finalize', async () => {
             requester: requester.address,
             prices: ordersPrices,
             volume: expectedVolume,
-            trust: 3,
+            trust: 3n,
             callback: await oracleConsumerInstance.getAddress(),
         });
         const { dealId, taskId, taskIndex, dealPrice } =
