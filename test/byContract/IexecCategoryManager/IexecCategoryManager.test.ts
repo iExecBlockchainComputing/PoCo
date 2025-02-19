@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { Category, getIexecAccounts } from '../../../utils/poco-tools';
@@ -45,7 +45,7 @@ describe('CategoryManager', async () => {
     });
 
     it('Should not view category with bad index', async () => {
-        const lastCategoryIndex = (await iexecPocoAsAnyone.countCategory()).toNumber() - 1;
+        const lastCategoryIndex = Number(await iexecPocoAsAnyone.countCategory()) - 1;
         await expect(
             iexecPocoAsAnyone.viewCategory(lastCategoryIndex + 1),
         ).to.be.revertedWithoutReason();
@@ -53,7 +53,7 @@ describe('CategoryManager', async () => {
 
     it('Should create category', async () => {
         const newCategoryIndex = 5;
-        expect(await iexecPoco.callStatic.createCategory(...args)).to.equal(newCategoryIndex);
+        expect(await iexecPoco.createCategory.staticCall(...args)).to.equal(newCategoryIndex);
         await expect(iexecPoco.createCategory(...args))
             .to.emit(iexecPoco, 'CreateCategory')
             .withArgs(newCategoryIndex, name, description, timeRef);

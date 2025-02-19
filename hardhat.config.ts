@@ -14,6 +14,20 @@ import chainConfig from './config/config.json';
 const isNativeChainType = chainConfig.chains.default.asset == 'Native';
 const isLocalFork = process.env.LOCAL_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
+
+/**
+ * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
+ * @note Any fresh version of Hardhat uses for its default
+ * hardhat network a configuration from a recent Ethereum
+ * fork. EIPs brought by such recent fork are not necessarily
+ * supported by the iExec Bellecour blockchain.
+ */
+const bellecourBaseConfig = {
+    hardfork: 'berlin', // No EIP-1559 before London fork
+    gasPrice: 0,
+    blockGasLimit: 6_700_000,
+};
+
 const settings = {
     optimizer: {
         enabled: true,
@@ -44,20 +58,7 @@ const v8Settings = {
      * At this time, the iExec Bellecour blockchain does not support new OPCODES
      * brought by the Shanghai fork, hence the target must be lowered.
      */
-    evmVersion: 'berlin',
-};
-
-/**
- * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
- * @note Any fresh version of Hardhat uses for its default
- * hardhat network a configuration from a recent Ethereum
- * fork. EIPs brought by such recent fork are not necessarily
- * supported by the iExec Bellecour blockchain.
- */
-const bellecourNetworkConfig = {
-    hardfork: 'berlin', // No EIP-1559 before London fork
-    gasPrice: 0,
-    blockGasLimit: 6_700_000,
+    evmVersion: bellecourBaseConfig.hardfork,
 };
 
 const config: HardhatUserConfig = {
@@ -73,7 +74,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
+            ...((isNativeChainType || isLocalFork) && bellecourBaseConfig),
             ...(isLocalFork && {
                 forking: {
                     url: 'https://bellecour.iex.ec',
@@ -87,7 +88,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            ...((isNativeChainType || isLocalFork) && bellecourNetworkConfig),
+            ...((isNativeChainType || isLocalFork) && bellecourBaseConfig),
             ...(isLocalFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 chainId: 134,
@@ -99,7 +100,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 0, // Get closer to Bellecour network
+            gasPrice: bellecourBaseConfig.gasPrice, // Get closer to Bellecour network
         },
         'dev-token': {
             chainId: 65535,
@@ -133,8 +134,7 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
-            gasPrice: 0,
-            gas: 6700000,
+            ...bellecourBaseConfig,
         },
         bellecour: {
             chainId: 134,
@@ -143,9 +143,7 @@ const config: HardhatUserConfig = {
                 process.env.PROD_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
-            hardfork: 'berlin', // No EIP-1559 before London fork
-            gasPrice: 0,
-            gas: 6700000,
+            ...bellecourBaseConfig,
             verify: {
                 etherscan: {
                     apiUrl: bellecourBlockscoutUrl,
