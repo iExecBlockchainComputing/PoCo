@@ -418,11 +418,7 @@ describe('Registries', () => {
                 await datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs),
             )
                 .to.emit(datasetRegistry, 'Transfer')
-                .withArgs(
-                    ZeroAddress,
-                    datasetProvider.address,
-                    predictedAddress,
-                );
+                .withArgs(ZeroAddress, datasetProvider.address, predictedAddress);
             expect(await datasetRegistry.balanceOf(datasetProvider.address)).to.equal(
                 initialDatasetBalance + 1n,
             );
