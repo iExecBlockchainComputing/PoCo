@@ -39,7 +39,12 @@ import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
 import { Category } from '../utils/poco-tools';
 import { linkContractToProxy } from '../utils/proxy-tools';
-const CONFIG = require('../config/config.json');
+import {
+    config,
+    getChainConfig,
+    getDefaultChainConfig,
+    isNativeChain,
+} from '../config/config-utils';
 
 /**
  * @dev Deploying contracts with `npx hardhat deploy` task brought by
@@ -53,15 +58,15 @@ const CONFIG = require('../config/config.json');
  */
 export default async function deploy() {
     console.log('Deploying PoCo..');
-    const chainId = Number((await ethers.provider.getNetwork()).chainId);
+    const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
-    const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
+    const deploymentOptions = getChainConfig(chainId) || getDefaultChainConfig();
     const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
     const factoryDeployer = new FactoryDeployerHelper(owner, salt);
     // Deploy RLC
-    const isTokenMode = deploymentOptions.asset == 'Token';
+    const isTokenMode = !isNativeChain(deploymentOptions);
     let rlcInstanceAddress = isTokenMode
-        ? await getOrDeployRlc(deploymentOptions.token, owner) // token
+        ? await getOrDeployRlc(deploymentOptions.token!, owner) // token
         : ethers.ZeroAddress; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
@@ -149,9 +154,9 @@ export default async function deploy() {
         owner,
     );
     // Base URI configuration from config.json
-    const baseURIApp = CONFIG.registriesBaseUri.app;
-    const baseURIDataset = CONFIG.registriesBaseUri.dataset;
-    const baseURIWorkerpool = CONFIG.registriesBaseUri.workerpool;
+    const baseURIApp = config.registriesBaseUri.app;
+    const baseURIDataset = config.registriesBaseUri.dataset;
+    const baseURIWorkerpool = config.registriesBaseUri.workerpool;
     // Check if registries have been initialized and set base URIs
     if (!(await appRegistryInstance.initialized())) {
         await appRegistryInstance
@@ -196,9 +201,8 @@ export default async function deploy() {
     }
     // Set categories
     const catCountBefore = await iexecAccessorsInstance.countCategory();
-    const categories = CONFIG.categories as Category[];
-    for (let i = Number(catCountBefore); i < categories.length; i++) {
-        const category = categories[i];
+    for (let i = Number(catCountBefore); i < config.categories.length; i++) {
+        const category = config.categories[i];
         await IexecCategoryManager__factory.connect(erc1538ProxyAddress, owner)
             .createCategory(
                 category.name,

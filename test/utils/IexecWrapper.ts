@@ -12,7 +12,6 @@ import {
     ZeroAddress,
 } from 'ethers';
 import hre, { ethers } from 'hardhat';
-import config from '../../config/config.json';
 import {
     AppRegistry,
     AppRegistry__factory,
@@ -50,7 +49,7 @@ import {
     getTaskId,
     setNextBlockTimestamp,
 } from '../../utils/poco-tools';
-const DEPLOYMENT_CONFIG = config.chains.default;
+import { isNativeChain } from '../../config/config-utils';
 
 export class IexecWrapper {
     proxyAddress: string;
@@ -82,32 +81,28 @@ export class IexecWrapper {
      * @param account Deposit value for an account.
      */
     async depositInIexecAccount(account: SignerWithAddress, value: bigint) {
-        switch (DEPLOYMENT_CONFIG.asset) {
-            case 'Native':
-                await IexecInterfaceNative__factory.connect(this.proxyAddress, account)
-                    .deposit({
-                        value: (value * 10n ** 9n).toString(),
-                    })
-                    .then((tx) => tx.wait());
-                break;
-            case 'Token':
-                const rlc = RLC__factory.connect(
-                    await IexecAccessors__factory.connect(
-                        this.proxyAddress,
-                        this.accounts.anyone,
-                    ).token(),
-                    this.accounts.iexecAdmin,
-                );
-                // Transfer RLC from owner to recipient
-                await rlc.transfer(account.address, value).then((tx) => tx.wait());
-                // Deposit
-                await rlc
-                    .connect(account)
-                    .approveAndCall(this.proxyAddress, value, '0x')
-                    .then((tx) => tx.wait());
-                break;
-            default:
-                break;
+        if (isNativeChain()) {
+            await IexecInterfaceNative__factory.connect(this.proxyAddress, account)
+                .deposit({
+                    value: (value * 10n ** 9n).toString(),
+                })
+                .then((tx) => tx.wait());
+            return;
+        }
+        const rlc = RLC__factory.connect(
+            await IexecAccessors__factory.connect(
+                this.proxyAddress,
+                this.accounts.anyone,
+            ).token(),
+            this.accounts.iexecAdmin,
+        );
+        // Transfer RLC from owner to recipient
+        await rlc.transfer(account.address, value).then((tx) => tx.wait());
+        // Deposit
+        await rlc
+            .connect(account)
+            .approveAndCall(this.proxyAddress, value, '0x')
+            .then((tx) => tx.wait());
         }
     }
 

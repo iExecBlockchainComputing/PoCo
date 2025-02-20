@@ -9,9 +9,9 @@ import {
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
 import 'solidity-docgen';
-import chainConfig from './config/config.json';
+import { isNativeChain } from './config/config-utils';
 
-const isNativeChainType = chainConfig.chains.default.asset == 'Native';
+const isNativeChainType = isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
 

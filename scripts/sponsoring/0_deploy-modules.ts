@@ -1,5 +1,6 @@
+import { ZeroAddress } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import CONFIG from '../../config/config.json';
+import { getChainConfig } from '../../config/config-utils';
 import {
     GenericFactory__factory,
     IexecOrderManagementDelegate__factory,
@@ -20,8 +21,10 @@ export async function deployModules() {
     const [deployer] = await ethers.getSigners();
     console.log(`Deployer: ${deployer.address}`);
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = CONFIG.chains[chainId].v5;
-
+    const deploymentOptions = getChainConfig(chainId).v5;
+    if (!deploymentOptions.IexecLibOrders_v5) {
+        throw new Error('IexecLibOrders_v5 is required');
+    }
     const salt = deploymentOptions.salt;
     const libraries = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:

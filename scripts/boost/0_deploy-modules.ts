@@ -1,5 +1,5 @@
 import { deployments, ethers } from 'hardhat';
-import CONFIG from '../../config/config.json';
+import { getChainConfig } from '../../config/config-utils';
 import {
     GenericFactory__factory,
     IexecPocoBoostAccessorsDelegate__factory,
@@ -11,7 +11,10 @@ const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.
     console.log('Deploying Boost modules..');
     const [owner] = await ethers.getSigners();
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = CONFIG.chains[chainId].v5;
+    const deploymentOptions = getChainConfig(chainId).v5;
+    if (!deploymentOptions.IexecLibOrders_v5) {
+        throw new Error('IexecLibOrders_v5 is required');
+    }
     const salt = deploymentOptions.salt;
     const modules = [
         {

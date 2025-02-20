@@ -11,7 +11,7 @@ import { hashOrder } from './createOrders';
 export interface Category {
     name: string;
     description: string;
-    workClockTimeRef: bigint;
+    workClockTimeRef: number; // JSON does not support bigint.
 }
 
 export enum TaskStatusEnum {

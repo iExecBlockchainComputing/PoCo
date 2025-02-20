@@ -7,7 +7,7 @@ import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-help
 import { expect } from 'chai';
 import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
-import CONFIG from '../../../config/config.json';
+import { isNativeChain } from '../../../config/config-utils';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
@@ -19,8 +19,7 @@ const depositArgs = [{ value: nativeDepositAmount }] as [{ value: bigint }];
 const withdrawAmount = 100n;
 const withdrawArg = [withdrawAmount] as [bigint];
 
-// TODO: remove this when poco is also available in Native mode
-if (CONFIG.chains.default.asset === 'Native') {
+if (isNativeChain()) {
     describe('EscrowNative', () => {
         let proxyAddress: string;
         let [iexecPoco, , iexecPocoAsAccountA, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];

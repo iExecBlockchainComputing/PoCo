@@ -1,8 +1,9 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
+import { ZeroAddress } from 'ethers';
 import hre, { ethers } from 'hardhat';
-import CONFIG from '../../config/config.json';
+import { getChainConfig } from '../../config/config-utils';
 import {
     IexecPocoBoostAccessors__factory,
     IexecPocoBoost__factory,
@@ -18,8 +19,11 @@ import {
 
 (async () => {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = CONFIG.chains[chainId].v5;
+    const deploymentOptions = getChainConfig(chainId).v5;
     console.log('Link Boost functions to proxy:');
+    if (!deploymentOptions.ERC1538Proxy) {
+        throw new Error('ERC1538Proxy is required');
+    }
     const erc1538ProxyAddress = deploymentOptions.ERC1538Proxy;
     const iexecPocoBoostDelegateAddress = (await hre.deployments.get('IexecPocoBoostDelegate'))
         .address; // Bellecour: 0x8425229f979AB3b0dDDe00D475D762cA4d6a5eFc

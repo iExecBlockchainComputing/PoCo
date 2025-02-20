@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import hre, { ethers } from 'hardhat';
-import CONFIG from '../../config/config.json';
+import { getChainConfig } from '../../config/config-utils';
 import {
     IexecOrderManagementDelegate__factory,
     IexecPoco1Delegate__factory,
@@ -26,8 +26,11 @@ if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
 
 export async function addModulesToProxy() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = CONFIG.chains[chainId].v5;
+    const deploymentOptions = getChainConfig(chainId).v5;
     console.log('Link functions to proxy:');
+    if (!deploymentOptions.ERC1538Proxy) {
+        throw new Error('ERC1538Proxy is required');
+    }
     const erc1538ProxyAddress = deploymentOptions.ERC1538Proxy;
     const iexecOrderManagementAddress = (await hre.deployments.get('IexecOrderManagementDelegate'))
         .address;

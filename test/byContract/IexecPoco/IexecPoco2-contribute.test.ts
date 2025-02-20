@@ -21,9 +21,9 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-const CONFIG = require('../../../config/config.json');
+import { config } from '../../../config/config-utils';
 
-const timeRef = BigInt(CONFIG.categories[0].workClockTimeRef);
+const timeRef = BigInt(config.categories[0].workClockTimeRef);
 const volume = 3n;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const standardDealTag = ZeroHash;

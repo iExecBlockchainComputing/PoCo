@@ -8,6 +8,15 @@ import { GenericFactory, GenericFactory__factory } from '../typechain';
 import { getBaseNameFromContractFactory } from './deploy-tools';
 const { EthersDeployer: Deployer, factoryAddress } = require('../utils/FactoryDeployer');
 
+// TODO merge FactoryDeployer and FactoryDeployerHelper here.
+// Use:
+// async getFactory() {
+//     if (!this.genericFactory) {
+//         await this.ready();
+//     }
+//     return this.genericFactory;
+// }
+
 export class FactoryDeployerHelper {
     salt: string;
     init: any;
