@@ -125,8 +125,7 @@ describe('IexecPoco2#contribute', () => {
             // worker2 is a losing worker
             let task;
             let contributeBlockTimestamp;
-            const viewFrozenOf = (address: string) =>
-                iexecPoco.frozenOf(address);
+            const viewFrozenOf = (address: string) => iexecPoco.frozenOf(address);
             for (let i = 0; i < workers.length; i++) {
                 const worker = workers[i];
                 const workerAddress = worker.signer.address;
