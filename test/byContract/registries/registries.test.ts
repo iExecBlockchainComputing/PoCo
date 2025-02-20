@@ -421,7 +421,7 @@ describe('Registries', () => {
                 .withArgs(
                     ZeroAddress,
                     datasetProvider.address,
-                    BigInt(predictedAddress).toString(),
+                    predictedAddress,
                 );
             expect(await datasetRegistry.balanceOf(datasetProvider.address)).to.equal(
                 initialDatasetBalance + 1n,
