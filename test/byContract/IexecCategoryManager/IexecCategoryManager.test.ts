@@ -45,9 +45,9 @@ describe('CategoryManager', async () => {
     });
 
     it('Should not view category with bad index', async () => {
-        const lastCategoryIndex = Number(await iexecPocoAsAnyone.countCategory()) - 1;
+        const lastCategoryIndex = (await iexecPocoAsAnyone.countCategory()) - 1n;
         await expect(
-            iexecPocoAsAnyone.viewCategory(lastCategoryIndex + 1),
+            iexecPocoAsAnyone.viewCategory(lastCategoryIndex + 1n),
         ).to.be.revertedWithoutReason();
     });
 
