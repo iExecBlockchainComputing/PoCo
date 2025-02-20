@@ -329,7 +329,7 @@ describe('Registries', () => {
 
             const tokenURI = await appRegistry.tokenURI(predictedAddress);
             const baseURI = await appRegistry.baseURI();
-            expect(tokenURI).to.equal(baseURI + BigInt(predictedAddress).toString());
+            expect(tokenURI).to.equal(baseURI + BigInt(predictedAddress));
         });
 
         it('Should check that a new app is well registered', async () => {
