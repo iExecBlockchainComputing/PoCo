@@ -438,7 +438,7 @@ describe('Registries', () => {
 
             const tokenURI = await datasetRegistry.tokenURI(predictedAddress);
             const baseURI = await datasetRegistry.baseURI();
-            expect(tokenURI).to.equal(baseURI + BigInt(predictedAddress).toString());
+            expect(tokenURI).to.equal(baseURI + BigInt(predictedAddress));
         });
 
         it('Should check that a new dataset is well registered', async () => {
