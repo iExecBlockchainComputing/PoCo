@@ -1,14 +1,12 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero, HashZero } from '@ethersproject/constants';
-import { Contract, ContractTransaction } from '@ethersproject/contracts';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import { Contract, ContractTransactionResponse, Wallet, ZeroAddress, ZeroHash } from 'ethers';
 import { ethers } from 'hardhat';
 import {
-    ERC1271Mock,
     ERC1271Mock__factory,
     IERC721__factory,
     IexecInterfaceNative,
@@ -16,7 +14,6 @@ import {
     IexecLibOrders_v5,
     IexecPocoAccessors,
     IexecPocoAccessors__factory,
-    OwnableMock,
     OwnableMock__factory,
 } from '../../../typechain';
 import { IexecPoco1 } from '../../../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol/IexecPoco1';
@@ -46,15 +43,15 @@ import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deploy
  * TODO add Standard tests.
  */
 
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const volume = 1;
-const botVolume = 321;
+const volume = 1n;
+const botVolume = 321n;
 const someMessage = 'some-message';
-const someWallet = ethers.Wallet.createRandom();
+const someWallet = Wallet.createRandom();
 
 /**
  * Note: TEE is the default in tests.
@@ -84,11 +81,11 @@ describe('IexecPoco1', () => {
     let ordersPrices: OrdersPrices;
     let orders: IexecOrders;
     let [randomAddress, randomSignature]: string[] = [];
-    let randomContract: OwnableMock;
-    let erc1271MockContract: ERC1271Mock;
+    let randomContractAddress: string;
+    let erc1271MockContractAddress: string;
     let orderManagement: {
         [key: string]: {
-            iexecPocoSignManageOrder: () => Promise<ContractTransaction>;
+            iexecPocoSignManageOrder: () => Promise<ContractTransactionResponse>;
             providerAddress: string;
             order:
                 | IexecLibOrders_v5.AppOrderStruct
@@ -142,14 +139,16 @@ describe('IexecPoco1', () => {
         const randomWallet = ethers.Wallet.createRandom();
         randomAddress = randomWallet.address;
         randomSignature = await randomWallet.signMessage('random');
-        randomContract = await new OwnableMock__factory()
+        randomContractAddress = await new OwnableMock__factory()
             .connect(anyone)
             .deploy()
-            .then((contract) => contract.deployed());
-        erc1271MockContract = await new ERC1271Mock__factory()
+            .then((contract) => contract.waitForDeployment())
+            .then((deployedContract) => deployedContract.getAddress());
+        erc1271MockContractAddress = await new ERC1271Mock__factory()
             .connect(anyone)
             .deploy()
-            .then((contract) => contract.deployed());
+            .then((contract) => contract.waitForDeployment())
+            .then((deployedContract) => deployedContract.getAddress());
     }
 
     describe('Verify signature', () => {
@@ -157,9 +156,9 @@ describe('IexecPoco1', () => {
             it(`Should ${verifySignatureFunction} of smart contract`, async () => {
                 expect(
                     await iexecPocoContract[verifySignatureFunction](
-                        erc1271MockContract.address,
-                        HashZero, // any is fine here
-                        ethers.utils.id('valid-signature'),
+                        erc1271MockContractAddress,
+                        ZeroHash, // any is fine here
+                        ethers.id('valid-signature'),
                     ),
                 ).to.be.true;
             });
@@ -167,9 +166,9 @@ describe('IexecPoco1', () => {
             it(`Should fail to ${verifySignatureFunction} of smart contract when validation returns false`, async () => {
                 expect(
                     await iexecPocoContract[verifySignatureFunction](
-                        erc1271MockContract.address,
-                        HashZero, // any is fine here
-                        ethers.utils.id('invalid-signature'),
+                        erc1271MockContractAddress,
+                        ZeroHash, // any is fine here
+                        ethers.id('invalid-signature'),
                     ),
                 ).to.be.false;
             });
@@ -177,9 +176,9 @@ describe('IexecPoco1', () => {
             it(`Should fail to ${verifySignatureFunction} of smart contract when validation reverts`, async () => {
                 expect(
                     await iexecPocoContract[verifySignatureFunction](
-                        erc1271MockContract.address,
-                        HashZero, // any is fine here
-                        ethers.utils.id('reverting-signature'),
+                        erc1271MockContractAddress,
+                        ZeroHash, // any is fine here
+                        ethers.id('reverting-signature'),
                     ),
                 ).to.be.false;
             });
@@ -188,7 +187,7 @@ describe('IexecPoco1', () => {
                 expect(
                     await iexecPocoContract[verifySignatureFunction](
                         someWallet.address,
-                        ethers.utils.hashMessage(someMessage),
+                        ethers.hashMessage(someMessage),
                         someWallet.signMessage(someMessage),
                     ),
                 ).to.be.true;
@@ -198,11 +197,11 @@ describe('IexecPoco1', () => {
                 const compactEoaSignature = compactSignature(
                     await someWallet.signMessage(someMessage),
                 );
-                expect(ethers.utils.arrayify(compactEoaSignature).length).equal(64);
+                expect(ethers.getBytes(compactEoaSignature).length).equal(64);
                 expect(
                     await iexecPocoContract[verifySignatureFunction](
                         someWallet.address,
-                        ethers.utils.hashMessage(someMessage),
+                        ethers.hashMessage(someMessage),
                         compactEoaSignature,
                     ),
                 ).to.be.true;
@@ -212,7 +211,7 @@ describe('IexecPoco1', () => {
                 await expect(
                     iexecPocoContract[verifySignatureFunction](
                         someWallet.address,
-                        ethers.utils.hashMessage(someMessage),
+                        ethers.hashMessage(someMessage),
                         '0x01', // bad signature format
                     ),
                 ).to.be.revertedWith('invalid-signature-format');
@@ -222,7 +221,7 @@ describe('IexecPoco1', () => {
                 expect(
                     await iexecPocoContract[verifySignatureFunction](
                         someWallet.address, // some EOA
-                        ethers.utils.hashMessage(someMessage),
+                        ethers.hashMessage(someMessage),
                         ethers.Wallet.createRandom() // signature from another EOA
                             .signMessage(someMessage),
                     ),
@@ -331,9 +330,7 @@ describe('IexecPoco1', () => {
 
                     it(`Should fail to ${verifyPresignatureFunction} for an unknown messageHash for ${asset}`, async () => {
                         const { providerAddress } = orderManagement[asset];
-                        const unknownMessageHash = ethers.utils.keccak256(
-                            ethers.utils.toUtf8Bytes('unknown'),
-                        );
+                        const unknownMessageHash = ethers.keccak256(ethers.toUtf8Bytes('unknown'));
 
                         const args = [
                             providerAddress,
@@ -386,8 +383,8 @@ describe('IexecPoco1', () => {
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Save frozen balances before match.
-            const requesterFrozenBefore = (await iexecPoco.frozenOf(requester.address)).toNumber();
-            const schedulerFrozenBefore = (await iexecPoco.frozenOf(scheduler.address)).toNumber();
+            const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
+            const schedulerFrozenBefore = await iexecPoco.frozenOf(scheduler.address);
             // Sign and match orders.
             const startTime = await setNextBlockTimestamp();
             await signOrders(iexecWrapper.getDomain(), fullConfigOrders, ordersActors);
@@ -398,7 +395,7 @@ describe('IexecPoco1', () => {
                 await iexecPocoAccessors.computeDealVolume(...fullConfigOrders.toArray()),
             ).to.equal(botVolume);
 
-            expect(await iexecPoco.callStatic.matchOrders(...fullConfigOrders.toArray())).to.equal(
+            expect(await iexecPoco.matchOrders.staticCall(...fullConfigOrders.toArray())).to.equal(
                 dealId,
             );
             const tx = iexecPocoAsRequester.matchOrders(...fullConfigOrders.toArray());
@@ -522,18 +519,18 @@ describe('IexecPoco1', () => {
             );
             // Check deal
             const deal = await iexecPoco.viewDeal(dealId);
-            expect(deal.beneficiary).to.equal(AddressZero);
+            expect(deal.beneficiary).to.equal(ZeroAddress);
             expect(deal.botSize).to.equal(1);
-            expect(deal.callback).to.equal(AddressZero);
+            expect(deal.callback).to.equal(ZeroAddress);
             expect(deal.trust).to.equal(1);
         });
 
         it('Should match orders without: dataset', async () => {
-            orders.dataset.dataset = AddressZero;
-            orders.requester.dataset = AddressZero;
+            orders.dataset.dataset = ZeroAddress;
+            orders.requester.dataset = ZeroAddress;
             // Set dataset volume lower than other assets to make sure
             // it does not impact final volume computation.
-            orders.dataset.volume = botVolume - 1;
+            orders.dataset.volume = botVolume - 1n;
             orders.app.volume = botVolume;
             orders.workerpool.volume = botVolume;
             orders.requester.volume = botVolume;
@@ -547,7 +544,7 @@ describe('IexecPoco1', () => {
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Save frozen balances before match.
-            const requesterFrozenBefore = (await iexecPoco.frozenOf(requester.address)).toNumber();
+            const requesterFrozenBefore = await iexecPoco.frozenOf(requester.address);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
@@ -566,8 +563,8 @@ describe('IexecPoco1', () => {
             await expect(tx).to.emit(iexecPoco, 'OrdersMatched');
             // Check deal
             const deal = await iexecPoco.viewDeal(dealId);
-            expect(deal.dataset.pointer).to.equal(AddressZero);
-            expect(deal.dataset.owner).to.equal(AddressZero);
+            expect(deal.dataset.pointer).to.equal(ZeroAddress);
+            expect(deal.dataset.owner).to.equal(ZeroAddress);
             expect(deal.dataset.price).to.equal(0);
             // BoT size should not be impacted even if the dataset order is the order with the lowest volume
             expect(deal.botSize).to.equal(botVolume);
@@ -625,7 +622,7 @@ describe('IexecPoco1', () => {
         });
 
         it(`Should match orders with any workerpool when request order has no workerpool restriction`, async () => {
-            orders.requester.workerpool = AddressZero; // No restriction.
+            orders.requester.workerpool = ZeroAddress; // No restriction.
             await depositForRequesterAndSchedulerWithDefaultPrices(volume);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -644,44 +641,44 @@ describe('IexecPoco1', () => {
         //   - multiple matches of the same order
 
         it('Should fail when categories are different', async () => {
-            orders.requester.category = Number(orders.workerpool.category) + 1; // Valid but different category.
+            orders.requester.category = BigInt(orders.workerpool.category) + 1n; // Valid but different category.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x00',
             );
         });
 
         it('Should fail when category is unknown', async () => {
-            const lastCategoryIndex = (await iexecPoco.countCategory()).toNumber() - 1;
-            orders.requester.category = lastCategoryIndex + 1;
-            orders.workerpool.category = lastCategoryIndex + 1;
+            const lastCategoryIndex = (await iexecPoco.countCategory()) - 1n;
+            orders.requester.category = lastCategoryIndex + 1n;
+            orders.workerpool.category = lastCategoryIndex + 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x01',
             );
         });
 
         it('Should fail when requested trust is above workerpool trust', async () => {
-            orders.requester.trust = Number(orders.workerpool.trust) + 1;
+            orders.requester.trust = BigInt(orders.workerpool.trust) + 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x02',
             );
         });
 
         it('Should fail when app max price is less than app price', async () => {
-            orders.requester.appmaxprice = Number(orders.app.appprice) - 1;
+            orders.requester.appmaxprice = BigInt(orders.app.appprice) - 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x03',
             );
         });
 
         it('Should fail when dataset max price is less than dataset price', async () => {
-            orders.requester.datasetmaxprice = Number(orders.dataset.datasetprice) - 1;
+            orders.requester.datasetmaxprice = BigInt(orders.dataset.datasetprice) - 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x04',
             );
         });
 
         it('Should fail when workerpool max price is less than workerpool price', async () => {
-            orders.requester.workerpoolmaxprice = Number(orders.workerpool.workerpoolprice) - 1;
+            orders.requester.workerpoolmaxprice = BigInt(orders.workerpool.workerpoolprice) - 1n;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x05',
             );
@@ -738,7 +735,7 @@ describe('IexecPoco1', () => {
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x12',
             );
-            orders.requester.workerpool = randomContract.address;
+            orders.requester.workerpool = randomContractAddress;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x12',
             );
@@ -783,7 +780,7 @@ describe('IexecPoco1', () => {
                     );
                     // SC
                     // @ts-ignore
-                    orders[orderName][assetName + 'restrict'] = randomContract.address; // e.g. orders.app.datasetrestrict = 0xSC
+                    orders[orderName][assetName + 'restrict'] = randomContractAddress; // e.g. orders.app.datasetrestrict = 0xSC
                     await expect(iexecPoco.matchOrders(...orders.toArray())).to.be.revertedWith(
                         message,
                     );
@@ -792,8 +789,8 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when app is not registered', async () => {
-            orders.app.app = randomContract.address; // Must be an Ownable contract.
-            orders.requester.app = randomContract.address;
+            orders.app.app = randomContractAddress; // Must be an Ownable contract.
+            orders.requester.app = randomContractAddress;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x20',
             );
@@ -814,16 +811,16 @@ describe('IexecPoco1', () => {
             await IERC721__factory.connect(await iexecPoco.appregistry(), appProvider)
                 .transferFrom(
                     appProvider.address,
-                    erc1271MockContract.address,
+                    erc1271MockContractAddress,
                     appAddress, // tokenId
                 )
                 .then((tx) => tx.wait());
             // Make sure the test does not fail because of another reason.
-            const signerAddress = ethers.utils.verifyMessage(
+            const signerAddress = ethers.verifyMessage(
                 hashOrder(iexecWrapper.getDomain(), orders.app),
                 orders.app.sign as any,
             );
-            expect(signerAddress).to.not.equal(erc1271MockContract.address); // owner of app.
+            expect(signerAddress).to.not.equal(erc1271MockContractAddress); // owner of app.
             // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x21',
@@ -831,8 +828,8 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when dataset is not registered', async () => {
-            orders.dataset.dataset = randomContract.address; // Must be an Ownable contract.
-            orders.requester.dataset = randomContract.address;
+            orders.dataset.dataset = randomContractAddress; // Must be an Ownable contract.
+            orders.requester.dataset = randomContractAddress;
             await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x30',
@@ -854,16 +851,16 @@ describe('IexecPoco1', () => {
             await IERC721__factory.connect(await iexecPoco.datasetregistry(), datasetProvider)
                 .transferFrom(
                     datasetProvider.address,
-                    erc1271MockContract.address,
+                    erc1271MockContractAddress,
                     datasetAddress, // tokenId
                 )
                 .then((tx) => tx.wait());
             // Make sure the test does not fail because of another reason.
-            const signerAddress = ethers.utils.verifyMessage(
+            const signerAddress = ethers.verifyMessage(
                 hashOrder(iexecWrapper.getDomain(), orders.dataset),
                 orders.dataset.sign as any,
             );
-            expect(signerAddress).to.not.equal(erc1271MockContract.address); // owner of dataset.
+            expect(signerAddress).to.not.equal(erc1271MockContractAddress); // owner of dataset.
             // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x31',
@@ -871,8 +868,8 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when workerpool is not registered', async () => {
-            orders.workerpool.workerpool = randomContract.address; // Must be an Ownable contract.
-            orders.requester.workerpool = randomContract.address;
+            orders.workerpool.workerpool = randomContractAddress; // Must be an Ownable contract.
+            orders.requester.workerpool = randomContractAddress;
             await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
             await signOrder(iexecWrapper.getDomain(), orders.dataset, datasetProvider);
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
@@ -895,16 +892,16 @@ describe('IexecPoco1', () => {
             await IERC721__factory.connect(await iexecPoco.workerpoolregistry(), scheduler)
                 .transferFrom(
                     scheduler.address,
-                    erc1271MockContract.address,
+                    erc1271MockContractAddress,
                     workerpoolAddress, // tokenId
                 )
                 .then((tx) => tx.wait());
             // Make sure the test does not fail because of another reason.
-            const signerAddress = ethers.utils.verifyMessage(
+            const signerAddress = ethers.verifyMessage(
                 hashOrder(iexecWrapper.getDomain(), orders.workerpool),
                 orders.workerpool.sign as any,
             );
-            expect(signerAddress).to.not.equal(erc1271MockContract.address); // owner of workerpool.
+            expect(signerAddress).to.not.equal(erc1271MockContractAddress); // owner of workerpool.
             // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x41',
@@ -923,13 +920,13 @@ describe('IexecPoco1', () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.requester.sign = randomSignature; // Override signature.
             // Set the smart contract as the requester.
-            orders.requester.requester = erc1271MockContract.address;
+            orders.requester.requester = erc1271MockContractAddress;
             // Make sure the test does not fail because of another reason.
-            const signerAddress = ethers.utils.verifyMessage(
+            const signerAddress = ethers.verifyMessage(
                 hashOrder(iexecWrapper.getDomain(), orders.requester),
                 orders.requester.sign as any,
             );
-            expect(signerAddress).to.not.equal(erc1271MockContract.address); // Requester.
+            expect(signerAddress).to.not.equal(erc1271MockContractAddress); // Requester.
             // Match orders.
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x50',
@@ -942,8 +939,8 @@ describe('IexecPoco1', () => {
             // Needs more debugging.
             //
             // const appOrderHash = iexecWrapper.hashOrder(orders.app);
-            // const appOrderConsumedSlotIndex = ethers.utils.keccak256(
-            //     ethers.utils.concat([
+            // const appOrderConsumedSlotIndex = ethers.keccak256(
+            //     ethers.concat([
             //         appOrderHash, // key in the mapping.
             //         '0x12', // m_consumed mapping index.
             //     ])
@@ -952,7 +949,7 @@ describe('IexecPoco1', () => {
             // await setStorageAt(
             //     iexecPoco.address,
             //     appOrderConsumedSlotIndex,
-            //     ethers.utils.hexlify(Number(orders.app.volume)),
+            //     ethers.toBeHex(orders.app.volume),
             // );
             await depositForRequesterAndSchedulerWithDefaultPrices(botVolume);
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -968,7 +965,7 @@ describe('IexecPoco1', () => {
                 volume,
             );
             // Deposit less than deal price in the requester's account.
-            await iexecWrapper.depositInIexecAccount(requester, dealPrice - 1);
+            await iexecWrapper.depositInIexecAccount(requester, dealPrice - 1n);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             expect(await iexecPoco.balanceOf(requester.address)).to.be.lessThan(dealPrice);
             expect(await iexecPoco.balanceOf(scheduler.address)).to.equal(schedulerStake);
@@ -986,7 +983,7 @@ describe('IexecPoco1', () => {
             );
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             // Deposit less than stake value in the scheduler's account.
-            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake - 1);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake - 1n);
             expect(await iexecPoco.balanceOf(requester.address)).to.equal(dealPrice);
             expect(await iexecPoco.balanceOf(scheduler.address)).to.be.lessThan(schedulerStake);
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -1002,7 +999,7 @@ describe('IexecPoco1', () => {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             // override volumes and set different value for each order
             // to make sure the smallest volume is considered.
-            const expectedVolume = 2;
+            const expectedVolume = 2n;
             appOrder.volume = 2; // smallest unconsumed volume among all orders
             datasetOrder.volume = 3;
             workerpoolOrder.volume = 4;
@@ -1019,15 +1016,15 @@ describe('IexecPoco1', () => {
             await iexecWrapper.depositInIexecAccount(sponsor, dealPrice);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Save frozen balances before match.
-            const sponsorFrozenBefore = (await iexecPoco.frozenOf(sponsor.address)).toNumber();
+            const sponsorFrozenBefore = await iexecPoco.frozenOf(sponsor.address);
             // Sign and match orders.
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester);
             expect(
-                await iexecPocoAsSponsor.callStatic.sponsorMatchOrders(...orders.toArray()),
+                await iexecPocoAsSponsor.sponsorMatchOrders.staticCall(...orders.toArray()),
             ).to.equal(dealId);
             expect(
-                await iexecPocoAccessors.callStatic.computeDealVolume(...orders.toArray()),
+                await iexecPocoAccessors.computeDealVolume.staticCall(...orders.toArray()),
             ).to.equal(expectedVolume);
             const tx = iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray());
             // Check balances and frozen.
@@ -1068,7 +1065,7 @@ describe('IexecPoco1', () => {
                 volume,
             );
             // Deposit less than deal price in the sponsor's account.
-            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice - 1);
+            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice - 1n);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
@@ -1082,7 +1079,7 @@ describe('IexecPoco1', () => {
      * Helper function to deposit requester and scheduler stakes with
      * default prices for tests that do not rely on custom prices.
      */
-    async function depositForRequesterAndSchedulerWithDefaultPrices(volume: number) {
+    async function depositForRequesterAndSchedulerWithDefaultPrices(volume: bigint) {
         const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
         const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
             workerpoolPrice,

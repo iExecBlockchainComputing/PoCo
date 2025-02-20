@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { TypedDataDomain, TypedDataEncoder } from 'ethers';
+import { TypedDataDomain } from 'ethers';
 import { IexecLibOrders_v5 } from '../typechain';
 import * as constants from './constants';
 import { hashStruct, signStruct } from './odb-tools';
@@ -15,9 +15,9 @@ export interface OrdersAssets {
 }
 
 export interface OrdersPrices {
-    app?: number;
-    dataset?: number;
-    workerpool?: number;
+    app?: bigint;
+    dataset?: bigint;
+    workerpool?: bigint;
 }
 
 export interface MatchOrdersArgs {
@@ -26,7 +26,7 @@ export interface MatchOrdersArgs {
     beneficiary?: string;
     tag?: string;
     prices?: OrdersPrices;
-    volume?: number;
+    volume?: bigint;
     callback?: string;
     trust?: number;
     category?: number;
@@ -246,23 +246,6 @@ export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
         requestOrder.salt = matchOrdersArgs.salt;
     }
     return new IexecOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder);
-}
-
-/**
- * Build a domain separator from a given domain of create them for testing purposes
- * @returns a domain and a domain separator
- */
-export function buildDomain(domain?: TypedDataDomain | undefined) {
-    if (!domain) {
-        domain = {
-            name: 'domain-name',
-            version: 'domain-version',
-            chainId: 123,
-            verifyingContract: '0x0000000000000000000000000000000000000001',
-        }; // testing purposes
-    }
-    const domainSeparator = TypedDataEncoder.hashDomain(domain);
-    return { domain, domainSeparator };
 }
 
 /**

@@ -1,11 +1,10 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero, HashZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { ZeroAddress, ZeroHash, ethers } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { NULL } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -21,11 +20,11 @@ import {
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
-const volume = 1;
-const standardDealTag = HashZero;
+const volume = 1n;
+const standardDealTag = ZeroHash;
 const { resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
-const emptyEnclaveAddress = AddressZero;
+const emptyEnclaveAddress = ZeroAddress;
 const emptyEnclaveSignature = NULL.SIGNATURE;
 
 describe('IexecPoco2#reveal', () => {
@@ -46,7 +45,7 @@ describe('IexecPoco2#reveal', () => {
     let ordersPrices: OrdersPrices;
     let orders: IexecOrders;
     let [dealId, taskId]: string[] = [];
-    let taskIndex: number;
+    let taskIndex: bigint;
     let [resultHash, resultSeal]: string[] = [];
     let schedulerSignature: string;
 
@@ -62,9 +61,9 @@ describe('IexecPoco2#reveal', () => {
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
-        const appPrice = 1000;
-        const datasetPrice = 1_000_000;
-        const workerpoolPrice = 1_000_000_000;
+        const appPrice = 1000n;
+        const datasetPrice = 1_000_000n;
+        const workerpoolPrice = 1_000_000_000n;
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -87,9 +86,7 @@ describe('IexecPoco2#reveal', () => {
             ...orders.toArray(),
         ));
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
         ({ resultHash, resultSeal } = buildResultHashAndResultSeal(taskId, resultDigest, worker));
         schedulerSignature = await buildAndSignContributionAuthorizationMessage(
@@ -200,15 +197,13 @@ describe('IexecPoco2#reveal', () => {
                 volume,
                 trust: 3,
                 tag: standardDealTag,
-                salt: ethers.utils.hexZeroPad('0x' + Date.now().toString(), 32), // make
+                salt: ethers.zeroPadValue(ethers.toBeHex(Date.now()), 32), // make
             }).toArray(), // app and dataset orders unique since already matched in
             // beforeEach. A useless salt is also added to workerpool and request
             // orders to get an easy one-liner declaration.
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const workers = [
             { signer: worker1, resultDigest: resultDigest },
             { signer: worker2, resultDigest: badResultDigest },

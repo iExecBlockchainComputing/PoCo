@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
@@ -16,11 +16,10 @@ import { TaskStatusEnum, getIexecAccounts, getTaskId } from '../../../utils/poco
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
-const categoryTime = 300;
-const maxDealDuration = 10 * categoryTime;
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const categoryTime = 300n;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 
 describe('IexecPoco2#initialize', async () => {
     let proxyAddress: string;
@@ -71,7 +70,7 @@ describe('IexecPoco2#initialize', async () => {
             );
             expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
 
-            expect(await iexecPocoAsAnyone.callStatic.initialize(dealId, taskIndex)).to.equal(
+            expect(await iexecPocoAsAnyone.initialize.staticCall(dealId, taskIndex)).to.equal(
                 taskId,
             );
             const initialize = await iexecPocoAsAnyone.initialize(dealId, taskIndex);
@@ -84,8 +83,8 @@ describe('IexecPoco2#initialize', async () => {
             expect(task.dealid).equal(dealId);
             expect(task.idx).equal(taskIndex);
             expect(task.timeref).equal(categoryTime);
-            expect(task.contributionDeadline).equal(startTime + 7 * categoryTime);
-            expect(task.finalDeadline).equal(startTime + 10 * categoryTime);
+            expect(task.contributionDeadline).equal(startTime + 7n * categoryTime);
+            expect(task.finalDeadline).equal(startTime + 10n * categoryTime);
             // m_consensus does not have any getter
         });
 
@@ -94,7 +93,7 @@ describe('IexecPoco2#initialize', async () => {
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
-                volume: 10,
+                volume: 10n,
             }).toObject();
             const workerpoolOrder0 = {
                 ...createEmptyWorkerpoolOrder(),
@@ -163,12 +162,11 @@ describe('IexecPoco2#initialize', async () => {
 
     describe('Initialize array', function () {
         it('Should initialize array', async function () {
-            const volume = 3;
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
-                volume,
+                volume: 3n,
             });
             const { dealId } = await iexecWrapper.signAndMatchOrders(...orders.toArray());
             const dealIds = [dealId, dealId, dealId];
@@ -178,7 +176,7 @@ describe('IexecPoco2#initialize', async () => {
                 expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.UNSET);
             }
 
-            expect(await iexecPocoAsAnyone.callStatic.initializeArray(dealIds, taskIndexes)).to.be
+            expect(await iexecPocoAsAnyone.initializeArray.staticCall(dealIds, taskIndexes)).to.be
                 .true;
             const initializeArrayTx = await iexecPocoAsAnyone.initializeArray(dealIds, taskIndexes);
             await initializeArrayTx.wait();
@@ -192,19 +190,18 @@ describe('IexecPoco2#initialize', async () => {
         });
 
         it('Should not initialize array if incompatible length of inputs', async function () {
-            const dealId = ethers.utils.hashMessage('dealId');
+            const dealId = ethers.hashMessage('dealId');
             await expect(
                 iexecPoco.initializeArray([dealId, dealId], [0]),
             ).to.be.revertedWithoutReason();
         });
 
         it('Should not initialize array if one specific fails', async function () {
-            const volume = 2;
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 prices: ordersPrices,
-                volume,
+                volume: 2n,
             });
             const { dealId } = await iexecWrapper.signAndMatchOrders(...orders.toArray());
             const taskIndex0 = 0;

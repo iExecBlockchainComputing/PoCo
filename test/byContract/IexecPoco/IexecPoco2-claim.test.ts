@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { ZeroAddress, ethers } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
@@ -19,14 +19,14 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import * as constants from './../../../utils/constants';
 
-const categoryTime = 300;
-const maxDealDuration = 10 * categoryTime;
+const categoryTime = 300n;
+const maxDealDuration = 10n * categoryTime;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
-const enclaveAddress = ethers.constants.AddressZero;
+const enclaveAddress = ZeroAddress;
 
 describe('IexecPoco2#claim', async () => {
     let proxyAddress: string;
@@ -71,8 +71,8 @@ describe('IexecPoco2#claim', async () => {
      * task after deadline. The task comes from a deal payed by a sponsor.
      */
     it('Should claim task of deal payed by sponsor', async () => {
-        const expectedVolume = 3; // > 1 to explicit taskPrice vs dealPrice
-        const claimedTasks = 1;
+        const expectedVolume = 3n; // > 1 to explicit taskPrice vs dealPrice
+        const claimedTasks = 1n;
         const orders = buildOrders({
             assets: ordersAssets,
             requester: requester.address,
@@ -89,9 +89,7 @@ describe('IexecPoco2#claim', async () => {
         const schedulerTaskStake = schedulerDealStake / expectedVolume;
         const kittyAddress = await iexecPoco.kitty_address();
         await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         const workers = [worker1, worker2];
         for (const worker of workers) {
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -108,18 +106,11 @@ describe('IexecPoco2#claim', async () => {
             await iexecWrapper.depositInIexecAccount(worker, workerTaskStake);
             await iexecPoco
                 .connect(worker)
-                .contribute(
-                    taskId,
-                    resultHash,
-                    resultSeal,
-                    ethers.constants.AddressZero,
-                    '0x',
-                    schedulerSignature,
-                )
+                .contribute(taskId, resultHash, resultSeal, ZeroAddress, '0x', schedulerSignature)
                 .then((tx) => tx.wait());
         }
-        expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
-            dealPrice + schedulerDealStake + workerTaskStake * workers.length,
+        expect(await iexecPoco.balanceOf(proxyAddress)).to.be.equal(
+            dealPrice + schedulerDealStake + workerTaskStake * BigInt(workers.length),
         );
         expect(await iexecPoco.balanceOf(requester.address)).to.be.equal(0);
         expect(await iexecPoco.frozenOf(requester.address)).to.be.equal(0);
@@ -140,7 +131,7 @@ describe('IexecPoco2#claim', async () => {
         await claimTx.wait();
         await expect(claimTx)
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, sponsor.address, taskPrice)
+            .withArgs(proxyAddress, sponsor.address, taskPrice)
             .to.emit(iexecPoco, 'Unlock')
             .withArgs(sponsor.address, taskPrice)
             .to.emit(iexecPoco, 'Seize')
@@ -152,7 +143,7 @@ describe('IexecPoco2#claim', async () => {
         for (const worker of workers) {
             await expect(claimTx)
                 .to.emit(iexecPoco, 'Transfer')
-                .withArgs(iexecPoco.address, worker.address, workerTaskStake)
+                .withArgs(proxyAddress, worker.address, workerTaskStake)
                 .to.emit(iexecPoco, 'Unlock')
                 .withArgs(worker.address, workerTaskStake);
         }
@@ -160,7 +151,7 @@ describe('IexecPoco2#claim', async () => {
 
         expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.FAILED);
         const remainingTasksToClaim = expectedVolume - claimedTasks;
-        expect(await iexecPoco.balanceOf(iexecPoco.address)).to.be.equal(
+        expect(await iexecPoco.balanceOf(proxyAddress)).to.be.equal(
             taskPrice * remainingTasksToClaim + // sponsor has 2nd & 3rd task locked
                 schedulerDealStake, // kitty value since 1st task seized
         );
@@ -204,7 +195,7 @@ describe('IexecPoco2#claim', async () => {
 
         await expect(iexecPocoAsAnyone.claim(taskId))
             .to.emit(iexecPoco, 'Transfer')
-            .withArgs(iexecPoco.address, requester.address, taskPrice)
+            .withArgs(proxyAddress, requester.address, taskPrice)
             .to.emit(iexecPoco, 'Unlock')
             .withArgs(requester.address, taskPrice)
             .to.emit(iexecPoco, 'TaskClaimed');
@@ -259,9 +250,7 @@ describe('IexecPoco2#claim', async () => {
             enclaveAddress,
             scheduler,
         );
-        const workerTaskStake = await iexecPoco
-            .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+        const workerTaskStake = await iexecPoco.viewDeal(dealId).then((deal) => deal.workerStake);
         await iexecWrapper.depositInIexecAccount(worker1, workerTaskStake);
         await iexecPoco
             .connect(worker1)
@@ -297,7 +286,7 @@ describe('IexecPoco2#claim', async () => {
 
     describe('Claim array', () => {
         it('Should claim array', async () => {
-            const volume = 3;
+            const volume = 3n;
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -316,7 +305,7 @@ describe('IexecPoco2#claim', async () => {
             // Mine empty block so timestamp is accurate when static call is made
             await mine();
 
-            expect(await iexecPocoAsAnyone.callStatic.claimArray(taskIds)).to.be.true;
+            expect(await iexecPocoAsAnyone.claimArray.staticCall(taskIds)).to.be.true;
             const claimArrayTx = await iexecPocoAsAnyone.claimArray(taskIds);
             await claimArrayTx.wait();
             for (let taskId of taskIds) {
@@ -325,7 +314,7 @@ describe('IexecPoco2#claim', async () => {
         });
 
         it('Should not claim array when one is not claimable', async () => {
-            const volume = 2;
+            const volume = 2n;
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -344,15 +333,15 @@ describe('IexecPoco2#claim', async () => {
             await time.setNextBlockTimestamp(startTime + maxDealDuration);
 
             // Check first task is claimable and second task is not claimable
-            await expect(iexecPoco.estimateGas.claim(taskId1)).to.not.be.revertedWithoutReason();
-            await expect(iexecPoco.estimateGas.claim(taskId2)).to.be.revertedWithoutReason();
+            await expect(iexecPoco.claim.estimateGas(taskId1)).to.not.be.revertedWithoutReason();
+            await expect(iexecPoco.claim.estimateGas(taskId2)).to.be.revertedWithoutReason();
             // Claim array will fail
             await expect(iexecPoco.claimArray([taskId1, taskId2])).to.be.revertedWithoutReason();
         });
 
         describe('Initialize and claim array', () => {
             it('Should initialize and claim array', async () => {
-                const volume = 3;
+                const volume = 3n;
                 const orders = buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,
@@ -369,7 +358,7 @@ describe('IexecPoco2#claim', async () => {
                 expect(
                     await iexecPoco
                         .connect(anyone)
-                        .callStatic.initializeAndClaimArray(dealIds, taskIndexes),
+                        .initializeAndClaimArray.staticCall(dealIds, taskIndexes),
                 ).to.be.true;
                 const initializeAndClaimArrayTx = await iexecPoco
                     .connect(anyone)
@@ -386,14 +375,14 @@ describe('IexecPoco2#claim', async () => {
             });
 
             it('Should not initialize and claim array if incompatible length of inputs', async () => {
-                const dealId = ethers.utils.hashMessage('dealId');
+                const dealId = ethers.hashMessage('dealId');
                 await expect(
                     iexecPoco.initializeAndClaimArray([dealId, dealId], [0]),
                 ).to.be.revertedWithoutReason();
             });
 
             it('Should not initialize and claim array if one specific fails', async () => {
-                const volume = 2;
+                const volume = 2n;
                 const orders = buildOrders({
                     assets: ordersAssets,
                     requester: requester.address,

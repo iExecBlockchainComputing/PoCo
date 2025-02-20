@@ -39,7 +39,7 @@ describe('ERC20', async () => {
         ({ requester: holder, beneficiary: recipient, anyone } = accounts);
         spender = recipient;
         zeroAddressSigner = await ethers.getImpersonatedSigner(ZeroAddress);
-        await setZeroAddressBalance(10n);
+        await setZeroAddressBalance();
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsHolder = iexecPoco.connect(holder);
