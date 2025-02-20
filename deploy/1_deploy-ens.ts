@@ -1,7 +1,7 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import hre, { deployments, ethers } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import {
     ENS,
     ENSIntegration__factory,
@@ -24,7 +24,7 @@ export default async function deployEns() {
         console.log('Skipping ENS for public networks');
         return;
     }
-    const [owner] = await hre.ethers.getSigners();
+    const [owner] = await ethers.getSigners();
     const erc1538ProxyAddress = (await deployments.get('ERC1538Proxy')).address;
     const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
     const appRegistryAddress = await iexecAccessorsInstance.appregistry();

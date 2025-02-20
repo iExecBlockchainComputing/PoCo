@@ -1,6 +1,8 @@
-import { BigNumber } from '@ethersproject/bignumber';
-import { BytesLike } from '@ethersproject/bytes';
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 import { time } from '@nomicfoundation/hardhat-network-helpers';
+import { BytesLike } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import {
     IexecOrderManagementDelegate__factory,
@@ -75,9 +77,9 @@ export async function addModulesToProxy() {
         Array(updates.length).fill(erc1538ProxyAddress),
         Array(updates.length).fill(0),
         updates,
-        ethers.constants.HashZero,
+        ethers.ZeroHash,
         operationSalt,
-    ] as [string[], BigNumber[], BytesLike[], BytesLike, BytesLike];
+    ] as [string[], bigint[], BytesLike[], BytesLike, BytesLike];
     console.log('Scheduling proxy update..');
     await printBlockTime();
     const timelockInstance = TimelockController__factory.connect(timelockAddress, ethers.provider);

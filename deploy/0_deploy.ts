@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import hre, { ethers } from 'hardhat';
+import { ethers } from 'hardhat';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
@@ -53,7 +53,7 @@ import { linkContractToProxy } from '../utils/proxy-tools';
 export default async function deploy() {
     console.log('Deploying PoCo..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const [owner] = await hre.ethers.getSigners();
+    const [owner] = await ethers.getSigners();
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
     const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
     const factoryDeployer = new FactoryDeployerHelper(owner, salt);

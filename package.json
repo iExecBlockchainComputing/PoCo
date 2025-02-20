@@ -69,11 +69,13 @@
     "prettier-plugin-solidity": "^1.4.1",
     "puml-for-markdown": "^1.2.1",
     "sol2uml": "^2.5.19",
+    "solidity-coverage": "^0.8.14",
     "solidity-docgen": "^0.6.0-beta.36",
     "zx": "^8.1.6"
   },
   "devDependenciesComment": {
     "mocha": "Mocha Test Explorer in VSCode",
-    "sol2uml": "After 2.5.19, see https://github.com/naddison36/sol2uml/issues/183"
+    "sol2uml": "After 2.5.19, see https://github.com/naddison36/sol2uml/issues/183",
+    "solidity-coverage": "Fixing Hardhat's solidity-coverage: TypeError: provider.send is not a function"
   }
 }

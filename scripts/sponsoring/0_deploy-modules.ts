@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 import { deployments, ethers } from 'hardhat';
 import {
     GenericFactory__factory,
@@ -49,7 +52,7 @@ export async function deployModules() {
     ];
     const genericFactoryInstance = GenericFactory__factory.connect(genericFactoryAddress, deployer);
     for await (const module of modules) {
-        let moduleBytecode = module.contract.getDeployTransaction().data;
+        let moduleBytecode = (await module.contract.getDeployTransaction()).data;
         if (!moduleBytecode) {
             throw new Error('Failed to prepare bytecode');
         }
