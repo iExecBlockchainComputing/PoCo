@@ -15,9 +15,9 @@ export interface OrdersAssets {
 }
 
 export interface OrdersPrices {
-    app?: number;
-    dataset?: number;
-    workerpool?: number;
+    app?: bigint;
+    dataset?: bigint;
+    workerpool?: bigint;
 }
 
 export interface MatchOrdersArgs {
@@ -26,7 +26,7 @@ export interface MatchOrdersArgs {
     beneficiary?: string;
     tag?: string;
     prices?: OrdersPrices;
-    volume?: number;
+    volume?: bigint;
     callback?: string;
     trust?: number;
     category?: number;

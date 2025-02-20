@@ -34,9 +34,9 @@ import { hashDomain } from '../../utils/utils';
  * Test state view functions.
  */
 
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
@@ -91,7 +91,7 @@ describe('IexecAccessors', async () => {
     });
 
     it('balanceOf', async function () {
-        const amount = 3;
+        const amount = 3n;
         await iexecWrapper.depositInIexecAccount(anyone, amount);
         expect(await iexecPoco.balanceOf(anyone.address)).to.equal(amount);
     });
@@ -103,7 +103,7 @@ describe('IexecAccessors', async () => {
     });
 
     it('allowance', async function () {
-        const amount = 10;
+        const amount = 10n;
         const spender = ethers.Wallet.createRandom().address;
         await iexecWrapper.depositInIexecAccount(anyone, amount);
         await iexecPoco.connect(anyone).approve(spender, amount);
@@ -114,7 +114,7 @@ describe('IexecAccessors', async () => {
         await createDeal(); // Lock some requester funds.
         const dealPrice = appPrice + datasetPrice + workerpoolPrice;
         // Stake some funds.
-        const stakedBalance = 3;
+        const stakedBalance = 3n;
         await iexecWrapper.depositInIexecAccount(requester, stakedBalance);
         // Check staked and locked amounts.
         const account = await iexecPoco.viewAccount(requester.address);
@@ -176,8 +176,8 @@ describe('IexecAccessors', async () => {
         const { dealId, taskId, taskIndex, startTime, timeRef } = await createDeal();
         await iexecWrapper.initializeTask(dealId, taskIndex);
 
-        const contributionDeadlineRatio = Number(await iexecPoco.contribution_deadline_ratio());
-        const finalDeadlineRatio = Number(await iexecPoco.final_deadline_ratio());
+        const contributionDeadlineRatio = await iexecPoco.contribution_deadline_ratio();
+        const finalDeadlineRatio = await iexecPoco.final_deadline_ratio();
 
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.ACTIVE);
@@ -314,13 +314,13 @@ describe('IexecAccessors', async () => {
         });
 
         it('Should not get result when task is not completed', async function () {
-            const { dealId } = await createDeal(3);
+            const { dealId } = await createDeal(3n);
 
-            const unsetTaskId = getTaskId(dealId, 0);
-            const activeTaskId = await iexecWrapper.initializeTask(dealId, 1);
+            const unsetTaskId = getTaskId(dealId, 0n);
+            const activeTaskId = await iexecWrapper.initializeTask(dealId, 1n);
             const { taskId: revealingTaskId } = await iexecWrapper
-                .initializeTask(dealId, 2)
-                .then(() => iexecWrapper.contributeToTask(dealId, 2, resultDigest, worker1));
+                .initializeTask(dealId, 2n)
+                .then(() => iexecWrapper.contributeToTask(dealId, 2n, resultDigest, worker1));
 
             await verifyTaskStatusAndResult(unsetTaskId, TaskStatusEnum.UNSET);
             await verifyTaskStatusAndResult(activeTaskId, TaskStatusEnum.ACTIVE);
@@ -332,7 +332,7 @@ describe('IexecAccessors', async () => {
 /**
  * Helper function to create a deal with a specific volume.
  */
-async function createDeal(volume: number = 1) {
+async function createDeal(volume: bigint = 1n) {
     const orders = buildOrders({
         assets: ordersAssets,
         prices: ordersPrices,
@@ -343,7 +343,7 @@ async function createDeal(volume: number = 1) {
         ...orders.toArray(),
     );
     const dealCategory = (await iexecPoco.viewDeal(dealId)).category;
-    const timeRef = Number((await iexecPoco.viewCategory(dealCategory)).workClockTimeRef);
+    const timeRef = (await iexecPoco.viewCategory(dealCategory)).workClockTimeRef;
     return { dealId, taskId, taskIndex, startTime, timeRef, orders };
 }
 
