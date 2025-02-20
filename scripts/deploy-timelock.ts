@@ -5,7 +5,7 @@ import { duration } from '@nomicfoundation/hardhat-network-helpers/dist/src/help
 import hre, { ethers } from 'hardhat';
 import { TimelockController__factory } from '../typechain';
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
-import { getChainConfig, getDefaultChainConfig } from '../config/config-utils';
+import { getChainConfig, getDefaultChainConfig } from '../utils/config';
 
 /**
  * Deploy TimelockController contract using the generic factory.

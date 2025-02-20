@@ -15,7 +15,7 @@ import {
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { isNativeChain } from '../../../config/config-utils';
+import { isNativeChain } from '../../../utils/config';
 
 describe('ENSIntegration', () => {
     let proxyAddress: string;

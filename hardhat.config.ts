@@ -9,7 +9,7 @@ import {
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
 import 'solidity-docgen';
-import { isNativeChain } from './config/config-utils';
+import { isNativeChain } from './utils/config';
 
 const isNativeChainType = isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';

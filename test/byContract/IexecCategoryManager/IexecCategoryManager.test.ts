@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { Category, getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { config } from '../../../config/config-utils';
+import { config } from '../../../utils/config';
 
 const name = 'name';
 const description = 'description';

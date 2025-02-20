@@ -1,6 +1,6 @@
 import { ZeroAddress } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { getChainConfig } from '../../config/config-utils';
+import { getChainConfig } from '../../utils/config';
 import {
     GenericFactory__factory,
     IexecOrderManagementDelegate__factory,

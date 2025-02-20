@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import hre, { ethers } from 'hardhat';
-import { getChainConfig } from '../../config/config-utils';
+import { getChainConfig } from '../../utils/config';
 import {
     IexecOrderManagementDelegate__factory,
     IexecPoco1Delegate__factory,

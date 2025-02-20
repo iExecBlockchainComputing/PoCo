@@ -7,7 +7,7 @@ import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-help
 import { expect } from 'chai';
 import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
-import { isNativeChain } from '../../../config/config-utils';
+import { isNativeChain } from '../../../utils/config';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';

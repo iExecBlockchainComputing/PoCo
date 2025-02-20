@@ -49,7 +49,7 @@ import {
     getTaskId,
     setNextBlockTimestamp,
 } from '../../utils/poco-tools';
-import { isNativeChain } from '../../config/config-utils';
+import { isNativeChain } from '../../utils/config';
 
 export class IexecWrapper {
     proxyAddress: string;

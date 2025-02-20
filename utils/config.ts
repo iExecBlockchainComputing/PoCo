@@ -1,5 +1,5 @@
-import { Category } from '../utils/poco-tools';
-import json from './config.json';
+import { Category } from './poco-tools';
+import json from '../config/config.json';
 
 export const config = json as Config;
 

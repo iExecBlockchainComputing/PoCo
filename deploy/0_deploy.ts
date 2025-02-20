@@ -39,12 +39,7 @@ import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
 import { Category } from '../utils/poco-tools';
 import { linkContractToProxy } from '../utils/proxy-tools';
-import {
-    config,
-    getChainConfig,
-    getDefaultChainConfig,
-    isNativeChain,
-} from '../config/config-utils';
+import { config, getChainConfig, getDefaultChainConfig, isNativeChain } from '../utils/config';
 
 /**
  * @dev Deploying contracts with `npx hardhat deploy` task brought by

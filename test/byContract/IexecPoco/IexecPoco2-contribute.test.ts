@@ -21,7 +21,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { config } from '../../../config/config-utils';
+import { config } from '../../../utils/config';
 
 const timeRef = BigInt(config.categories[0].workClockTimeRef);
 const volume = 3n;

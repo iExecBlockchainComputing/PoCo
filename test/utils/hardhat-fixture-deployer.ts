@@ -5,7 +5,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
 import { ZeroAddress } from 'ethers';
-import { getChainConfig } from '../../config/config-utils';
+import { getChainConfig } from '../../utils/config';
 import deploy from '../../deploy/0_deploy';
 import deployEns from '../../deploy/1_deploy-ens';
 import { IexecInterfaceNative__factory } from '../../typechain';

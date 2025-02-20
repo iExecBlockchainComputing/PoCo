@@ -3,7 +3,7 @@ import { BytesLike } from '@ethersproject/bytes';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { ZeroAddress } from 'ethers';
 import hre, { ethers } from 'hardhat';
-import { getChainConfig } from '../../config/config-utils';
+import { getChainConfig } from '../../utils/config';
 import {
     IexecPocoBoostAccessors__factory,
     IexecPocoBoost__factory,

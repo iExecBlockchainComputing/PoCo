@@ -6,7 +6,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { BytesLike, ZeroAddress } from 'ethers';
 import hre, { deployments, ethers } from 'hardhat';
-import { config } from '../../../config/config-utils';
+import { config } from '../../../utils/config';
 import {
     AppRegistry,
     AppRegistry__factory,

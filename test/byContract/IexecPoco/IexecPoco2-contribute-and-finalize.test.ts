@@ -24,7 +24,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { config } from '../../../config/config-utils';
+import { config } from '../../../utils/config';
 
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
