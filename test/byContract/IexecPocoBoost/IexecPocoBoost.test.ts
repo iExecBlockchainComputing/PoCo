@@ -4,7 +4,7 @@ import { HashZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { TypedDataDomain } from 'ethers';
+import { BigNumberish, BytesLike, TypedDataDomain } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     ERC1271Mock__factory,
@@ -2029,17 +2029,18 @@ describe('IexecPocoBoost', function () {
                 constants.NULL.ADDRESS,
                 scheduler,
             );
+            const pushResultArgs = [
+                dealId,
+                taskIndex,
+                results,
+                resultsCallback,
+                schedulerSignature,
+                constants.NULL.ADDRESS,
+                constants.NULL.SIGNATURE,
+            ] as [BytesLike, BigNumberish, BytesLike, BytesLike, BytesLike, string, BytesLike];
             const successfulTxGasLimit = await iexecPocoBoostInstance
                 .connect(worker)
-                .pushResultBoost.estimateGas(
-                    dealId,
-                    taskIndex,
-                    results,
-                    resultsCallback,
-                    schedulerSignature,
-                    constants.NULL.ADDRESS,
-                    constants.NULL.SIGNATURE,
-                );
+                .pushResultBoost.estimateGas(...pushResultArgs);
             const failingTxGaslimit =
                 successfulTxGasLimit - (await iexecAccessor.callbackgas()) / 63n;
             // Forward to consumer contract less gas than it has the right to consume
@@ -2047,16 +2048,7 @@ describe('IexecPocoBoost', function () {
             await expect(
                 iexecPocoBoostInstance
                     .connect(worker)
-                    .pushResultBoost(
-                        dealId,
-                        taskIndex,
-                        results,
-                        resultsCallback,
-                        schedulerSignature,
-                        constants.NULL.ADDRESS,
-                        constants.NULL.SIGNATURE,
-                        { gasLimit: failingTxGaslimit },
-                    ),
+                    .pushResultBoost(...pushResultArgs, { gasLimit: failingTxGaslimit }),
             ).to.be.revertedWith('PocoBoost: Not enough gas after callback');
         });
     });
@@ -2401,7 +2393,7 @@ async function whenIdentityContractCalledForCandidateInGroupThenReturnTrue(
 
 /**
  * Deploy an ERC1271 mock contract.
- * @returns An ERC1271 mock contract instance.
+ * @returns An ERC1271 mock contract instance address.
  */
 async function deployErc1271MockContract() {
     return new ERC1271Mock__factory()
