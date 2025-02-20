@@ -318,7 +318,7 @@ describe('Registries', () => {
             );
             await expect(appRegistry.createApp(appProvider.address, ...createAppArgs))
                 .to.emit(appRegistry, 'Transfer')
-                .withArgs(ZeroAddress, appProvider.address, BigInt(predictedAddress).toString());
+                .withArgs(ZeroAddress, appProvider.address, predictedAddress);
             expect(await appRegistry.balanceOf(appProvider.address)).to.equal(
                 initialAppBalance + 1n,
             );
