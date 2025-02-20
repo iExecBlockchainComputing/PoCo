@@ -151,12 +151,10 @@ export class IexecWrapper {
      * @returns value of the reward
      */
     async getSchedulerRewardRatio(workerpoolAddress: string) {
-        return Number(
-            await Workerpool__factory.connect(
-                workerpoolAddress,
-                this.accounts.anyone,
-            ).m_schedulerRewardRatioPolicy(),
-        );
+        return await Workerpool__factory.connect(
+            workerpoolAddress,
+            this.accounts.anyone,
+        ).m_schedulerRewardRatioPolicy();
     }
 
     /**
