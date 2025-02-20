@@ -400,32 +400,6 @@ function hash(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperat
 
 _Every module must inherit from this contract._
 
-## IexecOrderManagementDelegate
-
-### manageAppOrder
-
-```solidity
-function manageAppOrder(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) external
-```
-
-### manageDatasetOrder
-
-```solidity
-function manageDatasetOrder(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) external
-```
-
-### manageWorkerpoolOrder
-
-```solidity
-function manageWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) external
-```
-
-### manageRequestOrder
-
-```solidity
-function manageRequestOrder(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) external
-```
-
 ## IexecEscrow
 
 ### Transfer
@@ -456,6 +430,32 @@ event Reward(address owner, uint256 amount, bytes32 ref)
 
 ```solidity
 event Seize(address owner, uint256 amount, bytes32 ref)
+```
+
+## IexecOrderManagementDelegate
+
+### manageAppOrder
+
+```solidity
+function manageAppOrder(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) external
+```
+
+### manageDatasetOrder
+
+```solidity
+function manageDatasetOrder(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) external
+```
+
+### manageWorkerpoolOrder
+
+```solidity
+function manageWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) external
+```
+
+### manageRequestOrder
+
+```solidity
+function manageRequestOrder(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) external
 ```
 
 ## Matching
@@ -655,8 +655,6 @@ For existing deals, use the deal accessors instead.
 | ---- | ---- | ----------- |
 | [0] | uint256 | The computed deal volume. |
 
-## IexecPocoCommonDelegate
-
 ## IexecPocoBoostAccessorsDelegate
 
 Access to PoCo Boost tasks must be done with PoCo Classic `IexecAccessors`.
@@ -765,6 +763,8 @@ Claim task to get a refund if task is not completed after deadline.
 | ---- | ---- | ----------- |
 | dealId | bytes32 | The ID of the deal. |
 | index | uint256 | The index of the task. |
+
+## IexecPocoCommonDelegate
 
 ## DelegateBase
 
