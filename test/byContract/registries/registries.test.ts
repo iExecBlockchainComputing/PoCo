@@ -1,11 +1,10 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { BytesLike } from '@ethersproject/bytes';
-import { AddressZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import { BytesLike, ZeroAddress } from 'ethers';
 import hre, { deployments, ethers } from 'hardhat';
 import CONFIG from '../../../config/config.json';
 import {
@@ -29,7 +28,7 @@ import {
 } from '../../../typechain';
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
-import { BN2Address } from '../../../utils/tools';
+import { bigintToAddress } from '../../../utils/tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 const randomAddress = () => ethers.Wallet.createRandom().address;
 
@@ -39,9 +38,13 @@ describe('Registries', () => {
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let ensRegistry: ENSRegistry;
+    let ensRegistryAddress: string;
     let [appRegistry, appRegistryAsAdmin]: AppRegistry[] = [];
+    let appRegistryAddress: string;
     let [datasetRegistry, datasetRegistryAsAdmin]: DatasetRegistry[] = [];
+    let datasetRegistryAddress: string;
     let [workerpoolRegistry, workerpoolRegistryAsAdmin]: WorkerpoolRegistry[] = [];
+    let workerpoolRegistryAddress: string;
 
     beforeEach(async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
@@ -51,22 +54,25 @@ describe('Registries', () => {
     async function initFixture() {
         ({ iexecAdmin, appProvider, datasetProvider, scheduler, anyone } =
             await getIexecAccounts());
-        const ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
+        ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
         ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
 
         appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
+        appRegistryAddress = await appRegistry.getAddress();
         appRegistryAsAdmin = appRegistry.connect(iexecAdmin);
         datasetRegistry = DatasetRegistry__factory.connect(
             await iexecPoco.datasetregistry(),
             anyone,
         );
+        datasetRegistryAddress = await datasetRegistry.getAddress();
         datasetRegistryAsAdmin = datasetRegistry.connect(iexecAdmin);
         workerpoolRegistry = WorkerpoolRegistry__factory.connect(
             await iexecPoco.workerpoolregistry(),
             anyone,
         );
+        workerpoolRegistryAddress = await workerpoolRegistry.getAddress();
         workerpoolRegistryAsAdmin = workerpoolRegistry.connect(iexecAdmin);
     }
 
@@ -75,49 +81,49 @@ describe('Registries', () => {
             const newAppRegistry = await new AppRegistry__factory()
                 .connect(iexecAdmin)
                 .deploy()
-                .then((contract) => contract.deployed());
-            await newAppRegistry.initialize(appRegistry.address).then((tx) => tx.wait());
+                .then((contract) => contract.waitForDeployment());
+            await newAppRegistry.initialize(appRegistryAddress).then((tx) => tx.wait());
             expect(await newAppRegistry.initialized()).to.be.true;
-            expect(await newAppRegistry.previous()).to.equal(appRegistry.address);
+            expect(await newAppRegistry.previous()).to.equal(appRegistryAddress);
 
             const newDatasetRegistry = await new DatasetRegistry__factory()
                 .connect(iexecAdmin)
                 .deploy()
-                .then((contract) => contract.deployed());
-            await newDatasetRegistry.initialize(datasetRegistry.address).then((tx) => tx.wait());
+                .then((contract) => contract.waitForDeployment());
+            await newDatasetRegistry.initialize(datasetRegistryAddress).then((tx) => tx.wait());
             expect(await newDatasetRegistry.initialized()).to.be.true;
-            expect(await newDatasetRegistry.previous()).to.equal(datasetRegistry.address);
+            expect(await newDatasetRegistry.previous()).to.equal(datasetRegistryAddress);
 
             const newWorkerpoolRegistry = await new WorkerpoolRegistry__factory()
                 .connect(iexecAdmin)
                 .deploy()
-                .then((contract) => contract.deployed());
+                .then((contract) => contract.waitForDeployment());
             await newWorkerpoolRegistry
-                .initialize(workerpoolRegistry.address)
+                .initialize(workerpoolRegistryAddress)
                 .then((tx) => tx.wait());
             expect(await newWorkerpoolRegistry.initialized()).to.be.true;
-            expect(await newWorkerpoolRegistry.previous()).to.equal(workerpoolRegistry.address);
+            expect(await newWorkerpoolRegistry.previous()).to.equal(workerpoolRegistryAddress);
         });
 
         it('Should not initialize when user is not the owner', async () => {
-            await expect(appRegistry.initialize(AddressZero)).to.be.revertedWith(
+            await expect(appRegistry.initialize(ZeroAddress)).to.be.revertedWith(
                 'Ownable: caller is not the owner',
             );
-            await expect(datasetRegistry.initialize(AddressZero)).to.be.revertedWith(
+            await expect(datasetRegistry.initialize(ZeroAddress)).to.be.revertedWith(
                 'Ownable: caller is not the owner',
             );
-            await expect(workerpoolRegistry.initialize(AddressZero)).to.be.revertedWith(
+            await expect(workerpoolRegistry.initialize(ZeroAddress)).to.be.revertedWith(
                 'Ownable: caller is not the owner',
             );
         });
 
         it('Should not reinitialize', async () => {
-            await expect(appRegistryAsAdmin.initialize(AddressZero)).to.be.revertedWithoutReason();
+            await expect(appRegistryAsAdmin.initialize(ZeroAddress)).to.be.revertedWithoutReason();
             await expect(
-                datasetRegistryAsAdmin.initialize(AddressZero),
+                datasetRegistryAsAdmin.initialize(ZeroAddress),
             ).to.be.revertedWithoutReason();
             await expect(
-                workerpoolRegistryAsAdmin.initialize(AddressZero),
+                workerpoolRegistryAsAdmin.initialize(ZeroAddress),
             ).to.be.revertedWithoutReason();
         });
     });
@@ -128,16 +134,16 @@ describe('Registries', () => {
             [];
 
         beforeEach(async () => {
-            const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
+            const reverseRootNameHash = ethers.namehash('addr.reverse');
             const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
             const reverseResolverAddress = await ReverseRegistrar__factory.connect(
                 reverseRegistrarAddress,
                 anyone,
             ).defaultResolver();
             reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
-            appRegistryNameHash = computeNameHash(appRegistry.address);
-            datasetRegistryNameHash = computeNameHash(datasetRegistry.address);
-            workerpoolRegistryNameHash = computeNameHash(workerpoolRegistry.address);
+            appRegistryNameHash = computeNameHash(appRegistryAddress);
+            datasetRegistryNameHash = computeNameHash(datasetRegistryAddress);
+            workerpoolRegistryNameHash = computeNameHash(workerpoolRegistryAddress);
         });
 
         it('Should retrieve the ENS name for registries', async () => {
@@ -156,19 +162,19 @@ describe('Registries', () => {
             const workerpoolRegistryEnsName = 'myWorkerpoolRegistry.eth';
 
             await appRegistryAsAdmin
-                .setName(ensRegistry.address, appRegistryEnsName)
+                .setName(ensRegistryAddress, appRegistryEnsName)
                 .then((tx) => tx.wait());
             expect(await reverseResolver.name(appRegistryNameHash)).to.equal(appRegistryEnsName);
 
             await datasetRegistryAsAdmin
-                .setName(ensRegistry.address, datasetRegistryEnsName)
+                .setName(ensRegistryAddress, datasetRegistryEnsName)
                 .then((tx) => tx.wait());
             expect(await reverseResolver.name(datasetRegistryNameHash)).to.equal(
                 datasetRegistryEnsName,
             );
 
             await workerpoolRegistryAsAdmin
-                .setName(ensRegistry.address, workerpoolRegistryEnsName)
+                .setName(ensRegistryAddress, workerpoolRegistryEnsName)
                 .then((tx) => tx.wait());
             expect(await reverseResolver.name(workerpoolRegistryNameHash)).to.equal(
                 workerpoolRegistryEnsName,
@@ -177,13 +183,13 @@ describe('Registries', () => {
 
         it('Should not set name when user is not the owner', async () => {
             await expect(
-                appRegistry.setName(ensRegistry.address, 'new.app.registry.eth'),
+                appRegistry.setName(ensRegistryAddress, 'new.app.registry.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
             await expect(
-                datasetRegistry.setName(ensRegistry.address, 'new.dataset.registry.eth'),
+                datasetRegistry.setName(ensRegistryAddress, 'new.dataset.registry.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
             await expect(
-                workerpoolRegistry.setName(ensRegistry.address, 'new.workerpool.registry.eth'),
+                workerpoolRegistry.setName(ensRegistryAddress, 'new.workerpool.registry.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
         });
     });
@@ -254,19 +260,15 @@ describe('Registries', () => {
 
         it('Should return the correct value for proxyCodeHash', async () => {
             const proxyCode = InitializableUpgradeabilityProxy__factory.bytecode;
-            expect(await appRegistry.proxyCodeHash()).to.equal(ethers.utils.keccak256(proxyCode));
-            expect(await datasetRegistry.proxyCodeHash()).to.equal(
-                ethers.utils.keccak256(proxyCode),
-            );
-            expect(await workerpoolRegistry.proxyCodeHash()).to.equal(
-                ethers.utils.keccak256(proxyCode),
-            );
+            expect(await appRegistry.proxyCodeHash()).to.equal(ethers.keccak256(proxyCode));
+            expect(await datasetRegistry.proxyCodeHash()).to.equal(ethers.keccak256(proxyCode));
+            expect(await workerpoolRegistry.proxyCodeHash()).to.equal(ethers.keccak256(proxyCode));
         });
 
         it('Should return the correct value for previous registry', async () => {
-            expect(await appRegistry.previous()).to.equal(AddressZero);
-            expect(await datasetRegistry.previous()).to.equal(AddressZero);
-            expect(await workerpoolRegistry.previous()).to.equal(AddressZero);
+            expect(await appRegistry.previous()).to.equal(ZeroAddress);
+            expect(await datasetRegistry.previous()).to.equal(ZeroAddress);
+            expect(await workerpoolRegistry.previous()).to.equal(ZeroAddress);
         });
 
         it('Should current regitries be initialized', async () => {
@@ -281,23 +283,23 @@ describe('Registries', () => {
             `App`,
             'DOCKER',
             MULTIADDR_BYTES,
-            ethers.utils.id(`My app checksum`),
+            ethers.id(`My app checksum`),
             '0x1234',
         ] as [string, string, BytesLike, BytesLike, BytesLike];
         it('Should predict the correct address for future app creation', async () => {
             const code = await appRegistry.proxyCode();
-            const proxyCodeHash = ethers.utils.keccak256(code);
+            const proxyCodeHash = ethers.keccak256(code);
             const encodedInitializer = App__factory.createInterface().encodeFunctionData(
                 'initialize',
                 createAppArgs,
             );
-            const salt = ethers.utils.solidityKeccak256(
+            const salt = ethers.solidityPackedKeccak256(
                 ['bytes', 'address'],
                 [encodedInitializer, appProvider.address],
             );
 
-            const predictedAddress = ethers.utils.getCreate2Address(
-                appRegistry.address,
+            const predictedAddress = ethers.getCreate2Address(
+                appRegistryAddress,
                 salt,
                 proxyCodeHash,
             );
@@ -316,28 +318,22 @@ describe('Registries', () => {
             );
             await expect(appRegistry.createApp(appProvider.address, ...createAppArgs))
                 .to.emit(appRegistry, 'Transfer')
-                .withArgs(
-                    AddressZero,
-                    appProvider.address,
-                    ethers.BigNumber.from(predictedAddress).toString(),
-                );
+                .withArgs(ZeroAddress, appProvider.address, predictedAddress);
             expect(await appRegistry.balanceOf(appProvider.address)).to.equal(
-                initialAppBalance.add(1),
+                initialAppBalance + 1n,
             );
             expect(await appRegistry.ownerOf(predictedAddress)).to.equal(appProvider.address);
 
             const tokenAtIndex = await appRegistry.tokenOfOwnerByIndex(appProvider.address, 0);
-            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
-                ethers.utils.getAddress(predictedAddress),
-            );
+            expect(bigintToAddress(tokenAtIndex)).to.equal(ethers.getAddress(predictedAddress));
 
             const tokenURI = await appRegistry.tokenURI(predictedAddress);
             const baseURI = await appRegistry.baseURI();
-            expect(tokenURI).to.equal(baseURI + ethers.BigNumber.from(predictedAddress).toString());
+            expect(tokenURI).to.equal(baseURI + BigInt(predictedAddress));
         });
 
         it('Should check that a new app is well registered', async () => {
-            const appCreatedAddress = await appRegistry.callStatic.createApp(
+            const appCreatedAddress = await appRegistry.createApp.staticCall(
                 appProvider.address,
                 ...createAppArgs,
             );
@@ -363,7 +359,7 @@ describe('Registries', () => {
         });
 
         it('Should check that a new app is well registered on new app registry', async () => {
-            const appCreatedAddress = await appRegistry.callStatic.createApp(
+            const appCreatedAddress = await appRegistry.createApp.staticCall(
                 appProvider.address,
                 ...createAppArgs,
             );
@@ -374,9 +370,9 @@ describe('Registries', () => {
             const newAppRegistry = await new AppRegistry__factory()
                 .connect(iexecAdmin)
                 .deploy()
-                .then((contract) => contract.deployed());
+                .then((contract) => contract.waitForDeployment());
 
-            await newAppRegistry.initialize(appRegistry.address).then((tx) => tx.wait());
+            await newAppRegistry.initialize(appRegistryAddress).then((tx) => tx.wait());
             const isRegistered = await newAppRegistry.isRegistered(appCreatedAddress);
             expect(isRegistered).to.be.true;
         });
@@ -386,22 +382,22 @@ describe('Registries', () => {
         const createDatasetArgs = [
             `Dataset`,
             MULTIADDR_BYTES,
-            ethers.utils.id(`My dataset checksum`),
+            ethers.id(`My dataset checksum`),
         ] as [string, BytesLike, BytesLike];
         it('Should predict the correct address for future dataset creation', async () => {
             const code = await datasetRegistry.proxyCode();
-            const proxyCodeHash = ethers.utils.keccak256(code);
+            const proxyCodeHash = ethers.keccak256(code);
             const encodedInitializer = Dataset__factory.createInterface().encodeFunctionData(
                 'initialize',
                 createDatasetArgs,
             );
-            const salt = ethers.utils.solidityKeccak256(
+            const salt = ethers.solidityPackedKeccak256(
                 ['bytes', 'address'],
                 [encodedInitializer, datasetProvider.address],
             );
 
-            const predictedAddress = ethers.utils.getCreate2Address(
-                datasetRegistry.address,
+            const predictedAddress = ethers.getCreate2Address(
+                datasetRegistryAddress,
                 salt,
                 proxyCodeHash,
             );
@@ -422,13 +418,9 @@ describe('Registries', () => {
                 await datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs),
             )
                 .to.emit(datasetRegistry, 'Transfer')
-                .withArgs(
-                    AddressZero,
-                    datasetProvider.address,
-                    ethers.BigNumber.from(predictedAddress).toString(),
-                );
+                .withArgs(ZeroAddress, datasetProvider.address, predictedAddress);
             expect(await datasetRegistry.balanceOf(datasetProvider.address)).to.equal(
-                initialDatasetBalance.add(1),
+                initialDatasetBalance + 1n,
             );
             expect(await datasetRegistry.ownerOf(predictedAddress)).to.equal(
                 datasetProvider.address,
@@ -438,17 +430,15 @@ describe('Registries', () => {
                 datasetProvider.address,
                 0,
             );
-            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
-                ethers.utils.getAddress(predictedAddress),
-            );
+            expect(bigintToAddress(tokenAtIndex)).to.equal(ethers.getAddress(predictedAddress));
 
             const tokenURI = await datasetRegistry.tokenURI(predictedAddress);
             const baseURI = await datasetRegistry.baseURI();
-            expect(tokenURI).to.equal(baseURI + ethers.BigNumber.from(predictedAddress).toString());
+            expect(tokenURI).to.equal(baseURI + BigInt(predictedAddress));
         });
 
         it('Should check that a new dataset is well registered', async () => {
-            const datasetCreatedAddress = await datasetRegistry.callStatic.createDataset(
+            const datasetCreatedAddress = await datasetRegistry.createDataset.staticCall(
                 datasetProvider.address,
                 ...createDatasetArgs,
             );
@@ -478,18 +468,18 @@ describe('Registries', () => {
         const createWorkerpoolArgs = [`Workerpool description`] as [string];
         it('Should predict the correct address for future workerpool creation', async () => {
             const proxyCode = await workerpoolRegistry.proxyCode();
-            const proxyCodeHash = ethers.utils.keccak256(proxyCode);
+            const proxyCodeHash = ethers.keccak256(proxyCode);
             const encodedInitializer = Workerpool__factory.createInterface().encodeFunctionData(
                 'initialize',
                 createWorkerpoolArgs,
             );
-            const salt = ethers.utils.solidityKeccak256(
+            const salt = ethers.solidityPackedKeccak256(
                 ['bytes', 'address'],
                 [encodedInitializer, scheduler.address],
             );
 
-            const expectedAddress = ethers.utils.getCreate2Address(
-                workerpoolRegistry.address,
+            const expectedAddress = ethers.getCreate2Address(
+                workerpoolRegistryAddress,
                 salt,
                 proxyCodeHash,
             );
@@ -517,28 +507,22 @@ describe('Registries', () => {
                 ),
             )
                 .to.emit(workerpoolRegistry, 'Transfer')
-                .withArgs(
-                    AddressZero,
-                    scheduler.address,
-                    ethers.BigNumber.from(predictedAddress).toString(),
-                );
+                .withArgs(ZeroAddress, scheduler.address, predictedAddress);
             expect(await workerpoolRegistry.balanceOf(scheduler.address)).to.equal(
-                initialWorkerpoolBalance.add(1),
+                initialWorkerpoolBalance + 1n,
             );
             expect(await workerpoolRegistry.ownerOf(predictedAddress)).to.equal(scheduler.address);
 
             const tokenAtIndex = await workerpoolRegistry.tokenOfOwnerByIndex(scheduler.address, 0);
-            expect(ethers.utils.getAddress(BN2Address(tokenAtIndex))).to.equal(
-                ethers.utils.getAddress(predictedAddress),
-            );
+            expect(bigintToAddress(tokenAtIndex)).to.equal(ethers.getAddress(predictedAddress));
 
             const tokenURI = await workerpoolRegistry.tokenURI(predictedAddress);
             const baseURI = await workerpoolRegistry.baseURI();
-            expect(tokenURI).to.equal(baseURI + ethers.BigNumber.from(predictedAddress).toString());
+            expect(tokenURI).to.equal(baseURI + BigInt(predictedAddress));
         });
 
         it('Should check that a new workerpool is well registered', async () => {
-            const workerpoolCreatedAddress = await workerpoolRegistry.callStatic.createWorkerpool(
+            const workerpoolCreatedAddress = await workerpoolRegistry.createWorkerpool.staticCall(
                 scheduler.address,
                 ...createWorkerpoolArgs,
             );
@@ -565,5 +549,5 @@ describe('Registries', () => {
     });
 
     const computeNameHash = (address: string) =>
-        ethers.utils.namehash(`${address.substring(2)}.addr.reverse`);
+        ethers.namehash(`${address.substring(2)}.addr.reverse`);
 });
