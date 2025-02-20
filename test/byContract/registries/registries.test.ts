@@ -522,7 +522,7 @@ describe('Registries', () => {
 
             const tokenURI = await workerpoolRegistry.tokenURI(predictedAddress);
             const baseURI = await workerpoolRegistry.baseURI();
-            expect(tokenURI).to.equal(baseURI + BigInt(predictedAddress).toString());
+            expect(tokenURI).to.equal(baseURI + BigInt(predictedAddress));
         });
 
         it('Should check that a new workerpool is well registered', async () => {
