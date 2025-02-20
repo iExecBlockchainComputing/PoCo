@@ -18,7 +18,7 @@
         - IexecPoco (#196)
         - `trust` specific field (#201)
         - IexecPocoBoost (#198)
-        - minor fixe in bigint for IexecWrapper (#202)
+        - fixed a minor issue in BigInt for IexecWrapper (#202).
 - Migrate scripts to TypeScript: (#184)
   - `getFunctionSignatures.js`, `common-test-snapshot.js`, `test-storage.js`, `timelock.js`
 - Migrated utility files to TypeScript : (#183)
