@@ -90,10 +90,7 @@ export class IexecWrapper {
             return;
         }
         const rlc = RLC__factory.connect(
-            await IexecAccessors__factory.connect(
-                this.proxyAddress,
-                this.accounts.anyone,
-            ).token(),
+            await IexecAccessors__factory.connect(this.proxyAddress, this.accounts.anyone).token(),
             this.accounts.iexecAdmin,
         );
         // Transfer RLC from owner to recipient
@@ -103,7 +100,6 @@ export class IexecWrapper {
             .connect(account)
             .approveAndCall(this.proxyAddress, value, '0x')
             .then((tx) => tx.wait());
-        }
     }
 
     // TODO rename to computeSchedulerStakePerDeal
