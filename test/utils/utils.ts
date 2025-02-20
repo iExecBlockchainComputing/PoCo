@@ -12,14 +12,15 @@ export async function hashDomain(domain: IexecLibOrders_v5.EIP712DomainStructOut
 }
 
 /**
- * Send some ETH the zero address to allow sending transactions using
- * Hardhat's impersonation mechanism.
+ * Set the zero address's balance to a non null amount to allow sending
+ * transactions using Hardhat's impersonation mechanism.
  * Fixes the error:
  * ProviderError: Sender doesn't have enough funds to send tx ...
  *
  * Note: sending ETH to address(0) does not increment its balance.
  */
-export async function setZeroAddressBalance(amount: bigint) {
+export async function setZeroAddressBalance() {
+    const amount = 100n; // Random large enough amount.
     await ethers.provider.send('hardhat_setBalance', [
         ZeroAddress,
         ethers.toBeHex(ethers.parseEther(amount.toString())),

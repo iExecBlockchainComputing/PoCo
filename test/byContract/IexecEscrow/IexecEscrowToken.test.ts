@@ -111,7 +111,7 @@ describe('IexecEscrowToken', () => {
         });
         it('Should not deposit tokens when caller is address 0', async () => {
             const addressZeroSigner = await ethers.getImpersonatedSigner(AddressZero);
-            await setZeroAddressBalance(10n);
+            await setZeroAddressBalance();
             await rlcInstance
                 .connect(iexecAdmin)
                 .transfer(addressZeroSigner.address, amount)

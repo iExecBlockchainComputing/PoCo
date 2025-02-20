@@ -109,7 +109,7 @@ if (CONFIG.chains.default.asset === 'Native') {
             it('Should not deposit native tokens when caller is address 0', async () => {
                 const zeroAddressSigner = await ethers.getImpersonatedSigner(ZeroAddress);
                 const iexecPocoAsAddress0 = iexecPoco.connect(zeroAddressSigner);
-                await setZeroAddressBalance(10n);
+                await setZeroAddressBalance();
                 await expect(iexecPocoAsAddress0.deposit(...depositArgs)).to.be.revertedWith(
                     'ERC20: mint to the zero address',
                 );
