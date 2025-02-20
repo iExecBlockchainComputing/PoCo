@@ -1,26 +1,33 @@
-import { Interface } from '@ethersproject/abi';
-import { ContractTransaction } from '@ethersproject/contracts';
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
+import { ContractTransactionResponse, Interface } from 'ethers';
 import { ethers } from 'hardhat';
 import { ERC1538Query, ERC1538Query__factory, ERC1538Update__factory } from '../../typechain';
 
 function encodeModuleProxyUpdate(ModuleInterface: Interface, moduleAddress: string) {
-    const moduleFunctions = Object.keys(ModuleInterface.functions).map((tx) => tx + ';');
-    moduleFunctions.forEach((func) => {
+    let moduleFunctions = '';
+    ModuleInterface.forEachFunction((functionFragment) => {
+        const func = functionFragment.format();
         console.log(`- ${func}`);
+        moduleFunctions += func + ';';
     });
     const moduleProxyUpdateData = ERC1538Update__factory.createInterface().encodeFunctionData(
         'updateContract',
-        [moduleAddress, moduleFunctions.join(''), ''],
+        [moduleAddress, moduleFunctions, ''],
     );
     return moduleProxyUpdateData;
 }
 
 async function printBlockTime() {
-    const latestBlock = await ethers.provider.getBlock('latest');
-    const blockNumber = latestBlock.number;
-    const blockTimestamp = latestBlock.timestamp;
-    const blockDate = new Date(blockTimestamp * 1000);
-    console.log(`Block#${blockNumber}: ${blockDate} (timestamp:${blockTimestamp})`);
+    await ethers.provider.getBlock('latest').then((latestBlock) => {
+        if (latestBlock) {
+            const blockNumber = latestBlock.number;
+            const blockTimestamp = latestBlock.timestamp;
+            const blockDate = new Date(blockTimestamp * 1000);
+            console.log(`Block#${blockNumber}: ${blockDate} (timestamp:${blockTimestamp})`);
+        }
+    });
 }
 
 async function printFunctions(erc1538ProxyAddress: string) {
@@ -28,15 +35,15 @@ async function printFunctions(erc1538ProxyAddress: string) {
         erc1538ProxyAddress,
         ethers.provider,
     );
-    const functionCount = await erc1538QueryInstance.totalFunctions();
+    const functionCount = Number(await erc1538QueryInstance.totalFunctions());
     console.log(`ERC1538Proxy supports ${functionCount} functions:`);
-    for (let i = 0; i < functionCount.toNumber(); i++) {
+    for (let i = 0; i < functionCount; i++) {
         const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
         console.log(`[${i}] ${contract} ${method}`);
     }
 }
 
-function logTxData(x: ContractTransaction) {
+function logTxData(x: ContractTransactionResponse) {
     console.log(x);
 }
 

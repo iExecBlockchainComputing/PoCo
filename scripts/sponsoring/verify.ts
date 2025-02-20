@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 import fs from 'fs';
 import hre, { deployments } from 'hardhat';
 import path from 'path';
