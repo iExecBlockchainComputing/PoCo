@@ -4,8 +4,8 @@ import json from '../config/config.json';
 const config = json as Config;
 
 function isNativeChain(chain?: Chain) {
-    chain = chain ?? getDefaultChainConfig();
-    return chain.asset === 'Native' || process.env.IS_NATIVE_CHAIN === 'true';
+    chain = chain ?? config.chains.default;
+    return chain.asset === 'Native' || process.env.TEST__IS_NATIVE_CHAIN === 'true';
 }
 
 /**
@@ -19,8 +19,8 @@ function getChainConfig(chainId: bigint): Chain {
     return chainConfig;
 }
 
-function getDefaultChainConfig(): Chain {
-    return config.chains.default;
+function getChainConfigOrDefault(chainId: bigint): Chain {
+    return config.chains[chainId.toString()] ?? config.chains.default;
 }
 
 type Config = {
@@ -62,5 +62,5 @@ export default {
     ...config,
     isNativeChain,
     getChainConfig,
-    getDefaultChainConfig,
+    getChainConfigOrDefault,
 };

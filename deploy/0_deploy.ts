@@ -54,7 +54,7 @@ export default async function deploy() {
     console.log('Deploying PoCo..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
-    const deploymentOptions = config.getChainConfig(chainId) || config.getDefaultChainConfig();
+    const deploymentOptions = config.getChainConfigOrDefault(chainId);
     const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
     const factoryDeployer = new FactoryDeployerHelper(owner, salt);
     // Deploy RLC

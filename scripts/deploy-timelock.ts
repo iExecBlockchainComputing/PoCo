@@ -15,10 +15,7 @@ export const deploy = async () => {
     console.log('Deploying TimelockController..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
-    const salt =
-        process.env.SALT ||
-        config.getChainConfig(chainId).v5.salt ||
-        config.getDefaultChainConfig().v5.salt;
+    const salt = process.env.SALT || config.getChainConfigOrDefault(chainId).v5.salt;
 
     // Initialize factory deployer
     const factoryDeployer = new FactoryDeployerHelper(owner, salt);
