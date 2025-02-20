@@ -93,7 +93,7 @@ describe('IexecPoco2#contribute', () => {
             requester: requester.address,
             prices: ordersPrices,
             volume,
-            trust: 0,
+            trust: 0n,
             tag: standardDealTag,
         });
     }
@@ -107,7 +107,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 3,
+                    trust: 3n,
                     tag: teeDealTag,
                 }).toArray(),
             );
@@ -212,7 +212,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 0,
+                    trust: 0n,
                     tag: teeDealTag,
                 }).toArray(),
             );
@@ -337,7 +337,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 3, // so consensus is not yet reached on first contribution
+                    trust: 3n, // so consensus is not yet reached on first contribution
                     tag: standardDealTag,
                 }).toArray(),
             );
@@ -395,7 +395,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 0,
+                    trust: 0n,
                     tag: teeDealTag,
                 }).toArray(),
             );
@@ -460,7 +460,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 0,
+                    trust: 0n,
                     tag: teeDealTag,
                 }).toArray(),
             );

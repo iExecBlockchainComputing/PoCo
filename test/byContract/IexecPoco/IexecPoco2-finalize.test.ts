@@ -597,7 +597,7 @@ describe('IexecPoco2#finalize', async () => {
             requester: requester.address,
             prices: ordersPrices,
             volume: 1n,
-            trust: 3,
+            trust: 3n,
         });
         const { dealId, taskId, taskIndex } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
@@ -725,7 +725,7 @@ describe('IexecPoco2#finalize', async () => {
             ...buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                trust: 3,
+                trust: 3n,
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());

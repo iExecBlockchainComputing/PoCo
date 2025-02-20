@@ -28,7 +28,7 @@ export interface MatchOrdersArgs {
     prices?: OrdersPrices;
     volume?: bigint;
     callback?: string;
-    trust?: number;
+    trust?: bigint;
     category?: number;
     params?: string;
     salt?: string;
@@ -122,7 +122,7 @@ export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct 
         volume: 1,
         tag: constants.NULL.BYTES32,
         category: 0,
-        trust: 0,
+        trust: 0n,
         requester: constants.NULL.ADDRESS,
         beneficiary: constants.NULL.ADDRESS,
         callback: constants.NULL.ADDRESS,
@@ -139,7 +139,7 @@ export function createEmptyWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderS
         volume: 1,
         tag: constants.NULL.BYTES32,
         category: 0,
-        trust: 0,
+        trust: 0n,
         apprestrict: constants.NULL.ADDRESS,
         datasetrestrict: constants.NULL.ADDRESS,
         requesterrestrict: constants.NULL.ADDRESS,

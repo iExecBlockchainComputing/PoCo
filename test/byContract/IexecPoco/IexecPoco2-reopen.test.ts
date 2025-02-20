@@ -73,7 +73,7 @@ describe('IexecPoco2#reopen', async () => {
     }
 
     it('Should reopen task after reveal deadline', async () => {
-        await matchOrdersAndInitializeTask(3); // Multiple workers.
+        await matchOrdersAndInitializeTask(3n); // Multiple workers.
         const resultHash = buildResultHash(taskId, resultDigest);
         const badResultDigest = buildUtf8ResultAndDigest('bad-result').resultDigest;
         const contributions = [
@@ -131,7 +131,7 @@ describe('IexecPoco2#reopen', async () => {
     });
 
     it('Should not reopen task when sender is not the scheduler', async () => {
-        await matchOrdersAndInitializeTask(1);
+        await matchOrdersAndInitializeTask(1n);
         await contribute(worker, resultDigest);
         const task = await iexecPoco.viewTask(taskId);
         // Time travel beyond reveal deadline but before final deadline.
@@ -145,7 +145,7 @@ describe('IexecPoco2#reopen', async () => {
     });
 
     it('Should not reopen task when status is before revealing', async () => {
-        await matchOrdersAndInitializeTask(3);
+        await matchOrdersAndInitializeTask(3n);
         // Only 1 contribution, consensus not reached yet.
         await contribute(worker1, resultDigest);
         const task = await iexecPoco.viewTask(taskId);
@@ -156,7 +156,7 @@ describe('IexecPoco2#reopen', async () => {
     });
 
     it('Should not reopen task when status is after revealing', async () => {
-        await matchOrdersAndInitializeTask(1);
+        await matchOrdersAndInitializeTask(1n);
         const { results, resultDigest } = buildUtf8ResultAndDigest('result');
         await contribute(worker, resultDigest);
         // Move task to the next status (COMPLETED).
@@ -173,7 +173,7 @@ describe('IexecPoco2#reopen', async () => {
     });
 
     it('Should not reopen task after final deadline', async () => {
-        await matchOrdersAndInitializeTask(1);
+        await matchOrdersAndInitializeTask(1n);
         await contribute(worker, resultDigest);
         const task = await iexecPoco.viewTask(taskId);
         // Time travel beyond final deadline.
@@ -187,7 +187,7 @@ describe('IexecPoco2#reopen', async () => {
     });
 
     it('Should not reopen task before reveal deadline', async () => {
-        await matchOrdersAndInitializeTask(1);
+        await matchOrdersAndInitializeTask(1n);
         await contribute(worker, resultDigest);
         const task = await iexecPoco.viewTask(taskId);
         // No time travel.
@@ -200,7 +200,7 @@ describe('IexecPoco2#reopen', async () => {
     });
 
     it('Should not reopen task with at least 1 reveal', async () => {
-        await matchOrdersAndInitializeTask(3);
+        await matchOrdersAndInitializeTask(3n);
         await contribute(worker1, resultDigest);
         await contribute(worker2, resultDigest);
         // Consensus reached, reveal for worker 1.
@@ -223,7 +223,7 @@ describe('IexecPoco2#reopen', async () => {
      * Create orders with the provided trust, match deal, and initialize task.
      * @param trust
      */
-    async function matchOrdersAndInitializeTask(trust: number) {
+    async function matchOrdersAndInitializeTask(trust: bigint) {
         const orders = buildOrders({
             assets: ordersAssets,
             prices: ordersPrices,

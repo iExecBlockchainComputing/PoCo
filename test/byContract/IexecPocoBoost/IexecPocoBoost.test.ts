@@ -434,7 +434,7 @@ describe('IexecPocoBoost', function () {
             });
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             // Change trust.
-            requestOrder.trust = 1;
+            requestOrder.trust = 1n;
             // Sign & hash orders.
             await signOrders(domain, orders, ordersActors);
             // Run & verify.
@@ -886,7 +886,7 @@ describe('IexecPocoBoost', function () {
                 requester: requester.address,
             });
             // Set bad trust (> 1).
-            orders.requester.trust = 2;
+            orders.requester.trust = 2n;
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
             ).to.be.revertedWith('PocoBoost: Bad trust level');
