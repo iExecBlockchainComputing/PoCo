@@ -10,10 +10,10 @@
     - Deployment scripts (#187)
     - Tests
         - IexecEscrow (#199)
-        - ENSIntegration, IexecOrderManagement, IexecRelay (#195)
-        - IexecCategoryManager, IexecERC20 (#192)
+        - ENSIntegration, IexecOrderManagement, IexecRelay (#195, #199)
+        - IexecCategoryManager, IexecERC20 (#192, #199)
         - test/*fullchain* (#190)
-        - IexecAccessors, IexecMaintenance (#189, #191)
+        - IexecAccessors, IexecMaintenance (#189, #191, #199)
 - Migrate scripts to TypeScript: (#184)
     - `getFunctionSignatures.js`, `common-test-snapshot.js`, `test-storage.js`, `timelock.js`
 - Migrated utility files to TypeScript : (#183)
