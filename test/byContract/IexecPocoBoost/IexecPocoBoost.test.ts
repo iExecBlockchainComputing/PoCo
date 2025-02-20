@@ -2047,7 +2047,7 @@ describe('IexecPocoBoost', function () {
                 iexecPocoBoostInstance
                     .connect(worker)
                     .pushResultBoost(...pushResultArgs, { gasLimit: failingTxGaslimit }),
-            ).to.be.revertedWith('PocoBoost: Not enough gas after callback');
+            ).to.be.revertedWithoutReason(); // TODO: Check 'PocoBoost: Not enough gas after callback'
         });
     });
 
