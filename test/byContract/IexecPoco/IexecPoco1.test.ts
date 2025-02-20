@@ -349,7 +349,7 @@ describe('IexecPoco1', () => {
 
     describe('Match orders', () => {
         it('Should match orders with: all assets, beneficiary, BoT, callback, replication', async () => {
-            const trust = 3;
+            const trust = 3n;
             const category = 2;
             const params = '<params>';
             // Use orders with full configuration.
@@ -453,7 +453,7 @@ describe('IexecPoco1', () => {
         });
 
         it('[Standard] Should match orders with: all assets, beneficiary, BoT, callback, replication', async () => {
-            const trust = 3;
+            const trust = 3n;
             const category = 2;
             const params = '<params>';
             // Use orders with full configuration.

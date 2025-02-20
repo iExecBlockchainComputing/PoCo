@@ -79,7 +79,7 @@ describe('IexecPoco2#reveal', () => {
             requester: requester.address,
             prices: ordersPrices,
             volume,
-            trust: 1,
+            trust: 1n,
             tag: standardDealTag,
         });
         ({ dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
@@ -195,7 +195,7 @@ describe('IexecPoco2#reveal', () => {
                 requester: requester.address,
                 prices: ordersPrices,
                 volume,
-                trust: 3,
+                trust: 3n,
                 tag: standardDealTag,
                 salt: ethers.zeroPadValue(ethers.toBeHex(Date.now()), 32), // make
             }).toArray(), // app and dataset orders unique since already matched in

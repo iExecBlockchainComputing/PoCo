@@ -117,7 +117,7 @@ describe('Integration tests', function () {
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
-            trust: workers.length ** 2 - 1,
+            trust: BigInt(workers.length ** 2 - 1),
         });
         const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndSponsorMatchOrders(
             ...orders.toArray(),
@@ -208,7 +208,7 @@ describe('Integration tests', function () {
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
-            trust: workers.length ** 2 - 1,
+            trust: BigInt(workers.length ** 2 - 1),
         });
         const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
@@ -296,7 +296,7 @@ describe('Integration tests', function () {
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
-            trust: 1,
+            trust: 1n,
         });
         const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndSponsorMatchOrders(
             ...orders.toArray(),
@@ -374,7 +374,7 @@ describe('Integration tests', function () {
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
-            trust: 1,
+            trust: 1n,
         });
         const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
@@ -450,7 +450,7 @@ describe('Integration tests', function () {
             requester: requester.address,
             tag: teeDealTag,
             volume,
-            trust: 1,
+            trust: 1n,
         });
         const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
@@ -522,7 +522,7 @@ describe('Integration tests', function () {
                     requester: requester.address,
                     tag: standardDealTag,
                     volume,
-                    trust: workerNumber ** 2 - 1,
+                    trust: BigInt(workerNumber ** 2 - 1),
                 });
                 const { dealId, dealPrice, schedulerStakePerDeal } =
                     await iexecWrapper.signAndMatchOrders(...orders.toArray());
@@ -624,7 +624,7 @@ describe('Integration tests', function () {
             requester: requester.address,
             tag: standardDealTag,
             volume,
-            trust: winningWorkers.length,
+            trust: BigInt(winningWorkers.length),
         });
 
         const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(

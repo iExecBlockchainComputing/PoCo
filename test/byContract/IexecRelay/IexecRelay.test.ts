@@ -17,7 +17,7 @@ const datasetPrice = 2;
 const workerpoolPrice = 3;
 const volume = 4;
 const category = 5;
-const trust = 6;
+const trust = 6n;
 const tag = ethers.id('tag');
 const salt = ethers.id('salt');
 let sign: string;
