@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { ZeroAddress, ZeroHash } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     AppRegistry__factory,
@@ -56,20 +57,20 @@ export default async function deploy() {
     const chainId = Number((await ethers.provider.getNetwork()).chainId);
     const [owner] = await ethers.getSigners();
     const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
-    const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
+    const salt = process.env.SALT || deploymentOptions.v5.salt || ZeroHash;
     const factoryDeployer = new FactoryDeployerHelper(owner, salt);
     // Deploy RLC
     const isTokenMode = deploymentOptions.asset == 'Token';
     let rlcInstanceAddress = isTokenMode
         ? await getOrDeployRlc(deploymentOptions.token, owner) // token
-        : ethers.ZeroAddress; // native
+        : ZeroAddress; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
     const erc1538UpdateAddress = await factoryDeployer.deployWithFactory(
         new ERC1538UpdateDelegate__factory(),
     );
     const transferOwnershipCall = await Ownable__factory.connect(
-        ethers.ZeroAddress, // any is fine
+        ZeroAddress, // any is fine
         owner, // any is fine
     )
         .transferOwnership.populateTransaction(owner.address)
@@ -155,13 +156,13 @@ export default async function deploy() {
     // Check if registries have been initialized and set base URIs
     if (!(await appRegistryInstance.initialized())) {
         await appRegistryInstance
-            .initialize(deploymentOptions.v3.AppRegistry || ethers.ZeroAddress)
+            .initialize(deploymentOptions.v3.AppRegistry || ZeroAddress)
             .then((tx) => tx.wait());
         await appRegistryInstance.setBaseURI(`${baseURIApp}/${chainId}/`).then((tx) => tx.wait());
     }
     if (!(await datasetRegistryInstance.initialized())) {
         await datasetRegistryInstance
-            .initialize(deploymentOptions.v3.DatasetRegistry || ethers.ZeroAddress)
+            .initialize(deploymentOptions.v3.DatasetRegistry || ZeroAddress)
             .then((tx) => tx.wait());
         await datasetRegistryInstance
             .setBaseURI(`${baseURIDataset}/${chainId}/`)
@@ -169,7 +170,7 @@ export default async function deploy() {
     }
     if (!(await workerpoolRegistryInstance.initialized())) {
         await workerpoolRegistryInstance
-            .initialize(deploymentOptions.v3.WorkerpoolRegistry || ethers.ZeroAddress)
+            .initialize(deploymentOptions.v3.WorkerpoolRegistry || ZeroAddress)
             .then((tx) => tx.wait());
         await workerpoolRegistryInstance
             .setBaseURI(`${baseURIWorkerpool}/${chainId}/`)
@@ -178,8 +179,7 @@ export default async function deploy() {
 
     // Set main configuration
     const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
-    const iexecInitialized =
-        (await iexecAccessorsInstance.eip712domain_separator()) != ethers.ZeroHash;
+    const iexecInitialized = (await iexecAccessorsInstance.eip712domain_separator()) != ZeroHash;
     if (!iexecInitialized) {
         await IexecMaintenanceDelegate__factory.connect(erc1538ProxyAddress, owner)
             .configure(
@@ -190,7 +190,7 @@ export default async function deploy() {
                 appRegistryAddress,
                 datasetRegistryAddress,
                 workerpoolRegistryAddress,
-                ethers.ZeroAddress,
+                ZeroAddress,
             )
             .then((tx) => tx.wait());
     }

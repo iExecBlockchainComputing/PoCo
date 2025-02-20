@@ -8,7 +8,7 @@ import {
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate__factory,
 } from '../../typechain';
-import { mineBlockIfOnLocalFork } from '../mine';
+import { mineBlockIfOnLocalFork } from '../../utils/mine';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
 
 (async () => {

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { time } from '@nomicfoundation/hardhat-network-helpers';
-import { BytesLike } from 'ethers';
+import { BytesLike, ZeroHash } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import CONFIG from '../../config/config.json';
 import {
@@ -74,7 +74,7 @@ export async function addModulesToProxy() {
         Array(updates.length).fill(erc1538ProxyAddress),
         Array(updates.length).fill(0),
         updates,
-        ethers.ZeroHash,
+        ZeroHash,
         operationSalt,
     ] as [string[], bigint[], BytesLike[], BytesLike, BytesLike];
     console.log('Scheduling proxy update..');

@@ -10,6 +10,7 @@ import {
     Interface,
     TypedDataDomain,
     ZeroAddress,
+    ZeroHash,
 } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import config from '../../config/config.json';
@@ -312,9 +313,9 @@ export class IexecWrapper {
                 this.accounts.appProvider.address,
                 'my-app',
                 'APP_TYPE_0',
-                ethers.ZeroHash,
-                ethers.ZeroHash,
-                ethers.ZeroHash,
+                ZeroHash,
+                ZeroHash,
+                ZeroHash,
             )
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(appReceipt);
@@ -327,12 +328,7 @@ export class IexecWrapper {
             this.accounts.datasetProvider,
         );
         const datasetReceipt = await datasetRegistry
-            .createDataset(
-                this.accounts.datasetProvider.address,
-                'my-dataset',
-                ethers.ZeroHash,
-                ethers.ZeroHash,
-            )
+            .createDataset(this.accounts.datasetProvider.address, 'my-dataset', ZeroHash, ZeroHash)
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(datasetReceipt);
     }

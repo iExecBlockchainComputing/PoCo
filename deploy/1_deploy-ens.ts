@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
     ENS,
@@ -75,8 +76,8 @@ export default async function deployEns() {
      */
     async function registerDomain(label: string, domain: string = ''): Promise<FIFSRegistrar> {
         const name = domain ? `${label}.${domain}` : `${label}`;
-        const labelHash = label ? labelhash(label) : ethers.ZeroHash;
-        const nameHash = name ? ethers.namehash(name) : ethers.ZeroHash;
+        const labelHash = label ? labelhash(label) : ZeroHash;
+        const nameHash = name ? ethers.namehash(name) : ZeroHash;
         const existingRegistrarAddress = await ens.owner(nameHash);
         let registrar;
         let registrarAddress;
