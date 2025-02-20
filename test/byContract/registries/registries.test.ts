@@ -511,7 +511,7 @@ describe('Registries', () => {
                 ),
             )
                 .to.emit(workerpoolRegistry, 'Transfer')
-                .withArgs(ZeroAddress, scheduler.address, BigInt(predictedAddress).toString());
+                .withArgs(ZeroAddress, scheduler.address, predictedAddress);
             expect(await workerpoolRegistry.balanceOf(scheduler.address)).to.equal(
                 initialWorkerpoolBalance + 1n,
             );
