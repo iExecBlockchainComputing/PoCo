@@ -23,7 +23,7 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 const CONFIG = require('../../../config/config.json');
 
-const timeRef = CONFIG.categories[0].workClockTimeRef;
+const timeRef = BigInt(CONFIG.categories[0].workClockTimeRef);
 const volume = 3n;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const standardDealTag = ZeroHash;
@@ -93,7 +93,7 @@ describe('IexecPoco2#contribute', () => {
             requester: requester.address,
             prices: ordersPrices,
             volume,
-            trust: 0,
+            trust: 0n,
             tag: standardDealTag,
         });
     }
@@ -107,7 +107,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 3,
+                    trust: 3n,
                     tag: teeDealTag,
                 }).toArray(),
             );
@@ -200,7 +200,7 @@ describe('IexecPoco2#contribute', () => {
             expect(task.status).equal(TaskStatusEnum.REVEALING);
             expect(task.consensusValue).equal(buildResultHash(taskId, resultDigest));
             assert(contributeBlockTimestamp != undefined);
-            expect(task.revealDeadline).equal(contributeBlockTimestamp + timeRef * 2);
+            expect(task.revealDeadline).equal(contributeBlockTimestamp + timeRef * 2n);
             expect(task.revealCounter).equal(0);
             expect(task.winnerCounter).equal(winningWorkers.length);
         });
@@ -212,7 +212,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 0,
+                    trust: 0n,
                     tag: teeDealTag,
                 }).toArray(),
             );
@@ -337,7 +337,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 3, // so consensus is not yet reached on first contribution
+                    trust: 3n, // so consensus is not yet reached on first contribution
                     tag: standardDealTag,
                 }).toArray(),
             );
@@ -395,7 +395,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 0,
+                    trust: 0n,
                     tag: teeDealTag,
                 }).toArray(),
             );
@@ -460,7 +460,7 @@ describe('IexecPoco2#contribute', () => {
                     requester: requester.address,
                     prices: ordersPrices,
                     volume,
-                    trust: 0,
+                    trust: 0n,
                     tag: teeDealTag,
                 }).toArray(),
             );

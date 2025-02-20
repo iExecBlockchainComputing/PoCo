@@ -210,7 +210,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(deal.workerReward)
                 .to.be.equal((workerpoolPrice * (100n - schedulerRewardRatio)) / 100n)
                 .to.be.greaterThan(0);
-            expect(deal.deadline).to.be.equal(startTime + 7 * 300); // Category 0
+            expect(deal.deadline).to.be.equal(startTime + 7n * 300n); // Category 0
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(1);
             expect(deal.shortTag).to.be.equal('0x000001');
@@ -375,7 +375,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(deal.workerReward)
                 .to.be.equal((workerpoolPrice * (100n - schedulerRewardRatio)) / 100n)
                 .to.be.greaterThan(0);
-            expect(deal.deadline).to.be.equal(startTime + 7 * 300); // Category 0
+            expect(deal.deadline).to.be.equal(startTime + 7n * 300n); // Category 0
             expect(deal.botFirst).to.be.equal(0);
             expect(deal.botSize).to.be.equal(1);
             expect(deal.shortTag).to.be.equal('0x000001');
@@ -649,7 +649,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
             expect(await iexecInstance.balanceOf(kittyAddress)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(0);
-            await time.setNextBlockTimestamp(startTime + 7 * 300);
+            await time.setNextBlockTimestamp(startTime + 7n * 300n);
 
             await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
                 .to.emit(iexecPocoBoostInstance, 'Transfer')
@@ -730,7 +730,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             expect(await iexecInstance.frozenOf(scheduler.address)).to.be.equal(schedulerDealStake);
             expect(await iexecInstance.balanceOf(kittyAddress)).to.be.equal(0);
             expect(await iexecInstance.frozenOf(kittyAddress)).to.be.equal(0);
-            await time.setNextBlockTimestamp(startTime + 7 * 300);
+            await time.setNextBlockTimestamp(startTime + 7n * 300n);
 
             await expect(iexecPocoBoostInstance.connect(anyone).claimBoost(dealId, taskIndex))
                 .to.emit(iexecPocoBoostInstance, 'Transfer')

@@ -11,7 +11,7 @@ import { hashOrder } from './createOrders';
 export interface Category {
     name: string;
     description: string;
-    workClockTimeRef: number;
+    workClockTimeRef: bigint;
 }
 
 export enum TaskStatusEnum {
@@ -219,7 +219,7 @@ export async function signMessage(signerAccount: SignerWithAddress, message: str
  * @returns timestamp of the next block.
  */
 export async function setNextBlockTimestamp() {
-    const startTime = (await time.latest()) + 10;
+    const startTime = BigInt((await time.latest()) + 10);
     await time.setNextBlockTimestamp(startTime);
     return startTime;
 }

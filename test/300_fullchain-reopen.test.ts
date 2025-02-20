@@ -114,7 +114,7 @@ describe('Integration tests', function () {
             requester: requester.address,
             tag: standardDealTag,
             volume,
-            trust: 4,
+            trust: 4n,
         });
         const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
