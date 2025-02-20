@@ -3,7 +3,7 @@ import json from '../config/config.json';
 
 const config = json as Config;
 
-function isNativeChain(chain?: Chain) {
+function isNativeChain(chain?: ChainConfig) {
     chain = chain ?? config.chains.default;
     return chain.asset === 'Native' || process.env.TEST__IS_NATIVE_CHAIN === 'true';
 }
@@ -11,7 +11,7 @@ function isNativeChain(chain?: Chain) {
 /**
  * Get the config of the current chain or throw if it is not defined.
  */
-function getChainConfig(chainId: bigint): Chain {
+function getChainConfig(chainId: bigint): ChainConfig {
     const chainConfig = config.chains[chainId.toString()];
     if (!chainConfig) {
         throw new Error(`Chain config undefined for chain ${chainId}`);
@@ -19,7 +19,7 @@ function getChainConfig(chainId: bigint): Chain {
     return chainConfig;
 }
 
-function getChainConfigOrDefault(chainId: bigint): Chain {
+function getChainConfigOrDefault(chainId: bigint): ChainConfig {
     return config.chains[chainId.toString()] ?? config.chains.default;
 }
 
@@ -31,11 +31,11 @@ type Config = {
         workerpool: string;
     };
     chains: {
-        [key: string]: Chain;
+        [key: string]: ChainConfig;
     };
 };
 
-type Chain = {
+type ChainConfig = {
     _comment: string;
     asset: string;
     token?: string | null;
