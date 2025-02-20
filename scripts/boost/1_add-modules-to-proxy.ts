@@ -1,15 +1,14 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
-import { ZeroAddress } from 'ethers';
 import hre, { ethers } from 'hardhat';
-import { getChainConfig } from '../../utils/config';
 import {
     IexecPocoBoostAccessors__factory,
     IexecPocoBoost__factory,
     TimelockController__factory,
 } from '../../typechain';
 import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
+import config from '../../utils/config';
 import {
     encodeModuleProxyUpdate,
     logTxData,
@@ -19,7 +18,7 @@ import {
 
 (async () => {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = getChainConfig(chainId).v5;
+    const deploymentOptions = config.getChainConfig(chainId).v5;
     console.log('Link Boost functions to proxy:');
     if (!deploymentOptions.ERC1538Proxy) {
         throw new Error('ERC1538Proxy is required');

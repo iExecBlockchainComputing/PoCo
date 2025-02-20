@@ -49,7 +49,7 @@ import {
     getTaskId,
     setNextBlockTimestamp,
 } from '../../utils/poco-tools';
-import { isNativeChain } from '../../utils/config';
+import config from '../../utils/config';
 
 export class IexecWrapper {
     proxyAddress: string;
@@ -81,7 +81,7 @@ export class IexecWrapper {
      * @param account Deposit value for an account.
      */
     async depositInIexecAccount(account: SignerWithAddress, value: bigint) {
-        if (isNativeChain()) {
+        if (config.isNativeChain()) {
             await IexecInterfaceNative__factory.connect(this.proxyAddress, account)
                 .deposit({
                     value: (value * 10n ** 9n).toString(),

@@ -6,7 +6,6 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { BytesLike, ZeroAddress } from 'ethers';
 import hre, { deployments, ethers } from 'hardhat';
-import { config } from '../../../utils/config';
 import {
     AppRegistry,
     AppRegistry__factory,
@@ -26,6 +25,7 @@ import {
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../../typechain';
+import config from '../../../utils/config';
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { bigintToAddress } from '../../../utils/tools';

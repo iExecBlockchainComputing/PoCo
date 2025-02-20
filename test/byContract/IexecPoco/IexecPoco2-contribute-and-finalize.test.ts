@@ -10,6 +10,7 @@ import {
     IexecInterfaceNative__factory,
     TestClient__factory,
 } from '../../../typechain';
+import config from '../../../utils/config';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     ContributionStatusEnum,
@@ -24,7 +25,6 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { config } from '../../../utils/config';
 
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;

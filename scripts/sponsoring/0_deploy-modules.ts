@@ -1,6 +1,4 @@
-import { ZeroAddress } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import { getChainConfig } from '../../utils/config';
 import {
     GenericFactory__factory,
     IexecOrderManagementDelegate__factory,
@@ -8,6 +6,7 @@ import {
     IexecPoco2Delegate__factory,
     IexecPocoAccessorsDelegate__factory,
 } from '../../typechain';
+import config from '../../utils/config';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
 
 if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
@@ -21,7 +20,7 @@ export async function deployModules() {
     const [deployer] = await ethers.getSigners();
     console.log(`Deployer: ${deployer.address}`);
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = getChainConfig(chainId).v5;
+    const deploymentOptions = config.getChainConfig(chainId).v5;
     if (!deploymentOptions.IexecLibOrders_v5) {
         throw new Error('IexecLibOrders_v5 is required');
     }

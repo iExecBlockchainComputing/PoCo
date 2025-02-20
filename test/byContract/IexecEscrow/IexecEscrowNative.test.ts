@@ -7,8 +7,8 @@ import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-help
 import { expect } from 'chai';
 import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
-import { isNativeChain } from '../../../utils/config';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import config from '../../../utils/config';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import { setZeroAddressBalance } from '../../utils/utils';
@@ -19,7 +19,7 @@ const depositArgs = [{ value: nativeDepositAmount }] as [{ value: bigint }];
 const withdrawAmount = 100n;
 const withdrawArg = [withdrawAmount] as [bigint];
 
-if (isNativeChain()) {
+if (config.isNativeChain()) {
     describe('EscrowNative', () => {
         let proxyAddress: string;
         let [iexecPoco, , iexecPocoAsAccountA, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];

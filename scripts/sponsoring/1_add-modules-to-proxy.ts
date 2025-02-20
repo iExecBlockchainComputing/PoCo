@@ -2,7 +2,6 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import hre, { ethers } from 'hardhat';
-import { getChainConfig } from '../../utils/config';
 import {
     IexecOrderManagementDelegate__factory,
     IexecPoco1Delegate__factory,
@@ -11,6 +10,7 @@ import {
     Ownable__factory,
     TimelockController__factory,
 } from '../../typechain';
+import config from '../../utils/config';
 import {
     encodeModuleProxyUpdate,
     logTxData,
@@ -26,7 +26,7 @@ if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
 
 export async function addModulesToProxy() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = getChainConfig(chainId).v5;
+    const deploymentOptions = config.getChainConfig(chainId).v5;
     console.log('Link functions to proxy:');
     if (!deploymentOptions.ERC1538Proxy) {
         throw new Error('ERC1538Proxy is required');

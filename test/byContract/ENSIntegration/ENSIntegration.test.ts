@@ -13,9 +13,9 @@ import {
     PublicResolver__factory,
     ReverseRegistrar__factory,
 } from '../../../typechain';
+import config from '../../../utils/config';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { isNativeChain } from '../../../utils/config';
 
 describe('ENSIntegration', () => {
     let proxyAddress: string;
@@ -40,7 +40,7 @@ describe('ENSIntegration', () => {
 
     describe('Forward resolution', () => {
         it('Should resolve initial names', async () => {
-            if (!isNativeChain()) {
+            if (!config.isNativeChain()) {
                 expect(await resolve('rlc.iexec.eth')).to.equal(await iexecPoco.token());
             }
             expect(await resolve('admin.iexec.eth')).to.equal(iexecAdmin.address);

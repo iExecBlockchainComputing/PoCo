@@ -1,9 +1,9 @@
 import { Category } from './poco-tools';
 import json from '../config/config.json';
 
-export const config = json as Config;
+const config = json as Config;
 
-export function isNativeChain(chain?: Chain) {
+function isNativeChain(chain?: Chain) {
     chain = chain ?? getDefaultChainConfig();
     return chain.asset === 'Native' || process.env.IS_NATIVE_CHAIN === 'true';
 }
@@ -11,7 +11,7 @@ export function isNativeChain(chain?: Chain) {
 /**
  * Get the config of the current chain or throw if it is not defined.
  */
-export function getChainConfig(chainId: bigint): Chain {
+function getChainConfig(chainId: bigint): Chain {
     const chainConfig = config.chains[chainId.toString()];
     if (!chainConfig) {
         throw new Error(`Chain config undefined for chain ${chainId}`);
@@ -19,7 +19,7 @@ export function getChainConfig(chainId: bigint): Chain {
     return chainConfig;
 }
 
-export function getDefaultChainConfig(): Chain {
+function getDefaultChainConfig(): Chain {
     return config.chains.default;
 }
 
@@ -56,4 +56,11 @@ type Chain = {
         ERC1538Proxy?: string;
         IexecLibOrders_v5?: string;
     };
+};
+
+export default {
+    ...config,
+    isNativeChain,
+    getChainConfig,
+    getDefaultChainConfig,
 };

@@ -36,10 +36,9 @@ import {
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
+import config from '../utils/config';
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
-import { Category } from '../utils/poco-tools';
 import { linkContractToProxy } from '../utils/proxy-tools';
-import { config, getChainConfig, getDefaultChainConfig, isNativeChain } from '../utils/config';
 
 /**
  * @dev Deploying contracts with `npx hardhat deploy` task brought by
@@ -55,11 +54,11 @@ export default async function deploy() {
     console.log('Deploying PoCo..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
-    const deploymentOptions = getChainConfig(chainId) || getDefaultChainConfig();
+    const deploymentOptions = config.getChainConfig(chainId) || config.getDefaultChainConfig();
     const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
     const factoryDeployer = new FactoryDeployerHelper(owner, salt);
     // Deploy RLC
-    const isTokenMode = !isNativeChain(deploymentOptions);
+    const isTokenMode = !config.isNativeChain(deploymentOptions);
     let rlcInstanceAddress = isTokenMode
         ? await getOrDeployRlc(deploymentOptions.token!, owner) // token
         : ethers.ZeroAddress; // native

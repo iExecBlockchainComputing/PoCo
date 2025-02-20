@@ -5,7 +5,7 @@ import { duration } from '@nomicfoundation/hardhat-network-helpers/dist/src/help
 import hre, { ethers } from 'hardhat';
 import { TimelockController__factory } from '../typechain';
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
-import { getChainConfig, getDefaultChainConfig } from '../utils/config';
+import config from '../utils/config';
 
 /**
  * Deploy TimelockController contract using the generic factory.
@@ -16,7 +16,9 @@ export const deploy = async () => {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await hre.ethers.getSigners();
     const salt =
-        process.env.SALT || getChainConfig(chainId).v5.salt || getDefaultChainConfig().v5.salt;
+        process.env.SALT ||
+        config.getChainConfig(chainId).v5.salt ||
+        config.getDefaultChainConfig().v5.salt;
 
     // Initialize factory deployer
     const factoryDeployer = new FactoryDeployerHelper(owner, salt);
