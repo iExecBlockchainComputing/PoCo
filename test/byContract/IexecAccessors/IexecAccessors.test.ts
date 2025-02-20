@@ -28,7 +28,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { hashDomain } from '../IexecMaintenance/IexecMaintenance.test';
+import { hashDomain } from '../../utils/utils';
 
 /**
  * Test state view functions.

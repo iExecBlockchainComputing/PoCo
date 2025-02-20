@@ -40,12 +40,15 @@ jobs:
             test/byContract/IexecAccessors/** \
             test/byContract/IexecCategoryManager/** \
             test/byContract/IexecERC20/** \
+            test/byContract/IexecEscrow/** \
+            test/byContract/IexecMaintenance/** \
             test/byContract/IexecOrderManagement/** \
             test/byContract/IexecRelay/** \
             test/byContract/IexecPoco/** \
             test/byContract/IexecPocoBoost/** \
             test/byContract/registries/** \
-            test/*fullchain*
+            test/*fullchain* && \
+            npm run test:native
       - name: Run deployment
         # Basic deployment to make sure everything is ok.
         # Could be removed in the future if not relevant.

@@ -9,10 +9,11 @@
 - Migrate to Ethers v6:
     - Deployment scripts (#187)
     - Tests
-        - ENSIntegration, IexecOrderManagement, IexecRelay (#195)
-        - IexecCategoryManager, IexecERC20 (#192)
+        - IexecEscrow (#199)
+        - ENSIntegration, IexecOrderManagement, IexecRelay (#195, #199)
+        - IexecCategoryManager, IexecERC20 (#192, #199)
         - test/*fullchain* (#190, #196)
-        - IexecAccessors (#189, #191, #196)
+        - IexecAccessors, IexecMaintenance (#189, #191, #199)
         - IexecPoco (#196)
         - `trust` specific field (#201)
         - IexecPocoBoost (#198)

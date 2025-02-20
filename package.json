@@ -13,6 +13,7 @@
     "deploy:timelock": "hardhat run scripts/deploy-timelock.ts",
     "test-storage-layout": "npx hardhat run scripts/test-storage.ts",
     "test": "REPORT_GAS=true npx hardhat test",
+    "test:native": "bash scripts/test/run-native-tests.sh",
     "autotest": "./test.sh",
     "coverage": "npx hardhat coverage",
     "verify": "npx hardhat verify",
