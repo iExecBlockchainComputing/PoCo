@@ -4,7 +4,7 @@ import { HashZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { BigNumberish, BytesLike, TypedDataDomain } from 'ethers';
+import { BytesLike, TypedDataDomain } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     ERC1271Mock__factory,
@@ -1327,14 +1327,13 @@ describe('IexecPocoBoost', function () {
             const taskPrice = appPrice + datasetPrice + workerpoolPrice;
             const volume = 3n;
             const dealPrice = taskPrice * volume;
-            const oracleConsumerAddress = await oracleConsumerInstance.getAddress();
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
                 prices: ordersPrices,
                 volume: volume,
-                callback: oracleConsumerAddress,
+                callback: await oracleConsumerInstance.getAddress(),
             });
             const initialKitty = 10_000_000_010n; // MIN_KITTY * 10 + 10,
             // Fill kitty
@@ -1659,12 +1658,11 @@ describe('IexecPocoBoost', function () {
                 someContractAddress,
                 anyone,
             );
-            const revertingOracleConsumerAddress = await revertingOracleConsumer.getAddress();
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
-                callback: revertingOracleConsumerAddress, // will revert
+                callback: await revertingOracleConsumer.getAddress(), // will revert
             });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester, taskIndex);
@@ -2037,7 +2035,7 @@ describe('IexecPocoBoost', function () {
                 schedulerSignature,
                 constants.NULL.ADDRESS,
                 constants.NULL.SIGNATURE,
-            ] as [BytesLike, BigNumberish, BytesLike, BytesLike, BytesLike, string, BytesLike];
+            ] as [BytesLike, bigint, BytesLike, BytesLike, BytesLike, string, BytesLike];
             const successfulTxGasLimit = await iexecPocoBoostInstance
                 .connect(worker)
                 .pushResultBoost.estimateGas(...pushResultArgs);
@@ -2422,7 +2420,7 @@ function addressToBytes32(address: string): string {
  * @returns amount of total stake
  */
 function computeSchedulerDealStake(workerpoolPrice: bigint, volume: bigint) {
-    return (workerpoolPrice * workerpoolStakeRatio * volume) / 100n;
+    return ((workerpoolPrice * workerpoolStakeRatio) / 100n) * volume;
 }
 
 async function expectOrderConsumed(orderHash: string, expectedConsumedVolume: bigint) {
