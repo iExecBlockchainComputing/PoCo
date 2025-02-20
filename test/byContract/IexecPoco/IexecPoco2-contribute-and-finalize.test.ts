@@ -30,7 +30,7 @@ const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 const taskPrice = appPrice + datasetPrice + workerpoolPrice;
-const timeRef = CONFIG.categories[0].workClockTimeRef;
+const timeRef = BigInt(CONFIG.categories[0].workClockTimeRef);
 const trust = 1n;
 const volume = 1n;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
@@ -149,7 +149,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
         expect(task.consensusValue).to.equal(resultHash);
-        expect(task.revealDeadline).to.equal(contributeAndFinalizeBlockTimestamp + timeRef * 2);
+        expect(task.revealDeadline).to.equal(contributeAndFinalizeBlockTimestamp + timeRef * 2n);
         expect(task.revealCounter).to.equal(1);
         expect(task.winnerCounter).to.equal(1);
         expect(task.resultDigest).to.equal(resultsCallbackDigest);

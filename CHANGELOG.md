@@ -15,6 +15,7 @@
         - IexecAccessors (#189, #191, #196)
         - IexecPoco (#196)
         - `trust` specific field (#201)
+        - IexecPocoBoost (#198)
 - Migrate scripts to TypeScript: (#184)
     - `getFunctionSignatures.js`, `common-test-snapshot.js`, `test-storage.js`, `timelock.js`
 - Migrated utility files to TypeScript : (#183)
