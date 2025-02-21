@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import config from '../../config/config.json';
 import deploy from '../../deploy/0_deploy';
 import deployEns from '../../deploy/1_deploy-ens';
 import { IexecInterfaceNative__factory } from '../../typechain';
+import config from '../../utils/config';
 import { getIexecAccounts } from '../../utils/poco-tools';
 
 async function deployAll() {
@@ -18,7 +18,10 @@ async function deployAll() {
 
 async function setUpLocalFork() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const proxyAddress = config.chains[chainId].v5.ERC1538Proxy;
+    const proxyAddress = config.getChainConfig(chainId).v5.ERC1538Proxy;
+    if (!proxyAddress) {
+        throw new Error('ERC1538Proxy is required');
+    }
     // Send RLCs to default accounts
     const srlcRichSigner = await ethers.getImpersonatedSigner(proxyAddress);
     const otherAccountInitAmount =

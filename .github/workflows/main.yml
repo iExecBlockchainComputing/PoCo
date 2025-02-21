@@ -40,6 +40,8 @@ jobs:
         run: npm run deploy:timelock
       - name: Run coverage
         run: npm run coverage
+      - name: Run partial native tests
+        run: npm run test:native
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
@@ -17,9 +17,9 @@ const datasetPrice = 2;
 const workerpoolPrice = 3;
 const volume = 4;
 const category = 5;
-const trust = 6;
-const tag = ethers.utils.id('tag');
-const salt = ethers.utils.id('salt');
+const trust = 6n;
+const tag = ethers.id('tag');
+const salt = ethers.id('salt');
 let sign: string;
 
 describe('IexecRelay', async () => {

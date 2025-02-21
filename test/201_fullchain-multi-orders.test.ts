@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import {
@@ -24,14 +24,15 @@ import {
     buildUtf8ResultAndDigest,
     getIexecAccounts,
 } from '../utils/poco-tools';
+import { maxBigInt, minBigInt } from '../utils/tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice1 = 1_000_000_015;
-const workerpoolPrice2 = 1_000_000_025;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice1 = 1_000_000_015n;
+const workerpoolPrice2 = 1_000_000_025n;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
@@ -73,7 +74,7 @@ describe('Integration tests', function () {
         ordersPrices = {
             app: appPrice,
             dataset: datasetPrice,
-            workerpool: 0, // Overridden below.
+            workerpool: 0n, // Overridden below.
         };
     }
 
@@ -82,11 +83,11 @@ describe('Integration tests', function () {
      * for the same workerpool and only 1 request order.
      */
     it('[1] No sponsorship, no beneficiary, no callback, BoT, no replication, 2 workerpool orders', async function () {
-        const volume = 3;
-        const workerpoolOrderVolume1 = 2;
-        const workerpoolOrderVolume2 = 10;
-        const dealVolume1 = Math.min(workerpoolOrderVolume1, volume); // min(2, 3);
-        const dealVolume2 = Math.min(workerpoolOrderVolume2, volume - dealVolume1); // min(10, 1)
+        const volume = 3n;
+        const workerpoolOrderVolume1 = 2n;
+        const workerpoolOrderVolume2 = 10n;
+        const dealVolume1 = minBigInt(workerpoolOrderVolume1, volume); // min(2, 3);
+        const dealVolume2 = minBigInt(workerpoolOrderVolume2, volume - dealVolume1); // min(10, 1)
         const taskPrice1 = appPrice + datasetPrice + workerpoolPrice1;
         const taskPrice2 = appPrice + datasetPrice + workerpoolPrice2;
         // Create default orders.
@@ -109,7 +110,7 @@ describe('Integration tests', function () {
         workerpoolOrder1.workerpoolprice = workerpoolPrice1;
         workerpoolOrder2.volume = workerpoolOrderVolume2;
         workerpoolOrder2.workerpoolprice = workerpoolPrice2;
-        requestOrder.workerpoolmaxprice = Math.max(workerpoolPrice1, workerpoolPrice2);
+        requestOrder.workerpoolmaxprice = maxBigInt(workerpoolPrice1, workerpoolPrice2);
         // Match both workerpool orders with the same request order.
         const dealOrders1 = new IexecOrders(
             appOrder,
@@ -175,7 +176,7 @@ describe('Integration tests', function () {
         );
         await runTaskThenCheckBalancesAndVolumes(
             dealId1,
-            taskIndex1 + 1,
+            taskIndex1 + 1n,
             taskPrice1,
             schedulerStakePerTaskOfDeal1,
             schedulerRewardPerTaskOfDeal1,
@@ -201,11 +202,11 @@ describe('Integration tests', function () {
 
     async function runTaskThenCheckBalancesAndVolumes(
         dealId: string,
-        taskIndex: number,
-        taskPrice: number,
-        schedulerStake: number,
-        schedulerReward: number,
-        workerReward: number,
+        taskIndex: bigint,
+        taskPrice: bigint,
+        schedulerStake: bigint,
+        schedulerReward: bigint,
+        workerReward: bigint,
     ) {
         // Save frozens before task execution.
         const accounts = [requester, scheduler, appProvider, datasetProvider, worker1];
@@ -246,9 +247,9 @@ describe('Integration tests', function () {
         const expectedFrozenChanges = [
             -taskPrice, // Requester
             -schedulerStake, // Scheduler
-            0, // AppProvider
-            0, // DatasetProvider
-            0, // Worker
+            0n, // AppProvider
+            0n, // DatasetProvider
+            0n, // Worker
         ];
         await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
     }

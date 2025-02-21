@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
@@ -31,9 +31,9 @@ import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 const callbackAddress = ethers.Wallet.createRandom().address;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
@@ -106,7 +106,7 @@ describe('Integration tests', function () {
     }
 
     it('[1] Sponsorship, beneficiary, callback, BoT, replication', async function () {
-        const volume = 3;
+        const volume = 3n;
         // Create deal.
         const workers = [worker1, worker2];
         const orders = buildOrders({
@@ -117,7 +117,7 @@ describe('Integration tests', function () {
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
-            trust: workers.length ** 2 - 1,
+            trust: BigInt(workers.length ** 2 - 1),
         });
         const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndSponsorMatchOrders(
             ...orders.toArray(),
@@ -135,9 +135,9 @@ describe('Integration tests', function () {
         const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => deal.workerStake);
         // Finalize each task and check balance changes.
-        for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
+        for (let taskIndex = 0n; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
             for (const worker of workers) {
                 await iexecWrapper.contributeToTask(
@@ -163,10 +163,10 @@ describe('Integration tests', function () {
             const expectedProxyBalanceChange = -(
                 taskPrice +
                 schedulerStakePerTask +
-                workerStakePerTask * workers.length
+                workerStakePerTask * BigInt(workers.length)
             );
             const expectedWinningWorkerBalanceChange =
-                workerStakePerTask + workersRewardPerTask / workers.length;
+                workerStakePerTask + workersRewardPerTask / BigInt(workers.length);
             await expect(finalizeTx).to.changeTokenBalances(
                 iexecPoco,
                 [proxyAddress, ...accounts],
@@ -182,22 +182,22 @@ describe('Integration tests', function () {
             );
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
-            const completedTasks = taskIndex + 1;
+            const completedTasks = taskIndex + 1n;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
                 -taskPrice * completedTasks, // Sponsor
-                0, // Requester
+                0n, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
-                0, // AppProvider
-                0, // DatasetProvider,
-                ...workers.map(() => 0), // Add 0 for each worker
+                0n, // AppProvider
+                0n, // DatasetProvider,
+                ...workers.map(() => 0n), // Add 0 for each worker
             ];
             await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
     it('[2] No sponsorship, beneficiary, callback, BoT, replication', async function () {
-        const volume = 3;
+        const volume = 3n;
         // Create deal.
         const workers = [worker1, worker2];
         const orders = buildOrders({
@@ -208,7 +208,7 @@ describe('Integration tests', function () {
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
-            trust: workers.length ** 2 - 1,
+            trust: BigInt(workers.length ** 2 - 1),
         });
         const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
@@ -227,8 +227,8 @@ describe('Integration tests', function () {
         // Finalize each task and check balance changes.
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
-        for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
+            .then((deal) => deal.workerStake);
+        for (let taskIndex = 0n; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
             for (const worker of workers) {
                 await iexecWrapper.contributeToTask(
@@ -254,10 +254,10 @@ describe('Integration tests', function () {
             const expectedProxyBalanceChange = -(
                 taskPrice +
                 schedulerStakePerTask +
-                workerStakePerTask * workers.length
+                workerStakePerTask * BigInt(workers.length)
             );
             const expectedWinningWorkerBalanceChange =
-                workerStakePerTask + workersRewardPerTask / workers.length;
+                workerStakePerTask + workersRewardPerTask / BigInt(workers.length);
             await expect(finalizeTx).to.changeTokenBalances(
                 iexecPoco,
                 [proxyAddress, ...accounts],
@@ -272,21 +272,21 @@ describe('Integration tests', function () {
             );
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
-            const completedTasks = taskIndex + 1;
+            const completedTasks = taskIndex + 1n;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
                 -taskPrice * completedTasks, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
-                0, // AppProvider
-                0, // DatasetProvider
-                ...workers.map(() => 0), // Add 0 for each worker
+                0n, // AppProvider
+                0n, // DatasetProvider
+                ...workers.map(() => 0n), // Add 0 for each worker
             ];
             await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
     it('[3] Sponsorship, beneficiary, callback, BoT, no replication', async function () {
-        const volume = 3;
+        const volume = 3n;
         // Create deal.
         const orders = buildOrders({
             assets: ordersAssets,
@@ -296,7 +296,7 @@ describe('Integration tests', function () {
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
-            trust: 1,
+            trust: 1n,
         });
         const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndSponsorMatchOrders(
             ...orders.toArray(),
@@ -312,7 +312,7 @@ describe('Integration tests', function () {
         const accounts = [sponsor, requester, scheduler, appProvider, datasetProvider, worker1];
         const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         // Finalize each task and check balance changes.
-        for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
+        for (let taskIndex = 0n; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
             const { workerStakePerTask } = await iexecWrapper.contributeToTeeTask(
                 dealId,
@@ -349,22 +349,22 @@ describe('Integration tests', function () {
             );
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
-            const completedTasks = taskIndex + 1;
+            const completedTasks = taskIndex + 1n;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
                 -taskPrice * completedTasks, // Sponsor
-                0, // Requester
+                0n, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
-                0, // AppProvider
-                0, // DatasetProvider
-                0, // Worker
+                0n, // AppProvider
+                0n, // DatasetProvider
+                0n, // Worker
             ];
             await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
     it('[4] No sponsorship, beneficiary, callback, BoT, no replication', async function () {
-        const volume = 3;
+        const volume = 3n;
         // Create deal.
         const orders = buildOrders({
             assets: ordersAssets,
@@ -374,7 +374,7 @@ describe('Integration tests', function () {
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
-            trust: 1,
+            trust: 1n,
         });
         const { dealId, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
@@ -390,7 +390,7 @@ describe('Integration tests', function () {
         const accounts = [requester, scheduler, appProvider, datasetProvider, worker1];
         const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
         // Finalize each task and check balance changes.
-        for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
+        for (let taskIndex = 0n; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
             const { workerStakePerTask } = await iexecWrapper.contributeToTeeTask(
                 dealId,
@@ -428,21 +428,21 @@ describe('Integration tests', function () {
             );
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
-            const completedTasks = taskIndex + 1;
+            const completedTasks = taskIndex + 1n;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
                 -taskPrice * completedTasks, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
-                0, // AppProvider
-                0, // DatasetProvider
-                0, // Worker
+                0n, // AppProvider
+                0n, // DatasetProvider
+                0n, // Worker
             ];
             await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
         }
     });
 
     it('[5] No sponsorship, no beneficiary, no callback, no BoT, no replication', async function () {
-        const volume = 1;
+        const volume = 1n;
         // Create deal.
         const orders = buildOrders({
             assets: ordersAssets,
@@ -450,7 +450,7 @@ describe('Integration tests', function () {
             requester: requester.address,
             tag: teeDealTag,
             volume,
-            trust: 1,
+            trust: 1n,
         });
         const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
@@ -464,7 +464,7 @@ describe('Integration tests', function () {
         // Save frozens
         const accounts = [requester, scheduler, appProvider, datasetProvider, worker1];
         const accountsInitialFrozens = await iexecWrapper.getInitialFrozens(accounts);
-        const taskIndex = 0;
+        const taskIndex = 0n;
         const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
         const { workerStakePerTask } = await iexecWrapper.contributeToTeeTask(
             dealId,
@@ -501,9 +501,9 @@ describe('Integration tests', function () {
         const expectedFrozenChanges = [
             -dealPrice, // Requester
             -schedulerStakePerTask, // Scheduler
-            0, // AppProvider
-            0, // DatasetProvider
-            0, // Worker
+            0n, // AppProvider
+            0n, // DatasetProvider
+            0n, // Worker
         ];
         await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
     });
@@ -511,7 +511,7 @@ describe('Integration tests', function () {
     describe('Integration tests array of worker', function () {
         for (let workerNumber = 2; workerNumber < 6; workerNumber++) {
             it(`[6.${workerNumber - 1}] No sponsorship, no beneficiary, no callback, no BoT, up to ${workerNumber} workers`, async function () {
-                const volume = 1;
+                const volume = 1n;
                 const allWorkers = [worker1, worker2, worker3, worker4, worker5];
                 const workers = allWorkers.slice(0, workerNumber);
                 const accounts = [requester, scheduler, appProvider, datasetProvider, ...workers];
@@ -522,7 +522,7 @@ describe('Integration tests', function () {
                     requester: requester.address,
                     tag: standardDealTag,
                     volume,
-                    trust: workerNumber ** 2 - 1,
+                    trust: BigInt(workerNumber ** 2 - 1),
                 });
                 const { dealId, dealPrice, schedulerStakePerDeal } =
                     await iexecWrapper.signAndMatchOrders(...orders.toArray());
@@ -538,14 +538,14 @@ describe('Integration tests', function () {
                 for (let i = 0; i < workerNumber; i++) {
                     expect(await iexecPoco.viewScore(workers[i].address)).to.be.equal(0);
                 }
-                const taskId = await iexecWrapper.initializeTask(dealId, 0);
+                const taskId = await iexecWrapper.initializeTask(dealId, 0n);
                 // Finalize each task and check balance changes.
                 const workerStakePerTask = await iexecPoco
                     .viewDeal(dealId)
-                    .then((deal) => deal.workerStake.toNumber());
+                    .then((deal) => deal.workerStake);
 
                 for (let i = 0; i < workerNumber; i++) {
-                    await iexecWrapper.contributeToTask(dealId, 0, resultDigest, workers[i]);
+                    await iexecWrapper.contributeToTask(dealId, 0n, resultDigest, workers[i]);
                 }
                 for (let i = 0; i < workerNumber; i++) {
                     await iexecPoco
@@ -560,10 +560,10 @@ describe('Integration tests', function () {
                 const expectedProxyBalanceChange = -(
                     dealPrice +
                     schedulerStakePerTask +
-                    workerStakePerTask * workers.length
+                    workerStakePerTask * BigInt(workers.length)
                 );
                 const expectedWinningWorkerBalanceChange =
-                    workerStakePerTask + workersRewardPerTask / workerNumber;
+                    workerStakePerTask + workersRewardPerTask / BigInt(workerNumber);
                 await expect(finalizeTx).to.changeTokenBalances(
                     iexecPoco,
                     [proxyAddress, ...accounts],
@@ -582,9 +582,9 @@ describe('Integration tests', function () {
                 const expectedFrozenChanges = [
                     -taskPrice,
                     -schedulerStakePerTask,
-                    0,
-                    0,
-                    ...workers.map(() => 0),
+                    0n,
+                    0n,
+                    ...workers.map(() => 0n),
                 ];
                 await iexecWrapper.checkFrozenChanges(
                     accountsInitialFrozens,
@@ -600,7 +600,7 @@ describe('Integration tests', function () {
     });
 
     it('[7] No sponsorship, no beneficiary, no callback, no BoT, up to 5 workers with 1 bad worker', async function () {
-        const volume = 1;
+        const volume = 1n;
         const allWorkers = [worker1, worker2, worker3, worker4, worker5];
         const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
         const losingWorker = worker1;
@@ -624,7 +624,7 @@ describe('Integration tests', function () {
             requester: requester.address,
             tag: standardDealTag,
             volume,
-            trust: winningWorkers.length,
+            trust: BigInt(winningWorkers.length),
         });
 
         const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
@@ -636,15 +636,15 @@ describe('Integration tests', function () {
         for (const contributor of contributions) {
             expect(await iexecPoco.viewScore(contributor.signer.address)).to.be.equal(0);
         }
-        const taskId = await iexecWrapper.initializeTask(dealId, 0);
+        const taskId = await iexecWrapper.initializeTask(dealId, 0n);
         // Finalize task and check balance changes.
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
+            .then((deal) => deal.workerStake);
         for (const contributor of contributions) {
             await iexecWrapper.contributeToTask(
                 dealId,
-                0,
+                0n,
                 contributor.resultDigest,
                 contributor.signer,
             );
@@ -662,21 +662,21 @@ describe('Integration tests', function () {
         const finalizeTx = await iexecPoco.connect(scheduler).finalize(taskId, results, '0x');
         await finalizeTx.wait();
 
-        const totalWorkerPoolReward = workerpoolPrice + workerStakePerTask * 1; // bad wrokers lose their stake and add it to the pool price
+        const totalWorkerPoolReward = workerpoolPrice + workerStakePerTask * 1n; // bad wrokers lose their stake and add it to the pool price
         // compute expected worker reward for current task
         const workersRewardPerTask = await iexecWrapper.computeWorkersRewardForCurrentTask(
             totalWorkerPoolReward,
             dealId,
         );
         const expectedWinningWorkerBalanceChange =
-            workerStakePerTask + workersRewardPerTask / winningWorkers.length;
+            workerStakePerTask + workersRewardPerTask / BigInt(winningWorkers.length);
         // compute expected scheduler reward for current task
         const schedulerRewardPerTask = totalWorkerPoolReward - workersRewardPerTask;
         const expectedSchedulerBalanceChange = schedulerStakePerTask + schedulerRewardPerTask;
 
         const expectedProxyBalanceChange = -(
             dealPrice +
-            workerStakePerTask * allWorkers.length +
+            workerStakePerTask * BigInt(allWorkers.length) +
             schedulerStakePerTask
         );
         await expect(finalizeTx).to.changeTokenBalances(
@@ -704,9 +704,9 @@ describe('Integration tests', function () {
         const expectedFrozenChanges = [
             -dealPrice,
             -schedulerStakePerTask,
-            0,
-            0,
-            ...allWorkers.map(() => 0),
+            0n,
+            0n,
+            ...allWorkers.map(() => 0n),
         ];
         await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
     });

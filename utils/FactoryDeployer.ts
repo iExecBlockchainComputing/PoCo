@@ -3,10 +3,10 @@
 
 import factoryJson from '@amxx/factory/deployments/GenericFactory.json';
 import factoryShanghaiJson from '@amxx/factory/deployments/GenericFactory_shanghai.json';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { Contract, ethers } from 'ethers';
 import hre from 'hardhat';
-import config from '../config/config.json';
+import config from './config';
 
 interface FactoryConfig {
     address: string;
@@ -17,13 +17,9 @@ interface FactoryConfig {
 }
 
 const factoryConfig: FactoryConfig =
-    config.chains.default.asset === 'Token' && hre.network.name.includes('hardhat')
+    !config.isNativeChain() && hre.network.name.includes('hardhat')
         ? factoryShanghaiJson
         : factoryJson;
-
-async function waitTx(txPromise: Promise<ethers.ContractTransaction>): Promise<void> {
-    await (await txPromise).wait();
-}
 
 export class EthersDeployer {
     private factory!: Contract;
@@ -36,13 +32,15 @@ export class EthersDeployer {
             } else {
                 try {
                     console.log(`→ Factory is not yet deployed on this network`);
-                    await waitTx(
-                        wallet.sendTransaction({
+                    await wallet
+                        .sendTransaction({
                             to: factoryConfig.deployer,
                             value: factoryConfig.cost,
-                        }),
-                    );
-                    await waitTx(wallet.provider!.sendTransaction(factoryConfig.tx));
+                        })
+                        .then((tx) => tx.wait());
+                    await wallet.provider
+                        .broadcastTransaction(factoryConfig.tx)
+                        .then((tx) => tx.wait());
                     console.log(`→ Factory successfully deployed`);
                 } catch (e) {
                     console.log(`→ Error deploying the factory`);
