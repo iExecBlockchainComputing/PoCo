@@ -13,7 +13,6 @@ import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/
 import config from '../../utils/config';
 import {
     encodeModuleProxyUpdate,
-    logTxData,
     printBlockTime,
     printFunctions,
 } from '../upgrades/upgrade-helper';
@@ -63,7 +62,7 @@ import {
         .connect(timelockAdminSigner)
         .scheduleBatch(...updateProxyArgs, delay)
         .then((tx) => {
-            logTxData(tx);
+            console.log(tx);
             tx.wait();
         });
     await time.increase(delay);
@@ -74,9 +73,9 @@ import {
     await timelockInstance
         .connect(timelockAdminSigner)
         .executeBatch(...updateProxyArgs)
-        .then((x) => {
-            logTxData(x);
-            x.wait();
+        .then((tx) => {
+            console.log(tx);
+            tx.wait();
         });
     await printFunctions(erc1538ProxyAddress);
 })();
