@@ -16,7 +16,7 @@ interface FactoryConfig {
     abi: any[];
 }
 
-const factoryConfig =
+const factoryConfig: FactoryConfig =
     !config.isNativeChain() && hre.network.name.includes('hardhat')
         ? factoryShanghaiJson
         : factoryJson;
