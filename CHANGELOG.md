@@ -7,6 +7,7 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+- Refactor Factory deployer (#206)
 - Enable native tests on CI (#204)
 - Migrate to Ethers v6:
   - Deployment scripts (#187, #203)
