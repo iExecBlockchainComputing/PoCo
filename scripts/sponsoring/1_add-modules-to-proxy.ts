@@ -15,7 +15,6 @@ import {
 } from '../../typechain';
 import {
     encodeModuleProxyUpdate,
-    logTxData,
     printBlockTime,
     printFunctions,
 } from '../upgrades/upgrade-helper';
@@ -109,7 +108,7 @@ export async function addModulesToProxy() {
             .connect(timelockAdminSigner)
             .scheduleBatch(...updateProxyArgs, delay)
             .then((tx) => {
-                logTxData(tx);
+                console.log(tx);
                 return tx.wait();
             });
     }
@@ -122,7 +121,7 @@ export async function addModulesToProxy() {
             .connect(timelockAdminSigner)
             .executeBatch(...updateProxyArgs)
             .then((x) => {
-                logTxData(x);
+                console.log(x);
                 return x.wait();
             });
         await printFunctions(erc1538ProxyAddress);

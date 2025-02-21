@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { ContractTransactionResponse, Interface } from 'ethers';
+import { Interface } from 'ethers';
 import { ethers } from 'hardhat';
 import { ERC1538Query, ERC1538Query__factory, ERC1538Update__factory } from '../../typechain';
 
@@ -20,14 +20,13 @@ function encodeModuleProxyUpdate(ModuleInterface: Interface, moduleAddress: stri
 }
 
 async function printBlockTime() {
-    await ethers.provider.getBlock('latest').then((latestBlock) => {
-        if (latestBlock) {
-            const blockNumber = latestBlock.number;
-            const blockTimestamp = latestBlock.timestamp;
-            const blockDate = new Date(blockTimestamp * 1000);
-            console.log(`Block#${blockNumber}: ${blockDate} (timestamp:${blockTimestamp})`);
-        }
-    });
+    const block = await ethers.provider.getBlock('latest');
+    if (block) {
+        const blockTimestamp = block.timestamp;
+        console.log(
+            `Block#${block.number}: ${new Date(blockTimestamp * 1000)} (timestamp:${blockTimestamp})`,
+        );
+    }
 }
 
 async function printFunctions(erc1538ProxyAddress: string) {
@@ -43,8 +42,4 @@ async function printFunctions(erc1538ProxyAddress: string) {
     }
 }
 
-function logTxData(x: ContractTransactionResponse) {
-    console.log(x);
-}
-
-export { encodeModuleProxyUpdate, printBlockTime, printFunctions, logTxData };
+export { encodeModuleProxyUpdate, printBlockTime, printFunctions };
