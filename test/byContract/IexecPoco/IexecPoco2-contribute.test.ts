@@ -6,6 +6,7 @@ import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { assert, expect } from 'chai';
 import { ZeroAddress, ZeroHash } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import config from '../../../utils/config';
 import { NULL } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
@@ -21,9 +22,8 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-const CONFIG = require('../../../config/config.json');
 
-const timeRef = BigInt(CONFIG.categories[0].workClockTimeRef);
+const timeRef = BigInt(config.categories[0].workClockTimeRef);
 const volume = 3n;
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const standardDealTag = ZeroHash;

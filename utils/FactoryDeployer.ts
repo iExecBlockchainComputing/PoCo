@@ -6,7 +6,7 @@ import factoryShanghaiJson from '@amxx/factory/deployments/GenericFactory_shangh
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { Contract, ethers } from 'ethers';
 import hre from 'hardhat';
-import config from '../config/config.json';
+import config from './config';
 
 interface FactoryConfig {
     address: string;
@@ -17,7 +17,7 @@ interface FactoryConfig {
 }
 
 const factoryConfig: FactoryConfig =
-    config.chains.default.asset === 'Token' && hre.network.name.includes('hardhat')
+    !config.isNativeChain() && hre.network.name.includes('hardhat')
         ? factoryShanghaiJson
         : factoryJson;
 

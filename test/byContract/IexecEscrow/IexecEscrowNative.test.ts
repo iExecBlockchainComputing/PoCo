@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { AddressZero } from '@ethersproject/constants';
@@ -7,8 +7,8 @@ import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-help
 import { expect } from 'chai';
 import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
-import CONFIG from '../../../config/config.json';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import config from '../../../utils/config';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import { setZeroAddressBalance } from '../../utils/utils';
@@ -19,8 +19,7 @@ const depositArgs = [{ value: nativeDepositAmount }] as [{ value: bigint }];
 const withdrawAmount = 100n;
 const withdrawArg = [withdrawAmount] as [bigint];
 
-// TODO: remove this when poco is also available in Native mode
-if (CONFIG.chains.default.asset === 'Native') {
+if (config.isNativeChain()) {
     describe('EscrowNative', () => {
         let proxyAddress: string;
         let [iexecPoco, , iexecPocoAsAccountA, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];

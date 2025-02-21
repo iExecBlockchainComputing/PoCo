@@ -4,13 +4,13 @@
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { BytesLike, ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
-import CONFIG from '../../config/config.json';
 import {
     IexecPocoBoostAccessors__factory,
     IexecPocoBoost__factory,
     TimelockController__factory,
 } from '../../typechain';
 import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
+import config from '../../utils/config';
 import {
     encodeModuleProxyUpdate,
     printBlockTime,
@@ -19,8 +19,11 @@ import {
 
 (async () => {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = CONFIG.chains[chainId].v5;
+    const deploymentOptions = config.getChainConfig(chainId).v5;
     console.log('Link Boost functions to proxy:');
+    if (!deploymentOptions.ERC1538Proxy) {
+        throw new Error('ERC1538Proxy is required');
+    }
     const erc1538ProxyAddress = deploymentOptions.ERC1538Proxy;
     const iexecPocoBoostDelegateAddress = (await deployments.get('IexecPocoBoostDelegate')).address; // Bellecour: 0x8425229f979AB3b0dDDe00D475D762cA4d6a5eFc
     const iexecPocoBoostAccessorsDelegateAddress = (

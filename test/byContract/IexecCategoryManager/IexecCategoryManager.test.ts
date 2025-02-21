@@ -5,9 +5,9 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
-import { Category, getIexecAccounts } from '../../../utils/poco-tools';
+import config from '../../../utils/config';
+import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-const CONFIG = require('../../../config/config.json');
 
 const name = 'name';
 const description = 'description';
@@ -34,9 +34,8 @@ describe('CategoryManager', async () => {
     }
 
     it('Should view categories', async () => {
-        const categories = CONFIG.categories as Category[];
-        for (let i = 0; i < categories.length; i++) {
-            const expectedCategory = categories[i];
+        for (let i = 0; i < config.categories.length; i++) {
+            const expectedCategory = config.categories[i];
             const category = await iexecPocoAsAnyone.viewCategory(i);
             expect(category.name).to.equal(expectedCategory.name);
             expect(category.description).to.equal(JSON.stringify(expectedCategory.description));

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
@@ -7,6 +7,15 @@ import { deployments, ethers } from 'hardhat';
 import { GenericFactory, GenericFactory__factory } from '../typechain';
 import { getBaseNameFromContractFactory } from './deploy-tools';
 const { EthersDeployer: Deployer, factoryAddress } = require('../utils/FactoryDeployer');
+
+// TODO merge FactoryDeployer and FactoryDeployerHelper here.
+// Use:
+// async getFactory() {
+//     if (!this.genericFactory) {
+//         await this.ready();
+//     }
+//     return this.genericFactory;
+// }
 
 export class FactoryDeployerHelper {
     salt: string;

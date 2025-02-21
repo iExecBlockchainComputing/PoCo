@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { deployments, ethers } from 'hardhat';
-import CONFIG from '../../config/config.json';
 import {
     GenericFactory__factory,
     IexecOrderManagementDelegate__factory,
@@ -10,6 +9,7 @@ import {
     IexecPoco2Delegate__factory,
     IexecPocoAccessorsDelegate__factory,
 } from '../../typechain';
+import config from '../../utils/config';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
 
 if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
@@ -23,8 +23,10 @@ export async function deployModules() {
     const [deployer] = await ethers.getSigners();
     console.log(`Deployer: ${deployer.address}`);
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = CONFIG.chains[chainId].v5;
-
+    const deploymentOptions = config.getChainConfig(chainId).v5;
+    if (!deploymentOptions.IexecLibOrders_v5) {
+        throw new Error('IexecLibOrders_v5 is required');
+    }
     const salt = deploymentOptions.salt;
     const libraries = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:

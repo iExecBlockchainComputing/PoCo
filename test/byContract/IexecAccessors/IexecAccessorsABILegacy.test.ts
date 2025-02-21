@@ -170,7 +170,7 @@ describe('IexecAccessorsABILegacy', function () {
     it('[ABILegacy] Should return category', async function () {
         const category = await iexecPocoABILegacy.viewCategoryABILegacy(1);
         expect(category[0]).to.equal('S');
-        expect(category[1]).to.equal('{}');
+        expect(category[1]).to.equal('""');
         expect(category[2]).to.equal(1200);
     });
 });

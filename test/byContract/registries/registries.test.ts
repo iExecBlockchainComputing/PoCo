@@ -6,7 +6,6 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { BytesLike, ZeroAddress } from 'ethers';
 import hre, { deployments, ethers } from 'hardhat';
-import CONFIG from '../../../config/config.json';
 import {
     AppRegistry,
     AppRegistry__factory,
@@ -26,6 +25,7 @@ import {
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../../typechain';
+import config from '../../../utils/config';
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { bigintToAddress } from '../../../utils/tools';
@@ -197,9 +197,9 @@ describe('Registries', () => {
     describe('setBaseURI', () => {
         it('Should retrieve base URI', async () => {
             const chainId = hre.network.config.chainId;
-            const baseURIApp = CONFIG.registriesBaseUri.app;
-            const baseURIDataset = CONFIG.registriesBaseUri.dataset;
-            const baseURIWorkerpool = CONFIG.registriesBaseUri.workerpool;
+            const baseURIApp = config.registriesBaseUri.app;
+            const baseURIDataset = config.registriesBaseUri.dataset;
+            const baseURIWorkerpool = config.registriesBaseUri.workerpool;
             expect(await appRegistry.baseURI()).to.equal(`${baseURIApp}/${chainId}/`);
             expect(await datasetRegistry.baseURI()).to.equal(`${baseURIDataset}/${chainId}/`);
             expect(await workerpoolRegistry.baseURI()).to.equal(`${baseURIWorkerpool}/${chainId}/`);
