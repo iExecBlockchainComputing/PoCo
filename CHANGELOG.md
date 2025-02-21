@@ -8,7 +8,7 @@
 
 ### Features
 - Migrate to Ethers v6:
-    - Deployment scripts (#187)
+    - Deployment scripts (#187, #203)
     - Tests
         - IexecEscrow (#199)
         - ENSIntegration, IexecOrderManagement, IexecRelay (#195, #199)

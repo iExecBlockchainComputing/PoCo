@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import hre, { deployments, ethers } from 'hardhat';
+import { ZeroHash } from 'ethers';
+import { deployments, ethers } from 'hardhat';
 import {
     ENS,
     ENSIntegration__factory,
@@ -24,7 +25,7 @@ export default async function deployEns() {
         console.log('Skipping ENS for public networks');
         return;
     }
-    const [owner] = await hre.ethers.getSigners();
+    const [owner] = await ethers.getSigners();
     const erc1538ProxyAddress = (await deployments.get('ERC1538Proxy')).address;
     const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
     const appRegistryAddress = await iexecAccessorsInstance.appregistry();
@@ -75,8 +76,8 @@ export default async function deployEns() {
      */
     async function registerDomain(label: string, domain: string = ''): Promise<FIFSRegistrar> {
         const name = domain ? `${label}.${domain}` : `${label}`;
-        const labelHash = label ? labelhash(label) : ethers.ZeroHash;
-        const nameHash = name ? ethers.namehash(name) : ethers.ZeroHash;
+        const labelHash = label ? labelhash(label) : ZeroHash;
+        const nameHash = name ? ethers.namehash(name) : ZeroHash;
         const existingRegistrarAddress = await ens.owner(nameHash);
         let registrar;
         let registrarAddress;

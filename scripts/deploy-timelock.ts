@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { duration } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
-import hre, { ethers } from 'hardhat';
+import { ZeroHash } from 'ethers';
+import { ethers } from 'hardhat';
 import { TimelockController__factory } from '../typechain';
 import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
 const CONFIG = require('../config/config.json');
@@ -14,9 +15,9 @@ const CONFIG = require('../config/config.json');
 export const deploy = async () => {
     console.log('Deploying TimelockController..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const [owner] = await hre.ethers.getSigners();
+    const [owner] = await ethers.getSigners();
     const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
-    const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
+    const salt = process.env.SALT || deploymentOptions.v5.salt || ZeroHash;
 
     // Initialize factory deployer
     const factoryDeployer = new FactoryDeployerHelper(owner, salt);

@@ -1,6 +1,8 @@
-import { BigNumber } from '@ethersproject/bignumber';
-import { BytesLike } from '@ethersproject/bytes';
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 import { time } from '@nomicfoundation/hardhat-network-helpers';
+import { BytesLike, ZeroHash } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import CONFIG from '../../config/config.json';
 import {
@@ -13,7 +15,6 @@ import {
 } from '../../typechain';
 import {
     encodeModuleProxyUpdate,
-    logTxData,
     printBlockTime,
     printFunctions,
 } from '../upgrades/upgrade-helper';
@@ -72,9 +73,9 @@ export async function addModulesToProxy() {
         Array(updates.length).fill(erc1538ProxyAddress),
         Array(updates.length).fill(0),
         updates,
-        ethers.constants.HashZero,
+        ZeroHash,
         operationSalt,
-    ] as [string[], BigNumber[], BytesLike[], BytesLike, BytesLike];
+    ] as [string[], bigint[], BytesLike[], BytesLike, BytesLike];
     console.log('Scheduling proxy update..');
     await printBlockTime();
     const timelockInstance = TimelockController__factory.connect(timelockAddress, ethers.provider);
@@ -107,7 +108,7 @@ export async function addModulesToProxy() {
             .connect(timelockAdminSigner)
             .scheduleBatch(...updateProxyArgs, delay)
             .then((tx) => {
-                logTxData(tx);
+                console.log(tx);
                 return tx.wait();
             });
     }
@@ -120,7 +121,7 @@ export async function addModulesToProxy() {
             .connect(timelockAdminSigner)
             .executeBatch(...updateProxyArgs)
             .then((x) => {
-                logTxData(x);
+                console.log(x);
                 return x.wait();
             });
         await printFunctions(erc1538ProxyAddress);

@@ -237,7 +237,7 @@ describe('IexecAccessors', async () => {
     });
 
     it('teeBroker', async function () {
-        expect(await iexecPoco.teebroker()).to.equal(ethers.ZeroAddress);
+        expect(await iexecPoco.teebroker()).to.equal(ZeroAddress);
     });
 
     it('callbackGas', async function () {
