@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { HashZero as hashZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import { TypedDataEncoder, ZeroHash } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     IexecInterfaceNative,
@@ -15,6 +15,7 @@ import {
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { hashDomain } from '../../utils/utils';
 
 const randomAddress = () => ethers.Wallet.createRandom().address;
 const configureParams = {
@@ -39,7 +40,7 @@ const configureArgs = Object.values(configureParams) as [
 ];
 const someDomainSeparator = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-describe('Maintenance', async () => {
+describe('IexecMaintenance', async () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
     let iexecMaintenanceExtra: IexecMaintenanceExtra;
@@ -120,9 +121,9 @@ describe('Maintenance', async () => {
             await expect(iexecPoco.importScore(worker.address)).to.be.revertedWithoutReason();
         });
         it('Should not import score when already imported', async () => {
-            const workerScoreImportedSlot = ethers.utils.hexStripZeros(
-                ethers.utils.keccak256(
-                    ethers.utils.defaultAbiCoder.encode(
+            const workerScoreImportedSlot = ethers.stripZerosLeft(
+                ethers.keccak256(
+                    ethers.AbiCoder.defaultAbiCoder().encode(
                         ['address', 'uint256'],
                         [
                             worker.address,
@@ -197,7 +198,7 @@ describe('Maintenance', async () => {
     });
 
     async function clearDomainSeparator() {
-        await setDomainSeparatorInStorage(hashZero);
+        await setDomainSeparatorInStorage(ZeroHash);
     }
 
     async function setDomainSeparatorInStorage(domainSeparator: string) {
@@ -210,12 +211,3 @@ describe('Maintenance', async () => {
         expect(await iexecPoco.eip712domain_separator()).equal(domainSeparator);
     }
 });
-
-async function hashDomain(domain: IexecLibOrders_v5.EIP712DomainStructOutput) {
-    return ethers.utils._TypedDataEncoder.hashDomain({
-        name: domain.name,
-        version: domain.version,
-        chainId: domain.chainId,
-        verifyingContract: domain.verifyingContract,
-    });
-}

@@ -1,18 +1,15 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { AddressZero } from '@ethersproject/constants';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { Wallet, ZeroAddress } from 'ethers';
 import {
-    IexecInterfaceNative,
     IexecInterfaceNativeABILegacy,
     IexecInterfaceNativeABILegacy__factory,
-    IexecInterfaceNative__factory,
 } from '../../../typechain';
-import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
+import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     ContributionStatusEnum,
     TaskStatusEnum,
@@ -24,19 +21,18 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const volume = 1;
-const trust = 1;
+const volume = 1n;
+const trust = 1n;
 const categoryId = 1;
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
-const callbackAddress = ethers.Wallet.createRandom().address;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
+const callbackAddress = Wallet.createRandom().address;
 const dealParams = 'params';
 const { resultDigest } = buildUtf8ResultAndDigest('result');
-const taskIndex = 0;
+const taskIndex = 0n;
 
 let proxyAddress: string;
-let iexecPoco: IexecInterfaceNative;
 let iexecPocoABILegacy: IexecInterfaceNativeABILegacy;
 let iexecWrapper: IexecWrapper;
 let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
@@ -49,7 +45,6 @@ let [
     anyone,
     worker1,
 ]: SignerWithAddress[] = [];
-let ordersActors: OrdersActors;
 let ordersAssets: OrdersAssets;
 let ordersPrices: OrdersPrices;
 let [dealId, taskId, resultHash, resultSeal]: string[] = [];
@@ -68,14 +63,7 @@ describe('IexecAccessorsABILegacy', function () {
             accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoABILegacy = IexecInterfaceNativeABILegacy__factory.connect(proxyAddress, anyone);
-        ordersActors = {
-            appOwner: appProvider,
-            datasetOwner: datasetProvider,
-            workerpoolOwner: scheduler,
-            requester: requester,
-        };
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -142,7 +130,7 @@ describe('IexecAccessorsABILegacy', function () {
     });
 
     it('[ABILegacy] Should return account', async function () {
-        const balanceAmount = 3;
+        const balanceAmount = 3n;
         await iexecWrapper.depositInIexecAccount(requester, balanceAmount);
         const account = await iexecPocoABILegacy.viewAccountABILegacy(requester.address);
         expect(account.length).to.equal(2);
@@ -176,13 +164,13 @@ describe('IexecAccessorsABILegacy', function () {
         expect(contribution[0]).to.equal(ContributionStatusEnum.CONTRIBUTED);
         expect(contribution[1]).to.equal(resultHash);
         expect(contribution[2]).to.equal(resultSeal);
-        expect(contribution[3]).to.equal(AddressZero); // enclaveChallenge
+        expect(contribution[3]).to.equal(ZeroAddress); // enclaveChallenge
     });
 
     it('[ABILegacy] Should return category', async function () {
         const category = await iexecPocoABILegacy.viewCategoryABILegacy(1);
         expect(category[0]).to.equal('S');
-        expect(category[1]).to.equal('{}');
+        expect(category[1]).to.equal('""');
         expect(category[2]).to.equal(1200);
     });
 });

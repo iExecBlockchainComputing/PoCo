@@ -7,8 +7,20 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
-
 - Add Halborn "Poco v5.5 & Voucher v1.0" audit report (#205)
+- Enable native tests on CI (#204)
+- Migrate to Ethers v6:
+  - Deployment scripts (#187, #203)
+  - Tests
+    - IexecEscrow (#199)
+    - ENSIntegration, IexecOrderManagement, IexecRelay (#195, #199)
+    - IexecCategoryManager, IexecERC20 (#192, #199, #202)
+    - test/*fullchain* (#190, #196)
+    - IexecAccessors, IexecMaintenance (#189, #191, #199)
+    - IexecPoco (#196)
+    - `trust` specific field (#201)
+    - IexecPocoBoost (#198)
+    - fixed a minor issue in BigInt for IexecWrapper (#202).
 - Migrate scripts to TypeScript: (#184)
   - `getFunctionSignatures.js`, `common-test-snapshot.js`, `test-storage.js`, `timelock.js`
 - Migrated utility files to TypeScript : (#183)

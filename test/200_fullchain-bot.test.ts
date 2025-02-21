@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
@@ -11,9 +11,9 @@ import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
 
 const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const appPrice = 1000;
-const datasetPrice = 1_000_000;
-const workerpoolPrice = 1_000_000_000;
+const appPrice = 1000n;
+const datasetPrice = 1_000_000n;
+const workerpoolPrice = 1_000_000_000n;
 
 let proxyAddress: string;
 let iexecPoco: IexecInterfaceNative;
@@ -81,7 +81,7 @@ describe('Integration tests', function () {
     it('Task Lifecycle with BoT Replication and Error Handling', async function () {
         const workers = [worker1, worker2, worker3, worker4, worker5];
         // Create deal.
-        const volume = 3;
+        const volume = 3n;
         const tasksAndWorkers: {
             [key: number]: {
                 worker: SignerWithAddress;
@@ -111,7 +111,7 @@ describe('Integration tests', function () {
             requester: requester.address,
             tag: standardDealTag,
             volume,
-            trust: 4,
+            trust: 4n,
         });
         const { dealId, dealPrice, schedulerStakePerDeal } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
@@ -128,11 +128,11 @@ describe('Integration tests', function () {
         // Finalize each task and check balance changes.
         const workerStakePerTask = await iexecPoco
             .viewDeal(dealId)
-            .then((deal) => deal.workerStake.toNumber());
-        for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
+            .then((deal) => deal.workerStake);
+        for (let taskIndex = 0n; taskIndex < volume; taskIndex++) {
             const taskId = await iexecWrapper.initializeTask(dealId, taskIndex);
             const initialScores = await getInitialScores(workers);
-            const contributions = tasksAndWorkers[taskIndex];
+            const contributions = tasksAndWorkers[Number(taskIndex)];
             for (const contribution of contributions) {
                 const { worker, useEnclave, result } = contribution;
                 const { resultDigest } = buildUtf8ResultAndDigest(result);
@@ -154,7 +154,9 @@ describe('Integration tests', function () {
                         .then((tx) => tx.wait());
                 }
             }
-            const { results } = buildUtf8ResultAndDigest(tasksAndWorkers[taskIndex][0].result);
+            const { results } = buildUtf8ResultAndDigest(
+                tasksAndWorkers[Number(taskIndex)][0].result,
+            );
             const finalizeTx = await iexecPoco.connect(scheduler).finalize(taskId, results, '0x');
             await finalizeTx.wait();
             expect((await iexecPoco.viewTask(taskId)).status).to.equal(TaskStatusEnum.COMPLETED);
@@ -176,21 +178,21 @@ describe('Integration tests', function () {
                 (worker) => !nonParticipantWorkers.includes(worker),
             );
             const totalWorkerPoolReward =
-                workerpoolPrice + workerStakePerTask * loosingWorkers.length; // bad wrokers lose their stake and add it to the pool price
+                workerpoolPrice + workerStakePerTask * BigInt(loosingWorkers.length); // bad wrokers lose their stake and add it to the pool price
             // compute expected worker reward for current task
             const workersRewardPerTask = await iexecWrapper.computeWorkersRewardForCurrentTask(
                 totalWorkerPoolReward,
                 dealId,
             );
             const expectedWinningWorkerBalanceChange =
-                workerStakePerTask + workersRewardPerTask / winningWorkers.length;
+                workerStakePerTask + workersRewardPerTask / BigInt(winningWorkers.length);
             // compute expected scheduler reward for current task
             const schedulerRewardPerTask = totalWorkerPoolReward - workersRewardPerTask;
             const expectedSchedulerBalanceChange = schedulerStakePerTask + schedulerRewardPerTask;
 
             const expectedProxyBalanceChange = -(
                 taskPrice +
-                workerStakePerTask * participantWorkers.length +
+                workerStakePerTask * BigInt(participantWorkers.length) +
                 schedulerStakePerTask
             );
 
@@ -216,14 +218,14 @@ describe('Integration tests', function () {
             );
             // Multiply amount by the number of finalized tasks to correctly compute
             // stake and reward amounts.
-            const completedTasks = taskIndex + 1;
+            const completedTasks = taskIndex + 1n;
             // Calculate expected frozen changes
             const expectedFrozenChanges = [
                 -taskPrice * completedTasks, // Requester
                 -schedulerStakePerTask * completedTasks, // Scheduler
-                0, // AppProvider
-                0, // DatasetProvider
-                ...workers.map(() => 0), // Add 0 for each worker
+                0n, // AppProvider
+                0n, // DatasetProvider
+                ...workers.map(() => 0n), // Add 0 for each worker
             ];
             await iexecWrapper.checkFrozenChanges(accountsInitialFrozens, expectedFrozenChanges);
             await validateScores(
@@ -237,35 +239,35 @@ describe('Integration tests', function () {
 
     async function getInitialScores(
         workers: SignerWithAddress[],
-    ): Promise<{ [address: string]: number }> {
-        const scores: { [address: string]: number } = {};
+    ): Promise<{ [address: string]: bigint }> {
+        const scores: { [address: string]: bigint } = {};
         for (const worker of workers) {
-            scores[worker.address] = (await iexecPoco.viewScore(worker.address)).toNumber();
+            scores[worker.address] = await iexecPoco.viewScore(worker.address);
         }
         return scores;
     }
 });
 
 async function validateScores(
-    initialScores: { [address: string]: number },
+    initialScores: { [address: string]: bigint },
     winningWorkers: SignerWithAddress[],
     loosingWorkers: SignerWithAddress[],
     nonParticipantWorkers: SignerWithAddress[],
 ) {
     for (const winningWorker of winningWorkers) {
-        const currentScore = (await iexecPoco.viewScore(winningWorker.address)).toNumber();
+        const currentScore = await iexecPoco.viewScore(winningWorker.address);
         expect(currentScore, `Worker ${winningWorker.address} score mismatch`).to.equal(
-            initialScores[winningWorker.address] + 1,
+            initialScores[winningWorker.address] + 1n,
         );
     }
     for (const loosingWorker of loosingWorkers) {
-        const currentScore = (await iexecPoco.viewScore(loosingWorker.address)).toNumber();
+        const currentScore = await iexecPoco.viewScore(loosingWorker.address);
         expect(currentScore, `Worker ${loosingWorker.address} score mismatch`).to.equal(
-            initialScores[loosingWorker.address] - 1,
+            initialScores[loosingWorker.address] - 1n,
         );
     }
     for (const nonParticipantWorker of nonParticipantWorkers) {
-        const currentScore = (await iexecPoco.viewScore(nonParticipantWorker.address)).toNumber();
+        const currentScore = await iexecPoco.viewScore(nonParticipantWorker.address);
         expect(currentScore, `Worker ${nonParticipantWorker.address} score mismatch`).to.equal(
             initialScores[nonParticipantWorker.address],
         );

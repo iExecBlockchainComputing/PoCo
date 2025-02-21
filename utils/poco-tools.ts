@@ -1,9 +1,9 @@
-// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain } from '@ethersproject/abstract-signer';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { TypedDataDomain } from 'ethers';
 import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
 import { hashOrder } from './createOrders';
@@ -11,7 +11,7 @@ import { hashOrder } from './createOrders';
 export interface Category {
     name: string;
     description: string;
-    workClockTimeRef: number;
+    workClockTimeRef: number; // JSON does not support bigint.
 }
 
 export enum TaskStatusEnum {
@@ -83,16 +83,16 @@ export async function getIexecAccounts(): Promise<IexecAccounts> {
 export function getDealId(
     domain: TypedDataDomain,
     requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-    firstTaskIndex: number = 0,
+    firstTaskIndex: bigint = 0n,
 ): string {
-    return ethers.utils.solidityKeccak256(
+    return ethers.solidityPackedKeccak256(
         ['bytes32', 'uint256'],
         [hashOrder(domain, requestOrder), firstTaskIndex],
     );
 }
 
-export function getTaskId(dealId: string, taskIndex: number): string {
-    return ethers.utils.solidityKeccak256(['bytes32', 'uint256'], [dealId, taskIndex]);
+export function getTaskId(dealId: string, taskIndex: bigint): string {
+    return ethers.solidityPackedKeccak256(['bytes32', 'uint256'], [dealId, taskIndex]);
 }
 
 export async function buildAndSignContributionAuthorizationMessage(
@@ -110,15 +110,15 @@ function buildContributionAuthorizationMessage(
     taskId: string,
     enclaveAddress: string,
 ) {
-    return ethers.utils.solidityKeccak256(
+    return ethers.solidityPackedKeccak256(
         ['address', 'bytes32', 'address'],
         [workerAddress, taskId, enclaveAddress],
     );
 }
 
 export function buildUtf8ResultAndDigest(resultPayload: string) {
-    const results = ethers.utils.toUtf8Bytes(resultPayload);
-    const resultDigest = ethers.utils.keccak256(results);
+    const results = ethers.toUtf8Bytes(resultPayload);
+    const resultDigest = ethers.keccak256(results);
     return { results, resultDigest };
 }
 
@@ -146,16 +146,16 @@ export function buildResultCallbackAndDigestForIntegerOracle(
     oracleCallDate: Date,
     oracleCallValue: number,
 ) {
-    const resultsCallback = ethers.utils.solidityPack(
+    const resultsCallback = ethers.solidityPacked(
         ['uint256', 'uint256'],
         [oracleCallDate.getTime(), oracleCallValue],
     );
-    const callbackResultDigest = ethers.utils.keccak256(resultsCallback);
+    const callbackResultDigest = ethers.keccak256(resultsCallback);
     return { resultsCallback, callbackResultDigest };
 }
 
 export function buildResultHash(taskId: string, resultDigest: string) {
-    return ethers.utils.solidityKeccak256(['bytes32', 'bytes'], [taskId, resultDigest]);
+    return ethers.solidityPackedKeccak256(['bytes32', 'bytes'], [taskId, resultDigest]);
 }
 
 export function buildResultHashAndResultSeal(
@@ -164,7 +164,7 @@ export function buildResultHashAndResultSeal(
     worker: SignerWithAddress,
 ) {
     const resultHash = buildResultHash(taskId, resultDigest);
-    const resultSeal = ethers.utils.solidityKeccak256(
+    const resultSeal = ethers.solidityPackedKeccak256(
         ['address', 'bytes32', 'bytes'],
         [worker.address, taskId, resultDigest],
     );
@@ -181,7 +181,7 @@ export async function buildAndSignPocoClassicEnclaveMessage(
 ) {
     return await signMessage(
         enclave,
-        ethers.utils.solidityKeccak256(['bytes32', 'bytes32'], [resultHash, resultSeal]),
+        ethers.solidityPackedKeccak256(['bytes32', 'bytes32'], [resultHash, resultSeal]),
     );
 }
 
@@ -200,14 +200,14 @@ export async function buildAndSignEnclaveMessage(
 }
 
 function buildEnclaveMessage(workerAddress: string, taskId: string, resultDigest: string) {
-    return ethers.utils.solidityKeccak256(
+    return ethers.solidityPackedKeccak256(
         ['address', 'bytes32', 'bytes32'],
         [workerAddress, taskId, resultDigest],
     );
 }
 
 export async function signMessage(signerAccount: SignerWithAddress, message: string) {
-    return signerAccount.signMessage(ethers.utils.arrayify(message));
+    return signerAccount.signMessage(ethers.getBytes(message));
 }
 
 /**
@@ -219,7 +219,7 @@ export async function signMessage(signerAccount: SignerWithAddress, message: str
  * @returns timestamp of the next block.
  */
 export async function setNextBlockTimestamp() {
-    const startTime = (await time.latest()) + 10;
+    const startTime = BigInt((await time.latest()) + 10);
     await time.setNextBlockTimestamp(startTime);
     return startTime;
 }
