@@ -8,6 +8,7 @@
 
 ### Features
 
+- Add Halborn "Poco v5.5 & Voucher v1.0" audit report
 - Migrate scripts to TypeScript: (#184)
   - `getFunctionSignatures.js`, `common-test-snapshot.js`, `test-storage.js`, `timelock.js`
 - Migrated utility files to TypeScript : (#183)
