@@ -4,7 +4,7 @@
 import { duration } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
 import { ethers } from 'hardhat';
 import { TimelockController__factory } from '../typechain';
-import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
+import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
 
 /**
@@ -18,7 +18,7 @@ export const deploy = async () => {
     const salt = process.env.SALT || config.getChainConfigOrDefault(chainId).v5.salt;
 
     // Initialize factory deployer
-    const factoryDeployer = new FactoryDeployerHelper(owner, salt);
+    const factoryDeployer = new FactoryDeployer(owner, salt);
 
     // Deploy TimelockController
     const ONE_WEEK_IN_SECONDS = duration.days(7);

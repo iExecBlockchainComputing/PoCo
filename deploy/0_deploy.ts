@@ -38,7 +38,7 @@ import {
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import config from '../utils/config';
-import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
+import { FactoryDeployer } from '../utils/FactoryDeployer';
 import { linkContractToProxy } from '../utils/proxy-tools';
 
 /**
@@ -57,7 +57,7 @@ export default async function deploy() {
     const [owner] = await ethers.getSigners();
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
     const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
-    const factoryDeployer = new FactoryDeployerHelper(owner, salt);
+    const factoryDeployer = new FactoryDeployer(owner, salt);
     // Deploy RLC
     const isTokenMode = !config.isNativeChain(deploymentOptions);
     let rlcInstanceAddress = isTokenMode
