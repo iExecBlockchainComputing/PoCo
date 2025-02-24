@@ -10,7 +10,7 @@ import { GenericFactory, GenericFactory__factory } from '../typechain';
 import config from './config';
 import { getBaseNameFromContractFactory } from './deploy-tools';
 
-export class FactoryDeployerHelper {
+export class FactoryDeployer {
     owner: SignerWithAddress;
     salt: string;
     genericFactory!: GenericFactory;
