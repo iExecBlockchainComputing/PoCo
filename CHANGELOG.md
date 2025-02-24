@@ -8,6 +8,7 @@
 
 ### Features
 - Add Halborn "Poco v5.5 & Voucher v1.0" audit report (#205)
+- Refactor Factory deployer (#206)
 - Enable native tests on CI (#204)
 - Migrate to Ethers v6:
   - Deployment scripts (#187, #203)
