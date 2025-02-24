@@ -35,6 +35,10 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 - [Solidity API documentation](./docs/solidity/index.md)
 - [Full PoCo documentation](https://protocol.docs.iex.ec/key-concepts/proof-of-contribution)
 
+## Audits
+
+All contract audit files can be found in [audit/](./audit/) folder.
+
 # How to?
 
 ## Configure a deployment
