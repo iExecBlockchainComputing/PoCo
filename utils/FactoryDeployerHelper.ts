@@ -71,7 +71,7 @@ export class FactoryDeployerHelper {
                 ? factoryShanghaiJson
                 : factoryJson;
         this.genericFactory = GenericFactory__factory.connect(factoryConfig.address, this.owner);
-        if ((await this.owner.provider!.getCode(factoryConfig.address)) !== '0x') {
+        if ((await ethers.provider.getCode(factoryConfig.address)) !== '0x') {
             console.log(`→ Factory is available on this network`);
             return;
         }
@@ -83,9 +83,7 @@ export class FactoryDeployerHelper {
                     value: factoryConfig.cost,
                 })
                 .then((tx) => tx.wait());
-            await this.owner.provider
-                .broadcastTransaction(factoryConfig.tx)
-                .then((tx) => tx.wait());
+            await ethers.provider.broadcastTransaction(factoryConfig.tx).then((tx) => tx.wait());
             console.log(`→ Factory successfully deployed`);
         } catch (e) {
             console.log(e);
