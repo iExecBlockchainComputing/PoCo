@@ -19,9 +19,9 @@
     "verify": "npx hardhat verify",
     "format": "npx prettier --write",
     "uml": "npm run sol-to-uml && npm run puml-to-links && npm run storage-to-diagrams",
-    "sol-to-uml": "npx zx tools/sol-to-uml.mjs",
-    "puml-to-links": "npx zx tools/puml-to-links.mjs",
-    "storage-to-diagrams": "npx zx tools/storage-to-diagrams.mjs",
+    "sol-to-uml": "npx zx scripts/tools/sol-to-uml.mjs",
+    "puml-to-links": "npx zx scripts/tools/puml-to-links.mjs",
+    "storage-to-diagrams": "npx zx scripts/tools/storage-to-diagrams.mjs",
     "doc": "npx hardhat docgen"
   },
   "lint-staged": {

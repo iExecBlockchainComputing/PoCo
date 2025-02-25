@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 
-// Usage: "npm run sol-to-uml" or "npx zx tools/solidity-to-uml.mjs"
+// Usage: "npm run sol-to-uml" or "npx zx scripts/tools/solidity-to-uml.mjs"
 // For sol2uml documentation, see https://github.com/naddison36/sol2uml#usage
 
 
@@ -37,7 +37,7 @@ await generateClassDiagramOfContracts(
 
 /**
  * Generate UML class diagrams for contracts in a given directory.
- * @param directory 
+ * @param directory
  */
 async function generateClassDiagramOfDirectory(directory) {
     console.log(`Generating class diagram for directory : ${directory}`);
@@ -48,13 +48,13 @@ async function generateClassDiagramOfDirectory(directory) {
 
 /**
  * Generate UML class diagrams for a set of given contracts.
- * @param contractsList 
- * @param diagramName 
+ * @param contractsList
+ * @param diagramName
  */
 async function generateClassDiagramOfContracts(contractsList, diagramName) {
     console.log(`Generating class diagram for contracts : ${contractsList}`);
     const baseContracts = contractsList.join(','); // => c1,c2,c3
-    // -b, --baseContractNames <name1,name2> 
+    // -b, --baseContractNames <name1,name2>
     // only output contracts connected to these comma separated base contract names
     await $`cd ${projectRootDir}/ &&
         npx sol2uml class contracts/ -b ${baseContracts} -o docs/uml/class-uml-${diagramName}.svg`
