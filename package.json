@@ -11,7 +11,7 @@
     "build": "npx hardhat compile",
     "deploy": "npx hardhat deploy",
     "deploy:timelock": "hardhat run scripts/deploy-timelock.ts",
-    "test-storage-layout": "npx hardhat run scripts/test-storage.ts",
+    "check-storage-layout": "npx hardhat run scripts/test-storage.ts",
     "test": "REPORT_GAS=true npx hardhat test",
     "test:native": "TEST__IS_NATIVE_CHAIN=true npx hardhat test test/byContract/IexecEscrow/IexecEscrowNative.test.ts",
     "coverage": "npx hardhat coverage",
