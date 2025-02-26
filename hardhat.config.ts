@@ -151,6 +151,13 @@ const config: HardhatUserConfig = {
                 },
             },
         },
+        arbitrumSepolia: {
+            chainId: 421614,
+            url: 'https://sepolia-rollup.arbitrum.io/rpc',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            },
+        },
     },
     etherscan: {
         apiKey: {
