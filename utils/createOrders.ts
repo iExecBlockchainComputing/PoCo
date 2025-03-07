@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { TypedDataDomain } from 'ethers';
+import { EIP712TypedData } from '@safe-global/types-kit';
+import { AbstractSigner, TypedDataDomain } from 'ethers';
 import { IexecLibOrders_v5 } from '../typechain';
 import * as constants from './constants';
-import { hashStruct, signStruct } from './odb-tools';
+import { buildTypes, hashStruct, signStruct } from './odb-tools';
 import { OrderOperationEnum } from './poco-tools';
 
 export interface OrdersAssets {
@@ -274,7 +275,7 @@ export async function signOrders(
 export async function signOrder(
     domain: TypedDataDomain,
     order: Record<string, any>,
-    signer: SignerWithAddress,
+    signer: AbstractSigner,
 ): Promise<void> {
     return signStruct(getTypeOf(order), order, domain, signer);
 }
@@ -320,4 +321,22 @@ function getTypeOf(order: Record<string, any>): string {
         return 'WorkerpoolOrder';
     }
     return '';
+}
+
+export function getEIP712TypedDataOrder(
+    domain: { name: string; version: string; chainId: bigint; verifyingContract: string },
+    order: Record<string, any>,
+): EIP712TypedData {
+    const primaryType = getTypeOf(order);
+    return {
+        domain: {
+            name: domain.name,
+            version: domain.version,
+            chainId: Number(domain.chainId),
+            verifyingContract: domain.verifyingContract,
+        },
+        types: buildTypes(primaryType),
+        message: order,
+        primaryType: primaryType,
+    };
 }

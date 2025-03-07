@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { time } from '@nomicfoundation/hardhat-network-helpers';
-import { TypedDataDomain } from 'ethers';
+import { TypedDataDomain, Wallet } from 'ethers';
 import { ethers } from 'hardhat';
 import { IexecLibOrders_v5 } from '../typechain';
 import { hashOrder } from './createOrders';
@@ -105,7 +105,7 @@ export async function buildAndSignContributionAuthorizationMessage(
     return await signMessage(authorizer, schedulerMessage);
 }
 
-function buildContributionAuthorizationMessage(
+export function buildContributionAuthorizationMessage(
     workerAddress: string,
     taskId: string,
     enclaveAddress: string,
@@ -199,14 +199,14 @@ export async function buildAndSignEnclaveMessage(
     return await signMessage(enclave, enclaveMessage);
 }
 
-function buildEnclaveMessage(workerAddress: string, taskId: string, resultDigest: string) {
+export function buildEnclaveMessage(workerAddress: string, taskId: string, resultDigest: string) {
     return ethers.solidityPackedKeccak256(
         ['address', 'bytes32', 'bytes32'],
         [workerAddress, taskId, resultDigest],
     );
 }
 
-export async function signMessage(signerAccount: SignerWithAddress, message: string) {
+export async function signMessage(signerAccount: SignerWithAddress | Wallet, message: string) {
     return signerAccount.signMessage(ethers.getBytes(message));
 }
 

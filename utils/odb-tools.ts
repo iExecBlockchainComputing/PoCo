@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain, TypedDataEncoder, TypedDataField, ethers } from 'ethers';
-import hre from 'hardhat';
+import { AbstractSigner, TypedDataDomain, TypedDataEncoder, TypedDataField } from 'ethers';
 
 interface WalletInfo {
     privateKey?: string;
@@ -87,7 +86,7 @@ const TYPES: Types = {
     ],
 };
 
-function buildTypes(primaryType: string): Types {
+export function buildTypes(primaryType: string): Types {
     const OPERATION = 'Operation';
     const types: Types = {
         [primaryType]: TYPES[primaryType],
@@ -106,7 +105,7 @@ async function eth_signTypedData(
     primaryType: string,
     message: Record<string, any>,
     domain: TypedDataDomain,
-    wallet: WalletInfo,
+    signer: AbstractSigner,
 ): Promise<string> {
     return new Promise((resolve, reject) => {
         const typedDataDomain = {
@@ -119,22 +118,20 @@ async function eth_signTypedData(
 
         let signerPromise;
 
-        if (wallet.privateKey) {
-            const walletInstance = new ethers.Wallet(wallet.privateKey, hre.ethers.provider);
-            signerPromise = Promise.resolve(walletInstance);
-        } else {
-            if (wallet.address) {
-                signerPromise = hre.ethers.getSigner(wallet.address);
-            } else {
-                reject(new Error('Wallet address is undefined'));
-                return;
-            }
-        }
+        // if (signer.privateKey) {
+        //     const walletInstance = new ethers.Wallet(signer.privateKey, hre.ethers.provider);
+        //     signerPromise = Promise.resolve(walletInstance);
+        // } else {
+        //     if (signer.address) {
+        //         signerPromise = hre.ethers.getSigner(signer.address);
+        //     } else {
+        //         reject(new Error('Wallet address is undefined'));
+        //         return;
+        //     }
+        // }
 
-        signerPromise
-            .then((signer) => signer.signTypedData(typedDataDomain, types, message))
-            .then(resolve)
-            .catch(reject);
+        //signerPromise
+        return signer.signTypedData(typedDataDomain, types, message).then(resolve).catch(reject);
     });
 }
 
@@ -142,7 +139,7 @@ export async function signStruct(
     primaryType: string,
     message: Record<string, any>,
     domain: TypedDataDomain,
-    wallet: WalletInfo,
+    wallet: AbstractSigner,
 ): Promise<Record<string, any>> {
     return eth_signTypedData(primaryType, message, domain, wallet).then((sign) => {
         message.sign = sign;
