@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { ethers } from 'ethers';
+import {hashStruct,signStruct, buildTypes} from './odb-tools-utils.mjs';
 
 // Constants
 export const NULL = {
@@ -10,11 +10,6 @@ export const NULL = {
     SIGNATURE: "0x"
 };
 
-// Order operations enum
-export const OrderOperationEnum = {
-    SIGN: 0,
-    CLOSE: 1
-};
 
 // ----------------------------------------
 // Order utility functions
@@ -27,39 +22,9 @@ export function createEmptyAppOrder() {
         appprice: BigInt(0),
         volume: 1,
         tag: NULL.BYTES32,
-        datasetrestrict: NULL.BYTES32,
-        workerpoolrestrict: NULL.BYTES32,
-        requesterrestrict: NULL.BYTES32,
-        salt: NULL.BYTES32,
-        sign: NULL.SIGNATURE,
-    };
-}
-
-export function createEmptyDatasetOrder() {
-    return {
-        dataset: NULL.ADDRESS,
-        datasetprice: BigInt(0),
-        volume: 1,
-        tag: NULL.BYTES32,
-        apprestrict: NULL.BYTES32,
-        workerpoolrestrict: NULL.BYTES32,
-        requesterrestrict: NULL.BYTES32,
-        salt: NULL.BYTES32,
-        sign: NULL.SIGNATURE,
-    };
-}
-
-export function createEmptyWorkerpoolOrder() {
-    return {
-        workerpool: NULL.ADDRESS,
-        workerpoolprice: BigInt(0),
-        volume: 1,
-        tag: NULL.BYTES32,
-        category: 0,
-        trust: BigInt(0),
-        apprestrict: NULL.BYTES32,
-        datasetrestrict: NULL.BYTES32,
-        requesterrestrict: NULL.BYTES32,
+        datasetrestrict: NULL.ADDRESS,
+        workerpoolrestrict: NULL.ADDRESS,
+        requesterrestrict: NULL.ADDRESS,
         salt: NULL.BYTES32,
         sign: NULL.SIGNATURE,
     };
@@ -86,6 +51,36 @@ export function createEmptyRequestOrder() {
     };
 }
 
+export function createEmptyDatasetOrder() {
+    return {
+        dataset: NULL.ADDRESS,
+        datasetprice: BigInt(0),
+        volume: 1,
+        tag: NULL.BYTES32,
+        apprestrict: NULL.ADDRESS,
+        workerpoolrestrict: NULL.ADDRESS,
+        requesterrestrict: NULL.ADDRESS,
+        salt: NULL.BYTES32,
+        sign: NULL.SIGNATURE,
+    };
+}
+
+export function createEmptyWorkerpoolOrder() {
+    return {
+        workerpool: NULL.ADDRESS,
+        workerpoolprice: BigInt(0),
+        volume: 1,
+        tag: NULL.BYTES32,
+        category: 0,
+        trust: BigInt(0),
+        apprestrict: NULL.ADDRESS,
+        datasetrestrict: NULL.ADDRESS,
+        requesterrestrict: NULL.ADDRESS,
+        salt: NULL.BYTES32,
+        sign: NULL.SIGNATURE,
+    };
+}
+
 // Create order operation
 export function createOrderOperation(order, operation) {
     return { 
@@ -96,7 +91,7 @@ export function createOrderOperation(order, operation) {
 }
 
 // Get the type of an order
-export function getOrderType(order) {
+export function getTypeOf(order) {
     if ('requester' in order) return 'RequestOrder';
     if ('app' in order && 'appprice' in order) return 'AppOrder';
     if ('dataset' in order && 'datasetprice' in order) return 'DatasetOrder';
@@ -104,72 +99,19 @@ export function getOrderType(order) {
     return '';
 }
 
-// Build EIP-712 types for an order
-export function buildTypes(primaryType) {
-    const types = {
-        EIP712Domain: [
-            { name: 'name', type: 'string' },
-            { name: 'version', type: 'string' },
-            { name: 'chainId', type: 'uint256' },
-            { name: 'verifyingContract', type: 'address' },
-        ],
-        AppOrder: [
-            { name: 'app', type: 'address' },
-            { name: 'appprice', type: 'uint256' },
-            { name: 'volume', type: 'uint256' },
-            { name: 'tag', type: 'bytes32' },
-            { name: 'datasetrestrict', type: 'bytes32' },
-            { name: 'workerpoolrestrict', type: 'bytes32' },
-            { name: 'requesterrestrict', type: 'bytes32' },
-            { name: 'salt', type: 'bytes32' }
-        ],
-        DatasetOrder: [
-            { name: 'dataset', type: 'address' },
-            { name: 'datasetprice', type: 'uint256' },
-            { name: 'volume', type: 'uint256' },
-            { name: 'tag', type: 'bytes32' },
-            { name: 'apprestrict', type: 'bytes32' },
-            { name: 'workerpoolrestrict', type: 'bytes32' },
-            { name: 'requesterrestrict', type: 'bytes32' },
-            { name: 'salt', type: 'bytes32' }
-        ],
-        WorkerpoolOrder: [
-            { name: 'workerpool', type: 'address' },
-            { name: 'workerpoolprice', type: 'uint256' },
-            { name: 'volume', type: 'uint256' },
-            { name: 'category', type: 'uint256' },
-            { name: 'trust', type: 'uint256' },
-            { name: 'tag', type: 'bytes32' },
-            { name: 'apprestrict', type: 'bytes32' },
-            { name: 'datasetrestrict', type: 'bytes32' },
-            { name: 'requesterrestrict', type: 'bytes32' },
-            { name: 'salt', type: 'bytes32' }
-        ],
-        RequestOrder: [
-            { name: 'requester', type: 'address' },
-            { name: 'beneficiary', type: 'address' },
-            { name: 'app', type: 'address' },
-            { name: 'tag', type: 'bytes32' },
-            { name: 'dataset', type: 'address' },
-            { name: 'appmaxprice', type: 'uint256' },
-            { name: 'datasetmaxprice', type: 'uint256' },
-            { name: 'workerpoolmaxprice', type: 'uint256' },
-            { name: 'volume', type: 'uint256' },
-            { name: 'category', type: 'uint256' },
-            { name: 'trust', type: 'uint256' },
-            { name: 'callback', type: 'address' },
-            { name: 'params', type: 'string' },
-            { name: 'salt', type: 'bytes32' }
-        ]
-    };
-    return types;
+// Hash an order using EIP-712
+export async function hashOrder(domain, order) {
+    return hashStruct(getTypeOf(order), order, domain)
+}
+
+// Sign an order using a signer
+export async function signOrder(domain, order, signer) {
+    return signStruct(getTypeOf(order), order, domain, signer)
 }
 
 // Get EIP-712 typed data for an order
 export function getEip712TypedDataOrder(domain, order) {
-    const orderType = getOrderType(order);
-    const types = buildTypes(orderType);
-    
+    const primaryType = getTypeOf(order);
     return {
         domain: {
             name: domain.name,
@@ -177,70 +119,77 @@ export function getEip712TypedDataOrder(domain, order) {
             chainId: Number(domain.chainId),
             verifyingContract: domain.verifyingContract,
         },
-        types,
-        primaryType: orderType,
-        message: order
+        types: buildTypes(primaryType),
+        message: order,
+        primaryType: primaryType,
     };
 }
 
-// Hash an order using EIP-712
-export async function hashOrder(domain, order) {
-    const orderType = getOrderType(order);
-    const types = buildTypes(orderType);
-    return ethers.TypedDataEncoder.hash(domain, { [orderType]: types[orderType] }, order);
-}
-
-// Sign an order using a signer
-export async function signOrder(domain, order, signer) {
-    const orderType = getOrderType(order);
-    const types = buildTypes(orderType);
+export async function signOrderWithSmartAccounttSigner(domain, order, smartAccountClient) {
+    const eip712Order = getEip712TypedDataOrder(domain, order);
+    // console.log('eip712Order', eip712Order);
     
-    const signature = await signer.signTypedData(
-        domain,
-        { [orderType]: types[orderType] },
-        order
-    );
+    // Remove sign from the order before signing
+    const messageToSign = { ...eip712Order.message };
+    delete messageToSign.sign;
     
-    order.sign = signature;
-    return signature;
+    try {
+        // Pass typedData as a property not as direct parameters
+        const signature = await smartAccountClient.signTypedData({
+            typedData: {
+                domain: eip712Order.domain,
+                types: eip712Order.types,
+                primaryType: eip712Order.primaryType,
+                message: messageToSign
+            }
+        });
+        
+        console.log('Signature received:', signature);
+        order.sign = signature;
+    } catch (error) {
+        console.error('Error signing with Smart Account:', error);
+        throw error;
+    }
 }
 
 // Sign message
-export async function signMessage(signer, message) {
-    return signer.signMessage(message);
-}
+// export async function signMessage(signer, message) {
+//     return signer.signMessage(message);
+// }
 
 // Deal and task ID generation
-export function getDealId(domain, requestOrder, taskIndex) {
-    const requestHash = hashOrder(domain, requestOrder);
-    const dealIdRaw = ethers.solidityPackedKeccak256(
-        ['bytes32', 'uint256'],
-        [requestHash, taskIndex]
-    );
-    return dealIdRaw;
-}
+// export function getDealId(domain, requestOrder, taskIndex) {
+//     const requestHash = hashOrder(domain, requestOrder);
+//     const dealIdRaw = ethers.solidityPackedKeccak256(
+//         ['bytes32', 'uint256'],
+//         [requestHash, taskIndex]
+//     );
+//     return dealIdRaw;
+// }
 
-export function getTaskId(dealId, taskIdx) {
-    return ethers.solidityPackedKeccak256(
-        ['bytes32', 'uint256'],
-        [dealId, taskIdx]
-    );
-}
+// export function getTaskId(dealId, taskIdx) {
+//     return ethers.solidityPackedKeccak256(
+//         ['bytes32', 'uint256'],
+//         [dealId, taskIdx]
+//     );
+// }
 
 // Contribution authorization message
-export function buildContributionAuthorizationMessage(workerAddress, taskId, enclaveChallenge) {
-    return `iExec contribution authorization
-Worker: ${workerAddress}
-Task: ${taskId}
-Enclave challenge: ${enclaveChallenge}`;
-}
+// export function buildContributionAuthorizationMessage(workerAddress, taskId, enclaveChallenge) {
+//     return `iExec contribution authorization
+// Worker: ${workerAddress}
+// Task: ${taskId}
+// Enclave challenge: ${enclaveChallenge}`;
+// }
 
 // Build result and digest
-export function buildUtf8ResultAndDigest(string) {
-    const results = string;
-    const resultHash = ethers.keccak256(ethers.toUtf8Bytes(results));
-    const resultDigest = ethers.keccak256(
-        ethers.solidityPacked(['bytes32'], [resultHash])
-    );
-    return { results, resultDigest };
-}
+// export function buildUtf8ResultAndDigest(string) {
+//     const results = string;
+//     const resultHash = ethers.keccak256(ethers.toUtf8Bytes(results));
+//     const resultDigest = ethers.keccak256(
+//         ethers.solidityPacked(['bytes32'], [resultHash])
+//     );
+//     return { results, resultDigest };
+// }
+
+

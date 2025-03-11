@@ -15,7 +15,8 @@ import {
     createEmptyRequestOrder,
     hashOrder,
     createEmptyDatasetOrder,
-    signOrder
+    signOrder,
+    signOrderWithSmartAccounttSigner
 } from './order-utils.mjs';
 import dotenv from 'dotenv';
 
@@ -104,10 +105,10 @@ async function main() {
     console.log('Setting up Alchemy Smart Account client...');
 
     const smartAccountClient = await createModularAccountAlchemyClient({
-    transport: alchemy({ apiKey: ALCHEMY_API_KEY }),
-    chain: arbitrumSepolia,
-    signer: viemSigner,
-    policyId: POLICY_ID,
+        transport: alchemy({ apiKey: ALCHEMY_API_KEY }),
+        chain: arbitrumSepolia,
+        signer: viemSigner,
+        policyId: POLICY_ID,
     });
 
     const smartAccountAddress = smartAccountClient.account.address;
@@ -190,7 +191,7 @@ async function main() {
 
     // Sign app order
     console.log('Signing app order...');
-    await signOrder(domain, appOrder, eoaSigner);
+    await signOrderWithSmartAccounttSigner(domain, appOrder, smartAccountClient);
     const appOrderHash = await hashOrder(domain, appOrder);
     console.log(`App order signed with hash: ${appOrderHash}`);
 
@@ -271,16 +272,12 @@ async function main() {
     
     // Sign request order with the EOA signer for the smart account
     console.log('Signing request order...');
-    await signOrder(domain, requestOrder, eoaSigner);
+    await signOrderWithSmartAccounttSigner(domain, requestOrder, smartAccountClient);
     const requestOrderHash = await hashOrder(domain, requestOrder);
     console.log(`Request order signed with hash: ${requestOrderHash}`);
 
     // Now we can match orders using matchOrdersBoost
     console.log('Matching orders...');
-    console.log('appOrder: ', appOrder);
-    console.log('workerpoolOrder: ', workerpoolOrder);
-    console.log('requestOrder: ', requestOrder);
-    console.log('createEmptyDatasetOrder: ', createEmptyDatasetOrder());
     const matchOrdersData = await iexecBoost.matchOrdersBoost.populateTransaction(
         appOrder,
         createEmptyDatasetOrder(),
