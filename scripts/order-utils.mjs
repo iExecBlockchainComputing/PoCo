@@ -128,7 +128,7 @@ export function getEip712TypedDataOrder(domain, order) {
     };
 }
 
-export async function signOrderWithSmartAccounttSigner(domain, order, smartAccountClient) {
+export async function signOrderWithSmartAccountSigner(domain, order, smartAccountClient) {
     const eip712Order = getEip712TypedDataOrder(domain, order);
     
     // Remove sign from the order before signing
