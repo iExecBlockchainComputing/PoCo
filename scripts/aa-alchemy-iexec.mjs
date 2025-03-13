@@ -62,6 +62,9 @@ async function main() {
     const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
     if (!ALCHEMY_API_KEY) throw new Error('Missing ALCHEMY_API_KEY in .env file');
 
+    const DRPC_KEY = process.env.DRPC_KEY;
+    if (!DRPC_KEY) throw new Error('Missing DRPC_KEY in .env file');
+
     const POLICY_ID = process.env.POLICY_ID;
     if (!POLICY_ID) throw new Error('Missing POLICY_ID in .env file');
 
@@ -110,7 +113,7 @@ async function main() {
     console.log("Account deployed:", code && code !== '0x' ? "Yes" : "No");
 
     // Create a provider for ethers contract interactions
-    const provider = new ethers.JsonRpcProvider(`https://lb.drpc.org/ogrpc?network=arbitrum-sepolia&dkey=AhEPbH3buE5zjj_dDMs3E2j3kZBSoroR7oQSjv5J234Y`);
+    const provider = new ethers.JsonRpcProvider(`https://lb.drpc.org/ogrpc?network=arbitrum-sepolia&dkey=${DRPC_KEY}`);
 
     // Connect to iExec proxy contract
     const iexecProxyAddress = '0x61b18b60a83bf11db697c4a7aafb8d3d947ac81c';
