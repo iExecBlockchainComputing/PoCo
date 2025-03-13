@@ -1062,17 +1062,7 @@ async function pushTaskResult({
 // Run the main function
 console.log('Starting Account Abstraction for iExec...');
 try {
-    const result = await main();
-    console.log("Transaction successful!");
-    if (result) {
-        // const result = await main();
-        console.log("Order matching successful!");
-        console.log("Orders summary:");
-        console.log(" - App order for app:", result.appOrder.app);
-        console.log(" - Workerpool order for workerpool:", result.workerpoolOrder.workerpool);
-        console.log(" - Request order from requester:", result.requestOrder.requester);
-        console.log(" - Match transaction:", result.matchTxHash);
-    }
+    await main();
 } catch (err) {
     console.error("Error in execution:", err);
 } finally {
