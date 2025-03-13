@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {hashStruct,signStruct, buildTypes} from './odb-tools-utils.mjs';
+import { ethers } from 'ethers';
 
 // Constants
 export const NULL = {
@@ -40,7 +41,7 @@ export function createEmptyRequestOrder() {
         workerpoolmaxprice: 0,
         volume: 1,
         tag: NULL.BYTES32,
-        category: 0,
+        category: 2,
         trust: BigInt(0),
         requester: NULL.ADDRESS,
         beneficiary: NULL.ADDRESS,
@@ -71,7 +72,7 @@ export function createEmptyWorkerpoolOrder() {
         workerpoolprice: BigInt(0),
         volume: 1,
         tag: NULL.BYTES32,
-        category: 0,
+        category: 2,
         trust: BigInt(0),
         apprestrict: NULL.ADDRESS,
         datasetrestrict: NULL.ADDRESS,
@@ -99,8 +100,10 @@ export function getTypeOf(order) {
     return '';
 }
 
-// Hash an order using EIP-712
-export async function hashOrder(domain, order) {
+export function hashOrder(domain, order) {
+    // console.log('domain', domain);
+    // console.log('hashOrder', order);
+    // console.log('getTypeOf(order)', getTypeOf(order));
     return hashStruct(getTypeOf(order), order, domain)
 }
 
@@ -127,7 +130,6 @@ export function getEip712TypedDataOrder(domain, order) {
 
 export async function signOrderWithSmartAccounttSigner(domain, order, smartAccountClient) {
     const eip712Order = getEip712TypedDataOrder(domain, order);
-    // console.log('eip712Order', eip712Order);
     
     // Remove sign from the order before signing
     const messageToSign = { ...eip712Order.message };
@@ -153,43 +155,41 @@ export async function signOrderWithSmartAccounttSigner(domain, order, smartAccou
 }
 
 // Sign message
-// export async function signMessage(signer, message) {
-//     return signer.signMessage(message);
-// }
+export async function signMessage(signer, message) {
+    return signer.signMessage(ethers.getBytes(message));
+}
 
 // Deal and task ID generation
-// export function getDealId(domain, requestOrder, taskIndex) {
-//     const requestHash = hashOrder(domain, requestOrder);
-//     const dealIdRaw = ethers.solidityPackedKeccak256(
-//         ['bytes32', 'uint256'],
-//         [requestHash, taskIndex]
-//     );
-//     return dealIdRaw;
-// }
+export function getDealId(domain, requestOrder, taskIndex) {
+    const requestHash = hashOrder(domain, requestOrder);
+    const dealIdRaw = ethers.solidityPackedKeccak256(
+        ['bytes32', 'uint256'],
+        [requestHash, taskIndex]
+    );
+    return dealIdRaw;
+}
 
-// export function getTaskId(dealId, taskIdx) {
-//     return ethers.solidityPackedKeccak256(
-//         ['bytes32', 'uint256'],
-//         [dealId, taskIdx]
-//     );
-// }
+export function getTaskId(dealId, taskIdx) {
+    return ethers.solidityPackedKeccak256(['bytes32', 'uint256'], [dealId, taskIdx]);
+}
 
+
+export async function buildAndSignContributionAuthorizationMessage(worker,taskId,enclave,authorizer,
+) {
+    const schedulerMessage = buildContributionAuthorizationMessage(worker, taskId, enclave);
+    return await signMessage(authorizer, schedulerMessage);
+}
 // Contribution authorization message
-// export function buildContributionAuthorizationMessage(workerAddress, taskId, enclaveChallenge) {
-//     return `iExec contribution authorization
-// Worker: ${workerAddress}
-// Task: ${taskId}
-// Enclave challenge: ${enclaveChallenge}`;
-// }
+export function buildContributionAuthorizationMessage(workerAddress, taskId, enclaveAddress) {
+    return ethers.solidityPackedKeccak256(
+        ['address', 'bytes32', 'address'],
+        [workerAddress, taskId, enclaveAddress],
+    );
+}
 
 // Build result and digest
-// export function buildUtf8ResultAndDigest(string) {
-//     const results = string;
-//     const resultHash = ethers.keccak256(ethers.toUtf8Bytes(results));
-//     const resultDigest = ethers.keccak256(
-//         ethers.solidityPacked(['bytes32'], [resultHash])
-//     );
-//     return { results, resultDigest };
-// }
-
-
+export function buildUtf8ResultAndDigest(resultPayload) {
+    const results = ethers.toUtf8Bytes(resultPayload);
+    const resultDigest = ethers.keccak256(results);
+    return { results, resultDigest };
+}
