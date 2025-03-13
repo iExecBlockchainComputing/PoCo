@@ -8,7 +8,7 @@ import { generatePrivateKey } from 'viem/accounts';
 import { LocalAccountSigner } from '@aa-sdk/core';
 import { alchemy, arbitrumSepolia } from '@account-kit/infra';
 import { createModularAccountAlchemyClient } from '@account-kit/smart-contracts';
-import { ethers } from 'ethers';
+import { ethers, verifyMessage } from 'ethers';
 import {
     createEmptyAppOrder,
     createEmptyWorkerpoolOrder,
@@ -16,46 +16,37 @@ import {
     hashOrder,
     createEmptyDatasetOrder,
     signOrder,
-    signOrderWithSmartAccounttSigner
+    signOrderWithSmartAccounttSigner,
+    createOrderOperation,
+    getDealId,
+    getTaskId,
+    buildContributionAuthorizationMessage,
+    signMessage,
+    buildUtf8ResultAndDigest
 } from './order-utils.mjs';
 import dotenv from 'dotenv';
+import {  debugWorkerpoolSignature} from "./odb-tools-utils.mjs";
+import { loadAbi } from './contract-abi.mjs';
 
 // Load environment variables
 dotenv.config();
 
+const OrderOperationEnum = {
+    SIGN: 0,
+    CLOSE: 1
+};
+
 // Define minimal ABIs directly to avoid import issues
-const IexecInterfaceTokenABI = [
-    "function appregistry() view returns (address)",
-    "function workerpoolregistry() view returns (address)",
-    "function viewPresigned(bytes32) view returns (address)",
-    "function manageWorkerpoolOrder(tuple(uint256 status, bytes32 order, uint8 preinfo, bytes sig)) returns (bool)",
-    "function manageRequestOrder(tuple(uint256 status, bytes32 order, uint8 preinfo, bytes sig)) returns (bool)",
-    "function teebroker() view returns (address)"
-];
-
-const AppRegistryABI = [
-    "function createApp(address _owner, string calldata _appName, string calldata _appType, bytes calldata _appMultiaddr, bytes32 _appChecksum, bytes calldata _appMREnclave) returns (address)",
-    "function isRegistered(address _app) external view returns (bool)"
-];
-
-const AppInterfaceABI = [
-    "function owner() view returns (address)"
-];
-
-const WorkerpoolRegistryABI = [
-    "function createWorkerpool(address _owner, string calldata _workerpoolDescription) returns (address)",
-    "function isRegistered(address _workerpool) external view returns (bool)"
-];
-const WorkerInterfaceABI = [
-    "function owner() view returns (address)"
-];
-
+const IexecLibOrdersV5ABI = loadAbi('IexecLibOrders_V5');
+const IexecInterfaceTokenABI = loadAbi('IexecInterfaceToken');
+const AppRegistryABI =  loadAbi('AppRegistry');
+const AppInterfaceABI = loadAbi('AppInterface');
+const WorkerpoolRegistryABI = loadAbi('WorkerpoolRegistry');
+const WorkerInterfaceABI = loadAbi('WorkerpoolInterface');
 const IexecPocoBoostABI = [
     "function matchOrdersBoost(tuple(address app, uint256 appprice, uint256 volume, bytes32 tag, address datasetrestrict, address workerpoolrestrict, address requesterrestrict, bytes32 salt, bytes sign) appOrder, tuple(address dataset, uint256 datasetprice, uint256 volume, bytes32 tag, address apprestrict, address workerpoolrestrict, address requesterrestrict, bytes32 salt, bytes sign) datasetOrder, tuple(address workerpool, uint256 workerpoolprice, uint256 volume, bytes32 tag, uint256 category, uint256 trust, address apprestrict, address datasetrestrict, address requesterrestrict, bytes32 salt, bytes sign) workerpoolOrder, tuple(address app, uint256 appmaxprice, address dataset, uint256 datasetmaxprice, address workerpool, uint256 workerpoolmaxprice, address requester, uint256 volume, bytes32 tag, uint256 category, uint256 trust, address beneficiary, address callback, string params, bytes32 salt, bytes sign) requestOrder) returns (bytes32)",
-    
-    "function sponsorMatchOrdersBoost(tuple(address app, uint256 appprice, uint256 volume, bytes32 tag, address datasetrestrict, address workerpoolrestrict, address requesterrestrict, bytes32 salt, bytes sign) appOrder, tuple(address dataset, uint256 datasetprice, uint256 volume, bytes32 tag, address apprestrict, address workerpoolrestrict, address requesterrestrict, bytes32 salt, bytes sign) datasetOrder, tuple(address workerpool, uint256 workerpoolprice, uint256 volume, bytes32 tag, uint256 category, uint256 trust, address apprestrict, address datasetrestrict, address requesterrestrict, bytes32 salt, bytes sign) workerpoolOrder, tuple(address app, uint256 appmaxprice, address dataset, uint256 datasetmaxprice, address workerpool, uint256 workerpoolmaxprice, address requester, uint256 volume, bytes32 tag, uint256 category, uint256 trust, address beneficiary, address callback, string params, bytes32 salt, bytes sign) requestOrder) returns (bytes32)",
-    
-    "function pushResultBoost(bytes32 _dealid, uint256 _taskindex, string calldata _results, bytes calldata _resultsCallback, bytes calldata _authorization, address _enclave, bytes calldata _enclaveSignature) external returns ()"
+    "function pushResultBoost(bytes32 dealId,uint256 index,bytes results,bytes resultsCallback,bytes authorizationSign,address enclaveChallenge,bytes enclaveSign)",
+    "function viewDealBoost(bytes32 id) external view returns (tuple(address appOwner, uint96 appPrice, address datasetOwner, uint96 datasetPrice, address workerpoolOwner, uint96 workerpoolPrice, address requester, uint96 workerReward, address callback, uint40 deadline, uint16 botFirst, uint16 botSize, bytes3 shortTag, address sponsor))"
 ];
   
 async function main() {
@@ -179,14 +170,15 @@ async function main() {
     console.log(`Owner matches smart account: ${appOwner.toLowerCase() === smartAccountAddress.toLowerCase()}`);
 
     // Generate order salt
-    const salt = ethers.id(new Date().toISOString());
+    // const salt = ethers.id(new Date().toISOString());
+    const salt = "0xe16a34142459207bd553494bf5a9be746afb15c6b0acda299ca1240f2ca90b84"
     console.log(`Using salt: ${salt}`);
 
     // Create app order
     console.log('Creating app order...');
     let appOrder = createEmptyAppOrder();
     appOrder.app = appAddress;
-    appOrder.volume = 10;
+    appOrder.volume = 1000;
     appOrder.salt = salt;
 
     // Sign app order
@@ -195,19 +187,26 @@ async function main() {
     const appOrderHash = await hashOrder(domain, appOrder);
     console.log(`App order signed with hash: ${appOrderHash}`);
 
+    const isAppValidSignature = await iexecProxy.verifySignature(
+        smartAccountAddress, 
+        appOrderHash,
+        appOrder.sign
+    );
+    
+    console.log(`\nSignature Valid for AppOrder ${smartAccountAddress}: ${isAppValidSignature ? 'YES' : 'NO'}`);
+
     // Get workerpool registry
     const workerpoolRegistryAddress = await iexecProxy.workerpoolregistry();
     console.log(`Workerpool registry address: ${workerpoolRegistryAddress}`);
     const workerpoolRegistry = new ethers.Contract(workerpoolRegistryAddress, WorkerpoolRegistryABI, provider);
 
     // Use existing workerpool (from EOA)
-    const workerpoolAddressEOA = '0x07018a596ba785847a6ac5b8d1f0fa5dd3fd7727'; // We'll use the EOA-owned workerpool
-
+    const workerpoolAddressEOA = '0xc875c4150c537e1c181eef5c64d901d493cec6a6'; // We'll use the EOA-owned workerpool
     // Check if workerpool is registered
     const isWorkerpoolRegistered = await workerpoolRegistry.isRegistered(workerpoolAddressEOA);
     console.log(`Is workerpool registered: ${isWorkerpoolRegistered}`);
 
-    if (!workerpoolAddressEOA) {
+    if (!isWorkerpoolRegistered) {
         console.error('Workerpool not registered, please use a registered workerpool');
         // const createWorkerpool = await workerpoolRegistry.createWorkerpool.populateTransaction(
         //     smartAccountAddress,
@@ -231,7 +230,7 @@ async function main() {
         const workerpoolRegistryWithSigner = workerpoolRegistry.connect(workSignerWithProvider);
         const createTx = await workerpoolRegistryWithSigner.createWorkerpool(
             workSigner.address,
-            'worker-eoa-workerpool'
+            'worker-eoa-workerpool-1'
         );
         
         console.log('Workerpool creation transaction sent:', createTx.hash);
@@ -239,27 +238,78 @@ async function main() {
         console.log(`Workerpool creation confirmed in block ${receipt.blockNumber}`);
         logTx("Workerpool EOA creation", createTx.hash);
     }
+
+    // Worker Signer address: 0x6ef10c3924e7F44a764Ed4346937cf25d036b688
     const worker = workSigner;
-    const enclave = { address: smartAccountAddress };
+    // const enclave = { address: smartAccountAddress };
     const scheduler = workSigner;
 
     const workerInterface = new ethers.Contract(workerpoolAddressEOA, WorkerInterfaceABI, provider);
     const workerOwner = await workerInterface.owner();
-    console.log(`Worker owner: ${workerOwner}`);
-    console.log(`Owner matches smart account: ${workerOwner.toLowerCase() === worker.address.toLowerCase()}`);
+    console.log(`Worker owner: ${workerOwner}`); // 0x6ef10c3924e7F44a764Ed4346937cf25d036b688
+    console.log(`Owner matches EOA: ${workerOwner.toLowerCase() === worker.address.toLowerCase()}`);
 
     // Create workerpool order
     console.log('Creating workerpool order...');
     let workerpoolOrder = createEmptyWorkerpoolOrder();
-    workerpoolOrder.workerpool = workerpoolAddressEOA;
-    workerpoolOrder.volume = 10;
+    
+    workerpoolOrder.workerpool = workerpoolAddressEOA; // 0x07018a596ba785847a6ac5b8d1f0fa5dd3fd7727
+    workerpoolOrder.volume = 1000;
     workerpoolOrder.salt = salt;
 
     // Sign workerpool order with worker signer (EOA)
-    console.log('Signing workerpool order with worker signer...');
+    // console.log('Signing workerpool order with worker signer...');
     await signOrder(domain, workerpoolOrder, scheduler);
     const workerpoolOrderHash = await hashOrder(domain, workerpoolOrder);
     console.log(`Workerpool order signed with hash: ${workerpoolOrderHash}`);
+
+    const isValidSignature = await iexecProxy.verifySignature(
+        await workerInterface.owner(), 
+        await hashOrder(domain, workerpoolOrder),
+        workerpoolOrder.sign
+    );
+    console.log(`\nSignature Valid for ${await workerInterface.owner()}: ${isValidSignature ? 'YES' : 'NO'}`);
+    // console.log(`\nSignature : ${workerpoolOrder.sign}`);
+
+    // console.log('Pre-Signing workerpool order with worker signer...');
+    const workSignerWithProvider = workSigner.connect(provider);
+    // const iexecProxyWithWorkerSigner = iexecProxy.connect(workSignerWithProvider);
+    // const orderOperation = createOrderOperation(workerpoolOrder, OrderOperationEnum.SIGN);
+    // const presignTx = await iexecProxyWithWorkerSigner.manageWorkerpoolOrder(
+    //     orderOperation
+    // );
+    // console.log('Workerpool presigned transaction sent:', presignTx.hash);
+    // const receiptW = await presignTx.wait();
+    // console.log(`Workerpool presigned confirmed in block ${receiptW.blockNumber}`);
+    // logTx("Workerpool presigned", presignTx.hash);
+
+    // console.log('Workerpool order:', workerpoolOrder);
+    // const isValidPreSignatureWorkerPool = await iexecProxy.verifyPresignature(
+    //     workerOwner, 
+        // await hashOrder(domain, workerpoolOrder),   
+    // );
+    // console.log(`\nPreSignature Valid for ${workerOwner}: ${isValidPreSignatureWorkerPool ? 'YES' : 'NO'}`);
+    // const workerpoolOrderHash = await hashOrder(domain, workerpoolOrder);
+    // console.log(`Workerpool order signed with hash: ${workerpoolOrderHash}`);
+    // exit(0);
+    // console.log(orderOperation);
+    // const manageOrder = (await iexecProxy.manageWorkerpoolOrder.populateTransaction(orderOperation))
+    //     .data;
+
+    // const userOpResult = await smartAccountClient.sendUserOperation({
+    //     uo: {
+    //         target: iexecProxyAddress,
+    //         data: manageOrder,
+    //         value: BigInt(0),
+    //     },
+    // });
+    // const txHash = await smartAccountClient.waitForUserOperationTransaction(userOpResult);
+    // logTx("Workerpool sign order", txHash);
+    // const workerpoolOrderHash = await hashOrder(domain, workerpoolOrder);
+    // console.log(`Workerpool order signed with hash: ${workerpoolOrderHash}`);
+    // console.log((await iexecProxy.viewPresigned(workerpoolOrderHash)) == account.address);
+
+
 
     // Create request order
     console.log('Creating request order...');
@@ -269,39 +319,132 @@ async function main() {
     requestOrder.workerpool = workerpoolAddressEOA;
     requestOrder.params = 'my-alchemy-params';
     requestOrder.salt = salt;
+    requestOrder.volume = 1000;
     
     // Sign request order with the EOA signer for the smart account
-    console.log('Signing request order...');
+    // const requestOrderOperation = createOrderOperation(requestOrder, OrderOperationEnum.SIGN);
+    // const manageRequestOrderData = await iexecProxy.manageRequestOrder.populateTransaction(
+    //     requestOrderOperation,
+    // ).then(tx => tx.data);
+
+    // const userOpResult_1 = await smartAccountClient.sendUserOperation({
+    //     uo: {
+    //         target: iexecProxyAddress,
+    //         data: manageRequestOrderData,
+    //         value: BigInt(0),
+    //     },
+    // });
+    // console.log('Signing request order...');
+    // const txHash_1 = await smartAccountClient.waitForUserOperationTransaction(userOpResult_1);
+    // logTx("Request presign order", txHash_1);
     await signOrderWithSmartAccounttSigner(domain, requestOrder, smartAccountClient);
     const requestOrderHash = await hashOrder(domain, requestOrder);
     console.log(`Request order signed with hash: ${requestOrderHash}`);
+    const isValidSignatureR = await iexecProxy.verifySignature(
+        smartAccountAddress, 
+        requestOrderHash,
+        requestOrder.sign
+    );
+    console.log(`\nSignature Valid for ${smartAccountAddress}: ${isValidSignatureR ? 'YES' : 'NO'}`);
+    // const isValidPreSignature = await iexecProxy.verifyPresignature(
+    //     smartAccountAddress, 
+    //     requestOrderHash,
+    //     // "0xd50ebe2519f6f988c422a08a9377c96fdfd0fb72978381c01a95fe0e83114da3"
+    // );
+    // console.log(`\nPreSignature Valid for ${smartAccountAddress}: ${isValidPreSignature ? 'YES' : 'NO'}`);
+
 
     // Now we can match orders using matchOrdersBoost
-    console.log('Matching orders...');
-    const matchOrdersData = await iexecBoost.matchOrdersBoost.populateTransaction(
-        appOrder,
-        createEmptyDatasetOrder(),
-        workerpoolOrder,
-        requestOrder
-    ).then(tx => tx.data);
-    const matchUserOpResult = await smartAccountClient.sendUserOperation({
-        uo: {
-            target: iexecProxyAddress,
-            data: matchOrdersData,
-            value: BigInt(0),
-        },
-    });
-    // console.log('User operation hash:', matchUserOpResult.hash);
-    const matchTxHash = await smartAccountClient.waitForUserOperationTransaction(matchUserOpResult);
-    logTx("Match orders", matchTxHash);
-    
+    // const matchOrdersData = await iexecBoost.matchOrdersBoost.populateTransaction(
+    //     appOrder,
+    //     createEmptyDatasetOrder(),
+    //     workerpoolOrder,
+    //     requestOrder
+    // ).then(tx => tx.data);
+    // const matchUserOpResult = await smartAccountClient.sendUserOperation({
+    //     uo: {
+    //         target: iexecProxyAddress,
+    //         data: matchOrdersData,
+    //         value: BigInt(0),
+    //     },
+    // });
+    // // console.log('User operation hash:', matchUserOpResult.hash);
+    // const matchTxHash = await smartAccountClient.waitForUserOperationTransaction(matchUserOpResult);
+    // logTx("Match orders", matchTxHash);
+
+
+
+    const taskIndex = 0;
+    const dealId = getDealId(domain, requestOrder, taskIndex);
+    const taskId = getTaskId(dealId, taskIndex);
+    console.log(`Task ID for deal ${dealId} and task index ${taskIndex}: ${taskId}`);
+    // console.log(await iexecProxy.teebroker());
+
+    const schedulerMessage = buildContributionAuthorizationMessage(
+        worker.address,
+        taskId,
+        ethers.ZeroAddress,
+    );
+    const schedulerSignatureString = await signMessage(scheduler, schedulerMessage);
+    console.log('account : Scheduler.address:', scheduler.address);
+    console.log('message : ', schedulerMessage);
+    console.log(`Scheduler signature: ${schedulerSignatureString}`);
+    const { rawMessage, messageHash, ethSignedMessageHash } = 
+    computeMessageHashForVerification(scheduler.address, taskId, ethers.ZeroAddress);
+
+    console.log("Raw message:", ethers.hexlify(rawMessage));
+    console.log("Message hash:", messageHash);
+    console.log("Ethereum signed message hash:", ethSignedMessageHash);
+
+    const { results, resultDigest } = buildUtf8ResultAndDigest('result');
+    console.log(`Result: ${results}`);
+
+    // console.log('Pushing result...');
+    console.log('dealId:', dealId);
+    const dealBoost = await iexecBoost.viewDealBoost(dealId)
+    console.log('Raw deal object:', {
+        appOwner: dealBoost.appOwner,
+        appPrice: dealBoost.appPrice.toString(),
+        datasetOwner: dealBoost.datasetOwner,
+        datasetPrice: dealBoost.datasetPrice.toString(),
+        workerpoolOwner: dealBoost.workerpoolOwner, 
+        workerpoolPrice: dealBoost.workerpoolPrice.toString(),
+        requester: dealBoost.requester,
+        workerReward: dealBoost.workerReward.toString(),
+        callback: dealBoost.callback,
+        deadline: dealBoost.deadline.toString(),
+        botFirst: dealBoost.botFirst,
+        botSize: dealBoost.botSize,
+        shortTag: ethers.hexlify(dealBoost.shortTag),
+        sponsor: dealBoost.sponsor
+      });
+    console.log('taskIndex:', taskIndex);
+    console.log('results:', results);
+    console.log('resultsCallback:', '0x');
+    console.log('schedulerSignatureString:', schedulerSignatureString);
+    console.log('enclave.address:', ethers.ZeroAddress);
+    console.log('enclaveSignatureString:', '0x');
+
+    const pushResultBoostTx = await iexecBoost.connect(workSignerWithProvider)
+    .pushResultBoost(
+        dealId,
+        taskIndex,
+        results,
+        '0x',
+        schedulerSignatureString,
+        ethers.ZeroAddress, //enclave.address,
+        '0x', //enclaveSignatureString,
+    )
+    console.log('Scheduler pushResultBoost transaction sent:', pushResultBoostTx.hash);
+    const receipt = await pushResultBoostTx.wait();
+    console.log(`Scheduler pushResultBoost confirmed in block ${receipt.blockNumber}`);
+    logTx("Scheduler pushResultBoost", pushResultBoostTx.hash);
     return {
         appOrder,
         workerpoolOrder,
         requestOrder,
-        matchTxHash,
+        // matchTxHash,
         smartAccountAddress,
-        domain
     };
 }
 
@@ -316,7 +459,7 @@ try {
     const result = await main();
     console.log("Transaction successful!");
     if (result) {
-        const result = await main();
+        // const result = await main();
         console.log("Order matching successful!");
         console.log("Orders summary:");
         console.log(" - App order for app:", result.appOrder.app);
@@ -329,3 +472,74 @@ try {
 } finally {
     console.log("\n--- SCRIPT COMPLETED ---");
 }
+
+
+// export function getTaskId(dealId, index) {
+//     // Make sure dealId is a proper hex string
+//     if (!dealId.startsWith('0x')) {
+//       dealId = '0x' + dealId;
+//     }
+    
+//     // Convert index to BigInt if it's not already
+//     const indexBigInt = BigInt(index);
+//     console.log("indexBigInt = ", indexBigInt);
+    
+//     // Use ethers.js to do the encoding
+//     const encodedData = ethers.solidityPacked(
+//       ['bytes32', 'uint256'],
+//       [dealId, indexBigInt]
+//     );
+    
+//     // Hash the encoded data
+//     const taskId = ethers.keccak256(encodedData);
+    
+//     return taskId;
+//   }
+
+function computeMessageHashForVerification(workerAddress, taskId, enclaveChallenge) {
+// Step 1: Create the raw message (abi.encodePacked(msg.sender, taskId, enclaveChallenge))
+const rawMessage = ethers.solidityPacked(
+    ['address', 'bytes32', 'address'],
+    [workerAddress, taskId, enclaveChallenge]
+);
+
+// Step 2: Hash the raw message with keccak256
+const messageHash = ethers.keccak256(rawMessage);
+
+// Step 3: Convert to Ethereum signed message hash
+// This is what MessageHashUtils.toEthSignedMessageHash does
+const ethSignedMessageHash = ethers.hashMessage(ethers.getBytes(messageHash));
+
+return {
+    rawMessage,
+    messageHash,
+    ethSignedMessageHash
+};
+}
+  
+  // Function to verify the signature
+  async function verifySignature(contract, schedulerAddress, workerAddress, taskId, enclaveChallenge, signature) {
+    const { ethSignedMessageHash } = computeMessageHashForVerification(
+      workerAddress, 
+      taskId, 
+      enclaveChallenge
+    );
+    
+    // Call the contract's verifySignature function
+    const isValid = await contract.verifySignature(
+      schedulerAddress,
+      ethSignedMessageHash,
+      signature
+    );
+    
+    // You can also verify locally
+    const recoveredAddress = ethers.recoverAddress(ethSignedMessageHash, signature);
+    const localVerification = recoveredAddress.toLowerCase() === schedulerAddress.toLowerCase();
+    
+    return {
+      contractVerification: isValid,
+      localVerification,
+      recoveredAddress,
+      ethSignedMessageHash
+    };
+  }
