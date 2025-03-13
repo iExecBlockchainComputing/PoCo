@@ -278,3 +278,27 @@ export function verifyTypedDataSignature(domain, primaryType, value, signature, 
         return false;
     }
 }
+
+export async function getDomain(provider, iexecProxyAddress, verbose = false) {
+    try {
+      // Get chain ID from the connected provider
+      const chainId = Number((await provider.getNetwork()).chainId);
+      
+      // Construct the domain object according to EIP-712
+      const domain = {
+        name: 'iExecODB',
+        version: '5.0.0',
+        chainId,
+        verifyingContract: iexecProxyAddress
+      };
+      
+      if (verbose) {
+        console.log('Domain:', domain);
+      }
+      
+      return domain;
+    } catch (error) {
+      console.error('Error creating domain object:', error);
+      throw new Error(`Failed to create domain object: ${error.message}`);
+    }
+  }
