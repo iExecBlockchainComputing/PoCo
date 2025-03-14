@@ -151,12 +151,20 @@ const config: HardhatUserConfig = {
                 },
             },
         },
+        odyssey: {
+            chainId: 911867,
+            url: process.env.ODYSSEY_NODE_URL || 'https://odyssey.ithaca.xyz',
+            // Add these if you need specific gas configuration
+            gasPrice: 'auto', // Or manual value if required
+            gasMultiplier: 1, // Adjust based on network requirements
+        },
     },
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
+            odyssey: 'nothing',
         },
         customChains: [
             {
@@ -173,6 +181,14 @@ const config: HardhatUserConfig = {
                 urls: {
                     apiURL: `${bellecourBlockscoutUrl}/api`,
                     browserURL: bellecourBlockscoutUrl,
+                },
+            },
+            {
+                network: 'odyssey',
+                chainId: 911867,
+                urls: {
+                    apiURL: 'https://odyssey-explorer.ithaca.xyz/api',
+                    browserURL: 'https://odyssey-explorer.ithaca.xyz',
                 },
             },
         ],
