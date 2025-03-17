@@ -1,9 +1,8 @@
 import '@nomicfoundation/hardhat-toolbox';
+import 'dotenv/config';
 import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
-//TODO: Remove
-// import 'hardhat-deploy';
-import '@nomicfoundation/hardhat-ignition';
+import 'hardhat-deploy';
 import { HardhatUserConfig, task } from 'hardhat/config';
 import {
     HARDHAT_NETWORK_MNEMONIC,
@@ -85,7 +84,7 @@ const config: HardhatUserConfig = {
             }),
             //TODO: Refactor
             forking: {
-                url: `https://eth-sepolia.g.alchemy.com/v2/${process.env.TENDERLY_PRIVATE_KEY}`,
+                url: `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_PRIVATE_KEY}`,
             },
             chainId: 11155111,
         },

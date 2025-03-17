@@ -1,56 +1,90 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import factoryJson from '@amxx/factory/deployments/GenericFactory.json';
-import factoryShanghaiJson from '@amxx/factory/deployments/GenericFactory_shanghai.json';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { ContractFactory } from 'ethers';
-import hre, { deployments, ethers } from 'hardhat';
-import { GenericFactory, GenericFactory__factory } from '../typechain';
-import config from './config';
+import { Contract, ContractFactory } from 'ethers';
+import { deployments, ethers } from 'hardhat';
+import { ABI } from './FactoryABI'; // Import the ABI from external file
 import { getBaseNameFromContractFactory } from './deploy-tools';
 
 export class FactoryDeployer {
     owner: SignerWithAddress;
     salt: string;
-    genericFactory!: GenericFactory;
+    factoryContract!: Contract;
+    factoryAddress: string;
 
     constructor(owner: SignerWithAddress, salt: string) {
         this.owner = owner;
-        this.salt = salt;
+        this.salt = ethers.keccak256(ethers.toUtf8Bytes(salt)); // Convert string salt to bytes32
+        this.factoryAddress = '0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed';
     }
 
     /**
-     * Deploy a contract through GenericFactory [and optionally trigger a call]
+     * Deploy a contract through the new Factory [and optionally trigger an init call]
      */
     async deployWithFactory(
         contractFactory: ContractFactory,
         constructorArgs?: any[],
-        call?: string,
+        initCalldata?: string,
     ) {
         await this.init();
+
+        // Get bytecode with constructor arguments
         let bytecode = (await contractFactory.getDeployTransaction(...(constructorArgs ?? [])))
             .data;
         if (!bytecode) {
             throw new Error('Failed to prepare bytecode');
         }
-        let contractAddress = await (call
-            ? this.genericFactory.predictAddressWithCall(bytecode, this.salt, call)
-            : this.genericFactory.predictAddress(bytecode, this.salt));
-        const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
-        if (!previouslyDeployed) {
-            await (
-                call
-                    ? this.genericFactory.createContractAndCall(bytecode, this.salt, call)
-                    : this.genericFactory.createContract(bytecode, this.salt)
-            ).then((tx) => tx.wait());
+
+        // Compute bytecode hash for address prediction
+        const bytecodeHash = ethers.keccak256(bytecode);
+
+        // Get contract address (will be different prediction method based on deployment)
+        let contractAddress: string;
+        try {
+            // Use explicit parameter types to avoid ambiguity
+            contractAddress = await this.factoryContract.computeCreate2Address(
+                this.salt,
+                bytecodeHash,
+            );
+        } catch (error) {
+            console.error('Error computing address:', error);
+            throw new Error('Failed to compute contract address');
         }
+
+        // Check if the contract is already deployed
+        const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
+
+        if (!previouslyDeployed) {
+            try {
+                if (initCalldata) {
+                    // Deploy with initialization - explicitly specify all parameters to avoid ambiguity
+                    const gasParams: [number, number] = [0, 0]; // Default gas parameters
+
+                    // Call the specific function variant with salt and bytecode (avoiding overload ambiguity)
+                    await this.factoryContract[
+                        'deployCreate2AndInit(bytes32,bytes,bytes,tuple(uint256,uint256))'
+                    ](this.salt, bytecode, initCalldata, gasParams).then((tx: any) => tx.wait());
+                } else {
+                    // Deploy without initialization - explicitly call the function with salt and bytecode
+                    await this.factoryContract['deployCreate2(bytes32,bytes)'](
+                        this.salt,
+                        bytecode,
+                    ).then((tx: any) => tx.wait());
+                }
+            } catch (error) {
+                console.error('Deployment error:', error);
+                throw new Error(`Failed to deploy contract: ${error?.message}`);
+            }
+        }
+
         const contractName = getBaseNameFromContractFactory(contractFactory);
         console.log(
             `${contractName}: ${contractAddress} ${
                 previouslyDeployed ? ' (previously deployed)' : ''
             }`,
         );
+
         await deployments.save(contractName, {
             // abi field is not used but is a required arg. Empty abi would be fine
             abi: (contractFactory as any).constructor.abi,
@@ -58,44 +92,25 @@ export class FactoryDeployer {
             bytecode: bytecode,
             args: constructorArgs,
         });
+
         return contractAddress;
     }
 
     private async init() {
-        if (this.genericFactory) {
+        if (this.factoryContract) {
             // Already initialized.
             return;
         }
-        const factoryConfig: FactoryConfig =
-            !config.isNativeChain() && hre.network.name.includes('hardhat')
-                ? factoryShanghaiJson
-                : factoryJson;
-        this.genericFactory = GenericFactory__factory.connect(factoryConfig.address, this.owner);
-        if ((await ethers.provider.getCode(factoryConfig.address)) !== '0x') {
+
+        // Use the imported ABI instead of defining it inline
+        this.factoryContract = new ethers.Contract(this.factoryAddress, ABI, this.owner);
+
+        // Check if the factory is deployed
+        if ((await ethers.provider.getCode(this.factoryAddress)) !== '0x') {
             console.log(`→ Factory is available on this network`);
             return;
-        }
-        try {
-            console.log(`→ Factory is not yet deployed on this network`);
-            await this.owner
-                .sendTransaction({
-                    to: factoryConfig.deployer,
-                    value: factoryConfig.cost,
-                })
-                .then((tx) => tx.wait());
-            await ethers.provider.broadcastTransaction(factoryConfig.tx).then((tx) => tx.wait());
-            console.log(`→ Factory successfully deployed`);
-        } catch (e) {
-            console.log(e);
-            throw new Error('→ Error deploying the factory');
+        } else {
+            throw new Error('→ Factory is not deployed at the specified address');
         }
     }
-}
-
-interface FactoryConfig {
-    address: string;
-    deployer: string;
-    cost: string;
-    tx: string;
-    abi: any[];
 }
