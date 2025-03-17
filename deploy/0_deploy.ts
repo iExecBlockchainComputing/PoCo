@@ -9,7 +9,6 @@ import {
     DatasetRegistry__factory,
     ENSIntegrationDelegate__factory,
     ERC1538Proxy__factory,
-    ERC1538Query,
     ERC1538QueryDelegate__factory,
     ERC1538Query__factory,
     ERC1538Update,
@@ -116,10 +115,7 @@ export default async function deploy() {
         await linkContractToProxy(erc1538, address, module);
     }
     // Verify linking on ERC1538Proxy
-    const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(
-        erc1538ProxyAddress,
-        owner,
-    );
+    const erc1538QueryInstance = ERC1538Query__factory.connect(erc1538ProxyAddress, owner);
     const functionCount = await erc1538QueryInstance.totalFunctions();
     console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
     for (let i = 0; i < Number(functionCount); i++) {

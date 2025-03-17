@@ -15,7 +15,7 @@ export class FactoryDeployer {
 
     constructor(owner: SignerWithAddress, salt: string) {
         this.owner = owner;
-        this.salt = ethers.keccak256(ethers.toUtf8Bytes(salt)); // Convert string salt to bytes32
+        this.salt = salt;
         this.factoryAddress = '0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed';
     }
 
@@ -36,57 +36,56 @@ export class FactoryDeployer {
             throw new Error('Failed to prepare bytecode');
         }
 
-        // Compute bytecode hash for address prediction
-        const bytecodeHash = ethers.keccak256(bytecode);
+        let tx;
+        let contractAddress: string | undefined;
 
-        // Get contract address (will be different prediction method based on deployment)
-        let contractAddress: string;
         try {
-            // Use explicit parameter types to avoid ambiguity
-            contractAddress = await this.factoryContract.computeCreate2Address(
-                this.salt,
-                bytecodeHash,
-            );
-        } catch (error) {
-            console.error('Error computing address:', error);
-            throw new Error('Failed to compute contract address');
-        }
+            if (initCalldata) {
+                console.log('Deploying with init code...');
+                const gasParams: [number, number] = [0, 0]; // Default gas parameters
 
-        // Check if the contract is already deployed
-        const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
-
-        if (!previouslyDeployed) {
-            try {
-                if (initCalldata) {
-                    // Deploy with initialization - explicitly specify all parameters to avoid ambiguity
-                    const gasParams: [number, number] = [0, 0]; // Default gas parameters
-
-                    // Call the specific function variant with salt and bytecode (avoiding overload ambiguity)
-                    await this.factoryContract[
-                        'deployCreate2AndInit(bytes32,bytes,bytes,tuple(uint256,uint256))'
-                    ](this.salt, bytecode, initCalldata, gasParams).then((tx: any) => tx.wait());
-                } else {
-                    // Deploy without initialization - explicitly call the function with salt and bytecode
-                    await this.factoryContract['deployCreate2(bytes32,bytes)'](
-                        this.salt,
-                        bytecode,
-                    ).then((tx: any) => tx.wait());
-                }
-            } catch (error) {
-                console.error('Deployment error:', error);
-                throw new Error(`Failed to deploy contract: ${error?.message}`);
+                tx = await this.factoryContract[
+                    'deployCreate2AndInit(bytes32,bytes,bytes,tuple(uint256,uint256))'
+                ](this.salt, bytecode, initCalldata, gasParams);
+            } else {
+                console.log('Deploying without init code...');
+                tx = await this.factoryContract['deployCreate2(bytes32,bytes)'](
+                    this.salt,
+                    bytecode,
+                );
             }
+
+            const receipt = await tx.wait();
+
+            // Extract contract address from event logs
+            for (const log of receipt.logs) {
+                try {
+                    const parsedLog = this.factoryContract.interface.parseLog(log);
+                    if (parsedLog.name === 'ContractCreation') {
+                        contractAddress = parsedLog.args.newContract;
+                        break;
+                    }
+                } catch (error) {
+                    continue; // Ignore logs that don't match the event
+                }
+            }
+
+            if (!contractAddress) {
+                throw new Error('ContractCreation event not found in transaction receipt.');
+            }
+        } catch (error) {
+            console.error('Deployment error:', error);
+            throw new Error(`Failed to deploy contract: ${error}`);
         }
 
         const contractName = getBaseNameFromContractFactory(contractFactory);
         console.log(
             `${contractName}: ${contractAddress} ${
-                previouslyDeployed ? ' (previously deployed)' : ''
+                (await ethers.provider.getCode(contractAddress)) !== '0x' ? '' : '(not deployed)'
             }`,
         );
 
         await deployments.save(contractName, {
-            // abi field is not used but is a required arg. Empty abi would be fine
             abi: (contractFactory as any).constructor.abi,
             address: contractAddress,
             bytecode: bytecode,
@@ -98,17 +97,13 @@ export class FactoryDeployer {
 
     private async init() {
         if (this.factoryContract) {
-            // Already initialized.
             return;
         }
 
-        // Use the imported ABI instead of defining it inline
         this.factoryContract = new ethers.Contract(this.factoryAddress, ABI, this.owner);
 
-        // Check if the factory is deployed
         if ((await ethers.provider.getCode(this.factoryAddress)) !== '0x') {
             console.log(`→ Factory is available on this network`);
-            return;
         } else {
             throw new Error('→ Factory is not deployed at the specified address');
         }
