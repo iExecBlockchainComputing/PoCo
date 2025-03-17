@@ -1,7 +1,9 @@
 import '@nomicfoundation/hardhat-toolbox';
 import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
-import 'hardhat-deploy';
+//TODO: Remove
+// import 'hardhat-deploy';
+import '@nomicfoundation/hardhat-ignition';
 import { HardhatUserConfig, task } from 'hardhat/config';
 import {
     HARDHAT_NETWORK_MNEMONIC,
@@ -81,6 +83,11 @@ const config: HardhatUserConfig = {
                 },
                 chainId: 134,
             }),
+            //TODO: Refactor
+            forking: {
+                url: `https://eth-sepolia.g.alchemy.com/v2/${process.env.TENDERLY_PRIVATE_KEY}`,
+            },
+            chainId: 11155111,
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
@@ -103,7 +110,7 @@ const config: HardhatUserConfig = {
             gasPrice: bellecourBaseConfig.gasPrice, // Get closer to Bellecour network
         },
         'dev-token': {
-            chainId: 65535,
+            chainId: 11155111,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
