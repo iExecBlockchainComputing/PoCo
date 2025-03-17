@@ -41,7 +41,7 @@ function getSerializedObject(entry: AbiParameter): string {
         : entry.type;
 }
 
-export function getFunctionSignatures(abi: any[]): string {
+function getFunctionSignatures(abi: any[]): string {
     return [
         ...abi.filter((entry) => entry.type === 'receive').map(() => 'receive;'),
         ...abi.filter((entry) => entry.type === 'fallback').map(() => 'fallback;'),
