@@ -1,5 +1,319 @@
 # Solidity API
 
+## LaPoste
+
+THIS IS AN EXAMPLE CONTRACT.
+THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
+DO NOT USE THIS CODE IN PRODUCTION.
+
+### IEXEC_POCO
+
+```solidity
+contract IexecPoco IEXEC_POCO
+```
+
+### currentChainSelector
+
+```solidity
+uint64 currentChainSelector
+```
+
+### appRegistry
+
+```solidity
+contract IAppRegistry appRegistry
+```
+
+### datasetRegistry
+
+```solidity
+contract IDatasetRegistry datasetRegistry
+```
+
+### workerpoolRegistry
+
+```solidity
+contract IWorkerpoolRegistry workerpoolRegistry
+```
+
+### lockedAssets
+
+```solidity
+mapping(address => bool) lockedAssets
+```
+
+### chains
+
+```solidity
+mapping(uint64 => struct ILaPoste.BridgeDetails) chains
+```
+
+### constructor
+
+```solidity
+constructor(contract IRouterClient ccipRouterAddress, contract LinkTokenInterface linkTokenAddress, uint64 _currentChainSelector) public
+```
+
+### enableChain
+
+```solidity
+function enableChain(uint64 chainSelector, address bridgeAddress, bytes ccipExtraArgs) external
+```
+
+### disableChain
+
+```solidity
+function disableChain(uint64 chainSelector) external
+```
+
+### lockAndBridgeApp
+
+```solidity
+function lockAndBridgeApp(address appAddress, uint64 destinationChainSelector, enum ILaPoste.PayFeesIn payFeesIn) external returns (bytes32 messageId)
+```
+
+### lockAndBridgeDataset
+
+```solidity
+function lockAndBridgeDataset(address datasetAddress, uint64 destinationChainSelector, enum ILaPoste.PayFeesIn payFeesIn) external returns (bytes32 messageId)
+```
+
+### lockAndBridgeWorkerpool
+
+```solidity
+function lockAndBridgeWorkerpool(address workerpoolAddress, uint64 destinationChainSelector, enum ILaPoste.PayFeesIn payFeesIn) external returns (bytes32 messageId)
+```
+
+### ccipReceive
+
+```solidity
+function ccipReceive(struct Client.Any2EVMMessage message) external virtual
+```
+
+Called by the Router to deliver a message.
+If this reverts, any token transfers also revert. The message
+will move to a FAILED state and become available for manual execution.
+
+_Note ensure you check the msg.sender is the OffRampRouter_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| message | struct Client.Any2EVMMessage | CCIP Message |
+
+### withdraw
+
+```solidity
+function withdraw(address _beneficiary) public
+```
+
+### withdrawToken
+
+```solidity
+function withdrawToken(address _beneficiary, address _token) public
+```
+
+### receive
+
+```solidity
+receive() external payable
+```
+
+## ILaPoste
+
+### PayFeesIn
+
+```solidity
+enum PayFeesIn {
+  Native,
+  LINK
+}
+```
+
+### AssetType
+
+```solidity
+enum AssetType {
+  App,
+  Dataset,
+  Workerpool
+}
+```
+
+### InvalidRouter
+
+```solidity
+error InvalidRouter(address router)
+```
+
+### NotEnoughBalanceForFees
+
+```solidity
+error NotEnoughBalanceForFees(uint256 currentBalance, uint256 calculatedFees)
+```
+
+### NothingToWithdraw
+
+```solidity
+error NothingToWithdraw()
+```
+
+### FailedToWithdrawEth
+
+```solidity
+error FailedToWithdrawEth(address owner, address target, uint256 value)
+```
+
+### ChainNotEnabled
+
+```solidity
+error ChainNotEnabled(uint64 chainSelector)
+```
+
+### SenderNotEnabled
+
+```solidity
+error SenderNotEnabled(address sender)
+```
+
+### OperationNotAllowedOnCurrentChain
+
+```solidity
+error OperationNotAllowedOnCurrentChain(uint64 chainSelector)
+```
+
+### InvalidAssetType
+
+```solidity
+error InvalidAssetType()
+```
+
+### AssetAlreadyDeployed
+
+```solidity
+error AssetAlreadyDeployed()
+```
+
+### AssetNotLocked
+
+```solidity
+error AssetNotLocked()
+```
+
+### TransferFailed
+
+```solidity
+error TransferFailed()
+```
+
+### ChainEnabled
+
+```solidity
+event ChainEnabled(uint64 chainSelector, address bridgeAddress, bytes ccipExtraArgs)
+```
+
+### ChainDisabled
+
+```solidity
+event ChainDisabled(uint64 chainSelector)
+```
+
+### AssetLocked
+
+```solidity
+event AssetLocked(address assetAddress, address owner, enum ILaPoste.AssetType assetType, uint64 destinationChainSelector)
+```
+
+### AssetUnlocked
+
+```solidity
+event AssetUnlocked(address assetAddress, address owner, enum ILaPoste.AssetType assetType, uint64 sourceChainSelector)
+```
+
+### CrossChainSent
+
+```solidity
+event CrossChainSent(bytes32 messageId, uint64 destinationChainSelector, enum ILaPoste.AssetType assetType)
+```
+
+### CrossChainReceived
+
+```solidity
+event CrossChainReceived(uint64 sourceChainSelector, enum ILaPoste.AssetType assetType)
+```
+
+### BridgeDetails
+
+```solidity
+struct BridgeDetails {
+  address bridgeAddress;
+  bytes ccipExtraArgsBytes;
+}
+```
+
+### AppData
+
+```solidity
+struct AppData {
+  address owner;
+  string name;
+  string appType;
+  bytes multiaddr;
+  bytes32 checksum;
+  bytes mrEnclave;
+}
+```
+
+### DatasetData
+
+```solidity
+struct DatasetData {
+  address owner;
+  string name;
+  bytes multiaddr;
+  bytes32 checksum;
+}
+```
+
+### WorkerpoolData
+
+```solidity
+struct WorkerpoolData {
+  address owner;
+  string description;
+}
+```
+
+### AssetData
+
+```solidity
+struct AssetData {
+  enum ILaPoste.AssetType assetType;
+  bytes data;
+}
+```
+
+## IexecPoco
+
+### appregistry
+
+```solidity
+function appregistry() external view returns (contract IAppRegistry)
+```
+
+### datasetregistry
+
+```solidity
+function datasetregistry() external view returns (contract IDatasetRegistry)
+```
+
+### workerpoolregistry
+
+```solidity
+function workerpoolregistry() external view returns (contract IWorkerpoolRegistry)
+```
+
 ## IexecLibCore_v5
 
 ### Account
