@@ -1,0 +1,40 @@
+{
+  "address": "0xEB0Ed9970D80A2307dC7fD0dFBee2EA451ecCbF2",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract ENS",
+          "name": "ensAddr",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "node",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "label",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "register",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "numDeployments": 8
+}

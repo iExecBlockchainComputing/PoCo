@@ -134,6 +134,13 @@ const config: HardhatUserConfig = {
                 mnemonic: process.env.PROD_MNEMONIC || '',
             },
         },
+        arbitrum_sepolia: {
+            chainId: 421614,
+            url: process.env.ARBITRUM_SEPOLIA_NODE || '',
+            accounts: {
+                mnemonic: process.env.PROD_MNEMONIC || '',
+            },
+        },
         goerli: {
             chainId: 5,
             url: process.env.GOERLI_NODE || '',

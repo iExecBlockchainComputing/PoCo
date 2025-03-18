@@ -41,14 +41,12 @@ export class FactoryDeployer {
 
         try {
             if (initCalldata) {
-                console.log('Deploying with init code...');
                 const gasParams: [number, number] = [0, 0]; // Default gas parameters
 
                 tx = await this.factoryContract[
                     'deployCreate2AndInit(bytes32,bytes,bytes,tuple(uint256,uint256))'
                 ](this.salt, bytecode, initCalldata, gasParams);
             } else {
-                console.log('Deploying without init code...');
                 tx = await this.factoryContract['deployCreate2(bytes32,bytes)'](
                     this.salt,
                     bytecode,
@@ -60,7 +58,7 @@ export class FactoryDeployer {
             // Extract contract address from event logs
             for (const log of receipt.logs) {
                 try {
-                    const parsedLog = this.factoryContract.interface.parseLog(log);
+                    const parsedLog = this.factoryContract.interface.parseLog(log) as any;
                     if (parsedLog.name === 'ContractCreation') {
                         contractAddress = parsedLog.args.newContract;
                         break;
