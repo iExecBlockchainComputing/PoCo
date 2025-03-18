@@ -1,4 +1,5 @@
 import '@nomicfoundation/hardhat-toolbox';
+import 'dotenv/config';
 import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
@@ -117,6 +118,20 @@ const config: HardhatUserConfig = {
         mainnet: {
             chainId: 1,
             url: process.env.MAINNET_NODE || '',
+            accounts: {
+                mnemonic: process.env.PROD_MNEMONIC || '',
+            },
+        },
+        sepolia: {
+            chainId: 11155111,
+            url: process.env.SEPOLIA_NODE || '',
+            accounts: {
+                mnemonic: process.env.PROD_MNEMONIC || '',
+            },
+        },
+        arbitrum_sepolia: {
+            chainId: 421614,
+            url: process.env.ARBITRUM_SEPOLIA_NODE || '',
             accounts: {
                 mnemonic: process.env.PROD_MNEMONIC || '',
             },
