@@ -28,11 +28,12 @@ export default async function main() {
     const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
 
     const factoryDeployer = new FactoryDeployer(owner, salt);
-    const laPosteAddress = await factoryDeployer.deployWithFactory(
+
+    //factory is useless for now without Proxy (UUPS ou transparent)
+    await factoryDeployer.deployWithFactory(
         new LaPoste__factory(),
         constructorArgs[Number(chainId)],
     );
-    console.log('🚀 LaPoste Address:', laPosteAddress);
 }
 
 main();
