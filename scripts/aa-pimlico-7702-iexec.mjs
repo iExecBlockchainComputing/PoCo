@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: 2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
-
+import { createSmartAccountClient } from "permissionless"
+import { toSafeSmartAccount } from "permissionless/accounts"
+import { createPimlicoClient } from "permissionless/clients/pimlico"
 import { writeFileSync, existsSync,readFileSync  } from 'fs';
-import { createPublicClient, http } from 'viem';
-import { generatePrivateKey } from 'viem/accounts';
-import { LocalAccountSigner } from '@aa-sdk/core';
-import { alchemy, arbitrumSepolia } from '@account-kit/infra';
-import { createModularAccountAlchemyClient } from '@account-kit/smart-contracts';
+import { createPublicClient, http, zeroAddress } from 'viem';
+import { generatePrivateKey, privateKeyToAccount, privateKeyToAddress } from 'viem/accounts';
+import { odysseyTestnet } from "viem/chains"
+
 import { ethers } from 'ethers';
 import {
     createEmptyAppOrder,
@@ -15,7 +16,7 @@ import {
     createEmptyDatasetOrder,
     hashOrder,
     signOrder,
-    signOrderWithAlchemySmartAccountSigner,
+    signOrderWithPimlicoSmartAccountSigner,
     getDealId,
     getTaskId,
     buildContributionAuthorizationMessage,
@@ -31,7 +32,7 @@ import { loadAbi } from './contract-abi.mjs';
 dotenv.config();
 
 // Constants
-const IEXEC_PROXY_ADDRESS = '0x61b18b60a83bf11db697c4a7aafb8d3d947ac81c';
+const IEXEC_PROXY_ADDRESS = '0xC7e170b0a96131CC6368bF38a96D5EDDdAdfA711';
 const salt = generateSalt();
 const OrderOperationEnum = {
     SIGN: 0,
@@ -53,8 +54,8 @@ function loadOrGeneratePrivateKey(envVar, saveAs = null) {
 /**
  * Initialize provider and contract instances
  */
-function initializeContracts(RPC_URL) {
-    const provider = new ethers.JsonRpcProvider(RPC_URL);
+function initializeContracts() {
+    const provider = new ethers.JsonRpcProvider(odysseyTestnet.rpcUrls.default.http[0]);
     
     const IexecInterfaceTokenABI = loadAbi('IexecInterfaceToken');
     const IexecPocoBoostABI = [
@@ -83,30 +84,46 @@ function initializeContracts(RPC_URL) {
     };
 }
 
-async function createSmartAccountAlchemyProvider(smartAccountPvk, ALCHEMY_API_KEY, POLICY_ID) {
-
-    // Create Alchemy Account Kit client
+async function createSmartAccountAlchemyProvider(eoaPrivateKey, safePrivateKey, pimlicoUrl) {
     console.log('Setting up Alchemy Smart Account client...');
 
-    const smartAccountClient = await createModularAccountAlchemyClient({
-        transport: alchemy({ apiKey: ALCHEMY_API_KEY }),
-        chain: arbitrumSepolia,
-        signer: LocalAccountSigner.privateKeyToAccountSigner(smartAccountPvk),
-        policyId: POLICY_ID,
-    });
+    const pimlicoClient = createPimlicoClient({
+        transport: http(pimlicoUrl)
+    })
+    const publicClient = createPublicClient({
+        chain: odysseyTestnet,
+        transport: http(odysseyTestnet.rpcUrls.default.http[0]),
+    }) 
+    
+    const safeAccount = await toSafeSmartAccount({
+        address: privateKeyToAddress(eoaPrivateKey),
+        owners : [privateKeyToAccount(safePrivateKey)],
+        client: publicClient, 
+        version: "1.4.1",
+    })
+    
+    const smartAccountClient = createSmartAccountClient({
+        account: safeAccount,
+        paymaster: pimlicoClient,
+        bundlerTransport: http(pimlicoUrl),
+        userOperation : {
+            estimateFeesPerGas: async () => (await pimlicoClient.getUserOperationGasPrice()).fast,
+        }
+    })
+
+    // Create Alchemy Account Kit client
 
     const smartAccountAddress = smartAccountClient.account.address;
-    console.log(`Smart account address: https://sepolia.arbiscan.io/address/${smartAccountAddress}`);
+    console.log(`Smart account address: https://odyssey-explorer.ithaca.xyz/address/${smartAccountAddress}`);
 
-    const publicClient = createPublicClient({
-        chain: arbitrumSepolia,
-        transport: http(`https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`),
-    });
     // Check if account is deployed
     const code = await publicClient.getBytecode({ address: smartAccountAddress });
     console.log("Account deployed:", code && code !== '0x' ? "Yes" : "No");
 
     return {
+        pimlicoClient,
+        publicClient,
+        safeAccount,
         smartAccountClient,
         smartAccountAddress
     };
@@ -116,30 +133,29 @@ async function createSmartAccountAlchemyProvider(smartAccountPvk, ALCHEMY_API_KE
  * Log a transaction with explorer link
  */
 function logTx(description, txHash) {
-    console.log(`${description} transaction included: https://sepolia.arbiscan.io/tx/${txHash}`);
+    console.log(`${description} transaction included: https://odyssey-explorer.ithaca.xyz/tx/${txHash}`);
 }
   
 async function main() {
     console.log('Starting Alchemy-based Account Abstraction script for iExec');
 
     // Get environment variables 
-    const PRIVATE_KEY = loadOrGeneratePrivateKey('PRIVATE_KEY_2', 'PRIVATE_KEY_2');
+    const EOA_PRIVATE_KEY = loadOrGeneratePrivateKey('PRIVATE_KEY', 'PRIVATE_KEY');
+    const SAFE_PRIVATE_KEY = loadOrGeneratePrivateKey('SAFE_PRIVATE_KEY', 'SAFE_PRIVATE_KEY');
     const WORK_PK = loadOrGeneratePrivateKey('WORK_PK', 'WORK_PK');
     
-    const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
-    if (!ALCHEMY_API_KEY) throw new Error('Missing ALCHEMY_API_KEY in .env file');
-
-    const POLICY_ID = process.env.POLICY_ID;
-    if (!POLICY_ID) throw new Error('Missing POLICY_ID in .env file');
-
-    const RPC_URL = process.env.RPC_URL;
-    if (!RPC_URL) throw new Error('Missing RPC_URL in .env file');
+    const PIMLICO_API_KEY = process.env.PIMLICO_API_KEY;
+    if (!PIMLICO_API_KEY) throw new Error('Missing PIMLICO_API_KEY in .env file');
+    const pimlicoUrl = `https://api.pimlico.io/v2/${odysseyTestnet.id}/rpc?apikey=${PIMLICO_API_KEY}`
 
     console.log('Environment variables loaded');
 
     // Create signers
-    const eoaSigner = new ethers.Wallet(PRIVATE_KEY);
+    const eoaSigner = new ethers.Wallet(EOA_PRIVATE_KEY);
     console.log('EOA Signer address:', eoaSigner.address);
+
+    const safeSigner = new ethers.Wallet(SAFE_PRIVATE_KEY);
+    console.log('Safe Signer address:', safeSigner.address);
 
     const workSigner = new ethers.Wallet(WORK_PK);
     console.log('Worker Signer address:', workSigner.address);
@@ -153,15 +169,15 @@ async function main() {
         AppInterfaceABI,
         WorkerpoolRegistryABI,
         WorkerInterfaceABI,
-    } = initializeContracts(RPC_URL);
+    } = initializeContracts();
 
-    const {smartAccountClient, smartAccountAddress} = await createSmartAccountAlchemyProvider(PRIVATE_KEY, ALCHEMY_API_KEY, POLICY_ID);
+    const {smartAccountClient, smartAccountAddress} = await createSmartAccountAlchemyProvider(EOA_PRIVATE_KEY, SAFE_PRIVATE_KEY, pimlicoUrl);
 
     // Create a provider for ethers contract interactions
     const domain = await getDomain(provider,IEXEC_PROXY_ADDRESS, false);
 
-    // In your App Developer workflow function:
-    const appAddress = "0xe7ca9875F7c6F68f36F4FA519e81b9850988BAec"
+    // // In your App Developer workflow function:
+    const appAddress = "0x9B5351eB2ccC1Eb6ddCaD46f6eA46847ae9C7A4C"
     const appInfo = await createOrVerifyApp({
         iexecProxy,
         provider,
@@ -175,7 +191,7 @@ async function main() {
         appUri: 'docker.io/hello-world:1.0.0'
     });
     
-    console.log(`App setup complete, using app at ${appInfo.appAddress}`);
+    console.log(`App setup complete, using app at ${appInfo.appAddress}`); 
 
     const appOrderResult = await createAndSignAppOrder({
         appAddress,                 // The address of your app
@@ -201,8 +217,8 @@ async function main() {
     const workerpoolInfo = await setupWorkerpoolRegistry({
         iexecProxy,
         provider,
-        // workerpoolAddressEOA : ethers.ZeroAddress,0x0C7646596DD583A98885ab5960Eff5BE8eA2D9f9
-        workerpoolAddressEOA : "0x0C7646596DD583A98885ab5960Eff5BE8eA2D9f9",
+        // workerpoolAddressEOA : zeroAddress,0x0C7646596DD583A98885ab5960Eff5BE8eA2D9f9
+        workerpoolAddressEOA : "0xCA85fe1eb183c390045D9Cfd470264EDA9256560",
         smartAccountClient,
         smartAccountAddress,
         workSigner,
@@ -260,29 +276,29 @@ async function main() {
     console.log(`Signed by: ${requestOrderInfo.signedBy}`);
 
     // Match the orders
-    const matchResult = await matchOrders({
-        appOrder: appOrder,
-        workerpoolOrder: workerpoolOrderInfo.workerpoolOrder,
-        requestOrder: requestOrderInfo.requestOrder,
-        iexecBoost, 
-        iexecProxyAddress: IEXEC_PROXY_ADDRESS,
-        smartAccountClient,
-        datasetOrder: null, // Provide a dataset order if needed
-        useEOA: false, // Set to true if you want to use an EOA for transaction
-        eoaSigner: null, // Provide an EOA signer if useEOA is true
-        provider
-    });
+    // const matchResult = await matchOrders({
+    //     appOrder: appOrder,
+    //     workerpoolOrder: workerpoolOrderInfo.workerpoolOrder,
+    //     requestOrder: requestOrderInfo.requestOrder,
+    //     iexecBoost, 
+    //     iexecProxyAddress: IEXEC_PROXY_ADDRESS,
+    //     smartAccountClient,
+    //     datasetOrder: null, // Provide a dataset order if needed
+    //     useEOA: false, // Set to true if you want to use an EOA for transaction
+    //     eoaSigner: null, // Provide an EOA signer if useEOA is true
+    //     provider
+    // });
 
-    const resultInfo = await pushTaskResult({
-        domain,
-        taskIndex: 0,
-        requestOrder: requestOrderInfo.requestOrder,
-        result: 'This is my task result',
-        iexecBoost,
-        scheduler, // You need a scheduler wallet (typically the workerpool owner)
-        worker, // You need a worker wallet to submit the result
-        provider
-    });
+    // const resultInfo = await pushTaskResult({
+    //     domain,
+    //     taskIndex: 0,
+    //     requestOrder: requestOrderInfo.requestOrder,
+    //     result: 'This is my task result',
+    //     iexecBoost,
+    //     scheduler, // You need a scheduler wallet (typically the workerpool owner)
+    //     worker, // You need a worker wallet to submit the result
+    //     provider
+    // });
 
     // return {
     //     appOrder,
@@ -292,6 +308,7 @@ async function main() {
     //     smartAccountAddress,
     // };
 }
+  
   
 async function createOrVerifyApp({
     iexecProxy,
@@ -346,22 +363,25 @@ async function createOrVerifyApp({
             ).then(tx => tx.data);
 
             // Send user operation via smart account
-            const userOpResult = await smartAccountClient.sendUserOperation({
-                uo: {
-                    target: appRegistryAddress,
-                    data: createAppData,
-                    value: BigInt(0),
-                },
+            const userOperationHash = await smartAccountClient.sendUserOperation({
+                calls: [
+                    {
+                        to:appRegistryAddress,
+                        data: createAppData,
+                        value: 0n,
+                    }
+                ],
             });
 
-            // Wait for transaction confirmation
-            txHash = await smartAccountClient.waitForUserOperationTransaction(userOpResult);
+            const {receipt} = await smartAccountClient.waitForUserOperationReceipt({
+                hash: userOperationHash,
+            })
             
             // Log transaction details
-            logTx("App creation", txHash);
+            logTx("App creation", receipt.transactionHash);
             
             // Extract the app address from the transaction
-            appAddress = await extractAssetAddressFromTx(provider, txHash, AppRegistryABI);
+            appAddress = await extractAssetAddressFromTx(provider, receipt.transactionHash, AppRegistryABI);
             console.log(`New app created with address: ${appAddress}`);
         } else {
             console.log(`Using existing app at ${appAddress}`);
@@ -543,7 +563,7 @@ async function extractAssetAddressFromTx(provider, txHash, AppRegistryABI) {
         // Convert to checksum address
         const checksumAddress = ethers.getAddress(lowercaseAddress);
         
-        console.log(`Extracted app address: ${checksumAddress} from tx: ${txHash}`);
+        console.log(`Extracted asset address: ${checksumAddress} from tx: ${txHash}`);
         return checksumAddress;
         
     } catch (error) {
@@ -609,7 +629,7 @@ async function createAndSignAppOrder({
         
         // Sign app order
         console.log('Signing app order with smart account...');
-        await signOrderWithAlchemySmartAccountSigner(domain, appOrder, smartAccountClient);
+        await signOrderWithPimlicoSmartAccountSigner(domain, appOrder, smartAccountClient);
         const appOrderHash = await hashOrder(domain, appOrder);
         console.log(`App order signed with hash: ${appOrderHash}`);
         
@@ -840,7 +860,7 @@ async function createAndSignRequestOrder({
         } else {
             // Sign with smart account off-chain
             console.log('Signing request order with smart account...');
-            await signOrderWithAlchemySmartAccountSigner(domain, requestOrder, smartAccountClient);
+            await signOrderWithPimlicoSmartAccountSigner(domain, requestOrder, smartAccountClient);
             requestOrderHash = await hashOrder(domain, requestOrder);
             console.log(`Request order signed with hash: ${requestOrderHash}`);
         }
@@ -946,16 +966,18 @@ async function matchOrders({
             // Send user operation
             console.log('Sending user operation to match orders...');
             const matchUserOpResult = await smartAccountClient.sendUserOperation({
-                uo: {
-                    target: iexecProxyAddress, // Use the correct target address
-                    data: matchOrdersData,
-                    value: BigInt(0),
-                },
+                calls: [
+                    {
+                        to:iexecProxyAddress,
+                        data: matchOrdersData,
+                        value: 0n,
+                    }
+                ],
             });
-            
-            console.log('User operation hash:', matchUserOpResult.hash);
-            txHash = await smartAccountClient.waitForUserOperationTransaction(matchUserOpResult);
-            logTx("Match orders with smart account", txHash);
+            const {receipt} = await smartAccountClient.waitForUserOperationReceipt({
+                hash: matchUserOpResult,
+            })
+            logTx("Match orders with smart account", receipt.transactionHash);
         }
     } catch (error) {
         console.error('Error in matchOrders:', error);
@@ -972,7 +994,7 @@ async function pushTaskResult({
     scheduler,
     worker,
     provider,
-    enclaveAddress = ethers.ZeroAddress,
+    enclaveAddress = zeroAddress,
     resultsCallback = '0x'
 }) {
     try {

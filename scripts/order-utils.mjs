@@ -128,7 +128,7 @@ export function getEip712TypedDataOrder(domain, order) {
     };
 }
 
-export async function signOrderWithSmartAccountSigner(domain, order, smartAccountClient) {
+export async function signOrderWithAlchemySmartAccountSigner(domain, order, smartAccountClient) {
     const eip712Order = getEip712TypedDataOrder(domain, order);
     
     // Remove sign from the order before signing
@@ -144,6 +144,30 @@ export async function signOrderWithSmartAccountSigner(domain, order, smartAccoun
                 primaryType: eip712Order.primaryType,
                 message: messageToSign
             }
+        });
+        
+        console.log('Signature received:', signature);
+        order.sign = signature;
+    } catch (error) {
+        console.error('Error signing with Smart Account:', error);
+        throw error;
+    }
+}
+
+export async function signOrderWithPimlicoSmartAccountSigner(domain, order, smartAccountClient) {
+    const eip712Order = getEip712TypedDataOrder(domain, order);
+    
+    // Remove sign from the order before signing
+    const messageToSign = { ...eip712Order.message };
+    delete messageToSign.sign;
+    
+    try {
+        // Pass typedData as a property not as direct parameters
+        const signature = await smartAccountClient.signTypedData({
+                domain: eip712Order.domain,
+                types: eip712Order.types,
+                primaryType: eip712Order.primaryType,
+                message: messageToSign
         });
         
         console.log('Signature received:', signature);
