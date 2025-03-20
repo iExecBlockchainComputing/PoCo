@@ -283,14 +283,6 @@ async function main() {
         worker, // You need a worker wallet to submit the result
         provider
     });
-
-    // return {
-    //     appOrder,
-    //     workerpoolOrder,
-    //     requestOrder,
-    //     // matchTxHash,
-    //     smartAccountAddress,
-    // };
 }
   
 async function createOrVerifyApp({

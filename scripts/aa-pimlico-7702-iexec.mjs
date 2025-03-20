@@ -4,9 +4,10 @@ import { createSmartAccountClient } from "permissionless"
 import { toSafeSmartAccount } from "permissionless/accounts"
 import { createPimlicoClient } from "permissionless/clients/pimlico"
 import { writeFileSync, existsSync,readFileSync  } from 'fs';
-import { createPublicClient, http, zeroAddress } from 'viem';
+import { createPublicClient, http, zeroAddress, createWalletClient } from 'viem';
 import { generatePrivateKey, privateKeyToAccount, privateKeyToAddress } from 'viem/accounts';
 import { odysseyTestnet } from "viem/chains"
+import { eip7702Actions } from "viem/experimental"
 
 import { ethers } from 'ethers';
 import {
@@ -27,6 +28,8 @@ import {
 import { getDomain } from './odb-tools-utils.mjs';
 import dotenv from 'dotenv';
 import { loadAbi } from './contract-abi.mjs';
+import { getSafeModuleSetupData } from './getSetupData.mjs';
+import { safeAbiImplementation } from "./safeAbi.mjs";
 
 // Load environment variables
 dotenv.config();
@@ -84,8 +87,8 @@ function initializeContracts() {
     };
 }
 
-async function createSmartAccountAlchemyProvider(eoaPrivateKey, safePrivateKey, pimlicoUrl) {
-    console.log('Setting up Alchemy Smart Account client...');
+async function createSmartAccountPimlicoProvider(eoaPrivateKey, safePrivateKey, pimlicoUrl) {
+    console.log('Setting up Pimlico Smart Account client...');
 
     const pimlicoClient = createPimlicoClient({
         transport: http(pimlicoUrl)
@@ -111,14 +114,20 @@ async function createSmartAccountAlchemyProvider(eoaPrivateKey, safePrivateKey, 
         }
     })
 
-    // Create Alchemy Account Kit client
+    // Create Pimlico Account Kit client
 
     const smartAccountAddress = smartAccountClient.account.address;
     console.log(`Smart account address: https://odyssey-explorer.ithaca.xyz/address/${smartAccountAddress}`);
 
     // Check if account is deployed
     const code = await publicClient.getBytecode({ address: smartAccountAddress });
-    console.log("Account deployed:", code && code !== '0x' ? "Yes" : "No");
+    const isDeployed = code && code !== '0x';
+    console.log("Account deployed:", isDeployed ? "Yes" : "No");
+    if (!isDeployed) {
+        await deploySafeSmartAccount(eoaPrivateKey, safePrivateKey, pimlicoClient, smartAccountAddress);
+        const updatedCode = await publicClient.getBytecode({ address: smartAccountAddress });
+        console.log("Account deployment verified:", updatedCode && updatedCode !== '0x' ? "Success" : "Failed");
+    }
 
     return {
         pimlicoClient,
@@ -129,6 +138,72 @@ async function createSmartAccountAlchemyProvider(eoaPrivateKey, safePrivateKey, 
     };
 }
 
+async function deploySafeSmartAccount(eoaPrivateKey, safePrivateKey, publicClient, expectedAddress) {
+    console.log('Deploying Safe Smart Account using EIP-7702...');
+    
+    // Create wallet client with EIP-7702 extension
+    const account = privateKeyToAccount(eoaPrivateKey);
+    console.log(`Using deployer account: https://explorer-odyssey.t.conduit.xyz/address/${account.address}`);
+    const walletClient = createWalletClient({
+        account, 
+        chain: odysseyTestnet, 
+        transport: http("https://odyssey.ithaca.xyz"), 
+    }).extend(eip7702Actions());
+
+    // Gnosis Safe singleton contract address
+    const SAFE_SINGLETON_ADDRESS = "0x41675C099F32341bf84BFc5382aF534df5C7461a";
+    
+    // Sign authorization for EIP-7702 deployment
+    const authorization = await walletClient.signAuthorization({
+        contractAddress: SAFE_SINGLETON_ADDRESS, 
+    });
+
+    // Safe configuration constants
+    const SAFE_MULTISEND_ADDY = "0x38869bf66a61cF6bDB996A6aE40D5853Fd43B526";
+    const SAFE_4337_MODULE_ADDRESS = "0x75cf11467937ce3F2f357CE24ffc3DBF8fD5c226";
+
+    // Setup Safe parameters
+    const owners = [privateKeyToAddress(safePrivateKey)];
+    const signerThreshold = 1n;
+    const setupAddress = SAFE_MULTISEND_ADDY;
+    const setupData = getSafeModuleSetupData(); 
+    const fallbackHandler = SAFE_4337_MODULE_ADDRESS;
+    const paymentToken = zeroAddress;
+    const paymentValue = 0n;
+    const paymentReceiver = zeroAddress;
+
+    console.log(`Deploying Safe with owner: ${owners[0]}`);
+    console.log(`Expected Safe address: ${expectedAddress}`);
+    
+    try {
+        // Deploy the Safe contract
+        const txHash = await walletClient.writeContract({
+            address: account.address,
+            abi: safeAbiImplementation,
+            functionName: "setup",
+            args: [
+                owners,
+                signerThreshold,
+                setupAddress,
+                setupData,
+                fallbackHandler,
+                paymentToken,
+                paymentValue,
+                paymentReceiver,
+            ],
+            authorizationList: [authorization],
+        });
+        await publicClient.waitForTransactionReceipt(    {
+            hash: txHash
+        });
+        logTx('Safe deployment', txHash);
+        return txHash;
+    } catch (error) {
+        console.error('❌ Failed to deploy Safe:', error);
+        throw error;
+    }
+}
+
 /**
  * Log a transaction with explorer link
  */
@@ -137,7 +212,7 @@ function logTx(description, txHash) {
 }
   
 async function main() {
-    console.log('Starting Alchemy-based Account Abstraction script for iExec');
+    console.log('Starting Pimlico-based Account Abstraction script for iExec');
 
     // Get environment variables 
     const EOA_PRIVATE_KEY = loadOrGeneratePrivateKey('PRIVATE_KEY', 'PRIVATE_KEY');
@@ -171,7 +246,7 @@ async function main() {
         WorkerInterfaceABI,
     } = initializeContracts();
 
-    const {smartAccountClient, smartAccountAddress} = await createSmartAccountAlchemyProvider(EOA_PRIVATE_KEY, SAFE_PRIVATE_KEY, pimlicoUrl);
+    const {smartAccountClient, smartAccountAddress} = await createSmartAccountPimlicoProvider(EOA_PRIVATE_KEY, SAFE_PRIVATE_KEY, pimlicoUrl);
 
     // Create a provider for ethers contract interactions
     const domain = await getDomain(provider,IEXEC_PROXY_ADDRESS, false);
@@ -186,7 +261,7 @@ async function main() {
         smartAccountAddress,
         smartAccountClient,
         existingAppAddress: appAddress, // null will create a new app
-        appName: 'my-alchemy-app-234',
+        appName: 'my-Pimlico-app-234',
         appType: 'DOCKER',
         appUri: 'docker.io/hello-world:1.0.0'
     });
@@ -260,7 +335,7 @@ async function main() {
         requesterAddress: smartAccountAddress,
         appAddress: appAddress,
         workerpoolAddress: workerpoolInfo.activeWorkerpoolAddress,
-        params: 'my-alchemy-params',
+        params: 'my-Pimlico-params',
         domain,
         iexecProxy,
         smartAccountClient,
@@ -276,40 +351,31 @@ async function main() {
     console.log(`Signed by: ${requestOrderInfo.signedBy}`);
 
     // Match the orders
-    // const matchResult = await matchOrders({
-    //     appOrder: appOrder,
-    //     workerpoolOrder: workerpoolOrderInfo.workerpoolOrder,
-    //     requestOrder: requestOrderInfo.requestOrder,
-    //     iexecBoost, 
-    //     iexecProxyAddress: IEXEC_PROXY_ADDRESS,
-    //     smartAccountClient,
-    //     datasetOrder: null, // Provide a dataset order if needed
-    //     useEOA: false, // Set to true if you want to use an EOA for transaction
-    //     eoaSigner: null, // Provide an EOA signer if useEOA is true
-    //     provider
-    // });
+    const matchResult = await matchOrders({
+        appOrder: appOrder,
+        workerpoolOrder: workerpoolOrderInfo.workerpoolOrder,
+        requestOrder: requestOrderInfo.requestOrder,
+        iexecBoost, 
+        iexecProxyAddress: IEXEC_PROXY_ADDRESS,
+        smartAccountClient,
+        datasetOrder: null, // Provide a dataset order if needed
+        useEOA: false, // Set to true if you want to use an EOA for transaction
+        eoaSigner: null, // Provide an EOA signer if useEOA is true
+        provider
+    });
 
-    // const resultInfo = await pushTaskResult({
-    //     domain,
-    //     taskIndex: 0,
-    //     requestOrder: requestOrderInfo.requestOrder,
-    //     result: 'This is my task result',
-    //     iexecBoost,
-    //     scheduler, // You need a scheduler wallet (typically the workerpool owner)
-    //     worker, // You need a worker wallet to submit the result
-    //     provider
-    // });
-
-    // return {
-    //     appOrder,
-    //     workerpoolOrder,
-    //     requestOrder,
-    //     // matchTxHash,
-    //     smartAccountAddress,
-    // };
+    const resultInfo = await pushTaskResult({
+        domain,
+        taskIndex: 0,
+        requestOrder: requestOrderInfo.requestOrder,
+        result: 'This is my task result',
+        iexecBoost,
+        scheduler, // You need a scheduler wallet (typically the workerpool owner)
+        worker, // You need a worker wallet to submit the result
+        provider
+    });
 }
-  
-  
+
 async function createOrVerifyApp({
     iexecProxy,
     provider,
