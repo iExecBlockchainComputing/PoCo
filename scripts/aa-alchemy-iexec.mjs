@@ -32,8 +32,6 @@ dotenv.config();
 
 // Constants
 const IEXEC_PROXY_ADDRESS = '0x61b18b60a83bf11db697c4a7aafb8d3d947ac81c';
-const APP_ADDRESS = '0x957e1ecc70b57acd432d31cc16151eedb6303dad'; 
-const WORKERPOOL_ADDRESS = '0xc875c4150c537e1c181eef5c64d901d493cec6a6';
 const salt = generateSalt();
 const OrderOperationEnum = {
     SIGN: 0,
