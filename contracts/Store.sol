@@ -5,7 +5,6 @@ pragma solidity ^0.6.0;
 
 import "@iexec/interface/contracts/IexecHub.sol";
 import "@iexec/solidity/contracts/Libs/SafeMathExtended.sol";
-import "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./libs/IexecLibCore_v5.sol";
@@ -24,7 +23,7 @@ import "./registries/IRegistry.sol";
  * If in doubt, read about ERC1538 memory store.                            *
  ****************************************************************************/
 
-abstract contract Store is ERC1538Store
+abstract contract Store 
 {
 	// Registries
 	IRegistry internal m_appregistry;

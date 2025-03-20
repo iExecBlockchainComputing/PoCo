@@ -1,7 +1,13 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { ERC1538Update } from '../typechain';
+import { ethers } from 'hardhat';
+import {
+    DiamondCutFacet,
+    DiamondInit__factory,
+    DiamondLoupeFacet,
+    DiamondLoupeFacet__factory,
+} from '../typechain';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 
 interface AbiParameter {
@@ -16,18 +22,53 @@ interface AbiParameter {
  * @param contractFactory The contract factory to link to the proxy.
  */
 export async function linkContractToProxy(
-    proxy: ERC1538Update,
+    proxy: DiamondCutFacet,
+    diamondInitAddress: string,
     contractAddress: string,
     contractFactory: any,
 ) {
     const contractName = getBaseNameFromContractFactory(contractFactory);
+    const diamondLoupeFacet: DiamondLoupeFacet = DiamondLoupeFacet__factory.connect(
+        await proxy.getAddress(),
+        ethers.provider,
+    );
+    const abi = contractFactory.constructor.abi;
+    const iface = new ethers.Interface(abi);
+    let signatures = getFunctionSignatures(abi);
+    console.log(`${contractName}:`);
+    console.log(signatures);
+    let selectors: string[] = signatures.map((func) => iface.getFunction(func)?.selector);
+    // Skip following block if loupe is not yet present
+    if (contractName != 'DiamondLoupeFacet') {
+        const facets = await diamondLoupeFacet.facets();
+        // Get selectors already set on diamond
+        let existingSelectors: string[] = [];
+        for (const facet of facets) {
+            existingSelectors = existingSelectors.concat(facet.functionSelectors);
+        }
+        // Do no add a function whose name is already present on diamond [TODO: Improve]
+        selectors = selectors.filter((signature) => {
+            const func = iface.getFunction(signature)!;
+            const existingSelector = existingSelectors.includes(func.selector);
+            if (existingSelector) {
+                console.log(
+                    `[warn] ${contractName}.${func.format()} won't be added (function name already set by other facet)`,
+                );
+            }
+            return !existingSelector;
+        });
+    }
     await proxy
-        .updateContract(
-            contractAddress,
-            // TODO: Use contractFactory.interface.functions when moving to ethers@v6
-            // https://github.com/ethers-io/ethers.js/issues/1069
-            getFunctionSignatures(contractFactory.constructor.abi),
-            'Linking ' + contractName,
+        .diamondCut(
+            [
+                {
+                    facetAddress: contractAddress,
+                    action: 0, // Add
+                    functionSelectors: selectors,
+                },
+            ],
+            diamondInitAddress,
+            DiamondInit__factory.createInterface().encodeFunctionData('init'),
         )
         .then((tx) => tx.wait())
         .catch(() => {
@@ -41,17 +82,15 @@ function getSerializedObject(entry: AbiParameter): string {
         : entry.type;
 }
 
-function getFunctionSignatures(abi: any[]): string {
+// TODO: Use contractFactory.interface.functions when moving to ethers@v6
+// https://github.com/ethers-io/ethers.js/issues/1069
+function getFunctionSignatures(abi: any[]): string[] {
     return [
-        ...abi.filter((entry) => entry.type === 'receive').map(() => 'receive;'),
-        ...abi.filter((entry) => entry.type === 'fallback').map(() => 'fallback;'),
         ...abi
             .filter((entry) => entry.type === 'function')
             .map(
                 (entry) =>
-                    `${entry.name}(${entry.inputs?.map(getSerializedObject).join(',') ?? ''});`,
+                    `${entry.name}(${entry.inputs?.map(getSerializedObject).join(',') ?? ''})`,
             ),
-    ]
-        .filter(Boolean)
-        .join('');
+    ].filter(Boolean);
 }

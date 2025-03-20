@@ -3,19 +3,11 @@
 
 pragma solidity ^0.8.0;
 
-import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
-
 import {Store} from "../Store.v8.sol";
+import {OwnableDiamondStore} from "../OwnableDiamondStore.sol";
 
 /**
  * @title Base contract of all Delegate contracts.
  * @dev Every module must inherit from this contract.
  */
-abstract contract DelegateBase is Store {
-    /**
-     * @dev Constructor used by all PoCo modules.
-     */
-    constructor() Ownable(msg.sender) {
-        renounceOwnership();
-    }
-}
+abstract contract DelegateBase is Store, OwnableDiamondStore {}

@@ -3,18 +3,17 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
-import { ethers } from 'hardhat';
+import hre, { ethers } from 'hardhat';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
+    DiamondCutFacet,
+    DiamondCutFacet__factory,
+    DiamondInit__factory,
+    DiamondLoupeFacet,
+    DiamondLoupeFacet__factory,
+    Diamond__factory,
     ENSIntegrationDelegate__factory,
-    ERC1538Proxy__factory,
-    ERC1538Query,
-    ERC1538QueryDelegate__factory,
-    ERC1538Query__factory,
-    ERC1538Update,
-    ERC1538UpdateDelegate__factory,
-    ERC1538Update__factory,
     IexecAccessorsABILegacyDelegate__factory,
     IexecAccessorsDelegate__factory,
     IexecAccessors__factory,
@@ -33,12 +32,14 @@ import {
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate__factory,
     IexecRelayDelegate__factory,
+    LibDiamond__factory,
+    OwnershipFacet__factory,
     RLC__factory,
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
-import config from '../utils/config';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
+import config from '../utils/config';
 import { linkContractToProxy } from '../utils/proxy-tools';
 
 /**
@@ -64,9 +65,16 @@ export default async function deploy() {
         ? await getOrDeployRlc(deploymentOptions.token!, owner) // token
         : ZeroAddress; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
+    // TODO: Rename 1538 to 2535 everywhere
     // Deploy ERC1538 proxy contracts
+    const libDiamondAddress = await factoryDeployer.deployWithFactory(new LibDiamond__factory());
+    const libDiamond = (hre as any).__SOLIDITY_COVERAGE_RUNNING
+        ? {
+              ['@mudgen/diamond/contracts/libraries/LibDiamond.sol:LibDiamond']: libDiamondAddress,
+          }
+        : {};
     const erc1538UpdateAddress = await factoryDeployer.deployWithFactory(
-        new ERC1538UpdateDelegate__factory(),
+        new DiamondCutFacet__factory(libDiamond),
     );
     const transferOwnershipCall = await Ownable__factory.connect(
         ZeroAddress, // any is fine
@@ -78,12 +86,12 @@ export default async function deploy() {
             throw new Error('Failed to prepare transferOwnership data');
         });
     const erc1538ProxyAddress = await factoryDeployer.deployWithFactory(
-        new ERC1538Proxy__factory(),
-        [erc1538UpdateAddress],
-        transferOwnershipCall,
+        new Diamond__factory(libDiamond),
+        [owner.address, erc1538UpdateAddress],
     );
-    const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
+    const erc1538: DiamondCutFacet = DiamondCutFacet__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${await erc1538.getAddress()}`);
+    const diamondInitAddress = await factoryDeployer.deployWithFactory(new DiamondInit__factory());
     // Deploy library & modules
     const iexecLibOrdersAddress = await factoryDeployer.deployWithFactory(
         new IexecLibOrders_v5__factory(),
@@ -92,7 +100,8 @@ export default async function deploy() {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
     const modules = [
-        new ERC1538QueryDelegate__factory(),
+        new DiamondLoupeFacet__factory(),
+        new OwnershipFacet__factory(libDiamond),
         new IexecAccessorsDelegate__factory(),
         new IexecAccessorsABILegacyDelegate__factory(),
         new IexecCategoryManagerDelegate__factory(),
@@ -113,18 +122,22 @@ export default async function deploy() {
     ];
     for (const module of modules) {
         const address = await factoryDeployer.deployWithFactory(module);
-        await linkContractToProxy(erc1538, address, module);
+        // TODO: Improve init
+        await linkContractToProxy(erc1538, diamondInitAddress, address, module);
     }
     // Verify linking on ERC1538Proxy
-    const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(
+    const erc1538QueryInstance: DiamondLoupeFacet = DiamondLoupeFacet__factory.connect(
         erc1538ProxyAddress,
         owner,
     );
-    const functionCount = await erc1538QueryInstance.totalFunctions();
+    const facets = await erc1538QueryInstance.facets();
+    const functionCount = facets
+        .map((facet) => facet.functionSelectors.length)
+        .reduce((acc, curr) => acc + curr, 1);
     console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
     for (let i = 0; i < Number(functionCount); i++) {
-        const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
-        console.log(`[${i}] ${contract} ${method}`);
+        // const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
+        // console.log(`[${i}] ${contract} ${method}`);
     }
     const appRegistryAddress = await factoryDeployer.deployWithFactory(
         new AppRegistry__factory(),

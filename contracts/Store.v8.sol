@@ -5,7 +5,6 @@ pragma solidity ^0.8.0;
 
 import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
 import {IERC721Enumerable} from "@openzeppelin/contracts-v5/interfaces/IERC721Enumerable.sol";
-import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
 import {IexecLibCore_v5} from "./libs/IexecLibCore_v5.sol";
 
 /****************************************************************************
@@ -33,10 +32,9 @@ library LibMap2_bytes4_address_bytes {
     }
 }
 
+// TODO: Remove unused and/or rename 1538 to 2535 everywhere
 /// @dev @iexec/solidity ERC1538
-abstract contract ERC1538Store is Ownable {
-    LibMap2_bytes4_address_bytes.map internal m_funcs;
-}
+abstract contract ERC1538Store {}
 
 /// @dev registries
 interface IRegistry is IERC721Enumerable {
@@ -50,7 +48,7 @@ interface IRegistry is IERC721Enumerable {
  * @dev note the new added state variable "m_dealsBoost" that holds a new type
  * of deals for the PoCo Boost workflow.
  */
-abstract contract Store is ERC1538Store {
+abstract contract Store {
     // Registries
     //slither-disable-next-line constable-states
     IRegistry internal m_appregistry;

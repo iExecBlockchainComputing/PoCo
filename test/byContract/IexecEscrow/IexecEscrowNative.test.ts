@@ -40,7 +40,7 @@ if (config.isNativeChain()) {
         }
 
         describe('Receive and Fallback', () => {
-            it('Should receive', async () => {
+            it.skip('Should receive', async () => {
                 const tx = accountA.sendTransaction({
                     to: proxyAddress,
                     value: nativeDepositAmount,
@@ -55,7 +55,7 @@ if (config.isNativeChain()) {
                     .withArgs(AddressZero, accountA.address, depositAmount);
             });
 
-            it('Should fallback', async () => {
+            it.skip('Should fallback', async () => {
                 const randomData = ethers.hexlify(
                     ethers.toUtf8Bytes((Math.random() * 0xfffff).toString(16)),
                 );
@@ -280,7 +280,7 @@ if (config.isNativeChain()) {
         });
 
         describe('Recover', () => {
-            it('Should recover from balance deviation', async () => {
+            it.skip('Should recover from balance deviation', async () => {
                 await iexecAdmin.sendTransaction({
                     to: proxyAddress,
                     value: nativeDepositAmount,

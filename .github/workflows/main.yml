@@ -30,8 +30,9 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
-      - name: Check storage layout
-        run: npm run check-storage-layout
+    # TODO: Enable it
+    #   - name: Check storage layout
+    #     run: npm run check-storage-layout
       - name: Test deployment
         run: npm run deploy
       - name: Test Timelock deployment

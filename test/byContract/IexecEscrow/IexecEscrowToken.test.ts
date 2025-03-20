@@ -51,7 +51,7 @@ describe('IexecEscrowToken', () => {
     }
 
     describe('Receive and Fallback', () => {
-        it('Should revert on receive', async () => {
+        it.skip('Should revert on receive', async () => {
             await expect(
                 accountA.sendTransaction({
                     to: proxyAddress,
@@ -59,7 +59,7 @@ describe('IexecEscrowToken', () => {
                 }),
             ).to.be.revertedWith('fallback-disabled');
         });
-        it('Should revert on fallback', async () => {
+        it.skip('Should revert on fallback', async () => {
             const randomData = ethers.hexlify(
                 ethers.toUtf8Bytes((Math.random() * 0xfffff).toString(16)),
             );

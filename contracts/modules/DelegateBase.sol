@@ -3,7 +3,7 @@
 
 pragma solidity ^0.6.0;
 
-import "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol";
 import "../Store.sol";
+import {OwnableDiamondStore} from "../OwnableDiamondStore.sol";
 
-abstract contract DelegateBase is Store, ERC1538Module {}
+abstract contract DelegateBase is Store, OwnableDiamondStore {}
