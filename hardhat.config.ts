@@ -125,16 +125,12 @@ const config: HardhatUserConfig = {
         sepolia: {
             chainId: 11155111,
             url: process.env.SEPOLIA_NODE || '',
-            accounts: {
-                mnemonic: process.env.PROD_MNEMONIC || '',
-            },
+            accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
         },
         arbitrum_sepolia: {
             chainId: 421614,
             url: process.env.ARBITRUM_SEPOLIA_NODE || '',
-            accounts: {
-                mnemonic: process.env.PROD_MNEMONIC || '',
-            },
+            accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
         },
         goerli: {
             chainId: 5,
@@ -170,6 +166,8 @@ const config: HardhatUserConfig = {
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
+            sepolia: process.env.ETHERSCAN_API_KEY || '',
+            arbitrum_sepolia: process.env.ARBISCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
         },
@@ -180,6 +178,22 @@ const config: HardhatUserConfig = {
                 urls: {
                     apiURL: 'https://blockscout.viviani.iex.ec/api',
                     browserURL: 'https://blockscout.viviani.iex.ec/',
+                },
+            },
+            {
+                network: 'sepolia',
+                chainId: 11155111,
+                urls: {
+                    apiURL: 'https://api-sepolia.etherscan.io/api',
+                    browserURL: 'https://sepolia.etherscan.io/',
+                },
+            },
+            {
+                network: 'arbitrum_sepolia',
+                chainId: 421614,
+                urls: {
+                    apiURL: 'https://api-sepolia.arbiscan.io/api',
+                    browserURL: 'https://sepolia.arbiscan.io/',
                 },
             },
             {

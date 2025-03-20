@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {IERC721} from "@openzeppelin/contracts-v5/token/ERC721/IERC721.sol";
+import {ERC165} from "@openzeppelin/contracts-v5/utils/introspection/ERC165.sol";
 import {ERC721Holder} from "@openzeppelin/contracts-v5/token/ERC721/utils/ERC721Holder.sol";
 import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts-v5/token/ERC20/utils/SafeERC20.sol";
@@ -16,7 +17,6 @@ import {IWorkerpoolRegistry, IWorkerpool} from "../registries/workerpools/IWorke
 import {IDatasetRegistry, IDataset} from "../registries/datasets/IDatasetRegistry.sol";
 import {IAppRegistry, IApp} from "../registries/apps/IAppRegistry.sol";
 import {ILaPoste} from "./interfaces/ILaPoste.sol";
-
 /**
  * THIS IS AN EXAMPLE CONTRACT.
  * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
@@ -27,7 +27,8 @@ contract LaPoste is
     IAny2EVMMessageReceiver,
     ReentrancyGuard,
     OwnerIsCreator,
-    ERC721Holder
+    ERC721Holder,
+    ERC165
 {
     using SafeERC20 for IERC20;
 
@@ -415,6 +416,13 @@ contract LaPoste is
         uint256 amount = IERC20(_token).balanceOf(address(this));
         if (amount == 0) revert NothingToWithdraw();
         IERC20(_token).safeTransfer(_beneficiary, amount);
+    }
+
+    // Call by the CCIP router on receive
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return
+            interfaceId == type(IAny2EVMMessageReceiver).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     // Function to receive Ether
