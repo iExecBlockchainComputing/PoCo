@@ -114,6 +114,14 @@ function withdraw(address _beneficiary) public
 function withdrawToken(address _beneficiary, address _token) public
 ```
 
+### supportsInterface
+
+```solidity
+function supportsInterface(bytes4 interfaceId) public view virtual returns (bool)
+```
+
+_See {IERC165-supportsInterface}._
+
 ### receive
 
 ```solidity
