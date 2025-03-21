@@ -37,7 +37,7 @@ export async function linkContractToProxy(
     let signatures = getFunctionSignatures(abi);
     console.log(`${contractName}:`);
     console.log(signatures);
-    let selectors: string[] = signatures.map((func) => iface.getFunction(func)?.selector);
+    let selectors: string[] = signatures.map((functionName) => getFunctionSelector(functionName));
     // Skip following block if loupe is not yet present
     if (contractName != 'DiamondLoupeFacet') {
         const facets = await diamondLoupeFacet.facets();
@@ -47,12 +47,11 @@ export async function linkContractToProxy(
             existingSelectors = existingSelectors.concat(facet.functionSelectors);
         }
         // Do no add a function whose name is already present on diamond [TODO: Improve]
-        selectors = selectors.filter((signature) => {
-            const func = iface.getFunction(signature)!;
-            const existingSelector = existingSelectors.includes(func.selector);
+        selectors = selectors.filter((selector) => {
+            const existingSelector = existingSelectors.includes(selector);
             if (existingSelector) {
                 console.log(
-                    `[warn] ${contractName}.${func.format()} won't be added (function name already set by other facet)`,
+                    `[warn] ${contractName}.${iface.getFunction(selector)?.format()} won't be added (function name already set by other facet)`,
                 );
             }
             return !existingSelector;
@@ -86,6 +85,8 @@ function getSerializedObject(entry: AbiParameter): string {
 // https://github.com/ethers-io/ethers.js/issues/1069
 function getFunctionSignatures(abi: any[]): string[] {
     return [
+        ...abi.filter((entry) => entry.type === 'receive').map(() => 'receive'),
+        ...abi.filter((entry) => entry.type === 'fallback').map(() => 'fallback'),
         ...abi
             .filter((entry) => entry.type === 'function')
             .map(
@@ -93,4 +94,16 @@ function getFunctionSignatures(abi: any[]): string[] {
                     `${entry.name}(${entry.inputs?.map(getSerializedObject).join(',') ?? ''})`,
             ),
     ].filter(Boolean);
+}
+
+function getFunctionSelector(functionName: string) {
+    let selector = '';
+    if (functionName == 'receive') {
+        selector = '0x00000000';
+    } else if (functionName == 'fallback') {
+        selector = '0xFFFFFFFF';
+    } else {
+        selector = ethers.dataSlice(ethers.id(functionName), 0, 4);
+    }
+    return selector;
 }

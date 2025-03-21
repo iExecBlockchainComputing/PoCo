@@ -196,9 +196,7 @@ const config: HardhatUserConfig = {
             // Used in deployment
             '@amxx/factory/contracts/v6/GenericFactory.sol',
             // Diamond
-            '@mudgen/diamond/contracts/Diamond.sol',
             '@mudgen/diamond/contracts/upgradeInitializers/DiamondInit.sol',
-            '@mudgen/diamond/contracts/libraries/LibDiamond.sol',
             '@mudgen/diamond/contracts/facets/DiamondCutFacet.sol',
             '@mudgen/diamond/contracts/facets/DiamondLoupeFacet.sol',
             '@mudgen/diamond/contracts/facets/OwnershipFacet.sol',

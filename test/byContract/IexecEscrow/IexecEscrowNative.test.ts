@@ -40,7 +40,7 @@ if (config.isNativeChain()) {
         }
 
         describe('Receive and Fallback', () => {
-            it.skip('Should receive', async () => {
+            it('Should receive', async () => {
                 const tx = accountA.sendTransaction({
                     to: proxyAddress,
                     value: nativeDepositAmount,
@@ -55,7 +55,7 @@ if (config.isNativeChain()) {
                     .withArgs(AddressZero, accountA.address, depositAmount);
             });
 
-            it.skip('Should fallback', async () => {
+            it('Should fallback', async () => {
                 const randomData = ethers.hexlify(
                     ethers.toUtf8Bytes((Math.random() * 0xfffff).toString(16)),
                 );
