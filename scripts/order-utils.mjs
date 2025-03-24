@@ -34,11 +34,11 @@ export function createEmptyAppOrder() {
 export function createEmptyRequestOrder() {
     return {
         app: NULL.ADDRESS,
-        appmaxprice: 0,
+        appmaxprice: 100000,
         dataset: NULL.ADDRESS,
         datasetmaxprice: 0,
         workerpool: NULL.ADDRESS,
-        workerpoolmaxprice: 0,
+        workerpoolmaxprice: 100000,
         volume: 1,
         tag: NULL.BYTES32,
         category: 2,

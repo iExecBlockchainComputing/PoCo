@@ -39,7 +39,6 @@ const IEXEC_PROXY_ADDRESS = '0xC7e170b0a96131CC6368bF38a96D5EDDdAdfA711';
 const salt = generateSalt();
 const OrderOperationEnum = {
     SIGN: 0,
-    CLOSE: 1,
 };
 // Helper Functions
 /**
@@ -274,6 +273,7 @@ async function main() {
         domain,                     // EIP712 domain for signing
         smartAccountClient,         // Smart account client for signing
         smartAccountAddress,        // Address of the smart account
+        price : BigInt(123),
         volume: 1000,               // Order volume
         salt,                       // Salt for the order
     });
@@ -322,6 +322,7 @@ async function main() {
         WorkerInterfaceABI,
         OrderOperationEnum,
         volume: 1000,
+        price : BigInt(123),
         salt,
         useSmartAccount: false, // Set to true to use smart account instead of EOA
         preSign: false // Set to true to pre-sign the order on-chain
@@ -330,16 +331,31 @@ async function main() {
     console.log(`Workerpool order created with hash: ${workerpoolOrderInfo.workerpoolOrderHash}`);
     console.log(`Signed by: ${workerpoolOrderInfo.signedBy}`);
 
+    // const result = await depositWorkerpoolRLC({
+    //     workerpoolAddress: workerpoolInfo.activeWorkerpoolAddress, // Your workerpool address
+    //     provider,
+    //     iexecProxy,
+    //     smartAccountClient: smartAccountClient,
+    //     iexecProxyAddress: IEXEC_PROXY_ADDRESS, // iExec proxy address
+    //     useSmartAccount: false, // Set to false if using EOA
+    //     eoaSigner: workSigner // Only needed if useSmartAccount is false
+    // });
+
+    // console.log(`Successfully deposited ${ethers.formatUnits(result.depositedAmount, 9)} RLC to workerpool`);
+
     // Create and sign request order
     const requestOrderInfo = await createAndSignRequestOrder({
+        provider,
         requesterAddress: smartAccountAddress,
         appAddress: appAddress,
+        appPrice: appOrder.price,
         workerpoolAddress: workerpoolInfo.activeWorkerpoolAddress,
+        workerpoolPrice: workerpoolOrderInfo.workerpoolOrder.workerpoolprice,
         params: 'my-Pimlico-params',
         domain,
         iexecProxy,
         smartAccountClient,
-        IEXEC_PROXY_ADDRESS,
+        iexecProxyAddress :IEXEC_PROXY_ADDRESS,
         volume: 1000,
         salt,
         usePreSign: false, // Set to true to pre-sign on-chain instead of off-chain signing
@@ -351,18 +367,18 @@ async function main() {
     console.log(`Signed by: ${requestOrderInfo.signedBy}`);
 
     // Match the orders
-    const matchResult = await matchOrders({
-        appOrder: appOrder,
-        workerpoolOrder: workerpoolOrderInfo.workerpoolOrder,
-        requestOrder: requestOrderInfo.requestOrder,
-        iexecBoost, 
-        iexecProxyAddress: IEXEC_PROXY_ADDRESS,
-        smartAccountClient,
-        datasetOrder: null, // Provide a dataset order if needed
-        useEOA: false, // Set to true if you want to use an EOA for transaction
-        eoaSigner: null, // Provide an EOA signer if useEOA is true
-        provider
-    });
+    // const matchResult = await matchOrders({
+    //     appOrder: appOrder,
+    //     workerpoolOrder: workerpoolOrderInfo.workerpoolOrder,
+    //     requestOrder: requestOrderInfo.requestOrder,
+    //     iexecBoost, 
+    //     iexecProxyAddress: IEXEC_PROXY_ADDRESS,
+    //     smartAccountClient,
+    //     datasetOrder: null, // Provide a dataset order if needed
+    //     useEOA: false, // Set to true if you want to use an EOA for transaction
+    //     eoaSigner: null, // Provide an EOA signer if useEOA is true
+    //     provider
+    // });
 
     const resultInfo = await pushTaskResult({
         domain,
@@ -674,6 +690,7 @@ async function createAndSignAppOrder({
     domain,
     smartAccountClient,
     smartAccountAddress,
+    price = BigInt(0), 
     volume = 1000,
     salt,
 }) {
@@ -690,6 +707,7 @@ async function createAndSignAppOrder({
         appOrder.app = appAddress;
         appOrder.volume = volume;
         appOrder.salt = salt;
+        appOrder.price = price;
         
         console.log(`App order created for app ${appAddress} with volume ${volume}`);
         
@@ -734,6 +752,7 @@ async function createAndSignWorkerpoolOrder({
     iexecProxyAddress,
     WorkerInterfaceABI,
     volume = 1000,
+    price = BigInt(0),
     salt,
     useSmartAccount = false,
     preSign = false
@@ -749,6 +768,7 @@ async function createAndSignWorkerpoolOrder({
         workerpoolOrder.workerpool = workerpoolAddress;
         workerpoolOrder.volume = volume;
         workerpoolOrder.salt = salt;
+        workerpoolOrder.workerpoolprice = price;
         
         // Get workerpool owner for verification
         const workerInterface= new ethers.Contract(workerpoolAddress, WorkerInterfaceABI, provider)
@@ -849,9 +869,12 @@ async function createAndSignWorkerpoolOrder({
 }
 
 async function createAndSignRequestOrder({
+    provider,
     requesterAddress,
     appAddress,
+    appPrice,
     workerpoolAddress,
+    workerpoolPrice,
     params,
     domain,
     iexecProxy,
@@ -869,9 +892,93 @@ async function createAndSignRequestOrder({
         console.log(`App: ${appAddress}`);
         console.log(`Workerpool: ${workerpoolAddress}`);
         
-        // Create request order
         console.log('Creating request order...');
         let requestOrder = createEmptyRequestOrder();
+
+        console.log('Checking iExec account balance...');
+        const accountInfo = await iexecProxy.viewAccount(requesterAddress);
+        
+        // Extract the available balance (total balance minus frozen)
+        let currentBalance = BigInt(accountInfo.stake.toString());
+        console.log(`Account balance: ${currentBalance} RLC`);
+        
+        let minimumBalance = BigInt(0);
+        minimumBalance += appPrice;
+        minimumBalance += workerpoolPrice;
+        minimumBalance = minimumBalance * BigInt(volume);
+        const depositAmount = minimumBalance
+        // if (currentBalance < minimumBalance) {
+        //     console.log(`Balance is below minimum. Need to deposit at least ${ethers.formatUnits(minimumBalance - currentBalance, 9)} RLC`);
+            
+        //     // Get the RLC token address
+        //     let rlcTokenAddress = await iexecProxy.token();
+        //     console.log(`RLC token address: ${rlcTokenAddress}`);
+            
+        //     // Create RLC contract instance
+        //     const rlcContract = new ethers.Contract(
+        //         rlcTokenAddress,
+        //         loadAbi('IexecInterfaceToken'),
+        //         provider
+        //     );
+        //     // Check RLC token balance
+        //     const rlcBalance = await rlcContract.balanceOf(requesterAddress);
+        //     console.log(`RLC token balance: ${ethers.formatUnits(rlcBalance, 9)} RLC`);
+            
+        //     if (rlcBalance < depositAmount) {
+        //         throw new Error(`Insufficient RLC balance. You need at least ${ethers.formatUnits(depositAmount, 9)} RLC to deposit, but only have ${ethers.fformatUnits(rlcBalance, 9)} RLC.`);
+        //     }
+            
+        //     // Deposit RLC tokens to PoCo
+        //     console.log(`Depositing ${ethers.formatUnits(depositAmount, 9)} RLC to iExec account...`);
+            
+        //     if (useEOA && eoaSigner) {
+        //         // Deposit using EOA
+        //         const tx = await rlcContract.approveAndCall(
+        //             iexecProxyAddress,
+        //             depositAmount,
+        //             '0x'
+        //         );
+        //         console.log(`Deposit transaction sent: ${tx.hash}`);
+        //         await tx.wait();
+        //         console.log('Deposit transaction confirmed!');
+                
+        //     } else {
+        //         // Deposit using smart account
+        //         const approveAndCallData = await rlcContract.approveAndCall.populateTransaction(
+        //             iexecProxyAddress, depositAmount, '0x',
+        //         ).then(tx => tx.data);
+                
+        //         console.log('Sending user operation for RLC deposit...');
+        //         const userOpResult = await smartAccountClient.sendUserOperation({
+        //             calls: [
+        //                 {
+        //                     to:rlcTokenAddress,
+        //                     data: approveAndCallData,
+        //                     value: 0n,
+        //                 }
+        //             ],
+        //         });
+                
+        //         console.log('Deposit user operation hash:', userOpResult.hash);
+        //         const txHash = await smartAccountClient.waitForUserOperationTransaction(userOpResult);
+        //         logTx("RLC deposit", txHash);
+        //     }
+            
+        //     // Check updated balance
+        //     const updatedBalance = await iexecProxy.viewAccount(requesterAddress);
+        //     currentBalance = BigInt(updatedBalance.stake.toString());
+        //     console.log(`Updated iExec account balance: ${ethers.formatUnits(currentBalance.toString(), 9)} RLC`);
+            
+        //     if (BigInt(currentBalance.toString()) < minimumBalance) {
+        //         console.warn(`Warning: Balance after deposit (${ethers.formatUnits(currentBalance.toString(), 9)} RLC) is still below minimum required (${ethers.formatUnits(minimumBalance, 9)} RLC).`);
+        //     } else {
+        //         console.log(`✅ Sufficient balance confirmed for task execution.`);
+        //     }
+        // } else {
+        //     console.log(`✅ Sufficient balance already available for task execution.`);
+        // }
+        
+        // Create request order
         
         requestOrder.requester = requesterAddress;
         requestOrder.app = appAddress;
@@ -894,11 +1001,13 @@ async function createAndSignRequestOrder({
 
             console.log('Sending user operation to pre-sign request order...');
             const userOpResult = await smartAccountClient.sendUserOperation({
-                uo: {
-                    target: iexecProxyAddress,
+                calls: [
+                    {
+                        to: iexecProxyAddress,
                     data: manageRequestOrderData,
                     value: BigInt(0),
-                },
+                }
+            ],
             });
             
             console.log('User operation hash:', userOpResult.hash);
@@ -963,6 +1072,92 @@ async function createAndSignRequestOrder({
         throw error;
     }
 }
+
+async function depositWorkerpoolRLC({
+    workerpoolAddress,
+    provider,
+    iexecProxy,
+    smartAccountClient,
+    iexecProxyAddress,
+    useSmartAccount = false,
+    eoaSigner = null
+}) {
+    try {
+        console.log('\n=== Depositing RLC to Workerpool ===');
+        console.log(`Workerpool: ${workerpoolAddress}`);
+        
+        // Get the RLC token address
+        const rlcTokenAddress = await iexecProxy.token();
+        console.log(`RLC token address: ${rlcTokenAddress}`);
+        
+        // Create RLC contract instance for reading balance
+        const rlcContract = new ethers.Contract(
+            rlcTokenAddress,
+            loadAbi('IexecInterfaceToken'),
+            provider
+        );
+        
+        // Check RLC token balance
+        const rlcBalance = await rlcContract.balanceOf(eoaSigner.address);
+        const decimals = await rlcContract.decimals();
+        console.log(`RLC token balance: ${ethers.formatUnits(rlcBalance, decimals)} RLC`);
+        
+        if (rlcBalance <= 0) {
+            throw new Error(`No RLC tokens available to deposit.`);
+        }
+         // Using EOA signer
+         if (!eoaSigner) {
+            throw new Error("EOA signer is required when useSmartAccount is false");
+        }
+        
+        // Connect contracts to EOA signer
+        const workSignerWithProvider = eoaSigner.connect(provider);
+        const rlcWithSigner = rlcContract.connect(workSignerWithProvider);
+
+
+        const tx = await rlcWithSigner.approveAndCall(
+            iexecProxyAddress,
+            rlcBalance,
+            '0x'
+        );
+        await tx.wait();
+        logTx("RLC deposit to workerpool", tx.hash);
+        
+        // Check workerpool balance after deposit
+        try {
+            console.log('Checking updated workerpool balance...');
+            // For workerpools, we need to check their stake in the escrow
+            const workerpoolAccount = await iexecProxy.viewAccount(eoaSigner.address);
+            const workerpoolBalance = BigInt(workerpoolAccount.stake.toString());
+            const workerpoolLocked = BigInt(workerpoolAccount.locked.toString());
+            
+            console.log(`Workerpool balance: ${ethers.formatUnits(workerpoolBalance, decimals)} RLC`);
+            console.log(`Workerpool locked: ${ethers.formatUnits(workerpoolLocked, decimals)} RLC`);
+            console.log(`Workerpool available: ${ethers.formatUnits(workerpoolBalance - workerpoolLocked, decimals)} RLC`);
+            
+            // Also check remaining wallet balance
+            const remainingBalance = await rlcContract.balanceOf(eoaSigner.address);
+            console.log(`Remaining wallet balance: ${ethers.formatUnits(remainingBalance, decimals)} RLC`);
+            
+            return {
+                success: true,
+                depositedAmount: depositAmount,
+                newWorkerpoolBalance: workerpoolBalance,
+                remainingWalletBalance: remainingBalance
+            };
+        } catch (e) {
+            console.warn(`Could not verify workerpool balance: ${e.message}`);
+            return {
+                success: true,
+                depositedAmount: rlcBalance
+            };
+        }
+    } catch (error) {
+        console.error('Error in depositWorkerpoolRLC:', error);
+        throw error;
+    }
+}
+
 
 async function matchOrders({
     appOrder,
