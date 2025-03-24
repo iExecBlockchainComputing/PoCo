@@ -60,7 +60,7 @@ describe('IexecMaintenance', async () => {
     }
 
     describe('Configure', () => {
-        it.skip('Should configure', async () => {
+        it('Should configure', async () => {
             await clearDomainSeparator();
             await iexecPocoAsAdmin.configure(...configureArgs).then((tx) => tx.wait());
             expect(await iexecPoco.eip712domain_separator()).equal(
@@ -99,7 +99,7 @@ describe('IexecMaintenance', async () => {
     });
 
     describe('Update domain separator', () => {
-        it.skip('Should update domain separator', async () => {
+        it('Should update domain separator', async () => {
             await setDomainSeparatorInStorage(someDomainSeparator);
             expect(await iexecPoco.eip712domain_separator()).equal(someDomainSeparator);
             await iexecPoco.updateDomainSeparator().then((tx) => tx.wait());
@@ -107,7 +107,7 @@ describe('IexecMaintenance', async () => {
                 await hashDomain(await iexecPoco.domain()),
             );
         });
-        it.skip('Should not update domain separator when not configured', async () => {
+        it('Should not update domain separator when not configured', async () => {
             await clearDomainSeparator();
             await expect(iexecPoco.updateDomainSeparator()).to.be.revertedWith('not-configured');
         });
@@ -120,7 +120,7 @@ describe('IexecMaintenance', async () => {
         it('Should not import score when no v3_iexecHub configured', async () => {
             await expect(iexecPoco.importScore(worker.address)).to.be.revertedWithoutReason();
         });
-        it.skip('Should not import score when already imported', async () => {
+        it('Should not import score when already imported', async () => {
             const workerScoreImportedSlot = ethers.stripZerosLeft(
                 ethers.keccak256(
                     ethers.AbiCoder.defaultAbiCoder().encode(

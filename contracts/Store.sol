@@ -13,6 +13,7 @@ import "./registries/apps/App.sol";
 import "./registries/datasets/Dataset.sol";
 import "./registries/workerpools/Workerpool.sol";
 import "./registries/IRegistry.sol";
+import {OwnableDiamondStore} from "./OwnableDiamondStore.sol";
 
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
@@ -23,7 +24,7 @@ import "./registries/IRegistry.sol";
  * If in doubt, read about ERC1538 memory store.                            *
  ****************************************************************************/
 
-abstract contract Store 
+abstract contract Store is OwnableDiamondStore
 {
 	// Registries
 	IRegistry internal m_appregistry;

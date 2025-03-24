@@ -6,6 +6,7 @@ pragma solidity ^0.8.0;
 import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
 import {IERC721Enumerable} from "@openzeppelin/contracts-v5/interfaces/IERC721Enumerable.sol";
 import {IexecLibCore_v5} from "./libs/IexecLibCore_v5.sol";
+import {OwnableDiamondStore} from "./OwnableDiamondStore.sol";
 
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
@@ -48,7 +49,7 @@ interface IRegistry is IERC721Enumerable {
  * @dev note the new added state variable "m_dealsBoost" that holds a new type
  * of deals for the PoCo Boost workflow.
  */
-abstract contract Store {
+abstract contract Store is OwnableDiamondStore {
     // Registries
     //slither-disable-next-line constable-states
     IRegistry internal m_appregistry;

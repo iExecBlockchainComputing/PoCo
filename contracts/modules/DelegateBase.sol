@@ -4,6 +4,5 @@
 pragma solidity ^0.6.0;
 
 import "../Store.sol";
-import {OwnableDiamondStore} from "../OwnableDiamondStore.sol";
 
-abstract contract DelegateBase is Store, OwnableDiamondStore {}
+abstract contract DelegateBase is Store {}

@@ -92,7 +92,7 @@ describe('IexecPoco2#finalize', async () => {
             workerpool: workerpoolPrice,
         };
     }
-    it.skip('Should finalize task of deal payed by sponsor (with callback)', async () => {
+    it('Should finalize task of deal payed by sponsor (with callback)', async () => {
         const oracleConsumerInstance = await new TestClient__factory()
             .connect(anyone)
             .deploy()

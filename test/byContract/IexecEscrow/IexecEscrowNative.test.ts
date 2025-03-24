@@ -280,7 +280,7 @@ if (config.isNativeChain()) {
         });
 
         describe('Recover', () => {
-            it.skip('Should recover from balance deviation', async () => {
+            it('Should recover from balance deviation', async () => {
                 await iexecAdmin.sendTransaction({
                     to: proxyAddress,
                     value: nativeDepositAmount,
