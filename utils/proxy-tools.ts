@@ -1,12 +1,14 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     DiamondCutFacet,
     DiamondInit__factory,
     DiamondLoupeFacet,
     DiamondLoupeFacet__factory,
+    IDiamondLoupe,
 } from '../typechain';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 
@@ -38,12 +40,12 @@ export async function linkContractToProxy(
     console.log(`${contractName}:`);
     console.log(signatures);
     let selectors: string[] = signatures.map((functionName) => getFunctionSelector(functionName));
-    // Skip following block if loupe is not yet present
-    if (contractName != 'DiamondLoupeFacet') {
-        const facets = await diamondLoupeFacet.facets();
+    let existingFacets: IDiamondLoupe.FacetStructOutput[] = [];
+    try {
         // Get selectors already set on diamond
+        existingFacets = await diamondLoupeFacet.facets();
         let existingSelectors: string[] = [];
-        for (const facet of facets) {
+        for (const facet of existingFacets) {
             existingSelectors = existingSelectors.concat(facet.functionSelectors);
         }
         // Do no add a function whose name is already present on diamond [TODO: Improve]
@@ -56,7 +58,16 @@ export async function linkContractToProxy(
             }
             return !existingSelector;
         });
+    } catch (e) {
+        console.log('No selectors already set on diamond.');
     }
+    const init = existingFacets.length == 0;
+    // Multiple facets could be added to the proxy in a single transaction, but note that:
+    // 0. Adding 1 facet at a time costs around 300K gas here.
+    // 1. Adding all facets in a single transaction could cost around 5M gas here. It might
+    //  not be that straightforward to get such big transaction mined on a public network.
+    // 2. Adding couple facets in a single tx is another option with few tuning.
+    // Let's use option 0 for now.
     await proxy
         .diamondCut(
             [
@@ -66,8 +77,8 @@ export async function linkContractToProxy(
                     functionSelectors: selectors,
                 },
             ],
-            diamondInitAddress,
-            DiamondInit__factory.createInterface().encodeFunctionData('init'),
+            init ? diamondInitAddress : ZeroAddress, // only trigger init when adding first facet
+            init ? DiamondInit__factory.createInterface().encodeFunctionData('init') : '0x',
         )
         .then((tx) => tx.wait())
         .catch(() => {

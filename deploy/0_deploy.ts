@@ -122,7 +122,6 @@ export default async function deploy() {
     ];
     for (const module of modules) {
         const address = await factoryDeployer.deployWithFactory(module);
-        // TODO: Improve init
         await linkContractToProxy(erc1538, diamondInitAddress, address, module);
     }
     // Verify linking on ERC1538Proxy
