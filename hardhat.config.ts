@@ -14,6 +14,7 @@ import chainConfig from './utils/config';
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
 const isFujiFork = process.env.FUJI_FORK == 'true';
+const isArbitrumSepoliaFork = process.env.ARBITRUM_SEPOLIA_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
 
 /**
@@ -34,6 +35,13 @@ const fujiBaseConfig = {
     hardfork: 'london', // Avalanche C-Chain supports EIP-1559
     gasPrice: 25_000_000_000, // 25 Gwei default
     blockGasLimit: 8_000_000,
+};
+
+// Arbitrum Sepolia specific configuration
+const arbitrumSepoliaBaseConfig = {
+    hardfork: 'london',
+    gasPrice: 100_000_000, // 0.1 Gwei default (Arbitrum has lower gas prices)
+    blockGasLimit: 30_000_000, // Arbitrum has higher block gas limits
 };
 
 const settings = {
@@ -101,6 +109,18 @@ const config: HardhatUserConfig = {
                 chainId: 43113,
                 ...fujiBaseConfig,
             }),
+            ...(isArbitrumSepoliaFork && {
+                forking: {
+                    url:
+                        process.env.ARBITRUM_SEPOLIA_RPC_URL ||
+                        'https://sepolia-rollup.arbitrum.io/rpc',
+                    blockNumber: process.env.ARBITRUM_SEPOLIA_BLOCK_NUMBER
+                        ? parseInt(process.env.ARBITRUM_SEPOLIA_BLOCK_NUMBER)
+                        : undefined,
+                },
+                chainId: 421614, // Arbitrum Sepolia chain ID
+                ...arbitrumSepoliaBaseConfig,
+            }),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
@@ -117,6 +137,11 @@ const config: HardhatUserConfig = {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 chainId: 43113,
                 ...fujiBaseConfig,
+            }),
+            ...(isArbitrumSepoliaFork && {
+                accounts: 'remote', // Override defaults accounts for impersonation
+                chainId: 421614,
+                ...arbitrumSepoliaBaseConfig,
             }),
         },
         'dev-native': {
@@ -168,6 +193,21 @@ const config: HardhatUserConfig = {
                 },
             },
         },
+        // Add Arbitrum Sepolia as a network
+        'arbitrum-sepolia': {
+            chainId: 421614,
+            url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || '',
+            },
+            ...arbitrumSepoliaBaseConfig,
+            verify: {
+                etherscan: {
+                    apiUrl: 'https://api-sepolia.arbiscan.io',
+                    apiKey: process.env.ARBISCAN_API_KEY || '',
+                },
+            },
+        },
         viviani: {
             chainId: 133,
             url: 'https://viviani.iex.ec',
@@ -196,6 +236,8 @@ const config: HardhatUserConfig = {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
             fuji: process.env.SNOWTRACE_API_KEY || '',
+            avalancheFujiTestnet: process.env.SNOWTRACE_API_KEY || '',
+            arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
         },
@@ -206,6 +248,14 @@ const config: HardhatUserConfig = {
                 urls: {
                     apiURL: 'https://api-testnet.snowtrace.io/api',
                     browserURL: 'https://testnet.snowtrace.io/',
+                },
+            },
+            {
+                network: 'arbitrumSepolia',
+                chainId: 421614,
+                urls: {
+                    apiURL: 'https://api-sepolia.arbiscan.io/api',
+                    browserURL: 'https://sepolia.arbiscan.io/',
                 },
             },
             {
