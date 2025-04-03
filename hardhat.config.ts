@@ -13,6 +13,7 @@ import chainConfig from './utils/config';
 
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
+const isFujiFork = process.env.FUJI_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
 
 /**
@@ -26,6 +27,13 @@ const bellecourBaseConfig = {
     hardfork: 'berlin', // No EIP-1559 before London fork
     gasPrice: 0,
     blockGasLimit: 6_700_000,
+};
+
+// Avalanche Fuji specific configuration
+const fujiBaseConfig = {
+    hardfork: 'london', // Avalanche C-Chain supports EIP-1559
+    gasPrice: 25_000_000_000, // 25 Gwei default
+    blockGasLimit: 8_000_000,
 };
 
 const settings = {
@@ -81,6 +89,18 @@ const config: HardhatUserConfig = {
                 },
                 chainId: 134,
             }),
+            ...(isFujiFork && {
+                forking: {
+                    url:
+                        process.env.FUJI_RPC_URL ||
+                        'https://lb.drpc.org/ogrpc?network=avalanche-fuji&dkey=AhEPbH3buE5zjj_dDMs3E2galVURtfsR7pNM5mzgoATf',
+                    blockNumber: process.env.FUJI_BLOCK_NUMBER
+                        ? parseInt(process.env.FUJI_BLOCK_NUMBER)
+                        : undefined,
+                },
+                chainId: 43113,
+                ...fujiBaseConfig,
+            }),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
@@ -92,6 +112,11 @@ const config: HardhatUserConfig = {
             ...(isLocalFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 chainId: 134,
+            }),
+            ...(isFujiFork && {
+                accounts: 'remote', // Override defaults accounts for impersonation
+                chainId: 43113,
+                ...fujiBaseConfig,
             }),
         },
         'dev-native': {
@@ -128,6 +153,21 @@ const config: HardhatUserConfig = {
                 mnemonic: process.env.MNEMONIC || '',
             },
         },
+        // Add Fuji as a network
+        fuji: {
+            chainId: 43113,
+            url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || '',
+            },
+            ...fujiBaseConfig,
+            verify: {
+                etherscan: {
+                    apiUrl: 'https://api-testnet.snowtrace.io',
+                    apiKey: process.env.SNOWTRACE_API_KEY || '',
+                },
+            },
+        },
         viviani: {
             chainId: 133,
             url: 'https://viviani.iex.ec',
@@ -155,10 +195,19 @@ const config: HardhatUserConfig = {
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
+            fuji: process.env.SNOWTRACE_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
         },
         customChains: [
+            {
+                network: 'fuji',
+                chainId: 43113,
+                urls: {
+                    apiURL: 'https://api-testnet.snowtrace.io/api',
+                    browserURL: 'https://testnet.snowtrace.io/',
+                },
+            },
             {
                 network: 'viviani',
                 chainId: 133,
@@ -194,7 +243,7 @@ const config: HardhatUserConfig = {
             // Used as mock or fake in UTs
             '@openzeppelin/contracts-v5/interfaces/IERC1271.sol',
             // Used in deployment
-            '@amxx/factory/contracts/v6/GenericFactory.sol',
+            'createx/src/ICreateX.sol',
         ],
         keep: true, // Slither requires compiled dependencies
     },
