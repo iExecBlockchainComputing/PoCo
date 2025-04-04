@@ -2,11 +2,14 @@
 
 ## vNEXT
 
+- Add Github Action CI in order to publish NPM package
+
 ### Updated contracts
 
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+
 - Housekeeping (#207, )
 - Add Halborn "Poco v5.5 & Voucher v1.0" audit report (#205)
 - Refactor Factory deployer (#206)
