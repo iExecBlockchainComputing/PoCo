@@ -124,7 +124,7 @@ describe('IexecAccessors', async () => {
 
     // TODO test the case where token() == 0x0 in native mode.
     it('token', async function () {
-        expect(await iexecPoco.token()).to.equal('0x5FbDB2315678afecb367f032d93F642f64180aa3');
+        expect(await iexecPoco.token()).to.equal((await deployments.get('RLC')).address);
     });
 
     it('viewDeal', async function () {

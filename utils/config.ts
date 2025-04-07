@@ -38,8 +38,8 @@ type Config = {
 type ChainConfig = {
     _comment: string;
     asset: string;
-    token?: string | null;
-    richman?: string | null;
+    token?: string | null; // The token deployed should be compatible with Approve and call
+    richman?: string | null; // The richman account is needed if the token is already deployed
     uniswap?: boolean;
     etoken?: string;
     v3: {

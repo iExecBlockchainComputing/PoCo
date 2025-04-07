@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
-import { ethers } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
@@ -37,8 +37,8 @@ import {
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
-import config from '../utils/config';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
+import config from '../utils/config';
 import { linkContractToProxy } from '../utils/proxy-tools';
 
 /**
@@ -213,11 +213,31 @@ export default async function deploy() {
 }
 
 async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
-    return token // token
-        ? token
-        : await new RLC__factory()
-              .connect(owner)
-              .deploy()
-              .then((contract) => contract.waitForDeployment())
-              .then((contract) => contract.getAddress());
+    const rlcFactory = new RLC__factory().connect(owner);
+    if (token) {
+        console.log(`Using existing RLC token at: ${token}`);
+        await deployments.save('RLC', {
+            abi: (rlcFactory as any).constructor.abi,
+            address: token,
+            bytecode: (await rlcFactory.getDeployTransaction()).data,
+            deployedBytecode: await ethers.provider.getCode(token),
+        });
+        return token;
+    } else {
+        console.log('Deploying new RLC token...');
+        const rlcContract = await rlcFactory.deploy();
+        await rlcContract.waitForDeployment();
+        const rlcAddress = await rlcContract.getAddress();
+
+        // Save the deployment to hardhat deployments
+        await deployments.save('RLC', {
+            abi: (rlcFactory as any).constructor.abi,
+            address: rlcAddress,
+            bytecode: (await rlcFactory.getDeployTransaction()).data,
+            deployedBytecode: await ethers.provider.getCode(rlcAddress),
+        });
+
+        console.log(`New RLC token deployed at: ${rlcAddress}`);
+        return rlcAddress;
+    }
 }
