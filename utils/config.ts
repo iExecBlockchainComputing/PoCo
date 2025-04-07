@@ -1,5 +1,5 @@
-import { Category } from './poco-tools';
 import json from '../config/config.json';
+import { Category } from './poco-tools';
 
 const config = json as Config;
 
@@ -39,6 +39,7 @@ type ChainConfig = {
     _comment: string;
     asset: string;
     token?: string | null;
+    richman?: string | null;
     uniswap?: boolean;
     etoken?: string;
     v3: {
