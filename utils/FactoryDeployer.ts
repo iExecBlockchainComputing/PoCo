@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import factorySignedTxJson from 'createx/scripts/presigned-createx-deployment-transactions/signed_serialised_transaction_gaslimit_3000000_.json';
 import { ContractFactory } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { ICreateX, ICreateX__factory } from '../typechain';
@@ -82,6 +83,27 @@ export class FactoryDeployer {
             console.log(`→ CreateX is available on this network at ${CREATE_X_ADDRESSES}`);
             return;
         }
-        console.log(`→ Factory is not yet deployed on this network`);
+        try {
+            console.log(`→ Factory is not yet deployed on this network`);
+            const factorySignedTx = ethers.Transaction.from(factorySignedTxJson);
+            console.log(
+                `→ Deploying factory at ${CREATE_X_ADDRESSES} with gasPrice: ${factorySignedTx.gasPrice} and gasLimit: ${factorySignedTx.gasLimit}`,
+            );
+            const deployer = factorySignedTx.from;
+            const cost = (factorySignedTx.gasPrice! * factorySignedTx.gasLimit!).toString();
+            const tx = factorySignedTxJson;
+
+            await this.owner
+                .sendTransaction({
+                    to: deployer,
+                    value: cost,
+                })
+                .then((tx) => tx.wait());
+            await ethers.provider.broadcastTransaction(tx).then((tx) => tx.wait());
+            console.log(`→ Factory successfully deployed`);
+        } catch (e) {
+            console.log(e);
+            throw new Error('→ Error deploying the factory');
+        }
     }
 }
