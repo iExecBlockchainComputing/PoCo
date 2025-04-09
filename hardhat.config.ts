@@ -101,7 +101,7 @@ const config: HardhatUserConfig = {
                 forking: {
                     url:
                         process.env.FUJI_RPC_URL ||
-                        'https://lb.drpc.org/ogrpc?network=avalanche-fuji&dkey=AhEPbH3buE5zjj_dDMs3E2galVURtfsR7pNM5mzgoATf',
+                        'https://avalanche-fuji-c-chain-rpc.publicnode.com',
                     blockNumber: process.env.FUJI_BLOCK_NUMBER
                         ? parseInt(process.env.FUJI_BLOCK_NUMBER)
                         : undefined,
