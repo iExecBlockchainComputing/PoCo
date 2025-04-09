@@ -6,7 +6,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployments, ethers } from 'hardhat';
 import deploy from '../../deploy/0_deploy';
 import deployEns from '../../deploy/1_deploy-ens';
-import { IexecInterfaceNative__factory } from '../../typechain';
+import { IexecInterfaceNative__factory, IexecInterfaceToken__factory } from '../../typechain';
 import config from '../../utils/config';
 import { getIexecAccounts } from '../../utils/poco-tools';
 
@@ -54,9 +54,72 @@ async function setUpLocalFork() {
     return proxyAddress;
 }
 
+async function setUpTokenFork() {
+    const chainId = (await ethers.provider.getNetwork()).chainId;
+    const chainConfig = config.getChainConfig(chainId);
+    const rlcTokenAddress = chainConfig.token;
+    const richmanAddress = chainConfig.richman;
+    const accounts = await getIexecAccounts();
+    if (rlcTokenAddress && richmanAddress) {
+        const rlcToken = IexecInterfaceToken__factory.connect(rlcTokenAddress, ethers.provider);
+        const richmanSigner = await ethers.getImpersonatedSigner(richmanAddress);
+        await ethers.provider.send('hardhat_setBalance', [
+            richmanAddress,
+            '0x1000000000000000000', // 1 ETH
+        ]);
+        const otherAccountInitAmount = 10000 * 10 ** 9;
+        const accountsArray = Object.values(accounts) as SignerWithAddress[];
+        console.log(`Rich account ${richmanAddress} sending RLCs to other accounts..`);
+
+        // Transfer RLC tokens to all accounts
+        for (let i = 0; i < accountsArray.length; i++) {
+            const account = accountsArray[i];
+            await rlcToken
+                .connect(richmanSigner)
+                .transfer(account.address, otherAccountInitAmount)
+                .then((tx) => tx.wait());
+            const balance = await rlcToken.balanceOf(account.address);
+            console.log(`Account #${i}: ${account.address} (${balance.toLocaleString()} nRLC)`);
+        }
+    }
+
+    const proxyAddress = chainConfig.v5.ERC1538Proxy;
+    if (proxyAddress) {
+        console.log(`Using existing ERC1538Proxy at ${proxyAddress}`);
+        const iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, ethers.provider);
+        const timelockAddress = await iexecPoco.owner();
+        const timelock = await ethers.getImpersonatedSigner(timelockAddress);
+        const newIexecAdminAddress = accounts.iexecAdmin.address;
+        console.log(
+            `Transferring Poco ownership from Timelock:${timelockAddress} to iexecAdmin:${newIexecAdminAddress}`,
+        );
+
+        await iexecPoco
+            .connect(timelock)
+            .transferOwnership(newIexecAdminAddress)
+            .then((tx) => tx.wait());
+
+        return proxyAddress;
+    } else {
+        console.log('No existing ERC1538Proxy found, deploying new contracts');
+        // Deploy all contracts
+        await deploy();
+        await deployEns();
+        const newProxyAddress = (await deployments.get('ERC1538Proxy')).address;
+        console.log(`Deployed new ERC1538Proxy at ${newProxyAddress}`);
+        return newProxyAddress;
+    }
+}
+
 /**
  * @returns proxy address.
  */
 export const loadHardhatFixtureDeployment = async () => {
-    return await loadFixture(process.env.LOCAL_FORK != 'true' ? deployAll : setUpLocalFork);
+    if (process.env.LOCAL_FORK == 'true') {
+        return await loadFixture(setUpLocalFork);
+    } else if (process.env.FUJI_FORK == 'true' || process.env.ARBITRUM_SEPOLIA_FORK == 'true') {
+        return await loadFixture(setUpTokenFork);
+    } else {
+        return await loadFixture(deployAll);
+    }
 };
