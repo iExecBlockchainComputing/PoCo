@@ -57,7 +57,9 @@ export default async function deploy() {
     const [owner] = await ethers.getSigners();
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
     const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
-    const factoryDeployer = new FactoryDeployer(owner, salt);
+    const factoryAddress =
+        process.env.FACTORY_ADDRESS || deploymentOptions.v5.Factory || ethers.ZeroAddress;
+    const factoryDeployer = new FactoryDeployer(owner, salt, factoryAddress);
     // Deploy RLC
     const isTokenMode = !config.isNativeChain(deploymentOptions);
     let rlcInstanceAddress = isTokenMode
