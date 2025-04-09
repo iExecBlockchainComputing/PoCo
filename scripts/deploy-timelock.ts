@@ -15,10 +15,13 @@ export const deploy = async () => {
     console.log('Deploying TimelockController..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await ethers.getSigners();
-    const salt = process.env.SALT || config.getChainConfigOrDefault(chainId).v5.salt;
+    const deploymentOptions = config.getChainConfigOrDefault(chainId);
+    const salt = process.env.SALT || deploymentOptions.v5.salt;
 
     // Initialize factory deployer
-    const factoryDeployer = new FactoryDeployer(owner, salt);
+    const factoryAddress =
+        process.env.FACTORY_ADDRESS || deploymentOptions.v5.Factory || ethers.ZeroAddress;
+    const factoryDeployer = new FactoryDeployer(owner, salt, factoryAddress);
 
     // Deploy TimelockController
     const ONE_WEEK_IN_SECONDS = duration.days(7);
