@@ -7,6 +7,7 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+- Add CreateX factory for new chain X deployment (#215)
 - Housekeeping (#207, )
 - Add Halborn "Poco v5.5 & Voucher v1.0" audit report (#205)
 - Refactor Factory deployer (#206)
