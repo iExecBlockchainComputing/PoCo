@@ -243,22 +243,6 @@ const config: HardhatUserConfig = {
         },
         customChains: [
             {
-                network: 'fuji',
-                chainId: 43113,
-                urls: {
-                    apiURL: 'https://api-testnet.snowtrace.io/api',
-                    browserURL: 'https://testnet.snowtrace.io/',
-                },
-            },
-            {
-                network: 'arbitrumSepolia',
-                chainId: 421614,
-                urls: {
-                    apiURL: 'https://api-sepolia.arbiscan.io/api',
-                    browserURL: 'https://sepolia.arbiscan.io/',
-                },
-            },
-            {
                 network: 'viviani',
                 chainId: 133,
                 urls: {
