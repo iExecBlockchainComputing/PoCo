@@ -227,9 +227,10 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
         return token;
     } else {
         console.log('Deploying new RLC token...');
-        const rlcContract = await rlcFactory.deploy();
-        await rlcContract.waitForDeployment();
-        const rlcAddress = await rlcContract.getAddress();
+        const rlcAddress = await rlcFactory
+            .deploy()
+            .then((contract) => contract.waitForDeployment())
+            .then((contract) => contract.getAddress());
 
         // Save the deployment to hardhat deployments
         await deployments.save('RLC', {
