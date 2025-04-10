@@ -13,7 +13,7 @@
     "deploy:timelock": "hardhat run scripts/deploy-timelock.ts",
     "check-storage-layout": "npx hardhat run scripts/check-storage.ts",
     "clean:hardhat": "rm -rf deployments/hardhat",
-    "test": "REPORT_GAS=true npx hardhat test",
+    "test": "npm run clean:hardhat && REPORT_GAS=true npx hardhat test",
     "test:arbitrum-sepolia": "npm run clean:hardhat && ARBITRUM_SEPOLIA_FORK=true npm run test",
     "test:fuji": "npm run clean:hardhat && FUJI_FORK=true npm run test",
     "test:native": "npm run clean:hardhat && TEST__IS_NATIVE_CHAIN=true npx hardhat test test/byContract/IexecEscrow/IexecEscrowNative.test.ts",
