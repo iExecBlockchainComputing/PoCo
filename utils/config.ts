@@ -50,7 +50,7 @@ type ChainConfig = {
     };
     v5: {
         usefactory: boolean;
-        Factory?: string;
+        factory?: string;
         salt: string;
         AppRegistry?: string;
         DatasetRegistry?: string;
