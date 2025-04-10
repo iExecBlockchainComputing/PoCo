@@ -179,19 +179,13 @@ const config: HardhatUserConfig = {
             },
         },
         // Add Fuji as a network
-        fuji: {
+        avalancheFujiTestnet: {
             chainId: 43113,
             url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
             accounts: {
                 mnemonic: process.env.MNEMONIC || '',
             },
             ...fujiBaseConfig,
-            verify: {
-                etherscan: {
-                    apiUrl: 'https://api-testnet.snowtrace.io',
-                    apiKey: process.env.SNOWTRACE_API_KEY || '',
-                },
-            },
         },
         // Add Arbitrum Sepolia as a network
         'arbitrum-sepolia': {
@@ -201,12 +195,6 @@ const config: HardhatUserConfig = {
                 mnemonic: process.env.MNEMONIC || '',
             },
             ...arbitrumSepoliaBaseConfig,
-            verify: {
-                etherscan: {
-                    apiUrl: 'https://api-sepolia.arbiscan.io',
-                    apiKey: process.env.ARBISCAN_API_KEY || '',
-                },
-            },
         },
         viviani: {
             chainId: 133,
@@ -235,8 +223,7 @@ const config: HardhatUserConfig = {
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
-            fuji: process.env.SNOWTRACE_API_KEY || '',
-            avalancheFujiTestnet: process.env.SNOWTRACE_API_KEY || '',
+            avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
             arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
