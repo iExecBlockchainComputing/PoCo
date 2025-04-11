@@ -99,9 +99,7 @@ const config: HardhatUserConfig = {
             }),
             ...(isFujiFork && {
                 forking: {
-                    url:
-                        process.env.FUJI_RPC_URL ||
-                        'https://avalanche-fuji-c-chain-rpc.publicnode.com',
+                    url: process.env.FUJI_RPC_URL || 'https://avalanche-fuji.drpc.org',
                     blockNumber: process.env.FUJI_BLOCK_NUMBER
                         ? parseInt(process.env.FUJI_BLOCK_NUMBER)
                         : undefined,
