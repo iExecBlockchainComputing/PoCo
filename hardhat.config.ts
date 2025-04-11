@@ -35,6 +35,7 @@ const fujiBaseConfig = {
     hardfork: 'london', // Avalanche C-Chain supports EIP-1559
     gasPrice: 25_000_000_000, // 25 Gwei default
     blockGasLimit: 8_000_000,
+    chainId: 43113,
 };
 
 // Arbitrum Sepolia specific configuration
@@ -42,6 +43,7 @@ const arbitrumSepoliaBaseConfig = {
     hardfork: 'london',
     gasPrice: 100_000_000, // 0.1 Gwei default (Arbitrum has lower gas prices)
     blockGasLimit: 30_000_000, // Arbitrum has higher block gas limits
+    chainId: 421614,
 };
 
 const settings = {
@@ -104,7 +106,6 @@ const config: HardhatUserConfig = {
                         ? parseInt(process.env.FUJI_BLOCK_NUMBER)
                         : undefined,
                 },
-                chainId: 43113,
                 ...fujiBaseConfig,
             }),
             ...(isArbitrumSepoliaFork && {
@@ -116,7 +117,6 @@ const config: HardhatUserConfig = {
                         ? parseInt(process.env.ARBITRUM_SEPOLIA_BLOCK_NUMBER)
                         : undefined,
                 },
-                chainId: 421614, // Arbitrum Sepolia chain ID
                 ...arbitrumSepoliaBaseConfig,
             }),
         },
@@ -133,12 +133,10 @@ const config: HardhatUserConfig = {
             }),
             ...(isFujiFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
-                chainId: 43113,
                 ...fujiBaseConfig,
             }),
             ...(isArbitrumSepoliaFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
-                chainId: 421614,
                 ...arbitrumSepoliaBaseConfig,
             }),
         },
@@ -178,19 +176,21 @@ const config: HardhatUserConfig = {
         },
         // Add Fuji as a network
         avalancheFujiTestnet: {
-            chainId: 43113,
             url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
             accounts: {
-                mnemonic: process.env.MNEMONIC || '',
+                mnemonic:
+                    process.env.MNEMONIC ||
+                    'test test test test test test test test test test test junk',
             },
             ...fujiBaseConfig,
         },
         // Add Arbitrum Sepolia as a network
         'arbitrum-sepolia': {
-            chainId: 421614,
             url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
             accounts: {
-                mnemonic: process.env.MNEMONIC || '',
+                mnemonic:
+                    process.env.MNEMONIC ||
+                    'test test test test test test test test test test test junk',
             },
             ...arbitrumSepoliaBaseConfig,
         },
