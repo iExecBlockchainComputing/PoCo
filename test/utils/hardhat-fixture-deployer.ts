@@ -117,9 +117,9 @@ async function setUpTokenFork() {
 export const loadHardhatFixtureDeployment = async () => {
     if (process.env.LOCAL_FORK == 'true') {
         return await loadFixture(setUpLocalFork);
-    } else if (process.env.FUJI_FORK == 'true' || process.env.ARBITRUM_SEPOLIA_FORK == 'true') {
-        return await loadFixture(setUpTokenFork);
-    } else {
-        return await loadFixture(deployAll);
     }
+    if (process.env.FUJI_FORK == 'true' || process.env.ARBITRUM_SEPOLIA_FORK == 'true') {
+        return await loadFixture(setUpTokenFork);
+    }
+    return await loadFixture(deployAll);
 };
