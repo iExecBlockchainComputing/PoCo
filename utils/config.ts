@@ -49,7 +49,6 @@ type ChainConfig = {
         WorkerpoolRegistry: string | null;
     };
     v5: {
-        usefactory: boolean;
         factory?: string;
         salt: string;
         AppRegistry?: string;

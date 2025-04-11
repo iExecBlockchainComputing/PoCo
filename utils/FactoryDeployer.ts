@@ -11,11 +11,11 @@ import { getBaseNameFromContractFactory } from './deploy-tools';
 export class FactoryDeployer {
     owner: SignerWithAddress;
     salt: string;
-    factoryAddress: string;
+    factoryAddress?: string;
     createX!: ICreateX;
     genericFactory!: GenericFactory;
 
-    constructor(owner: SignerWithAddress, salt: string, factoryAddress: string) {
+    constructor(owner: SignerWithAddress, salt: string, factoryAddress?: string) {
         this.owner = owner;
         this.salt = salt;
         this.factoryAddress = factoryAddress;
@@ -119,6 +119,9 @@ export class FactoryDeployer {
         if (this.genericFactory) {
             return;
         }
+        if (!this.factoryAddress) {
+            throw new Error('Factory address not set');
+        }
         this.genericFactory = GenericFactory__factory.connect(this.factoryAddress, this.owner);
         if ((await ethers.provider.getCode(this.factoryAddress)) !== '0x') {
             console.log(`→ Factory is available on this network`);
@@ -130,30 +133,44 @@ export class FactoryDeployer {
         if (this.createX) {
             return;
         }
-        this.createX = ICreateX__factory.connect(this.factoryAddress, this.owner);
-        if ((await ethers.provider.getCode(this.factoryAddress)) !== '0x') {
-            console.log(`→ CreateX is available on this network at ${this.factoryAddress}`);
-            return;
-        }
-        // Use full in case of working with local hardhat network, or bellecour
-        try {
-            console.log(`→ Factory is not yet deployed on this network`);
-            const factorySignedTx = ethers.Transaction.from(factorySignedTxJson);
-            const deployer = factorySignedTx.from;
-            const cost = (factorySignedTx.gasPrice! * factorySignedTx.gasLimit!).toString();
-            const tx = factorySignedTxJson;
+        if (!this.factoryAddress) {
+            // Use full in case of working with local hardhat network, or bellecour
+            try {
+                console.log(`→ Factory is not yet deployed on this network`);
+                const factorySignedTx = ethers.Transaction.from(factorySignedTxJson);
+                const deployer = factorySignedTx.from;
+                const cost = (factorySignedTx.gasPrice! * factorySignedTx.gasLimit!).toString();
+                const tx = factorySignedTxJson;
 
-            await this.owner
-                .sendTransaction({
-                    to: deployer,
-                    value: cost,
-                })
-                .then((tx) => tx.wait());
-            await ethers.provider.broadcastTransaction(tx).then((tx) => tx.wait());
-            console.log(`→ Factory successfully deployed`);
-        } catch (e) {
-            console.log(e);
-            throw new Error('→ Error deploying the factory');
+                await this.owner
+                    .sendTransaction({
+                        to: deployer,
+                        value: cost,
+                    })
+                    .then((tx) => tx.wait());
+                await ethers.provider.broadcastTransaction(tx).then((tx) => tx.wait());
+
+                // Calculate the deployed contract address
+                // For a contract creation transaction, the address is determined by the sender and nonce
+                const createdContractAddress = ethers.getCreateAddress({
+                    from: factorySignedTx.from!,
+                    nonce: factorySignedTx.nonce,
+                });
+                console.log(
+                    `→ Factory successfully deployed at address: ${createdContractAddress}`,
+                );
+                this.factoryAddress = createdContractAddress;
+                this.createX = ICreateX__factory.connect(this.factoryAddress, this.owner);
+            } catch (e) {
+                console.log(e);
+                throw new Error('→ Error deploying the factory');
+            }
+        } else {
+            this.createX = ICreateX__factory.connect(this.factoryAddress, this.owner);
+            if ((await ethers.provider.getCode(this.factoryAddress)) !== '0x') {
+                console.log(`→ CreateX is available on this network at ${this.factoryAddress}`);
+                return;
+            }
         }
     }
 }

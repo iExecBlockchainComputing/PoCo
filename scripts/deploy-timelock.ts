@@ -19,8 +19,7 @@ export const deploy = async () => {
     const salt = process.env.SALT || deploymentOptions.v5.salt;
 
     // Initialize factory deployer
-    const factoryAddress =
-        process.env.FACTORY_ADDRESS || deploymentOptions.v5.factory || ethers.ZeroAddress;
+    const factoryAddress = process.env.FACTORY_ADDRESS || deploymentOptions.v5.factory;
     const factoryDeployer = new FactoryDeployer(owner, salt, factoryAddress);
 
     // Deploy TimelockController

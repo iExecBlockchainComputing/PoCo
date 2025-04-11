@@ -53,7 +53,7 @@ It contains:
 	- **"asset":** can be "Token" or "Native", select which escrow to use.
 	- **"token":** the address of the token to use. If asset is set to token, and no token address is provided, a mock will be deployed on the fly.
 	- **"v3":** a list of resources from a previous (v3) deployment. This allows previous resources to be automatically available. It also enables score transfer from v3 to v5. [optional]
-	- **"v5":** deployment parameters for the new version. If usefactory is set to true, and no salt is provided, `bytes32(0)` will be used by default.
+	- **"v5":** deployment parameters for the new version. If factory address is set, and no salt is provided, `bytes32(0)` will be used by default.
 
 If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the recommended process is to:
 
