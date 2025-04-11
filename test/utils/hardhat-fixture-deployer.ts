@@ -54,7 +54,7 @@ async function setUpLocalFork() {
     return proxyAddress;
 }
 
-async function setUpTokenFork() {
+async function setUpLocalForkInTokenMode() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const chainConfig = config.getChainConfig(chainId);
     const rlcTokenAddress = chainConfig.token;
@@ -119,7 +119,7 @@ export const loadHardhatFixtureDeployment = async () => {
         return await loadFixture(setUpLocalFork);
     }
     if (process.env.FUJI_FORK == 'true' || process.env.ARBITRUM_SEPOLIA_FORK == 'true') {
-        return await loadFixture(setUpTokenFork);
+        return await loadFixture(setUpLocalForkInTokenMode);
     }
     return await loadFixture(deployAll);
 };
