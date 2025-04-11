@@ -216,31 +216,25 @@ export default async function deploy() {
 
 async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
     const rlcFactory = new RLC__factory().connect(owner);
+    let rlcAddress: string;
+
     if (token) {
         console.log(`Using existing RLC token at: ${token}`);
-        await deployments.save('RLC', {
-            abi: (rlcFactory as any).constructor.abi,
-            address: token,
-            bytecode: (await rlcFactory.getDeployTransaction()).data,
-            deployedBytecode: await ethers.provider.getCode(token),
-        });
-        return token;
+        rlcAddress = token;
     } else {
         console.log('Deploying new RLC token...');
-        const rlcAddress = await rlcFactory
+        rlcAddress = await rlcFactory
             .deploy()
             .then((contract) => contract.waitForDeployment())
             .then((contract) => contract.getAddress());
-
-        // Save the deployment to hardhat deployments
-        await deployments.save('RLC', {
-            abi: (rlcFactory as any).constructor.abi,
-            address: rlcAddress,
-            bytecode: (await rlcFactory.getDeployTransaction()).data,
-            deployedBytecode: await ethers.provider.getCode(rlcAddress),
-        });
-
         console.log(`New RLC token deployed at: ${rlcAddress}`);
-        return rlcAddress;
     }
+
+    await deployments.save('RLC', {
+        abi: (rlcFactory as any).constructor.abi,
+        address: rlcAddress,
+        bytecode: (await rlcFactory.getDeployTransaction()).data,
+        deployedBytecode: await ethers.provider.getCode(rlcAddress),
+    });
+    return rlcAddress;
 }
