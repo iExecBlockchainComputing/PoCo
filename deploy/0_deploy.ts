@@ -66,7 +66,7 @@ export default async function deploy() {
         : ZeroAddress; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
-    const erc1538UpdateAddress = await factoryDeployer.deployWithFactory(
+    const erc1538UpdateAddress = await factoryDeployer.deployContract(
         new ERC1538UpdateDelegate__factory(),
     );
     const transferOwnershipCall = await Ownable__factory.connect(
@@ -78,7 +78,7 @@ export default async function deploy() {
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const erc1538ProxyAddress = await factoryDeployer.deployWithFactory(
+    const erc1538ProxyAddress = await factoryDeployer.deployContract(
         new ERC1538Proxy__factory(),
         [erc1538UpdateAddress],
         transferOwnershipCall,
@@ -86,7 +86,7 @@ export default async function deploy() {
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${await erc1538.getAddress()}`);
     // Deploy library & modules
-    const iexecLibOrdersAddress = await factoryDeployer.deployWithFactory(
+    const iexecLibOrdersAddress = await factoryDeployer.deployContract(
         new IexecLibOrders_v5__factory(),
     );
     const iexecLibOrders = {
@@ -113,7 +113,7 @@ export default async function deploy() {
         new IexecPocoBoostAccessorsDelegate__factory(),
     ];
     for (const module of modules) {
-        const address = await factoryDeployer.deployWithFactory(module);
+        const address = await factoryDeployer.deployContract(module);
         await linkContractToProxy(erc1538, address, module);
     }
     // Verify linking on ERC1538Proxy
@@ -127,17 +127,17 @@ export default async function deploy() {
         const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
         console.log(`[${i}] ${contract} ${method}`);
     }
-    const appRegistryAddress = await factoryDeployer.deployWithFactory(
+    const appRegistryAddress = await factoryDeployer.deployContract(
         new AppRegistry__factory(),
         [],
         transferOwnershipCall,
     );
-    const datasetRegistryAddress = await factoryDeployer.deployWithFactory(
+    const datasetRegistryAddress = await factoryDeployer.deployContract(
         new DatasetRegistry__factory(),
         [],
         transferOwnershipCall,
     );
-    const workerpoolRegistryAddress = await factoryDeployer.deployWithFactory(
+    const workerpoolRegistryAddress = await factoryDeployer.deployContract(
         new WorkerpoolRegistry__factory(),
         [],
         transferOwnershipCall,

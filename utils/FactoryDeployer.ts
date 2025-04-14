@@ -8,28 +8,54 @@ import { deployments, ethers } from 'hardhat';
 import { GenericFactory, GenericFactory__factory, ICreateX, ICreateX__factory } from '../typechain';
 import { getBaseNameFromContractFactory } from './deploy-tools';
 
+// Define factory types
+type FactoryType = 'createx' | 'generic';
+
 export class FactoryDeployer {
     owner: SignerWithAddress;
     salt: string;
     factoryAddress?: string;
-    createX!: ICreateX;
-    genericFactory!: GenericFactory;
+    factoryType: FactoryType;
+    factory?: ICreateX | GenericFactory;
 
-    constructor(owner: SignerWithAddress, salt: string, factoryAddress?: string) {
+    constructor(
+        owner: SignerWithAddress,
+        salt: string,
+        factoryAddress?: string,
+        factoryType: FactoryType = 'createx',
+    ) {
         this.owner = owner;
         this.salt = salt;
         this.factoryAddress = factoryAddress;
+        this.factoryType = factoryType;
+    }
+
+    /**
+     * Deploy a contract through the configured factory [and optionally trigger a call]
+     */
+    async deployContract(
+        contractFactory: ContractFactory,
+        constructorArgs?: any[],
+        call?: string,
+    ): Promise<string> {
+        await this.initFactory();
+
+        if (this.factoryType === 'createx') {
+            return this.deployWithCreateX(contractFactory, constructorArgs, call);
+        } else {
+            return this.deployWithGenericFactory(contractFactory, constructorArgs, call);
+        }
     }
 
     /**
      * Deploy a contract through CreateX [and optionally trigger a call]
      */
-    async deployWithFactory(
+    private async deployWithCreateX(
         contractFactory: ContractFactory,
         constructorArgs?: any[],
         call?: string,
-    ) {
-        await this.initCreateX();
+    ): Promise<string> {
+        const createX = this.factory as ICreateX;
         let bytecode = (await contractFactory.getDeployTransaction(...(constructorArgs ?? [])))
             .data;
         if (!bytecode) {
@@ -37,7 +63,7 @@ export class FactoryDeployer {
         }
         const initCodeHash = ethers.keccak256(bytecode);
         const saltHash = ethers.keccak256(this.salt);
-        const contractAddress = await this.createX['computeCreate2Address(bytes32,bytes32)'](
+        const contractAddress = await createX['computeCreate2Address(bytes32,bytes32)'](
             saltHash,
             initCodeHash,
         );
@@ -46,7 +72,7 @@ export class FactoryDeployer {
         if (!previouslyDeployed) {
             await (
                 call
-                    ? this.createX['deployCreate2AndInit(bytes32,bytes,bytes,(uint256,uint256))'](
+                    ? createX['deployCreate2AndInit(bytes32,bytes,bytes,(uint256,uint256))'](
                           this.salt,
                           bytecode,
                           call,
@@ -55,88 +81,113 @@ export class FactoryDeployer {
                               initCallAmount: 0,
                           },
                       )
-                    : this.createX['deployCreate2(bytes32,bytes)'](this.salt, bytecode)
+                    : createX['deployCreate2(bytes32,bytes)'](this.salt, bytecode)
             ).then((tx) => tx.wait());
         }
-        const contractName = getBaseNameFromContractFactory(contractFactory);
-        console.log(
-            `${contractName}: ${contractAddress} ${
-                previouslyDeployed ? ' (previously deployed)' : ''
-            }`,
+        await this.saveDeployment(
+            contractFactory,
+            contractAddress,
+            bytecode,
+            constructorArgs,
+            previouslyDeployed,
         );
-        await deployments.save(contractName, {
-            // abi field is not used but is a required arg. Empty abi would be fine
-            abi: (contractFactory as any).constructor.abi,
-            address: contractAddress,
-            bytecode: bytecode,
-            args: constructorArgs,
-        });
         return contractAddress;
     }
 
     /**
      * Deploy a contract through GenericFactory [and optionally trigger a call]
      */
-    async deployWithGeneric(
+    private async deployWithGenericFactory(
         contractFactory: ContractFactory,
         constructorArgs?: any[],
         call?: string,
-    ) {
-        await this.initLegacy();
+    ): Promise<string> {
+        const genericFactory = this.factory as GenericFactory;
         let bytecode = (await contractFactory.getDeployTransaction(...(constructorArgs ?? [])))
             .data;
         if (!bytecode) {
             throw new Error('Failed to prepare bytecode');
         }
         let contractAddress = await (call
-            ? this.genericFactory.predictAddressWithCall(bytecode, this.salt, call)
-            : this.genericFactory.predictAddress(bytecode, this.salt));
+            ? genericFactory.predictAddressWithCall(bytecode, this.salt, call)
+            : genericFactory.predictAddress(bytecode, this.salt));
         const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
         if (!previouslyDeployed) {
             await (
                 call
-                    ? this.genericFactory.createContractAndCall(bytecode, this.salt, call)
-                    : this.genericFactory.createContract(bytecode, this.salt)
+                    ? genericFactory.createContractAndCall(bytecode, this.salt, call)
+                    : genericFactory.createContract(bytecode, this.salt)
             ).then((tx) => tx.wait());
         }
+        await this.saveDeployment(
+            contractFactory,
+            contractAddress,
+            bytecode,
+            constructorArgs,
+            previouslyDeployed,
+        );
+        return contractAddress;
+    }
+
+    /**
+     * Save deployment information to Hardhat deployments
+     */
+    private async saveDeployment(
+        contractFactory: ContractFactory,
+        address: string,
+        bytecode: string,
+        constructorArgs?: any[],
+        previouslyDeployed: boolean = false,
+    ): Promise<void> {
         const contractName = getBaseNameFromContractFactory(contractFactory);
         console.log(
-            `${contractName}: ${contractAddress} ${
-                previouslyDeployed ? ' (previously deployed)' : ''
-            }`,
+            `${contractName}: ${address} ${previouslyDeployed ? ' (previously deployed)' : ''}`,
         );
         await deployments.save(contractName, {
             // abi field is not used but is a required arg. Empty abi would be fine
             abi: (contractFactory as any).constructor.abi,
-            address: contractAddress,
+            address: address,
             bytecode: bytecode,
             args: constructorArgs,
         });
-        return contractAddress;
     }
 
-    private async initLegacy() {
-        if (this.genericFactory) {
-            return;
+    /**
+     * Initialize the appropriate factory based on factoryType
+     */
+    private async initFactory() {
+        if (this.factory) {
+            return; // Factory already initialized
         }
+        if (this.factoryType === 'createx') {
+            await this.initCreateX();
+        } else {
+            await this.initGenericFactory();
+        }
+    }
+
+    /**
+     * Initialize Generic Factory
+     */
+    private async initGenericFactory() {
         if (!this.factoryAddress) {
-            throw new Error('Factory address not set');
+            throw new Error('Factory address not set for GenericFactory');
         }
-        this.genericFactory = GenericFactory__factory.connect(this.factoryAddress, this.owner);
+        this.factory = GenericFactory__factory.connect(this.factoryAddress, this.owner);
         if ((await ethers.provider.getCode(this.factoryAddress)) !== '0x') {
-            console.log(`→ Factory is available on this network`);
+            console.log(`→ GenericFactory is available on this network at ${this.factoryAddress}`);
             return;
         }
+        throw new Error('GenericFactory not deployed at the provided address');
     }
 
+    /**
+     * Initialize CreateX Factory
+     */
     private async initCreateX() {
-        if (this.createX) {
-            return;
-        }
         if (!this.factoryAddress) {
-            // Use full in case of working with local hardhat network, or bellecour
             try {
-                console.log(`→ Factory is not yet deployed on this network`);
+                console.log(`→ CreateX is not yet deployed on this network`);
                 const factorySignedTx = ethers.Transaction.from(factorySignedTxJson);
                 const deployer = factorySignedTx.from;
                 const cost = (factorySignedTx.gasPrice! * factorySignedTx.gasLimit!).toString();
@@ -151,26 +202,26 @@ export class FactoryDeployer {
                 await ethers.provider.broadcastTransaction(tx).then((tx) => tx.wait());
 
                 // Calculate the deployed contract address
-                // For a contract creation transaction, the address is determined by the sender and nonce
                 const createdContractAddress = ethers.getCreateAddress({
                     from: factorySignedTx.from!,
                     nonce: factorySignedTx.nonce,
                 });
                 console.log(
-                    `→ Factory successfully deployed at address: ${createdContractAddress}`,
+                    `→ CreateX successfully deployed at address: ${createdContractAddress}`,
                 );
                 this.factoryAddress = createdContractAddress;
-                this.createX = ICreateX__factory.connect(this.factoryAddress, this.owner);
+                this.factory = ICreateX__factory.connect(this.factoryAddress, this.owner);
             } catch (e) {
                 console.log(e);
-                throw new Error('→ Error deploying the factory');
+                throw new Error('→ Error deploying CreateX');
             }
         } else {
-            this.createX = ICreateX__factory.connect(this.factoryAddress, this.owner);
+            this.factory = ICreateX__factory.connect(this.factoryAddress, this.owner);
             if ((await ethers.provider.getCode(this.factoryAddress)) !== '0x') {
                 console.log(`→ CreateX is available on this network at ${this.factoryAddress}`);
                 return;
             }
+            throw new Error('CreateX not deployed at the provided address');
         }
     }
 }

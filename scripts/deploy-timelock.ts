@@ -40,7 +40,7 @@ export const deploy = async () => {
     ];
     const constructorArgs = [ONE_WEEK_IN_SECONDS, ADMINISTRATORS, PROPOSERS, EXECUTORS];
     const timelockFactory = new TimelockController__factory(owner);
-    await factoryDeployer.deployWithFactory(timelockFactory, constructorArgs);
+    await factoryDeployer.deployContract(timelockFactory, constructorArgs);
 };
 
 if (require.main === module) {
