@@ -32,7 +32,6 @@ const bellecourBaseConfig = {
 
 // Avalanche Fuji specific configuration
 const fujiBaseConfig = {
-    hardfork: 'london', // Avalanche C-Chain supports EIP-1559
     gasPrice: 25_000_000_000, // 25 Gwei default
     blockGasLimit: 8_000_000,
     chainId: 43113,
@@ -40,7 +39,6 @@ const fujiBaseConfig = {
 
 // Arbitrum Sepolia specific configuration
 const arbitrumSepoliaBaseConfig = {
-    hardfork: 'london',
     gasPrice: 100_000_000, // 0.1 Gwei default (Arbitrum has lower gas prices)
     blockGasLimit: 30_000_000, // Arbitrum has higher block gas limits
     chainId: 421614,
