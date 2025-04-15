@@ -39,12 +39,10 @@ export class FactoryDeployer {
         call?: string,
     ): Promise<string> {
         await this.initFactory();
-
         if (this.factoryType === 'createx') {
-            return this.deployWithCreateX(contractFactory, constructorArgs, call);
-        } else {
-            return this.deployWithGenericFactory(contractFactory, constructorArgs, call);
+            return await this.deployWithCreateX(contractFactory, constructorArgs, call);
         }
+        return await this.deployWithGenericFactory(contractFactory, constructorArgs, call);
     }
 
     /**
