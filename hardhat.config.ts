@@ -176,9 +176,7 @@ const config: HardhatUserConfig = {
         avalancheFujiTestnet: {
             url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
             accounts: {
-                mnemonic:
-                    process.env.MNEMONIC ||
-                    'test test test test test test test test test test test junk',
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
             ...fujiBaseConfig,
         },
@@ -186,9 +184,7 @@ const config: HardhatUserConfig = {
         'arbitrum-sepolia': {
             url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
             accounts: {
-                mnemonic:
-                    process.env.MNEMONIC ||
-                    'test test test test test test test test test test test junk',
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
             ...arbitrumSepoliaBaseConfig,
         },
