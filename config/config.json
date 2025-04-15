@@ -44,7 +44,6 @@
         "WorkerpoolRegistry": "0xc398052563469e6Ea7C442aBf124aADE7ec2CC92"
       },
       "v5": {
-        "usefactory": true,
         "salt": "0x0000000000000000000000000000000000000000000000000000000000000000",
         "AppRegistry": "0xB1C52075b276f87b1834919167312221d50c9D16",
         "DatasetRegistry": "0x799DAa22654128d0C64d5b79eac9283008158730",
@@ -63,7 +62,6 @@
         "WorkerpoolRegistry": null
       },
       "v5": {
-        "usefactory": true,
         "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
       }
     },
@@ -79,7 +77,6 @@
         "WorkerpoolRegistry": null
       },
       "v5": {
-        "usefactory": true,
         "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
       }
     },
@@ -96,7 +93,6 @@
         "WorkerpoolRegistry": "0xdAD30AAb14F569830bFd26EdF72df876dc30D20c"
       },
       "v5": {
-        "usefactory": true,
         "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
       }
     },
@@ -112,7 +108,6 @@
         "WorkerpoolRegistry": "0x3f4C18C322064576C048b1284b700288ffEf126B"
       },
       "v5": {
-        "usefactory": true,
         "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
       }
     },
@@ -126,7 +121,6 @@
         "WorkerpoolRegistry": "0x1Cae59C7745A61dD37CD17f174745959D0f3f400"
       },
       "v5": {
-        "usefactory": true,
         "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
       }
     },
@@ -142,7 +136,43 @@
       "v5": {
         "ERC1538Proxy": "0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f",
         "IexecLibOrders_v5": "0xE8b04c85C47fcEc0e9eE30D4034e2997f6519123",
-        "usefactory": true,
+        "factory": "0xfAC000a12dA42B871c0AaD5F25391aAe62958Db1",
+        "factoryType": "generic",
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "43113": {
+      "_comment": "Avalanche Fuji Testnet",
+      "asset": "Token",
+      "token": "0xb96484C8B0e27B08a86661a3c19A028f4d3e89ad",
+      "richman": "0xd88CF17D89533816E99C0427581aa8C72129037D",
+      "uniswap": false,
+      "v3": {
+        "Hub": null,
+        "AppRegistry": null,
+        "DatasetRegistry": null,
+        "WorkerpoolRegistry": null
+      },
+      "v5": {
+        "factory": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed",
+        "factoryType": "createx",
+        "ERC1538Proxy": "0x14B465079537655E1662F012e99EBa3863c8B9E0",
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "421614": {
+      "_comment": "Arbitrum Sepolia Testnet",
+      "asset": "Token",
+      "uniswap": false,
+      "v3": {
+        "Hub": null,
+        "AppRegistry": null,
+        "DatasetRegistry": null,
+        "WorkerpoolRegistry": null
+      },
+      "v5": {
+        "factory": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed",
+        "factoryType": "createx",
         "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
       }
     },
@@ -158,7 +188,6 @@
         "WorkerpoolRegistry": null
       },
       "v5": {
-        "usefactory": true,
         "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
       }
     }

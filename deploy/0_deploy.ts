@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
-import { ethers } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
@@ -37,8 +37,8 @@ import {
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
-import config from '../utils/config';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
+import config from '../utils/config';
 import { linkContractToProxy } from '../utils/proxy-tools';
 
 /**
@@ -56,8 +56,7 @@ export default async function deploy() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await ethers.getSigners();
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
-    const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
-    const factoryDeployer = new FactoryDeployer(owner, salt);
+    const factoryDeployer = new FactoryDeployer(owner, chainId);
     // Deploy RLC
     const isTokenMode = !config.isNativeChain(deploymentOptions);
     let rlcInstanceAddress = isTokenMode
@@ -65,7 +64,7 @@ export default async function deploy() {
         : ZeroAddress; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
-    const erc1538UpdateAddress = await factoryDeployer.deployWithFactory(
+    const erc1538UpdateAddress = await factoryDeployer.deployContract(
         new ERC1538UpdateDelegate__factory(),
     );
     const transferOwnershipCall = await Ownable__factory.connect(
@@ -77,7 +76,7 @@ export default async function deploy() {
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const erc1538ProxyAddress = await factoryDeployer.deployWithFactory(
+    const erc1538ProxyAddress = await factoryDeployer.deployContract(
         new ERC1538Proxy__factory(),
         [erc1538UpdateAddress],
         transferOwnershipCall,
@@ -85,7 +84,7 @@ export default async function deploy() {
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${await erc1538.getAddress()}`);
     // Deploy library & modules
-    const iexecLibOrdersAddress = await factoryDeployer.deployWithFactory(
+    const iexecLibOrdersAddress = await factoryDeployer.deployContract(
         new IexecLibOrders_v5__factory(),
     );
     const iexecLibOrders = {
@@ -112,7 +111,7 @@ export default async function deploy() {
         new IexecPocoBoostAccessorsDelegate__factory(),
     ];
     for (const module of modules) {
-        const address = await factoryDeployer.deployWithFactory(module);
+        const address = await factoryDeployer.deployContract(module);
         await linkContractToProxy(erc1538, address, module);
     }
     // Verify linking on ERC1538Proxy
@@ -126,17 +125,17 @@ export default async function deploy() {
         const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
         console.log(`[${i}] ${contract} ${method}`);
     }
-    const appRegistryAddress = await factoryDeployer.deployWithFactory(
+    const appRegistryAddress = await factoryDeployer.deployContract(
         new AppRegistry__factory(),
         [],
         transferOwnershipCall,
     );
-    const datasetRegistryAddress = await factoryDeployer.deployWithFactory(
+    const datasetRegistryAddress = await factoryDeployer.deployContract(
         new DatasetRegistry__factory(),
         [],
         transferOwnershipCall,
     );
-    const workerpoolRegistryAddress = await factoryDeployer.deployWithFactory(
+    const workerpoolRegistryAddress = await factoryDeployer.deployContract(
         new WorkerpoolRegistry__factory(),
         [],
         transferOwnershipCall,
@@ -213,11 +212,26 @@ export default async function deploy() {
 }
 
 async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
-    return token // token
-        ? token
-        : await new RLC__factory()
-              .connect(owner)
-              .deploy()
-              .then((contract) => contract.waitForDeployment())
-              .then((contract) => contract.getAddress());
+    const rlcFactory = new RLC__factory().connect(owner);
+    let rlcAddress: string;
+
+    if (token) {
+        console.log(`Using existing RLC token at: ${token}`);
+        rlcAddress = token;
+    } else {
+        console.log('Deploying new RLC token...');
+        rlcAddress = await rlcFactory
+            .deploy()
+            .then((contract) => contract.waitForDeployment())
+            .then((contract) => contract.getAddress());
+        console.log(`New RLC token deployed at: ${rlcAddress}`);
+    }
+
+    await deployments.save('RLC', {
+        abi: (rlcFactory as any).constructor.abi,
+        address: rlcAddress,
+        bytecode: (await rlcFactory.getDeployTransaction()).data,
+        deployedBytecode: await ethers.provider.getCode(rlcAddress),
+    });
+    return rlcAddress;
 }

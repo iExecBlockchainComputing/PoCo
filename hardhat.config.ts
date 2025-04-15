@@ -13,6 +13,8 @@ import chainConfig from './utils/config';
 
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
+const isFujiFork = process.env.FUJI_FORK == 'true';
+const isArbitrumSepoliaFork = process.env.ARBITRUM_SEPOLIA_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
 
 /**
@@ -26,6 +28,20 @@ const bellecourBaseConfig = {
     hardfork: 'berlin', // No EIP-1559 before London fork
     gasPrice: 0,
     blockGasLimit: 6_700_000,
+};
+
+// Avalanche Fuji specific configuration
+const fujiBaseConfig = {
+    gasPrice: 25_000_000_000, // 25 Gwei default
+    blockGasLimit: 8_000_000,
+    chainId: 43113,
+};
+
+// Arbitrum Sepolia specific configuration
+const arbitrumSepoliaBaseConfig = {
+    gasPrice: 100_000_000, // 0.1 Gwei default (Arbitrum has lower gas prices)
+    blockGasLimit: 30_000_000, // Arbitrum has higher block gas limits
+    chainId: 421614,
 };
 
 const settings = {
@@ -81,6 +97,26 @@ const config: HardhatUserConfig = {
                 },
                 chainId: 134,
             }),
+            ...(isFujiFork && {
+                forking: {
+                    url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
+                    blockNumber: process.env.FUJI_BLOCK_NUMBER
+                        ? parseInt(process.env.FUJI_BLOCK_NUMBER)
+                        : undefined,
+                },
+                ...fujiBaseConfig,
+            }),
+            ...(isArbitrumSepoliaFork && {
+                forking: {
+                    url:
+                        process.env.ARBITRUM_SEPOLIA_RPC_URL ||
+                        'https://sepolia-rollup.arbitrum.io/rpc',
+                    blockNumber: process.env.ARBITRUM_SEPOLIA_BLOCK_NUMBER
+                        ? parseInt(process.env.ARBITRUM_SEPOLIA_BLOCK_NUMBER)
+                        : undefined,
+                },
+                ...arbitrumSepoliaBaseConfig,
+            }),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
@@ -92,6 +128,14 @@ const config: HardhatUserConfig = {
             ...(isLocalFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 chainId: 134,
+            }),
+            ...(isFujiFork && {
+                accounts: 'remote', // Override defaults accounts for impersonation
+                ...fujiBaseConfig,
+            }),
+            ...(isArbitrumSepoliaFork && {
+                accounts: 'remote', // Override defaults accounts for impersonation
+                ...arbitrumSepoliaBaseConfig,
             }),
         },
         'dev-native': {
@@ -128,6 +172,22 @@ const config: HardhatUserConfig = {
                 mnemonic: process.env.MNEMONIC || '',
             },
         },
+        // Add Fuji as a network
+        avalancheFujiTestnet: {
+            url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            },
+            ...fujiBaseConfig,
+        },
+        // Add Arbitrum Sepolia as a network
+        'arbitrum-sepolia': {
+            url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
+            accounts: {
+                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
+            },
+            ...arbitrumSepoliaBaseConfig,
+        },
         viviani: {
             chainId: 133,
             url: 'https://viviani.iex.ec',
@@ -155,6 +215,8 @@ const config: HardhatUserConfig = {
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
+            avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
+            arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
         },
@@ -195,6 +257,7 @@ const config: HardhatUserConfig = {
             '@openzeppelin/contracts-v5/interfaces/IERC1271.sol',
             // Used in deployment
             '@amxx/factory/contracts/v6/GenericFactory.sol',
+            'createx/src/ICreateX.sol',
         ],
         keep: true, // Slither requires compiled dependencies
     },
@@ -218,7 +281,7 @@ const config: HardhatUserConfig = {
             'Store.v8.sol',
         ],
     },
-    mocha: { timeout: 50000 },
+    mocha: { timeout: 300000 },
 };
 
 /**
