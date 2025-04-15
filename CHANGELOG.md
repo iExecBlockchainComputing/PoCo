@@ -2,6 +2,8 @@
 
 ## vNEXT
 
+- Add Github Action CI in order to publish NPM package
+
 ### Updated contracts
 
 - [x] `IexecPoco2Delegate.sol`
