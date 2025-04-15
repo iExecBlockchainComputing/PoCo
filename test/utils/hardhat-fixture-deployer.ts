@@ -58,7 +58,7 @@ async function fundAccounts(tokenAddress: string, richmanAddress: string, isNati
     }
 }
 
-async function setUpLocalFork() {
+async function setUpLocalForkInNativeMode() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const proxyAddress = config.getChainConfig(chainId).v5.ERC1538Proxy;
     if (!proxyAddress) {
@@ -100,7 +100,7 @@ async function setUpLocalForkInTokenMode() {
  */
 export const loadHardhatFixtureDeployment = async () => {
     if (process.env.LOCAL_FORK == 'true') {
-        return await loadFixture(setUpLocalFork);
+        return await loadFixture(setUpLocalForkInNativeMode);
     }
     if (process.env.FUJI_FORK == 'true' || process.env.ARBITRUM_SEPOLIA_FORK == 'true') {
         return await loadFixture(setUpLocalForkInTokenMode);
