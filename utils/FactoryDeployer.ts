@@ -6,28 +6,22 @@ import factorySignedTxJson from 'createx/scripts/presigned-createx-deployment-tr
 import { ContractFactory } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { GenericFactory, GenericFactory__factory, ICreateX, ICreateX__factory } from '../typechain';
+import config from '../utils/config';
 import { getBaseNameFromContractFactory } from './deploy-tools';
-
-// Define factory types
-type FactoryType = 'createx' | 'generic';
-
 export class FactoryDeployer {
     owner: SignerWithAddress;
     salt: string;
     factoryAddress?: string;
-    factoryType: FactoryType;
+    factoryType: string;
     factory?: ICreateX | GenericFactory;
 
-    constructor(
-        owner: SignerWithAddress,
-        salt: string,
-        factoryAddress?: string,
-        factoryType: FactoryType = 'createx',
-    ) {
+    constructor(owner: SignerWithAddress, chainId: bigint) {
+        const deploymentOptions = config.getChainConfigOrDefault(chainId);
         this.owner = owner;
-        this.salt = salt;
-        this.factoryAddress = factoryAddress;
-        this.factoryType = factoryType;
+        this.salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
+        this.factoryAddress = process.env.FACTORY_ADDRESS || deploymentOptions.v5.factory;
+        this.factoryType =
+            process.env.FACTORY_TYPE || deploymentOptions.v5.factoryType || 'createx';
     }
 
     /**

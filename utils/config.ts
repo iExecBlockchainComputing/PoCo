@@ -50,7 +50,8 @@ type ChainConfig = {
     };
     v5: {
         factory?: string;
-        salt: string;
+        factoryType?: string;
+        salt?: string;
         AppRegistry?: string;
         DatasetRegistry?: string;
         WorkerpoolRegistry?: string;
