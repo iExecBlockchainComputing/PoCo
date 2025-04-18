@@ -32,18 +32,15 @@ export default async function deployEns() {
     const datasetRegistryAddress = await iexecAccessorsInstance.datasetregistry();
     const workerpoolRegistryAddress = await iexecAccessorsInstance.workerpoolregistry();
     const ens = (await deploy(new ENSRegistry__factory(), owner, [])) as ENS;
-    await saveDeployment('ENSRegistry', ens);
     const ensAddress = await ens.getAddress();
     const resolver = (await deploy(new PublicResolver__factory(), owner, [
         ensAddress,
     ])) as PublicResolver;
-    await saveDeployment('PublicResolver', resolver);
     const resolverAddress = await resolver.getAddress();
     const reverseRegistrar = (await deploy(new ReverseRegistrar__factory(), owner, [
         ensAddress,
         resolverAddress,
     ])) as ReverseRegistrar;
-    await saveDeployment('ReverseRegistrar', reverseRegistrar);
     const registrars: { [name: string]: FIFSRegistrar } = {};
     // root registrar
     await registerDomain('');
@@ -143,20 +140,5 @@ export default async function deployEns() {
      */
     function labelhash(label: string) {
         return ethers.id(label.toLowerCase());
-    }
-
-    async function saveDeployment(name: string, instance: any) {
-        const address = await instance.getAddress();
-        const factoryName = Object.getPrototypeOf(instance.constructor).name;
-        const factory = eval(`new ${factoryName}()`);
-
-        await deployments.save(name, {
-            abi: (factory as any).constructor.abi,
-            address: address,
-            bytecode: factory.bytecode,
-            deployedBytecode: await ethers.provider.getCode(address),
-        });
-        console.log(`Saved ${name} deployment at ${address}`);
-        return instance;
     }
 }
