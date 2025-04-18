@@ -6,7 +6,15 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployments, ethers } from 'hardhat';
 import deploy from '../../deploy/0_deploy';
 import deployEns from '../../deploy/1_deploy-ens';
-import { IexecInterfaceNative__factory, IexecInterfaceToken__factory } from '../../typechain';
+import {
+    AppRegistry__factory,
+    DatasetRegistry__factory,
+    ERC1538Proxy__factory,
+    IexecInterfaceNative__factory,
+    IexecInterfaceToken__factory,
+    RLC__factory,
+    WorkerpoolRegistry__factory,
+} from '../../typechain';
 import config from '../../utils/config';
 import { getIexecAccounts } from '../../utils/poco-tools';
 
@@ -19,14 +27,14 @@ async function deployAll() {
 async function transferProxyOwnership(proxyAddress: string) {
     const accounts = await getIexecAccounts();
     const iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
-    const timelockAddress = await iexecPoco.owner();
-    const timelock = await ethers.getImpersonatedSigner(timelockAddress);
+    const pocoOwner = await iexecPoco.owner();
+    const pocoOwnerSigner = await ethers.getImpersonatedSigner(pocoOwner);
     const newIexecAdminAddress = accounts.iexecAdmin.address;
     console.log(
-        `Transferring Poco ownership from Timelock:${timelockAddress} to iexecAdmin:${newIexecAdminAddress}`,
+        `Transferring Poco ownership from current owner: ${pocoOwner} to iexecAdmin: ${newIexecAdminAddress}`,
     );
     await iexecPoco
-        .connect(timelock)
+        .connect(pocoOwnerSigner)
         .transferOwnership(newIexecAdminAddress)
         .then((tx) => tx.wait());
 }
@@ -73,10 +81,42 @@ async function setUpLocalForkInNativeMode() {
 async function setUpLocalForkInTokenMode() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const chainConfig = config.getChainConfig(chainId);
-    const rlcTokenAddress = chainConfig.token;
-    const richmanAddress = chainConfig.richman;
-    if (rlcTokenAddress && richmanAddress) {
-        await fundAccounts(rlcTokenAddress, richmanAddress, false);
+    if (chainConfig.token) {
+        await saveToDeployments('RLC', new RLC__factory(), chainConfig.token);
+
+        if (chainConfig.richman) {
+            await fundAccounts(chainConfig.token, chainConfig.richman, false);
+        }
+    }
+    if (chainConfig.v5) {
+        if (chainConfig.v5.AppRegistry) {
+            await saveToDeployments(
+                'AppRegistry',
+                new AppRegistry__factory(),
+                chainConfig.v5.AppRegistry,
+            );
+        }
+        if (chainConfig.v5.DatasetRegistry) {
+            await saveToDeployments(
+                'DatasetRegistry',
+                new DatasetRegistry__factory(),
+                chainConfig.v5.DatasetRegistry,
+            );
+        }
+        if (chainConfig.v5.WorkerpoolRegistry) {
+            await saveToDeployments(
+                'WorkerpoolRegistry',
+                new WorkerpoolRegistry__factory(),
+                chainConfig.v5.WorkerpoolRegistry,
+            );
+        }
+        if (chainConfig.v5.ERC1538Proxy) {
+            await saveToDeployments(
+                'ERC1538Proxy',
+                new ERC1538Proxy__factory(),
+                chainConfig.v5.ERC1538Proxy,
+            );
+        }
     }
 
     const proxyAddress = chainConfig.v5.ERC1538Proxy;
@@ -107,3 +147,13 @@ export const loadHardhatFixtureDeployment = async () => {
     }
     return await loadFixture(deployAll);
 };
+
+async function saveToDeployments(name: string, factory: any, address: string) {
+    await deployments.save(name, {
+        abi: (factory as any).constructor.abi,
+        address: address,
+        bytecode: factory.bytecode,
+        deployedBytecode: await ethers.provider.getCode(address),
+    });
+    console.log(`Saved existing ${name} at ${address} to deployments`);
+}
