@@ -13,6 +13,7 @@ import {
     IexecInterfaceNative__factory,
     IexecInterfaceToken__factory,
     RLC__factory,
+    Registry__factory,
     WorkerpoolRegistry__factory,
 } from '../../typechain';
 import config from '../../utils/config';
@@ -117,6 +118,7 @@ async function setUpLocalForkInTokenMode() {
                 chainConfig.v5.ERC1538Proxy,
             );
         }
+        await transferRegistryOwnerships(chainConfig);
     }
 
     const proxyAddress = chainConfig.v5.ERC1538Proxy;
@@ -156,4 +158,44 @@ async function saveToDeployments(name: string, factory: any, address: string) {
         deployedBytecode: await ethers.provider.getCode(address),
     });
     console.log(`Saved existing ${name} at ${address} to deployments`);
+}
+
+async function transferRegistryOwnerships(chainConfig: any) {
+    if (chainConfig.v5) {
+        if (chainConfig.v5.AppRegistry) {
+            await transferRegistryOwnership('AppRegistry', chainConfig.v5.AppRegistry);
+        }
+        if (chainConfig.v5.DatasetRegistry) {
+            await transferRegistryOwnership('DatasetRegistry', chainConfig.v5.DatasetRegistry);
+        }
+        if (chainConfig.v5.WorkerpoolRegistry) {
+            await transferRegistryOwnership(
+                'WorkerpoolRegistry',
+                chainConfig.v5.WorkerpoolRegistry,
+            );
+        }
+    }
+}
+
+async function transferRegistryOwnership(registryName: string, registryAddress: string) {
+    const accounts = await getIexecAccounts();
+    const newIexecAdminAddress = accounts.iexecAdmin.address;
+    try {
+        const registry = Registry__factory.connect(registryAddress, ethers.provider);
+        const currentOwner = await registry.owner();
+        if (currentOwner.toLowerCase() !== newIexecAdminAddress.toLowerCase()) {
+            console.log(
+                `Transferring ${registryName} ownership from ${currentOwner} to iexecAdmin: ${newIexecAdminAddress}`,
+            );
+            const ownerSigner = await ethers.getImpersonatedSigner(currentOwner);
+            await registry
+                .connect(ownerSigner)
+                .transferOwnership(newIexecAdminAddress)
+                .then((tx: any) => tx.wait());
+        } else {
+            console.log(`${registryName} already owned by iexecAdmin`);
+        }
+    } catch (error) {
+        console.error(`Error transferring ownership of ${registryName}:`, error);
+    }
 }
