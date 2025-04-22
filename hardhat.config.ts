@@ -1,4 +1,5 @@
 import '@nomicfoundation/hardhat-toolbox';
+import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
@@ -10,6 +11,7 @@ import {
 } from 'hardhat/internal/core/config/default-config';
 import 'solidity-docgen';
 import chainConfig from './utils/config';
+dotenv.config();
 
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
@@ -175,17 +177,19 @@ const config: HardhatUserConfig = {
         // Add Fuji as a network
         avalancheFujiTestnet: {
             url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
-            },
+            accounts: [
+                process.env.FUJI_PRIVATE_KEY ||
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+            ],
             ...fujiBaseConfig,
         },
         // Add Arbitrum Sepolia as a network
         'arbitrum-sepolia': {
             url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
-            },
+            accounts: [
+                process.env.ARBITRUM_SEPOLIA_PRIVATE_KEY ||
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+            ],
             ...arbitrumSepoliaBaseConfig,
         },
         viviani: {
