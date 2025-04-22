@@ -178,7 +178,7 @@ const config: HardhatUserConfig = {
         avalancheFujiTestnet: {
             url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
             accounts: [
-                process.env.FUJI_PRIVATE_KEY ||
+                process.env.DEV_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...fujiBaseConfig,
@@ -187,7 +187,7 @@ const config: HardhatUserConfig = {
         'arbitrum-sepolia': {
             url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
             accounts: [
-                process.env.ARBITRUM_SEPOLIA_PRIVATE_KEY ||
+                process.env.DEV_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...arbitrumSepoliaBaseConfig,
