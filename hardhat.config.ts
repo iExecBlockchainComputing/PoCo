@@ -10,6 +10,7 @@ import {
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
 import 'solidity-docgen';
+import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
 dotenv.config();
 
@@ -306,6 +307,25 @@ task('docgen').setAction(async (taskArgs, hre, runSuper) => {
             fs.renameSync(path + ignoredSuffix, path); // restore build info as before
         }
     });
+});
+
+task('test').setAction(async (taskArgs: any, hre, runSuper) => {
+    let deploymentsCopied = false;
+    let networkName = '';
+    try {
+        if (process.env.ARBITRUM_SEPOLIA_FORK === 'true') {
+            networkName = 'arbitrum-sepolia';
+            deploymentsCopied = await copyDeployments(networkName);
+        } else if (process.env.FUJI_FORK === 'true') {
+            networkName = 'avalancheFujiTestnet';
+            deploymentsCopied = await copyDeployments(networkName);
+        }
+        await runSuper(taskArgs);
+    } finally {
+        if (deploymentsCopied && networkName) {
+            await cleanupDeployments(networkName);
+        }
+    }
 });
 
 export default config;
