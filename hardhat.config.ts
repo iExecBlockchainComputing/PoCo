@@ -1,5 +1,5 @@
 import '@nomicfoundation/hardhat-toolbox';
-import * as dotenv from 'dotenv';
+import 'dotenv/config';
 import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
@@ -12,7 +12,6 @@ import {
 import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
-dotenv.config();
 
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
