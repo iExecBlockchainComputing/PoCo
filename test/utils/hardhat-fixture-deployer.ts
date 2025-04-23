@@ -1,72 +1,31 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployments, ethers } from 'hardhat';
 import deploy from '../../deploy/0_deploy';
 import deployEns from '../../deploy/1_deploy-ens';
-import {
-    AppRegistry__factory,
-    DatasetRegistry__factory,
-    ERC1538Proxy__factory,
-    IexecInterfaceNative__factory,
-    IexecInterfaceToken__factory,
-    RLC__factory,
-    Registry__factory,
-    WorkerpoolRegistry__factory,
-} from '../../typechain';
 import config from '../../utils/config';
-import { getIexecAccounts } from '../../utils/poco-tools';
+import {
+    fundAccounts,
+    saveExistingContractsToDeployments,
+    transferAllOwnerships,
+} from './fixture-helpers';
 
+/**
+ * Deploys all contracts from scratch
+ * @returns proxy address
+ */
 async function deployAll() {
     await deploy();
     await deployEns();
     return (await deployments.get('ERC1538Proxy')).address;
 }
 
-async function transferProxyOwnership(proxyAddress: string) {
-    const accounts = await getIexecAccounts();
-    const iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
-    const pocoOwner = await iexecPoco.owner();
-    const pocoOwnerSigner = await ethers.getImpersonatedSigner(pocoOwner);
-    const newIexecAdminAddress = accounts.iexecAdmin.address;
-    console.log(
-        `Transferring Poco ownership from current owner: ${pocoOwner} to iexecAdmin: ${newIexecAdminAddress}`,
-    );
-    await iexecPoco
-        .connect(pocoOwnerSigner)
-        .transferOwnership(newIexecAdminAddress)
-        .then((tx) => tx.wait());
-}
-
-async function fundAccounts(tokenAddress: string, richmanAddress: string, isNativeMode: boolean) {
-    const accounts = await getIexecAccounts();
-    const otherAccountInitAmount = isNativeMode ? 10 * 10 ** 9 : 10000 * 10 ** 9;
-    const accountsArray = Object.values(accounts) as SignerWithAddress[];
-    if (!isNativeMode) {
-        await ethers.provider.send('hardhat_setBalance', [
-            richmanAddress,
-            '0x1000000000000000000', // 1 ETH
-        ]);
-    }
-    console.log(`Rich account ${richmanAddress} sending RLCs to other accounts..`);
-    const richmanSigner = await ethers.getImpersonatedSigner(richmanAddress);
-    const tokenContract = isNativeMode
-        ? IexecInterfaceNative__factory.connect(tokenAddress, ethers.provider)
-        : IexecInterfaceToken__factory.connect(tokenAddress, ethers.provider);
-    for (let i = 0; i < accountsArray.length; i++) {
-        const account = accountsArray[i];
-        await tokenContract
-            .connect(richmanSigner)
-            .transfer(account.address, otherAccountInitAmount)
-            .then((tx) => tx.wait());
-
-        const balance = await tokenContract.balanceOf(account.address);
-        console.log(`Account #${i}: ${account.address} (${balance.toLocaleString()} nRLC)`);
-    }
-}
-
+/**
+ * Sets up local fork in native mode
+ * @returns proxy address
+ */
 async function setUpLocalForkInNativeMode() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const proxyAddress = config.getChainConfig(chainId).v5.ERC1538Proxy;
@@ -74,57 +33,27 @@ async function setUpLocalForkInNativeMode() {
         throw new Error('ERC1538Proxy is required');
     }
     await fundAccounts(proxyAddress, proxyAddress, true);
-    await transferProxyOwnership(proxyAddress);
+    await transferAllOwnerships(config.getChainConfig(chainId));
 
     return proxyAddress;
 }
 
+/**
+ * Sets up local fork in token mode
+ * @returns proxy address
+ */
 async function setUpLocalForkInTokenMode() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const chainConfig = config.getChainConfig(chainId);
-    if (chainConfig.token) {
-        await saveToDeployments('RLC', new RLC__factory(), chainConfig.token);
-
-        if (chainConfig.richman) {
-            await fundAccounts(chainConfig.token, chainConfig.richman, false);
-        }
+    await saveExistingContractsToDeployments(chainConfig);
+    if (chainConfig.token && chainConfig.richman) {
+        await fundAccounts(chainConfig.token, chainConfig.richman, false);
     }
-    if (chainConfig.v5) {
-        if (chainConfig.v5.AppRegistry) {
-            await saveToDeployments(
-                'AppRegistry',
-                new AppRegistry__factory(),
-                chainConfig.v5.AppRegistry,
-            );
-        }
-        if (chainConfig.v5.DatasetRegistry) {
-            await saveToDeployments(
-                'DatasetRegistry',
-                new DatasetRegistry__factory(),
-                chainConfig.v5.DatasetRegistry,
-            );
-        }
-        if (chainConfig.v5.WorkerpoolRegistry) {
-            await saveToDeployments(
-                'WorkerpoolRegistry',
-                new WorkerpoolRegistry__factory(),
-                chainConfig.v5.WorkerpoolRegistry,
-            );
-        }
-        if (chainConfig.v5.ERC1538Proxy) {
-            await saveToDeployments(
-                'ERC1538Proxy',
-                new ERC1538Proxy__factory(),
-                chainConfig.v5.ERC1538Proxy,
-            );
-        }
-        await transferRegistryOwnerships(chainConfig);
-    }
+    await transferAllOwnerships(chainConfig);
 
     const proxyAddress = chainConfig.v5.ERC1538Proxy;
     if (proxyAddress) {
         console.log(`Using existing ERC1538Proxy at ${proxyAddress}`);
-        await transferProxyOwnership(proxyAddress);
         return proxyAddress;
     } else {
         console.log('No existing ERC1538Proxy found, deploying new contracts');
@@ -138,7 +67,8 @@ async function setUpLocalForkInTokenMode() {
 }
 
 /**
- * @returns proxy address.
+ * Loads the appropriate fixture based on environment variables
+ * @returns proxy address
  */
 export const loadHardhatFixtureDeployment = async () => {
     if (process.env.LOCAL_FORK == 'true') {
@@ -149,53 +79,3 @@ export const loadHardhatFixtureDeployment = async () => {
     }
     return await loadFixture(deployAll);
 };
-
-async function saveToDeployments(name: string, factory: any, address: string) {
-    await deployments.save(name, {
-        abi: (factory as any).constructor.abi,
-        address: address,
-        bytecode: factory.bytecode,
-        deployedBytecode: await ethers.provider.getCode(address),
-    });
-    console.log(`Saved existing ${name} at ${address} to deployments`);
-}
-
-async function transferRegistryOwnerships(chainConfig: any) {
-    if (chainConfig.v5) {
-        if (chainConfig.v5.AppRegistry) {
-            await transferRegistryOwnership('AppRegistry', chainConfig.v5.AppRegistry);
-        }
-        if (chainConfig.v5.DatasetRegistry) {
-            await transferRegistryOwnership('DatasetRegistry', chainConfig.v5.DatasetRegistry);
-        }
-        if (chainConfig.v5.WorkerpoolRegistry) {
-            await transferRegistryOwnership(
-                'WorkerpoolRegistry',
-                chainConfig.v5.WorkerpoolRegistry,
-            );
-        }
-    }
-}
-
-async function transferRegistryOwnership(registryName: string, registryAddress: string) {
-    const accounts = await getIexecAccounts();
-    const newIexecAdminAddress = accounts.iexecAdmin.address;
-    try {
-        const registry = Registry__factory.connect(registryAddress, ethers.provider);
-        const currentOwner = await registry.owner();
-        if (currentOwner.toLowerCase() !== newIexecAdminAddress.toLowerCase()) {
-            console.log(
-                `Transferring ${registryName} ownership from ${currentOwner} to iexecAdmin: ${newIexecAdminAddress}`,
-            );
-            const ownerSigner = await ethers.getImpersonatedSigner(currentOwner);
-            await registry
-                .connect(ownerSigner)
-                .transferOwnership(newIexecAdminAddress)
-                .then((tx: any) => tx.wait());
-        } else {
-            console.log(`${registryName} already owned by iexecAdmin`);
-        }
-    } catch (error) {
-        console.error(`Error transferring ownership of ${registryName}:`, error);
-    }
-}
