@@ -92,6 +92,7 @@ export async function transferRegistryOwnership(registryName: string, registryAd
         }
     } catch (error) {
         console.error(`Error transferring ownership of ${registryName}:`, error);
+        throw error;
     }
 }
 
