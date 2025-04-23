@@ -103,18 +103,18 @@ export async function transferProxyOwnership(proxyAddress: string) {
     const pocoOwner = await iexecPoco.owner();
     const newIexecAdminAddress = accounts.iexecAdmin.address;
 
-    if (pocoOwner.toLowerCase() !== newIexecAdminAddress.toLowerCase()) {
-        console.log(
-            `Transferring Poco ownership from current owner: ${pocoOwner} to iexecAdmin: ${newIexecAdminAddress}`,
-        );
-        const pocoOwnerSigner = await ethers.getImpersonatedSigner(pocoOwner);
-        await iexecPoco
-            .connect(pocoOwnerSigner)
-            .transferOwnership(newIexecAdminAddress)
-            .then((tx) => tx.wait());
-    } else {
+    if (pocoOwner.toLowerCase() == newIexecAdminAddress.toLowerCase()) {
         console.log(`Proxy already owned by iexecAdmin`);
+        return;
     }
+    console.log(
+        `Transferring Poco ownership from current owner: ${pocoOwner} to iexecAdmin: ${newIexecAdminAddress}`,
+    );
+    const pocoOwnerSigner = await ethers.getImpersonatedSigner(pocoOwner);
+    await iexecPoco
+        .connect(pocoOwnerSigner)
+        .transferOwnership(newIexecAdminAddress)
+        .then((tx) => tx.wait());
 }
 
 /**
