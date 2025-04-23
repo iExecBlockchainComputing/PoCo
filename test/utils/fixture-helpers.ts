@@ -38,7 +38,6 @@ export async function fundAccounts(
     for (let i = 0; i < accountsArray.length; i++) {
         const account = accountsArray[i];
         await tokenContract
-            .connect(richmanSigner)
             .transfer(account.address, otherAccountInitAmount)
             .then((tx) => tx.wait());
 
