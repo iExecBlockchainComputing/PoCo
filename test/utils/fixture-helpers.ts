@@ -52,6 +52,7 @@ export async function fundAccounts(
  */
 export async function transferAllOwnerships(chainConfig: any) {
     if (chainConfig.v5.ERC1538Proxy) {
+        // Transfer proxy ownership from Timelock or current owner to a known EOA.
         await transferProxyOwnership(chainConfig.v5.ERC1538Proxy);
     }
     const registries = [
