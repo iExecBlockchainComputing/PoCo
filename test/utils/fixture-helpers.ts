@@ -51,19 +51,20 @@ export async function fundAccounts(
  * Transfers ownership of all contracts
  */
 export async function transferAllOwnerships(chainConfig: any) {
-    if (chainConfig.v5) {
-        const registries = [
-            { name: 'AppRegistry', address: chainConfig.v5.AppRegistry },
-            { name: 'DatasetRegistry', address: chainConfig.v5.DatasetRegistry },
-            { name: 'WorkerpoolRegistry', address: chainConfig.v5.WorkerpoolRegistry },
-        ];
-        for (const registry of registries) {
-            if (registry.address) {
-                await transferRegistryOwnership(registry.name, registry.address);
-            }
-        }
-        if (chainConfig.v5.ERC1538Proxy) {
-            await transferProxyOwnership(chainConfig.v5.ERC1538Proxy);
+    if (chainConfig.v5.ERC1538Proxy) {
+        await transferProxyOwnership(chainConfig.v5.ERC1538Proxy);
+    }
+    const registries = [
+        { name: 'AppRegistry', address: (await deployments.get('AppRegistry')).address },
+        { name: 'DatasetRegistry', address: (await deployments.get('DatasetRegistry')).address },
+        {
+            name: 'WorkerpoolRegistry',
+            address: (await deployments.get('WorkerpoolRegistry')).address,
+        },
+    ];
+    for (const registry of registries) {
+        if (registry.address) {
+            await transferRegistryOwnership(registry.name, registry.address);
         }
     }
 }
