@@ -4,14 +4,9 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
 import {
-    AppRegistry__factory,
-    DatasetRegistry__factory,
-    ERC1538Proxy__factory,
     IexecInterfaceNative__factory,
     IexecInterfaceToken__factory,
-    RLC__factory,
     Registry__factory,
-    WorkerpoolRegistry__factory,
 } from '../../typechain';
 import { getIexecAccounts } from '../../utils/poco-tools';
 
@@ -133,43 +128,4 @@ export async function saveToDeployments(name: string, factory: any, address: str
         deployedBytecode: await ethers.provider.getCode(address),
     });
     console.log(`Saved existing ${name} at ${address} to deployments`);
-}
-
-/**
- * Saves all existing contracts to deployments
- */
-export async function saveExistingContractsToDeployments(chainConfig: any) {
-    if (chainConfig.token) {
-        await saveToDeployments('RLC', new RLC__factory(), chainConfig.token);
-    }
-    if (chainConfig.v5) {
-        const contracts = [
-            {
-                name: 'AppRegistry',
-                factory: new AppRegistry__factory(),
-                address: chainConfig.v5.AppRegistry,
-            },
-            {
-                name: 'DatasetRegistry',
-                factory: new DatasetRegistry__factory(),
-                address: chainConfig.v5.DatasetRegistry,
-            },
-            {
-                name: 'WorkerpoolRegistry',
-                factory: new WorkerpoolRegistry__factory(),
-                address: chainConfig.v5.WorkerpoolRegistry,
-            },
-            {
-                name: 'ERC1538Proxy',
-                factory: new ERC1538Proxy__factory(),
-                address: chainConfig.v5.ERC1538Proxy,
-            },
-        ];
-
-        for (const contract of contracts) {
-            if (contract.address) {
-                await saveToDeployments(contract.name, contract.factory, contract.address);
-            }
-        }
-    }
 }
