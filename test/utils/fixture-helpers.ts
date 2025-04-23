@@ -32,8 +32,8 @@ export async function fundAccounts(
     console.log(`Rich account ${richmanAddress} sending RLCs to other accounts..`);
     const richmanSigner = await ethers.getImpersonatedSigner(richmanAddress);
     const tokenContract = isNativeMode
-        ? IexecInterfaceNative__factory.connect(tokenAddress, ethers.provider)
-        : IexecInterfaceToken__factory.connect(tokenAddress, ethers.provider);
+        ? IexecInterfaceNative__factory.connect(tokenAddress, richmanSigner)
+        : IexecInterfaceToken__factory.connect(tokenAddress, richmanSigner);
 
     for (let i = 0; i < accountsArray.length; i++) {
         const account = accountsArray[i];
