@@ -1,4 +1,5 @@
 import '@nomicfoundation/hardhat-toolbox';
+import 'dotenv/config';
 import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
@@ -9,6 +10,7 @@ import {
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
 import 'solidity-docgen';
+import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
 
 const isNativeChainType = chainConfig.isNativeChain();
@@ -175,17 +177,19 @@ const config: HardhatUserConfig = {
         // Add Fuji as a network
         avalancheFujiTestnet: {
             url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
-            },
+            accounts: [
+                process.env.DEV_PRIVATE_KEY ||
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+            ],
             ...fujiBaseConfig,
         },
         // Add Arbitrum Sepolia as a network
         'arbitrum-sepolia': {
             url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
-            },
+            accounts: [
+                process.env.DEV_PRIVATE_KEY ||
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+            ],
             ...arbitrumSepoliaBaseConfig,
         },
         viviani: {
@@ -302,6 +306,25 @@ task('docgen').setAction(async (taskArgs, hre, runSuper) => {
             fs.renameSync(path + ignoredSuffix, path); // restore build info as before
         }
     });
+});
+
+task('test').setAction(async (taskArgs: any, hre, runSuper) => {
+    let deploymentsCopied = false;
+    let networkName = '';
+    try {
+        if (process.env.ARBITRUM_SEPOLIA_FORK === 'true') {
+            networkName = 'arbitrum-sepolia';
+            deploymentsCopied = await copyDeployments(networkName);
+        } else if (process.env.FUJI_FORK === 'true') {
+            networkName = 'avalancheFujiTestnet';
+            deploymentsCopied = await copyDeployments(networkName);
+        }
+        await runSuper(taskArgs);
+    } finally {
+        if (deploymentsCopied && networkName) {
+            await cleanupDeployments(networkName);
+        }
+    }
 });
 
 export default config;

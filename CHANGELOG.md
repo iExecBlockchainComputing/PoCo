@@ -9,6 +9,7 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+- Deploy on new testnet chains using CreateX factory (#216)
 - Add CreateX factory for new chain deployment (#215)
 - Support Arbitrum & Avalanche Fuji testnets (#215)
 - Housekeeping (#207, )
