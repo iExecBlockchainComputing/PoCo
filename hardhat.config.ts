@@ -175,7 +175,7 @@ const config: HardhatUserConfig = {
             },
         },
         // Add Fuji as a network
-        avalancheFujiTestnet: {
+        avalancheFuji: {
             url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
             accounts: [
                 process.env.DEV_PRIVATE_KEY ||
@@ -184,7 +184,7 @@ const config: HardhatUserConfig = {
             ...fujiBaseConfig,
         },
         // Add Arbitrum Sepolia as a network
-        'arbitrum-sepolia': {
+        arbitrumSepolia: {
             url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
             accounts: [
                 process.env.DEV_PRIVATE_KEY ||
@@ -219,7 +219,7 @@ const config: HardhatUserConfig = {
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
-            avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
+            avalancheFuji: 'nothing', // a non-empty string is needed by the plugin.
             arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
@@ -313,10 +313,10 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     let networkName = '';
     try {
         if (process.env.ARBITRUM_SEPOLIA_FORK === 'true') {
-            networkName = 'arbitrum-sepolia';
+            networkName = 'arbitrumSepolia';
             deploymentsCopied = await copyDeployments(networkName);
         } else if (process.env.FUJI_FORK === 'true') {
-            networkName = 'avalancheFujiTestnet';
+            networkName = 'avalancheFuji';
             deploymentsCopied = await copyDeployments(networkName);
         }
         await runSuper(taskArgs);
