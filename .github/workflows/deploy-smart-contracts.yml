@@ -61,6 +61,7 @@ jobs:
           npm run deploy -- --network ${{ inputs.network }}
       
       - name: Update config.json with ERC1538Proxy address
+        if: inputs.network != 'hardhat'
         run: |
           if [ -f "deployments/${{ inputs.network }}/ERC1538Proxy.json" ]; then
             PROXY_ADDRESS=$(jq -r '.address' deployments/${{ inputs.network }}/ERC1538Proxy.json)
@@ -77,6 +78,7 @@ jobs:
           fi
           
       - name: Save deployment artifacts and updated config
+        if: inputs.network != 'hardhat'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: save deployment artifacts for ${{ inputs.network }} (${{ inputs.environment }}, ${{ github.run_id }})"
