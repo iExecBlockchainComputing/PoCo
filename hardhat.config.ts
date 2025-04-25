@@ -175,10 +175,10 @@ const config: HardhatUserConfig = {
             },
         },
         // Add Fuji as a network
-        avalancheFuji: {
+        avalancheFujiTestnet: {
             url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
             accounts: [
-                process.env.DEV_PRIVATE_KEY ||
+                process.env.PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...fujiBaseConfig,
@@ -187,7 +187,7 @@ const config: HardhatUserConfig = {
         arbitrumSepolia: {
             url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
             accounts: [
-                process.env.DEV_PRIVATE_KEY ||
+                process.env.PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...arbitrumSepoliaBaseConfig,
@@ -204,7 +204,7 @@ const config: HardhatUserConfig = {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
             accounts: [
-                process.env.PROD_PRIVATE_KEY ||
+                process.env.PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...bellecourBaseConfig,
@@ -219,7 +219,7 @@ const config: HardhatUserConfig = {
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY || '',
-            avalancheFuji: 'nothing', // a non-empty string is needed by the plugin.
+            avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
             arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
@@ -242,6 +242,9 @@ const config: HardhatUserConfig = {
                 },
             },
         ],
+    },
+    sourcify: {
+        enabled: true,
     },
     typechain: {
         outDir: 'typechain',
@@ -316,7 +319,7 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
             networkName = 'arbitrumSepolia';
             deploymentsCopied = await copyDeployments(networkName);
         } else if (process.env.FUJI_FORK === 'true') {
-            networkName = 'avalancheFuji';
+            networkName = 'avalancheFujiTestnet';
             deploymentsCopied = await copyDeployments(networkName);
         }
         await runSuper(taskArgs);
