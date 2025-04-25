@@ -1,3 +1,5 @@
+# iExec PoCo Smart Contracts
+
 [![codecov](https://codecov.io/github/iExecBlockchainComputing/PoCo/graph/badge.svg)](https://codecov.io/github/iExecBlockchainComputing/PoCo)
 
 # Introduction
@@ -117,22 +119,68 @@ npm run test
 
 ## Deploy
 
-You can deploy the smart contracts according to the [deploy/0_deploy.ts](./deploy/0_deploy.ts) content. This will automatically save some addresses of the deployed artifacts to the `./build` folder.
+The iExec PoCo contracts support automated deployment through both command-line interface and GitHub Actions workflows.
 
-To do so:
+### Command Line Deployment
 
-1. Make sure you followed the "Configure a deployment" section;
-2. Enter your targeted blockchain parameters in `hardhat.config.ts` configuration file;
+You can deploy the smart contracts according to the [deploy/0_deploy.ts](./deploy/0_deploy.ts) content. This will automatically save some addresses of the deployed artifacts to the `./deployments` folder.
+
+To deploy using the CLI:
+
+1. Make sure you followed the "Configure a deployment" section above
+2. Enter your targeted blockchain parameters in `hardhat.config.ts`
 3. Run the deployment using:
+
 ```
 npx hardhat deploy --network <your network name>
 ```
 
-Example of "complex" deployment:
+Example with custom salt:
 
 ```
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001 npx hardhat deploy --network hardhat
 ```
+
+### GitHub Actions Deployment
+
+For production deployments, we use GitHub Actions to automate the process with enhanced security. The workflow allows deploying to different networks with different environment configurations (development or production).
+
+To deploy using GitHub Actions:
+
+1. Navigate to the Actions tab in your GitHub repository
+2. Select the "Deploy PoCo Contracts" workflow
+3. Click "Run workflow"
+4. Choose the target network from the dropdown
+5. Select the deployment environment (develop or production)
+6. Start the workflow
+
+The workflow will:
+1. Run tests for the target network (only in development environment)
+2. Deploy the contracts using the appropriate environment keys
+3. Update the `config.json` file with the deployed contract addresses
+4. Commit the deployment artifacts and updated configuration back to the repository
+5. Wait for the contracts to be indexed by the block explorer
+6. Verify the contracts on the blockchain explorer
+
+## Contract Verification
+
+After deploying contracts, you can verify them on block explorers to make their source code publicly available.
+
+### Manual Verification
+
+To manually verify contracts:
+
+```
+npx hardhat run ./scripts/verify.ts --network <your network name>
+```
+
+This script automatically reads all deployed contract addresses and their constructor arguments from the deployment artifacts and verifies them on the relevant block explorer.
+
+### Automated Verification via GitHub Actions
+
+The GitHub Actions workflow automatically handles contract verification after deployment. It waits 60 seconds for the contracts to be indexed by the block explorer before attempting verification.
+
+The verification process uses the same script (`./scripts/verify.ts`) that reads deployment artifacts to verify each contract with its correct constructor arguments.
 
 ## Formatting
 
