@@ -3,42 +3,42 @@ on:
   workflow_dispatch:
     inputs:
       network:
-        description: 'Target Network'
+        description: 'Network'
         required: true
         type: choice
         options:
           - hardhat
-          - avalancheFujiTestnet   
+          - avalancheFujiTestnet
           - arbitrumSepolia
           - bellecour
       environment:
-        description: 'Deployment Environment'
+        description: 'Environment'
         required: true
         type: choice
         options:
-          - develop 
-          - production 
+          - develop
+          - production
         default: 'develop'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Required for saving deployment
-    environment: ${{ inputs.environment }}  # Use the selected environment
+      contents: write # Required for saving deployment
+    environment: ${{ inputs.environment }} # Use the selected environment
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Set up Nodejs
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm' # Cache dependencies
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run tests
         if: inputs.environment != 'production'
         run: |
@@ -49,17 +49,33 @@ jobs:
           else
             npm run test
           fi
-        
+
+      - name: Set environment variables
+        id: set-env
+        run: |
+          if [ "${{ inputs.environment }}" == "production" ]; then
+            echo "PRIVATE_KEY=${{ secrets.PROD_PRIVATE_KEY }}" >> $GITHUB_ENV
+          else
+            echo "PRIVATE_KEY=${{ secrets. DEV_PRIVATE_KEY }}" >> $GITHUB_ENV
+          fi
+
+          if [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
+            echo "FUJI_RPC_URL=${{ secrets.FUJI_RPC_URL }}" >> $GITHUB_ENV
+          fi
+
+          if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+            echo "ARBITRUM_SEPOLIA_RPC_URL=${{ secrets.ARBITRUM_SEPOLIA_RPC_URL }}" >> $GITHUB_ENV
+          fi
+
+          if [ "${{ inputs.network }}" == "bellecour" ]; then
+            echo "BELLECOUR_RPC_URL=${{ secrets.BELLECOUR_RPC_URL }}" >> $GITHUB_ENV
+          fi
+
       - name: Deploy contracts
-        env:
-          PRIVATE_KEY: ${{ inputs.environment == 'production' ? secrets.PROD_PRIVATE_KEY : secrets.DEV_PRIVATE_KEY }}
-          FUJI_RPC_URL: ${{ inputs.network == 'avalancheFujiTestnet' && secrets.FUJI_RPC_URL || '' }}
-          ARBITRUM_SEPOLIA_RPC_URL: ${{ inputs.network == 'arbitrumSepolia' && secrets.ARBITRUM_SEPOLIA_RPC_URL || '' }}
-          BELLECOUR_RPC_URL: ${{ inputs.network == 'bellecour' && secrets.BELLECOUR_RPC_URL || '' }}
         run: |
           echo "Deploying to: ${{ inputs.network }} with ${{ inputs.environment }} environment"
           npm run deploy -- --network ${{ inputs.network }}
-      
+
       - name: Update config.json with ERC1538Proxy address
         if: inputs.network != 'hardhat'
         run: |
@@ -76,27 +92,26 @@ jobs:
           else
             echo "ERC1538Proxy deployment file not found. Skipping config update."
           fi
-          
+
       - name: Save deployment artifacts and updated config
         if: inputs.network != 'hardhat'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: save deployment artifacts for ${{ inputs.network }} (${{ inputs.environment }}, ${{ github.run_id }})"
+          commit_message: 'chore: save deployment artifacts for ${{ inputs.network }} (${{ inputs.environment }}, ${{ github.run_id }})'
           file_pattern: 'deployments/${{ inputs.network }}/* config/config.json'
-          commit_user_name: "GitHub Actions Bot"
-          commit_user_email: "github-actions[bot]@users.noreply.github.com"
-          commit_author: "GitHub Actions Bot <github-actions[bot]@users.noreply.github.com>"
-      
+          commit_user_name: 'GitHub Actions Bot'
+          commit_user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_author: 'GitHub Actions Bot <github-actions[bot]@users.noreply.github.com>'
+
+      - name: Set verification environment variables
+        if: inputs.network != 'hardhat'
+        run: |
+          echo "ETHERSCAN_API_KEY=${{ secrets.ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
+          echo "ARBISCAN_API_KEY=${{ secrets.ARBISCAN_API_KEY }}" >> $GITHUB_ENV
+          echo "SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}" >> $GITHUB_ENV
+
       - name: Verify contracts
         if: inputs.network != 'hardhat'
-        env:
-          PRIVATE_KEY: ${{ inputs.environment == 'production' ? secrets.PROD_PRIVATE_KEY : secrets.DEV_PRIVATE_KEY }}
-          FUJI_RPC_URL: ${{ inputs.network == 'avalancheFujiTestnet' && secrets.FUJI_RPC_URL || '' }}
-          ARBITRUM_SEPOLIA_RPC_URL: ${{ inputs.network == 'arbitrumSepolia' && secrets.ARBITRUM_SEPOLIA_RPC_URL || '' }}
-          BELLECOUR_RPC_URL: ${{ inputs.network == 'bellecour' && secrets.BELLECOUR_RPC_URL || '' }}
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-          ARBISCAN_API_KEY: ${{ secrets.ARBISCAN_API_KEY }}
-          SNOWTRACE_API_KEY: ${{ secrets.SNOWTRACE_API_KEY }}
         run: |
           # Add a delay to allow block explorers to index the contracts
           echo "Waiting for contracts to be indexed..."
