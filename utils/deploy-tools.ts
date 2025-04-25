@@ -19,15 +19,19 @@ export async function deploy(
     constructorArgs?: any[],
     opts?: { quiet: boolean },
 ) {
+    const args = constructorArgs ?? [];
     const contractInstance = await contractFactory
         .connect(deployer)
-        .deploy(...(constructorArgs ?? []))
+        .deploy(...args)
         .then((x) => x.waitForDeployment());
     const contractName = getBaseNameFromContractFactory(contractFactory);
     const contractAddress = await contractInstance.getAddress();
     await deployments.save(contractName, {
         abi: (contractFactory as any).constructor.abi,
         address: contractAddress,
+        args: args,
+        bytecode: contractFactory.bytecode,
+        deployedBytecode: (await contractFactory.getDeployTransaction(...args)).data,
     });
     if (!opts || (opts && !opts.quiet)) {
         console.log(`${contractName}: ${contractAddress}`);
