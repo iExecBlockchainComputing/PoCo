@@ -1,0 +1,102 @@
+name: Deploy PoCo Contracts
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Target Network'
+        required: true
+        type: choice
+        options:
+          - hardhat
+          - avalancheFujiTestnet   
+          - arbitrumSepolia
+          - bellecour
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        type: choice
+        options:
+          - develop 
+          - production 
+        default: 'develop'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for saving deployment
+    environment: ${{ inputs.environment }}  # Use the selected environment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # Cache dependencies
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests
+        if: inputs.environment != 'production'
+        run: |
+          if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+            npm run test:arbitrumSepolia
+          elif [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
+            npm run test:fuji
+          else
+            npm run test
+          fi
+        
+      - name: Deploy contracts
+        env:
+          PRIVATE_KEY: ${{ inputs.environment == 'production' ? secrets.PROD_PRIVATE_KEY : secrets.DEV_PRIVATE_KEY }}
+          FUJI_RPC_URL: ${{ inputs.network == 'avalancheFujiTestnet' && secrets.FUJI_RPC_URL || '' }}
+          ARBITRUM_SEPOLIA_RPC_URL: ${{ inputs.network == 'arbitrumSepolia' && secrets.ARBITRUM_SEPOLIA_RPC_URL || '' }}
+          BELLECOUR_RPC_URL: ${{ inputs.network == 'bellecour' && secrets.BELLECOUR_RPC_URL || '' }}
+        run: |
+          echo "Deploying to: ${{ inputs.network }} with ${{ inputs.environment }} environment"
+          npm run deploy -- --network ${{ inputs.network }}
+      
+      - name: Update config.json with ERC1538Proxy address
+        run: |
+          if [ -f "deployments/${{ inputs.network }}/ERC1538Proxy.json" ]; then
+            PROXY_ADDRESS=$(jq -r '.address' deployments/${{ inputs.network }}/ERC1538Proxy.json)
+            # Verify we have an address before updating
+            if [ -n "$PROXY_ADDRESS" ] && [ "$PROXY_ADDRESS" != "null" ]; then
+              echo "Found ERC1538Proxy address: $PROXY_ADDRESS"
+              # Update config.json using our script
+              node scripts/update-config.js "${{ inputs.network }}" "ERC1538Proxy" "$PROXY_ADDRESS"
+            else
+              echo "Failed to extract a valid ERC1538Proxy address"
+            fi
+          else
+            echo "ERC1538Proxy deployment file not found. Skipping config update."
+          fi
+          
+      - name: Save deployment artifacts and updated config
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: save deployment artifacts for ${{ inputs.network }} (${{ inputs.environment }}, ${{ github.run_id }})"
+          file_pattern: 'deployments/${{ inputs.network }}/* config/config.json'
+          commit_user_name: "GitHub Actions Bot"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_author: "GitHub Actions Bot <github-actions[bot]@users.noreply.github.com>"
+      
+      - name: Verify contracts
+        if: inputs.network != 'hardhat'
+        env:
+          PRIVATE_KEY: ${{ inputs.environment == 'production' ? secrets.PROD_PRIVATE_KEY : secrets.DEV_PRIVATE_KEY }}
+          FUJI_RPC_URL: ${{ inputs.network == 'avalancheFujiTestnet' && secrets.FUJI_RPC_URL || '' }}
+          ARBITRUM_SEPOLIA_RPC_URL: ${{ inputs.network == 'arbitrumSepolia' && secrets.ARBITRUM_SEPOLIA_RPC_URL || '' }}
+          BELLECOUR_RPC_URL: ${{ inputs.network == 'bellecour' && secrets.BELLECOUR_RPC_URL || '' }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          ARBISCAN_API_KEY: ${{ secrets.ARBISCAN_API_KEY }}
+          SNOWTRACE_API_KEY: ${{ secrets.SNOWTRACE_API_KEY }}
+        run: |
+          # Add a delay to allow block explorers to index the contracts
+          echo "Waiting for contracts to be indexed..."
+          sleep 60
+          npx hardhat run ./scripts/verify.ts --network ${{ inputs.network }}
