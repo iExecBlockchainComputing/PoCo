@@ -5,7 +5,7 @@ import fs from 'fs';
 import hre, { deployments } from 'hardhat';
 import path from 'path';
 
-(async () => {
+async function verify() {
     const jsonExtension = '.json';
     const contractNames = fs
         .readdirSync(path.resolve(__dirname, `../deployments/${hre.network.name}`))
@@ -40,4 +40,15 @@ import path from 'path';
             }
         }
     }
-})();
+}
+
+if (require.main === module) {
+    verify()
+        .then(() => process.exit(0))
+        .catch((error) => {
+            console.error(error);
+            process.exit(1);
+        });
+}
+
+export default verify;
