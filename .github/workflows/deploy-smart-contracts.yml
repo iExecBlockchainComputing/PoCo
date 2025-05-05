@@ -17,9 +17,9 @@ on:
         required: true
         type: choice
         options:
-          - develop
-          - production
-        default: 'develop'
+          - testnets
+          - mainnets
+        default: 'testnets'
 
 jobs:
   deploy:
@@ -41,7 +41,7 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        if: inputs.environment != 'production'
+        if: inputs.environment != 'mainnets'
         run: |
           if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
             npm run test:arbitrumSepolia
@@ -54,11 +54,7 @@ jobs:
       - name: Set environment variables
         id: set-env
         run: |
-          if [ "${{ inputs.environment }}" == "production" ]; then
-            echo "PRIVATE_KEY=${{ secrets.PROD_PRIVATE_KEY }}" >> $GITHUB_ENV
-          else
-            echo "PRIVATE_KEY=${{ secrets. DEV_PRIVATE_KEY }}" >> $GITHUB_ENV
-          fi
+          echo "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}" >> $GITHUB_ENV
 
           if [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
             echo "FUJI_RPC_URL=${{ secrets.FUJI_RPC_URL }}" >> $GITHUB_ENV
