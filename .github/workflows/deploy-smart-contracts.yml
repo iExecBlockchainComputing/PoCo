@@ -22,7 +22,22 @@ on:
         default: 'testnets'
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate mainnet deployment conditions
+        run: |
+          if [[ "${{ inputs.environment }}" == "mainnets" && "${{ inputs.network }}" == "bellecour" && "${{ github.ref }}" != "refs/heads/main" ]]; then
+            echo "::error::Bellecour mainnet deployments must be made from the main branch. Current branch: ${GITHUB_REF#refs/heads/}"
+            exit 1
+          fi
+
+          echo "Deployment validation passed!"
   deploy:
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required for saving deployment
