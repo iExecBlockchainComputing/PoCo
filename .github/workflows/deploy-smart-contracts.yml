@@ -72,19 +72,16 @@ jobs:
           echo "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}" >> $GITHUB_ENV
           if [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
             echo "FUJI_RPC_URL=${{ secrets.FUJI_RPC_URL }}" >> $GITHUB_ENV
+            echo "SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}" >> $GITHUB_ENV  
           fi
 
           if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
             echo "ARBITRUM_SEPOLIA_RPC_URL=${{ secrets.ARBITRUM_SEPOLIA_RPC_URL }}" >> $GITHUB_ENV
+            echo "ARBISCAN_API_KEY=${{ secrets.ARBISCAN_API_KEY }}" >> $GITHUB_ENV
           fi
 
           if [ "${{ inputs.network }}" == "bellecour" ]; then
             echo "BELLECOUR_RPC_URL=${{ secrets.BELLECOUR_RPC_URL }}" >> $GITHUB_ENV
-          fi
-          if [ "${{ inputs.network }}" != "hardhat" ]; then
-            echo "ETHERSCAN_API_KEY=${{ secrets.ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
-            echo "ARBISCAN_API_KEY=${{ secrets.ARBISCAN_API_KEY }}" >> $GITHUB_ENV
-            echo "SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}" >> $GITHUB_ENV
           fi
 
       - name: Deploy contracts
