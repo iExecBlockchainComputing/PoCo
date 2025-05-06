@@ -30,7 +30,8 @@ jobs:
 
       - name: Validate mainnet deployment conditions
         run: |
-          if [[ "${{ inputs.environment }}" == "mainnets" && "${{ inputs.network }}" == "bellecour" && "${{ github.ref }}" != "refs/heads/main" ]]; then
+          #TODO remove this when we have other mainnets
+          if [[ "${{ inputs.environment }}" == "mainnets" && !("${{ inputs.network }}" == "bellecour" && "${{ github.ref }}" == "refs/heads/main") ]]; then
             echo "::error::Bellecour mainnet deployments must be made from the main branch. Current branch: ${GITHUB_REF#refs/heads/}"
             exit 1
           fi
