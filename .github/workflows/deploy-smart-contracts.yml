@@ -91,20 +91,7 @@ jobs:
 
       - name: Update config.json with ERC1538Proxy address
         if: inputs.network != 'hardhat'
-        run: |
-          if [ -f "deployments/${{ inputs.network }}/ERC1538Proxy.json" ]; then
-            PROXY_ADDRESS=$(jq -r '.address' deployments/${{ inputs.network }}/ERC1538Proxy.json)
-            # Verify we have an address before updating
-            if [ -n "$PROXY_ADDRESS" ] && [ "$PROXY_ADDRESS" != "null" ]; then
-              echo "Found ERC1538Proxy address: $PROXY_ADDRESS"
-              # Update config.json using our script
-              node scripts/update-config.js "${{ inputs.network }}" "ERC1538Proxy" "$PROXY_ADDRESS"
-            else
-              echo "Failed to extract a valid ERC1538Proxy address"
-            fi
-          else
-            echo "ERC1538Proxy deployment file not found. Skipping config update."
-          fi
+        run: node scripts/tool/update-config.js "${{ inputs.network }}"
 
       - name: Save deployment artifacts and updated config
         if: inputs.network != 'hardhat'
