@@ -1,6 +1,7 @@
 import fs from 'fs';
 import hre from 'hardhat';
 import path from 'path';
+import config from '../utils/config';
 
 async function main() {
     const [networkName] = process.argv.slice(2);
@@ -33,15 +34,21 @@ async function main() {
     }
 
     console.log(`Found ERC1538Proxy address: ${contractAddress}`);
-    const configPath = path.resolve('config/config.json');
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-
-    if (!config.chains) {
-        config.chains = {};
+    const localconfig = config;
+    if (!localconfig.chains) {
+        localconfig.chains = {};
     }
 
-    if (!config.chains[chainId]) {
-        config.chains[chainId] = {
+    if (!localconfig.chains[chainId]) {
+        localconfig.chains[chainId] = {
+            _comment: `Chain ${chainId} (${networkName})`,
+            asset: 'Native', // Default value, update as needed
+            v3: {
+                Hub: null,
+                AppRegistry: null,
+                DatasetRegistry: null,
+                WorkerpoolRegistry: null,
+            },
             v5: {},
         };
     }
@@ -52,14 +59,16 @@ async function main() {
 
     const contractKey = 'ERC1538Proxy';
     const previousValue = config.chains[chainId].v5[contractKey] || 'null';
-    config.chains[chainId].v5[contractKey] = contractAddress;
+    localconfig.chains[chainId].v5[contractKey] = contractAddress;
 
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    const configPath = path.resolve('config/config.json');
+    fs.writeFileSync(configPath, JSON.stringify(localconfig, null, 2));
 
     console.log(`Updated ${chainId}.v5.${contractKey}:`);
     console.log(`Previous: ${previousValue}`);
     console.log(`New: ${contractAddress}`);
 }
+
 main()
     .then(() => process.exit(0))
     .catch((error) => {
