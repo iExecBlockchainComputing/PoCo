@@ -4,16 +4,11 @@ import path from 'path';
 import config from '../utils/config';
 
 async function main() {
-    const [networkName] = process.argv.slice(2);
-
-    if (!networkName) {
-        console.error('Usage: node update-config.js <networkName>');
-        process.exit(1);
-    }
-
     let chainId;
+    let networkName;
     try {
         chainId = (await hre.ethers.provider.getNetwork()).chainId.toString();
+        networkName = hre.network.name;
     } catch (error) {
         console.error(`Failed to get chain ID for network ${networkName}:`, error.message);
         process.exit(1);
