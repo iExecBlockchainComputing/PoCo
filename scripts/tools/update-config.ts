@@ -29,15 +29,15 @@ async function main(): Promise<void> {
     }
 
     console.log(`Found ERC1538Proxy address: ${contractAddress}`);
-    const localconfig = config;
+    const localConfig = config;
 
     // Ensure the chain structure exists
-    if (!localconfig.chains) {
-        localconfig.chains = {};
+    if (!localConfig.chains) {
+        localConfig.chains = {};
     }
 
-    if (!localconfig.chains[chainId]) {
-        localconfig.chains[chainId] = {
+    if (!localConfig.chains[chainId]) {
+        localConfig.chains[chainId] = {
             _comment: `Chain ${chainId} (${networkName})`,
             asset: 'Token', // Default value, update as needed
             v3: {
@@ -50,16 +50,16 @@ async function main(): Promise<void> {
         };
     }
 
-    if (!localconfig.chains[chainId].v5) {
-        localconfig.chains[chainId].v5 = {};
+    if (!localConfig.chains[chainId].v5) {
+        localConfig.chains[chainId].v5 = {};
     }
 
     const contractKey = 'ERC1538Proxy';
-    const previousValue = localconfig.chains[chainId].v5[contractKey] || 'null';
-    localconfig.chains[chainId].v5[contractKey] = contractAddress;
+    const previousValue = localConfig.chains[chainId].v5[contractKey] || 'null';
+    localConfig.chains[chainId].v5[contractKey] = contractAddress;
 
     // Write the updated config back to file
-    fs.writeFileSync(configPath, JSON.stringify(localconfig, null, 2));
+    fs.writeFileSync(configPath, JSON.stringify(localConfig, null, 2));
 
     console.log(`Updated ${chainId}.v5.${contractKey}:`);
     console.log(`Previous: ${previousValue}`);
