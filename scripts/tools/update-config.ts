@@ -1,18 +1,18 @@
-import fs from 'fs';
-import hre from 'hardhat';
-import path from 'path';
-import config from '../utils/config';
+import * as fs from 'fs';
+import { ethers } from 'hardhat';
+import * as path from 'path';
+import config from '../../utils/config';
 
-async function main() {
-    let chainId;
-    let networkName;
-    try {
-        chainId = (await hre.ethers.provider.getNetwork()).chainId.toString();
-        networkName = hre.network.name;
-    } catch (error) {
-        console.error(`Failed to get chain ID for network ${networkName}:`, error.message);
-        process.exit(1);
-    }
+// Get the absolute path to the config file
+const configPath = path.resolve('config/config.json');
+
+async function main(): Promise<void> {
+    // Get network info from ethers
+    const network = await ethers.provider.getNetwork();
+    const networkName = network.name;
+    const chainId = network.chainId.toString();
+
+    console.log(`Working with network: ${networkName} (Chain ID: ${chainId})`);
 
     const deploymentPath = path.resolve(`deployments/${networkName}/ERC1538Proxy.json`);
     if (!fs.existsSync(deploymentPath)) {
@@ -29,7 +29,11 @@ async function main() {
     }
 
     console.log(`Found ERC1538Proxy address: ${contractAddress}`);
+
+    // Read the config file directly
     const localconfig = config;
+
+    // Ensure the chain structure exists
     if (!localconfig.chains) {
         localconfig.chains = {};
     }
@@ -48,15 +52,15 @@ async function main() {
         };
     }
 
-    if (!config.chains[chainId].v5) {
-        config.chains[chainId].v5 = {};
+    if (!localconfig.chains[chainId].v5) {
+        localconfig.chains[chainId].v5 = {};
     }
 
     const contractKey = 'ERC1538Proxy';
-    const previousValue = config.chains[chainId].v5[contractKey] || 'null';
+    const previousValue = localconfig.chains[chainId].v5[contractKey] || 'null';
     localconfig.chains[chainId].v5[contractKey] = contractAddress;
 
-    const configPath = path.resolve('config/config.json');
+    // Write the updated config back to file
     fs.writeFileSync(configPath, JSON.stringify(localconfig, null, 2));
 
     console.log(`Updated ${chainId}.v5.${contractKey}:`);
@@ -64,6 +68,7 @@ async function main() {
     console.log(`New: ${contractAddress}`);
 }
 
+// Execute the main function and handle any errors
 main()
     .then(() => process.exit(0))
     .catch((error) => {
