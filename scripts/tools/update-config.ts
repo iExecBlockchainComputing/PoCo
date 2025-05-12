@@ -29,8 +29,6 @@ async function main(): Promise<void> {
     }
 
     console.log(`Found ERC1538Proxy address: ${contractAddress}`);
-
-    // Read the config file directly
     const localconfig = config;
 
     // Ensure the chain structure exists

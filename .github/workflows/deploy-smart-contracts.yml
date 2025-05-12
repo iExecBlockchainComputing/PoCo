@@ -91,7 +91,7 @@ jobs:
 
       - name: Update config.json with ERC1538Proxy address
         if: inputs.network != 'hardhat'
-        run: npx hardhat run scripts/tools/update-config.js --network ${{ inputs.network }}
+        run: npx hardhat run scripts/tools/update-config.ts --network ${{ inputs.network }}
 
       - name: Save deployment artifacts and updated config
         if: inputs.network != 'hardhat'
