@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { ethers } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import * as path from 'path';
 import config from '../../utils/config';
 
@@ -20,7 +20,7 @@ async function main(): Promise<void> {
         process.exit(1);
     }
 
-    const deployment = JSON.parse(fs.readFileSync(deploymentPath, 'utf8'));
+    const deployment = await deployments.get('ERC1538Proxy');
     const contractAddress = deployment.address;
 
     if (!contractAddress || contractAddress === 'null') {
@@ -41,7 +41,7 @@ async function main(): Promise<void> {
     if (!localconfig.chains[chainId]) {
         localconfig.chains[chainId] = {
             _comment: `Chain ${chainId} (${networkName})`,
-            asset: 'Native', // Default value, update as needed
+            asset: 'Token', // Default value, update as needed
             v3: {
                 Hub: null,
                 AppRegistry: null,
