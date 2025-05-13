@@ -51,7 +51,7 @@ npx hardhat --network bellecour etherscan-verify
 ```
 and embedded `hardhat-verify` plugin of `hardhat` (v2.22.12):
 ```
-npx hardhat run ./scripts/sponsoring/verify.ts --network bellecour
+npx hardhat run ./scripts/verify.ts --network bellecour
 ```
 by previously modifiying the `.json` file produced by:
 ```

@@ -9,6 +9,7 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+- Add gitub action workflow for deployment (#218)
 - Fix new testnets chain name (#217)
 - Deploy on new testnet chains using CreateX factory (#216)
 - Add CreateX factory for new chain deployment (#215)

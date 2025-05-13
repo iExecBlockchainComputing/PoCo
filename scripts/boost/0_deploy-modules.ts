@@ -42,6 +42,7 @@ const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.
         await deployments.save(module.name, {
             abi: [],
             address: moduleAddress,
+            bytecode: module.bytecode,
         });
     }
 })();

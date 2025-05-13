@@ -53,7 +53,8 @@ import { linkContractToProxy } from '../utils/proxy-tools';
  */
 export default async function deploy() {
     console.log('Deploying PoCo..');
-    const chainId = (await ethers.provider.getNetwork()).chainId;
+    const network = await ethers.provider.getNetwork();
+    const chainId = network.chainId;
     const [owner] = await ethers.getSigners();
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
     const factoryDeployer = new FactoryDeployer(owner, chainId);
@@ -208,6 +209,12 @@ export default async function deploy() {
     console.log(`countCategory is now: ${catCountAfter} (was ${catCountBefore})`);
     for (let i = 0; i < Number(catCountAfter); i++) {
         console.log(`Category ${i}: ${await iexecAccessorsInstance.viewCategory(i)}`);
+    }
+
+    if (network.name !== 'hardhat' && network.name !== 'localhost') {
+        console.log('Waiting for block explorer to index the contracts...');
+        await new Promise((resolve) => setTimeout(resolve, 60000));
+        await import('../scripts/verify').then((module) => module.default());
     }
 }
 

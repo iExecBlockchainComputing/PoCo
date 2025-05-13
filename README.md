@@ -1,3 +1,5 @@
+# iExec PoCo Smart Contracts
+
 [![codecov](https://codecov.io/github/iExecBlockchainComputing/PoCo/graph/badge.svg)](https://codecov.io/github/iExecBlockchainComputing/PoCo)
 
 # Introduction
@@ -117,22 +119,39 @@ npm run test
 
 ## Deploy
 
-You can deploy the smart contracts according to the [deploy/0_deploy.ts](./deploy/0_deploy.ts) content. This will automatically save some addresses of the deployed artifacts to the `./build` folder.
+The iExec PoCo contracts support automated deployment through both command-line interface and GitHub Actions workflows.
 
-To do so:
+### Command Line Deployment
 
-1. Make sure you followed the "Configure a deployment" section;
-2. Enter your targeted blockchain parameters in `hardhat.config.ts` configuration file;
+You can deploy the smart contracts according to the [deploy/0_deploy.ts](./deploy/0_deploy.ts) content. This will automatically save some addresses of the deployed artifacts to the `./deployments` folder.
+
+To deploy using the CLI:
+
+1. Make sure you followed the "Configure a deployment" section above
+2. Enter your targeted blockchain parameters in `hardhat.config.ts`
 3. Run the deployment using:
+
 ```
 npx hardhat deploy --network <your network name>
 ```
 
-Example of "complex" deployment:
+Example with custom salt:
 
 ```
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001 npx hardhat deploy --network hardhat
 ```
+
+
+### Manual Verification
+
+To manually verify contracts:
+
+```
+npx hardhat run ./scripts/verify.ts --network <your network name>
+```
+
+This script automatically reads all deployed contract addresses and their constructor arguments from the deployment artifacts and verifies them on the relevant block explorer.
+
 
 ## Formatting
 
