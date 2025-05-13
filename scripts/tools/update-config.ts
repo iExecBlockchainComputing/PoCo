@@ -13,13 +13,6 @@ async function main(): Promise<void> {
     const chainId = network.chainId.toString();
 
     console.log(`Working with network: ${networkName} (Chain ID: ${chainId})`);
-
-    const deploymentPath = path.resolve(`deployments/${networkName}/ERC1538Proxy.json`);
-    if (!fs.existsSync(deploymentPath)) {
-        console.error(`ERC1538Proxy deployment file not found for network: ${networkName}`);
-        process.exit(1);
-    }
-
     const deployment = await deployments.get('ERC1538Proxy');
     const contractAddress = deployment.address;
 
