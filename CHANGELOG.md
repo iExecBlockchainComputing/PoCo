@@ -2,6 +2,8 @@
 
 ## vNEXT
 
+## v5.5.1
+
 - Add Github Action CI in order to publish NPM package
 
 ### Updated contracts
@@ -9,6 +11,7 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+
 - Add gitub action workflow for deployment (#218)
 - Fix new testnets chain name (#217)
 - Deploy on new testnet chains using CreateX factory (#216)
