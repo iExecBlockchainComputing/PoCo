@@ -1,6 +1,6 @@
 # Changelog
 
-## vNEXT
+## v5.5.1
 
 - Add Github Action CI in order to publish NPM package
 
@@ -10,7 +10,7 @@
 
 ### Features
 
-- Housekeeping (#207, )
+- Housekeeping (#207)
 - Add Halborn "Poco v5.5 & Voucher v1.0" audit report (#205)
 - Refactor Factory deployer (#206)
 - Enable native tests on CI (#204)
