@@ -35,6 +35,10 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 - [Solidity API documentation](./docs/solidity/index.md)
 - [Full PoCo documentation](https://protocol.docs.iex.ec/key-concepts/proof-of-contribution)
 
+## Audits
+
+All contract audit files can be found in [audit/](./audit/) folder.
+
 # How to?
 
 ## Configure a deployment
@@ -85,7 +89,7 @@ PoCo smart contracts come with a test suite in the `./test` folder. You can star
 
 ```
 npm install
-npm run autotest
+npm run test
 ```
 
 Additionally, you can produce a coverage report using the following command:
@@ -104,7 +108,7 @@ The automatic testing command uses the Hardhat network by default to run the tes
     ```
     - Or run any other blockchain client.
 2. **[Optional]** Update the configuration
-    
+
     If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `hardhat.config.ts` configuration (network ports, accounts with mnemonic, ..) accordingly to the [Hardhat Configuration](https://hardhat.org/hardhat-runner/docs/config) documentation.
 3. Run tests
 ```

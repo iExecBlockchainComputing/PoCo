@@ -1,11 +1,9 @@
-// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import fs from 'fs';
-import hre, { ethers } from 'hardhat';
-import path from 'path';
-import { getFunctionSignatures } from '../migrations/utils/getFunctionSignatures';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { ZeroAddress, ZeroHash } from 'ethers';
+import { ethers } from 'hardhat';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
@@ -39,10 +37,9 @@ import {
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
-import { FactoryDeployerHelper } from '../utils/FactoryDeployerHelper';
-import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
-import { Category } from '../utils/poco-tools';
-const CONFIG = require('../config/config.json');
+import config from '../utils/config';
+import { FactoryDeployer } from '../utils/FactoryDeployer';
+import { linkContractToProxy } from '../utils/proxy-tools';
 
 /**
  * @dev Deploying contracts with `npx hardhat deploy` task brought by
@@ -54,28 +51,28 @@ const CONFIG = require('../config/config.json');
  * The`hardhat-deploy` plugin is currently being under used compared to all
  * features available in it.
  */
-module.exports = async function () {
+export default async function deploy() {
     console.log('Deploying PoCo..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const [owner] = await hre.ethers.getSigners();
-    const deploymentOptions = CONFIG.chains[chainId] || CONFIG.chains.default;
-    const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.constants.HashZero;
-    const factoryDeployer = new FactoryDeployerHelper(owner, salt);
+    const [owner] = await ethers.getSigners();
+    const deploymentOptions = config.getChainConfigOrDefault(chainId);
+    const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
+    const factoryDeployer = new FactoryDeployer(owner, salt);
     // Deploy RLC
-    const isTokenMode = deploymentOptions.asset == 'Token';
+    const isTokenMode = !config.isNativeChain(deploymentOptions);
     let rlcInstanceAddress = isTokenMode
-        ? await getOrDeployRlc(deploymentOptions.token, owner) // token
-        : ethers.constants.AddressZero; // native
+        ? await getOrDeployRlc(deploymentOptions.token!, owner) // token
+        : ZeroAddress; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Deploy ERC1538 proxy contracts
     const erc1538UpdateAddress = await factoryDeployer.deployWithFactory(
         new ERC1538UpdateDelegate__factory(),
     );
     const transferOwnershipCall = await Ownable__factory.connect(
-        ethers.constants.AddressZero, // any is fine
+        ZeroAddress, // any is fine
         owner, // any is fine
     )
-        .populateTransaction.transferOwnership(owner.address)
+        .transferOwnership.populateTransaction(owner.address)
         .then((tx) => tx.data)
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
@@ -85,10 +82,8 @@ module.exports = async function () {
         [erc1538UpdateAddress],
         transferOwnershipCall,
     );
-    // Save addresses of deployed PoCo contracts for later use
-    saveDeployedAddress('ERC1538Proxy', erc1538ProxyAddress);
     const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
-    console.log(`IexecInstance found at address: ${erc1538.address}`);
+    console.log(`IexecInstance found at address: ${await erc1538.getAddress()}`);
     // Deploy library & modules
     const iexecLibOrdersAddress = await factoryDeployer.deployWithFactory(
         new IexecLibOrders_v5__factory(),
@@ -127,7 +122,7 @@ module.exports = async function () {
     );
     const functionCount = await erc1538QueryInstance.totalFunctions();
     console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
-    for (let i = 0; i < functionCount.toNumber(); i++) {
+    for (let i = 0; i < Number(functionCount); i++) {
         const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
         console.log(`[${i}] ${contract} ${method}`);
     }
@@ -154,19 +149,19 @@ module.exports = async function () {
         owner,
     );
     // Base URI configuration from config.json
-    const baseURIApp = CONFIG.registriesBaseUri.app;
-    const baseURIDataset = CONFIG.registriesBaseUri.dataset;
-    const baseURIWorkerpool = CONFIG.registriesBaseUri.workerpool;
+    const baseURIApp = config.registriesBaseUri.app;
+    const baseURIDataset = config.registriesBaseUri.dataset;
+    const baseURIWorkerpool = config.registriesBaseUri.workerpool;
     // Check if registries have been initialized and set base URIs
     if (!(await appRegistryInstance.initialized())) {
         await appRegistryInstance
-            .initialize(deploymentOptions.v3.AppRegistry || ethers.constants.AddressZero)
+            .initialize(deploymentOptions.v3.AppRegistry || ZeroAddress)
             .then((tx) => tx.wait());
         await appRegistryInstance.setBaseURI(`${baseURIApp}/${chainId}/`).then((tx) => tx.wait());
     }
     if (!(await datasetRegistryInstance.initialized())) {
         await datasetRegistryInstance
-            .initialize(deploymentOptions.v3.DatasetRegistry || ethers.constants.AddressZero)
+            .initialize(deploymentOptions.v3.DatasetRegistry || ZeroAddress)
             .then((tx) => tx.wait());
         await datasetRegistryInstance
             .setBaseURI(`${baseURIDataset}/${chainId}/`)
@@ -174,7 +169,7 @@ module.exports = async function () {
     }
     if (!(await workerpoolRegistryInstance.initialized())) {
         await workerpoolRegistryInstance
-            .initialize(deploymentOptions.v3.WorkerpoolRegistry || ethers.constants.AddressZero)
+            .initialize(deploymentOptions.v3.WorkerpoolRegistry || ZeroAddress)
             .then((tx) => tx.wait());
         await workerpoolRegistryInstance
             .setBaseURI(`${baseURIWorkerpool}/${chainId}/`)
@@ -183,8 +178,7 @@ module.exports = async function () {
 
     // Set main configuration
     const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
-    const iexecInitialized =
-        (await iexecAccessorsInstance.eip712domain_separator()) != ethers.constants.HashZero;
+    const iexecInitialized = (await iexecAccessorsInstance.eip712domain_separator()) != ZeroHash;
     if (!iexecInitialized) {
         await IexecMaintenanceDelegate__factory.connect(erc1538ProxyAddress, owner)
             .configure(
@@ -195,15 +189,14 @@ module.exports = async function () {
                 appRegistryAddress,
                 datasetRegistryAddress,
                 workerpoolRegistryAddress,
-                ethers.constants.AddressZero,
+                ZeroAddress,
             )
             .then((tx) => tx.wait());
     }
     // Set categories
     const catCountBefore = await iexecAccessorsInstance.countCategory();
-    const categories = CONFIG.categories as Category[];
-    for (let i = catCountBefore.toNumber(); i < categories.length; i++) {
-        const category = categories[i];
+    for (let i = Number(catCountBefore); i < config.categories.length; i++) {
+        const category = config.categories[i];
         await IexecCategoryManager__factory.connect(erc1538ProxyAddress, owner)
             .createCategory(
                 category.name,
@@ -214,10 +207,10 @@ module.exports = async function () {
     }
     const catCountAfter = await iexecAccessorsInstance.countCategory();
     console.log(`countCategory is now: ${catCountAfter} (was ${catCountBefore})`);
-    for (let i = 0; i < catCountAfter.toNumber(); i++) {
+    for (let i = 0; i < Number(catCountAfter); i++) {
         console.log(`Category ${i}: ${await iexecAccessorsInstance.viewCategory(i)}`);
     }
-};
+}
 
 async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
     return token // token
@@ -225,59 +218,6 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
         : await new RLC__factory()
               .connect(owner)
               .deploy()
-              .then((contract) => {
-                  contract.deployed();
-                  return contract.address;
-              });
+              .then((contract) => contract.waitForDeployment())
+              .then((contract) => contract.getAddress());
 }
-
-/**
- * Link a contract to an ERC1538 proxy.
- * @param proxy contract to ERC1538 proxy.
- * @param contractAddress The contract address to link to the proxy.
- * @param contractFactory The contract factory to link to the proxy.
- */
-async function linkContractToProxy(
-    proxy: ERC1538Update,
-    contractAddress: string,
-    contractFactory: any,
-) {
-    const contractName = getBaseNameFromContractFactory(contractFactory);
-    await proxy
-        .updateContract(
-            contractAddress,
-            // TODO: Use contractFactory.interface.functions when moving to ethers@v6
-            // https://github.com/ethers-io/ethers.js/issues/1069
-            getFunctionSignatures(contractFactory.constructor.abi),
-            'Linking ' + contractName,
-        )
-        .then((tx) => tx.wait())
-        .catch(() => {
-            throw new Error(`Failed to link ${contractName}`);
-        });
-}
-
-// TODO [optional]: Use hardhat-deploy to save addresses automatically
-// https://github.com/wighawag/hardhat-deploy/tree/master#hardhat-deploy-in-a-nutshell
-/**
- * Save addresses of deployed contracts (since hardhat does not do it for us).
- * @param contractName contract name to deploy
- * @param deployedAddress address where contract where deployed
- */
-function saveDeployedAddress(contractName: string, deployedAddress: string) {
-    const chainId = hre.network.config.chainId || 0;
-    const BUILD_DIR = '../build';
-    fs.writeFileSync(
-        path.resolve(__dirname, BUILD_DIR, `${contractName}.json`),
-        JSON.stringify({
-            networks: {
-                [chainId]: {
-                    address: deployedAddress,
-                },
-            },
-        }),
-    );
-    console.log(`Saved deployment at ${deployedAddress} for ${contractName}`);
-}
-
-module.exports.tags = ['IexecPocoBoostDelegate'];

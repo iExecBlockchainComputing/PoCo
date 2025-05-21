@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { deployments, ethers, expect } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
+import { expect } from 'chai';
+import { deployments, ethers } from 'hardhat';
 import {
     ENSRegistry,
     ENSRegistry__factory,
@@ -13,8 +13,9 @@ import {
     PublicResolver__factory,
     ReverseRegistrar__factory,
 } from '../../../typechain';
+import config from '../../../utils/config';
 import { getIexecAccounts } from '../../../utils/poco-tools';
-const CONFIG = require('../../../config/config.json');
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 describe('ENSIntegration', () => {
     let proxyAddress: string;
@@ -39,7 +40,7 @@ describe('ENSIntegration', () => {
 
     describe('Forward resolution', () => {
         it('Should resolve initial names', async () => {
-            if (CONFIG.chains.default.asset === 'Token') {
+            if (!config.isNativeChain()) {
                 expect(await resolve('rlc.iexec.eth')).to.equal(await iexecPoco.token());
             }
             expect(await resolve('admin.iexec.eth')).to.equal(iexecAdmin.address);
@@ -69,17 +70,15 @@ describe('ENSIntegration', () => {
 
         it('Should register reverse resolution name', async () => {
             const name = 'test.domain.eth';
-            const reverseNameHash = ethers.utils.namehash(
-                `${proxyAddress.substring(2)}.addr.reverse`,
-            );
-            const reverseRootNameHash = ethers.utils.namehash('addr.reverse');
+            const reverseNameHash = ethers.namehash(`${proxyAddress.substring(2)}.addr.reverse`);
+            const reverseRootNameHash = ethers.namehash('addr.reverse');
             const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
             const reverseResolverAddress = await ReverseRegistrar__factory.connect(
                 reverseRegistrarAddress,
                 anyone,
             ).defaultResolver();
             const reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
-            await expect(iexecPocoAsAdmin.setName(ensRegistry.address, name))
+            await expect(iexecPocoAsAdmin.setName(await ensRegistry.getAddress(), name))
                 .to.emit(reverseResolver, 'NameChanged')
                 .withArgs(reverseNameHash, name);
             expect(await lookup(proxyAddress)).to.equal(name);
@@ -87,7 +86,7 @@ describe('ENSIntegration', () => {
 
         it('Should not register reverse resolution name when sender is not the owner', async () => {
             await expect(
-                iexecPoco.setName(ensRegistry.address, 'some.name.eth'),
+                iexecPoco.setName(await ensRegistry.getAddress(), 'some.name.eth'),
             ).to.be.revertedWith('Ownable: caller is not the owner');
         });
     });
@@ -98,7 +97,7 @@ describe('ENSIntegration', () => {
      * @returns ETH address
      */
     async function resolve(domain: string) {
-        const nameHash = ethers.utils.namehash(domain);
+        const nameHash = ethers.namehash(domain);
         const resolver = await getResolver(nameHash);
         return await resolver['addr(bytes32)'](nameHash);
     }
@@ -109,7 +108,7 @@ describe('ENSIntegration', () => {
      * @returns ENS name
      */
     async function lookup(address: string) {
-        const nameHash = ethers.utils.namehash(`${address.substring(2)}.addr.reverse`);
+        const nameHash = ethers.namehash(`${address.substring(2)}.addr.reverse`);
         const reverseResolver = await getResolver(nameHash);
         return await reverseResolver.name(nameHash);
     }

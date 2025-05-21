@@ -1,13 +1,13 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { expect } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
+import { expect } from 'chai';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
-import { Category, getIexecAccounts } from '../../../utils/poco-tools';
-const CONFIG = require('../../../config/config.json');
+import config from '../../../utils/config';
+import { getIexecAccounts } from '../../../utils/poco-tools';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const name = 'name';
 const description = 'description';
@@ -34,9 +34,8 @@ describe('CategoryManager', async () => {
     }
 
     it('Should view categories', async () => {
-        const categories = CONFIG.categories as Category[];
-        for (let i = 0; i < categories.length; i++) {
-            const expectedCategory = categories[i];
+        for (let i = 0; i < config.categories.length; i++) {
+            const expectedCategory = config.categories[i];
             const category = await iexecPocoAsAnyone.viewCategory(i);
             expect(category.name).to.equal(expectedCategory.name);
             expect(category.description).to.equal(JSON.stringify(expectedCategory.description));
@@ -45,15 +44,15 @@ describe('CategoryManager', async () => {
     });
 
     it('Should not view category with bad index', async () => {
-        const lastCategoryIndex = (await iexecPocoAsAnyone.countCategory()).toNumber() - 1;
+        const lastCategoryIndex = (await iexecPocoAsAnyone.countCategory()) - 1n;
         await expect(
-            iexecPocoAsAnyone.viewCategory(lastCategoryIndex + 1),
+            iexecPocoAsAnyone.viewCategory(lastCategoryIndex + 1n),
         ).to.be.revertedWithoutReason();
     });
 
     it('Should create category', async () => {
         const newCategoryIndex = 5;
-        expect(await iexecPoco.callStatic.createCategory(...args)).to.equal(newCategoryIndex);
+        expect(await iexecPoco.createCategory.staticCall(...args)).to.equal(newCategoryIndex);
         await expect(iexecPoco.createCategory(...args))
             .to.emit(iexecPoco, 'CreateCategory')
             .withArgs(newCategoryIndex, name, description, timeRef);

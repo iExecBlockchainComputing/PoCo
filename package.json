@@ -1,6 +1,6 @@
 {
   "name": "@iexec/poco",
-  "version": "5.5.0",
+  "version": "5.5.1",
   "description": "",
   "author": "iExec",
   "license": "Apache-2.0",
@@ -10,20 +10,21 @@
     "prepare": "husky",
     "build": "npx hardhat compile",
     "deploy": "npx hardhat deploy",
-    "test-storage-layout": "npx hardhat run scripts/test-storage.js",
+    "deploy:timelock": "hardhat run scripts/deploy-timelock.ts",
+    "check-storage-layout": "npx hardhat run scripts/check-storage.ts",
     "test": "REPORT_GAS=true npx hardhat test",
-    "autotest": "./test.sh",
+    "test:native": "TEST__IS_NATIVE_CHAIN=true npx hardhat test test/byContract/IexecEscrow/IexecEscrowNative.test.ts",
     "coverage": "npx hardhat coverage",
     "verify": "npx hardhat verify",
     "format": "npx prettier --write",
     "uml": "npm run sol-to-uml && npm run puml-to-links && npm run storage-to-diagrams",
-    "sol-to-uml": "npx zx tools/sol-to-uml.mjs",
-    "puml-to-links": "npx zx tools/puml-to-links.mjs",
-    "storage-to-diagrams": "npx zx tools/storage-to-diagrams.mjs",
+    "sol-to-uml": "npx zx scripts/tools/sol-to-uml.mjs",
+    "puml-to-links": "npx zx scripts/tools/puml-to-links.mjs",
+    "storage-to-diagrams": "npx zx scripts/tools/storage-to-diagrams.mjs",
     "doc": "npx hardhat docgen"
   },
   "lint-staged": {
-    "*.{js,ts,sol}": [
+    "*.{js,ts,sol,json,yml}": [
       "prettier --write"
     ]
   },
@@ -53,15 +54,10 @@
   },
   "devDependencies": {
     "@amxx/factory": "^1.0.0",
-    "@defi-wonderland/smock": "^2.3.5",
     "@ensdomains/ens-contracts": "^0.0.3",
-    "@nomicfoundation/hardhat-network-helpers": "^1.0.11",
-    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
-    "@nomiclabs/hardhat-truffle5": "^2.0.7",
-    "@nomiclabs/hardhat-web3": "^2.0.0",
-    "@openzeppelin/test-helpers": "^0.5.16",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@openzeppelin/upgrades-core": "^1.37.1",
-    "hardhat": "^2.14.1",
+    "hardhat": "^2.22.18",
     "hardhat-dependency-compiler": "^1.2.1",
     "hardhat-deploy": "^0.11.43",
     "husky": "^9.1.6",
@@ -72,12 +68,13 @@
     "prettier-plugin-solidity": "^1.4.1",
     "puml-for-markdown": "^1.2.1",
     "sol2uml": "^2.5.19",
+    "solidity-coverage": "^0.8.14",
     "solidity-docgen": "^0.6.0-beta.36",
-    "web3": "^1.10.4",
     "zx": "^8.1.6"
   },
   "devDependenciesComment": {
     "mocha": "Mocha Test Explorer in VSCode",
-    "sol2uml": "After 2.5.19, see https://github.com/naddison36/sol2uml/issues/183"
+    "sol2uml": "After 2.5.19, see https://github.com/naddison36/sol2uml/issues/183",
+    "solidity-coverage": "Fixing Hardhat's solidity-coverage: TypeError: provider.send is not a function"
   }
 }

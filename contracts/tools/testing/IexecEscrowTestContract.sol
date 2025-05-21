@@ -25,4 +25,21 @@ contract IexecEscrowTestContract is IexecEscrow {
     function seize_(address account, uint256 value, bytes32 ref) external {
         seize(account, value, ref);
     }
+
+    // Helper functions used in unit tests.
+
+    function setBalance(address account, uint256 value) external {
+        m_balances[account] = value;
+    }
+
+    // TODO remove the following function and inherit `IexecAccessorsDelegate`
+    // when it is migrated to solidity v8.
+
+    function balanceOf(address account) external view returns (uint256) {
+        return m_balances[account];
+    }
+
+    function frozenOf(address account) external view returns (uint256) {
+        return m_frozens[account];
+    }
 }

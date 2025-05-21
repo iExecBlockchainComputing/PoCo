@@ -16,8 +16,14 @@
         {
           "files": "*.sol",
           "options": {
-                "singleQuote": false 
-            }    
+                "singleQuote": false
+            }
+        },
+        {
+          "files": ["**/*.json", "**/*.yml"],
+          "options": {
+                "tabWidth": 2
+            }
         }
       ]
 }

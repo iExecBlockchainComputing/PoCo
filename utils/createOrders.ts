@@ -1,13 +1,11 @@
-// SPDX-FileCopyrightText: 2023-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain } from '@ethersproject/abstract-signer';
-import { BigNumber } from '@ethersproject/bignumber';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { TypedDataDomain } from 'ethers';
 import { IexecLibOrders_v5 } from '../typechain';
-import constants, { NULL } from './constants';
-import { utils } from './odb-tools';
+import * as constants from './constants';
+import { hashStruct, signStruct } from './odb-tools';
 import { OrderOperationEnum } from './poco-tools';
 
 export interface OrdersAssets {
@@ -17,9 +15,9 @@ export interface OrdersAssets {
 }
 
 export interface OrdersPrices {
-    app?: number;
-    dataset?: number;
-    workerpool?: number;
+    app?: bigint;
+    dataset?: bigint;
+    workerpool?: bigint;
 }
 
 export interface MatchOrdersArgs {
@@ -28,9 +26,9 @@ export interface MatchOrdersArgs {
     beneficiary?: string;
     tag?: string;
     prices?: OrdersPrices;
-    volume?: number;
+    volume?: bigint;
     callback?: string;
-    trust?: number;
+    trust?: bigint;
     category?: number;
     params?: string;
     salt?: string;
@@ -95,14 +93,14 @@ export class IexecOrders {
 
 export interface OrderOperation {
     order: Record<string, any>;
-    operation: BigNumber;
+    operation: number;
     sign: string;
 }
 
 export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
     return {
         app: constants.NULL.ADDRESS,
-        appprice: 0,
+        appprice: 0n,
         volume: 1,
         tag: constants.NULL.BYTES32,
         datasetrestrict: constants.NULL.ADDRESS,
@@ -124,7 +122,7 @@ export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct 
         volume: 1,
         tag: constants.NULL.BYTES32,
         category: 0,
-        trust: 0,
+        trust: 0n,
         requester: constants.NULL.ADDRESS,
         beneficiary: constants.NULL.ADDRESS,
         callback: constants.NULL.ADDRESS,
@@ -141,7 +139,7 @@ export function createEmptyWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderS
         volume: 1,
         tag: constants.NULL.BYTES32,
         category: 0,
-        trust: 0,
+        trust: 0n,
         apprestrict: constants.NULL.ADDRESS,
         datasetrestrict: constants.NULL.ADDRESS,
         requesterrestrict: constants.NULL.ADDRESS,
@@ -168,7 +166,7 @@ export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct 
  * Create an order operation from an existing order.
  */
 export function createOrderOperation<OrderType>(order: OrderType, operation: OrderOperationEnum) {
-    return { order, operation: BigNumber.from(operation), sign: NULL.SIGNATURE };
+    return { order, operation: Number(operation), sign: constants.NULL.SIGNATURE };
 }
 
 export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
@@ -251,23 +249,6 @@ export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
 }
 
 /**
- * Build a domain separator from a given domain of create them for testing purposes
- * @returns a domain and a domain separator
- */
-export function buildDomain(domain?: TypedDataDomain | undefined) {
-    if (!domain) {
-        domain = {
-            name: 'domain-name',
-            version: 'domain-version',
-            chainId: 123,
-            verifyingContract: '0x0000000000000000000000000000000000000001',
-        }; // testing purposes
-    }
-    const domainSeparator = ethers.utils._TypedDataEncoder.hashDomain(domain);
-    return { domain, domainSeparator };
-}
-
-/**
  * Sign all orders required by `matchOrder` calls.
  * @param domain typed data domain for EIP-712 signature
  * @param orders orders to sign (app, dataset, workerpool and requester orders)
@@ -295,7 +276,7 @@ export async function signOrder(
     order: Record<string, any>,
     signer: SignerWithAddress,
 ): Promise<void> {
-    return utils.signStruct(getTypeOf(order), order, domain, signer);
+    return signStruct(getTypeOf(order), order, domain, signer);
 }
 
 /**
@@ -307,7 +288,7 @@ export async function signOrderOperation(
     orderOperation: OrderOperation,
     signer: SignerWithAddress,
 ): Promise<void> {
-    return utils.signStruct(
+    return signStruct(
         getTypeOf(orderOperation.order) + 'Operation',
         orderOperation,
         domain,
@@ -320,7 +301,7 @@ export async function signOrderOperation(
  * @returns order hash
  */
 export function hashOrder(domain: TypedDataDomain, order: Record<string, any>): string {
-    return utils.hashStruct(getTypeOf(order), order, domain);
+    return hashStruct(getTypeOf(order), order, domain);
 }
 
 /**

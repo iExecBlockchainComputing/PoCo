@@ -1,8 +1,9 @@
-import { BigNumber } from '@ethersproject/bignumber';
-import { BytesLike } from '@ethersproject/bytes';
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 import { time } from '@nomicfoundation/hardhat-network-helpers';
+import { BytesLike, ZeroHash } from 'ethers';
 import hre, { ethers } from 'hardhat';
-import CONFIG from '../../config/config.json';
 import {
     IexecOrderManagementDelegate__factory,
     IexecPoco1Delegate__factory,
@@ -11,9 +12,9 @@ import {
     Ownable__factory,
     TimelockController__factory,
 } from '../../typechain';
+import config from '../../utils/config';
 import {
     encodeModuleProxyUpdate,
-    logTxData,
     printBlockTime,
     printFunctions,
 } from '../upgrades/upgrade-helper';
@@ -26,8 +27,11 @@ if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
 
 export async function addModulesToProxy() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = CONFIG.chains[chainId].v5;
+    const deploymentOptions = config.getChainConfig(chainId).v5;
     console.log('Link functions to proxy:');
+    if (!deploymentOptions.ERC1538Proxy) {
+        throw new Error('ERC1538Proxy is required');
+    }
     const erc1538ProxyAddress = deploymentOptions.ERC1538Proxy;
     const iexecOrderManagementAddress = (await hre.deployments.get('IexecOrderManagementDelegate'))
         .address;
@@ -72,9 +76,9 @@ export async function addModulesToProxy() {
         Array(updates.length).fill(erc1538ProxyAddress),
         Array(updates.length).fill(0),
         updates,
-        ethers.constants.HashZero,
+        ZeroHash,
         operationSalt,
-    ] as [string[], BigNumber[], BytesLike[], BytesLike, BytesLike];
+    ] as [string[], bigint[], BytesLike[], BytesLike, BytesLike];
     console.log('Scheduling proxy update..');
     await printBlockTime();
     const timelockInstance = TimelockController__factory.connect(timelockAddress, ethers.provider);
@@ -107,7 +111,7 @@ export async function addModulesToProxy() {
             .connect(timelockAdminSigner)
             .scheduleBatch(...updateProxyArgs, delay)
             .then((tx) => {
-                logTxData(tx);
+                console.log(tx);
                 return tx.wait();
             });
     }
@@ -120,7 +124,7 @@ export async function addModulesToProxy() {
             .connect(timelockAdminSigner)
             .executeBatch(...updateProxyArgs)
             .then((x) => {
-                logTxData(x);
+                console.log(x);
                 return x.wait();
             });
         await printFunctions(erc1538ProxyAddress);

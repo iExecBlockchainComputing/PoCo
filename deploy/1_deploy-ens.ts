@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import hre, { deployments, ethers } from 'hardhat';
+import { ZeroHash } from 'ethers';
+import { deployments, ethers } from 'hardhat';
 import {
     ENS,
     ENSIntegration__factory,
@@ -16,7 +17,7 @@ import {
 } from '../typechain';
 import { deploy } from '../utils/deploy-tools';
 
-module.exports = async function () {
+export default async function deployEns() {
     console.log('Deploying and configuring ENS..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     if (chainId < 1000) {
@@ -24,19 +25,21 @@ module.exports = async function () {
         console.log('Skipping ENS for public networks');
         return;
     }
-    const [owner] = await hre.ethers.getSigners();
+    const [owner] = await ethers.getSigners();
     const erc1538ProxyAddress = (await deployments.get('ERC1538Proxy')).address;
     const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
     const appRegistryAddress = await iexecAccessorsInstance.appregistry();
     const datasetRegistryAddress = await iexecAccessorsInstance.datasetregistry();
     const workerpoolRegistryAddress = await iexecAccessorsInstance.workerpoolregistry();
     const ens = (await deploy(new ENSRegistry__factory(), owner, [])) as ENS;
+    const ensAddress = await ens.getAddress();
     const resolver = (await deploy(new PublicResolver__factory(), owner, [
-        ens.address,
+        ensAddress,
     ])) as PublicResolver;
+    const resolverAddress = await resolver.getAddress();
     const reverseRegistrar = (await deploy(new ReverseRegistrar__factory(), owner, [
-        ens.address,
-        resolver.address,
+        ensAddress,
+        resolverAddress,
     ])) as ReverseRegistrar;
     const registrars: { [name: string]: FIFSRegistrar } = {};
     // root registrar
@@ -44,9 +47,9 @@ module.exports = async function () {
     await registrars[''].register(labelhash('reverse'), owner.address).then((tx) => tx.wait());
     await ens
         .setSubnodeOwner(
-            ethers.utils.namehash('reverse'),
+            ethers.namehash('reverse'),
             labelhash('addr'),
-            reverseRegistrar.address,
+            await reverseRegistrar.getAddress(),
         )
         .then((tx) => tx.wait());
     await registerDomain('eth');
@@ -71,31 +74,31 @@ module.exports = async function () {
     /**
      * Register domain on ENS.
      */
-    async function registerDomain(label: string, domain: string = '') {
+    async function registerDomain(label: string, domain: string = ''): Promise<FIFSRegistrar> {
         const name = domain ? `${label}.${domain}` : `${label}`;
-        const labelHash = label ? labelhash(label) : ethers.constants.HashZero;
-        const nameHash = name ? ethers.utils.namehash(name) : ethers.constants.HashZero;
+        const labelHash = label ? labelhash(label) : ZeroHash;
+        const nameHash = name ? ethers.namehash(name) : ZeroHash;
         const existingRegistrarAddress = await ens.owner(nameHash);
         let registrar;
+        let registrarAddress;
         if ((await ethers.provider.getCode(existingRegistrarAddress)) == '0x') {
-            registrar = (await deploy(
-                new FIFSRegistrar__factory(),
-                owner,
-                [ens.address, nameHash],
-                { quiet: true },
-            )) as FIFSRegistrar;
+            registrar = (await deploy(new FIFSRegistrar__factory(), owner, [ensAddress, nameHash], {
+                quiet: true,
+            })) as FIFSRegistrar;
+            registrarAddress = await registrar.getAddress();
             if (!!name) {
                 await registrars[domain]
-                    .register(labelHash, registrar.address)
+                    .register(labelHash, registrarAddress)
                     .then((tx) => tx.wait());
             } else {
-                await ens.setOwner(nameHash, registrar.address).then((tx) => tx.wait());
+                await ens.setOwner(nameHash, registrarAddress).then((tx) => tx.wait());
             }
         } else {
             registrar = FIFSRegistrar__factory.connect(existingRegistrarAddress, ethers.provider);
+            registrarAddress = await registrar.getAddress();
         }
         registrars[name] = registrar;
-        console.log(`FIFSRegistrar for domain ${name}: ${registrars[name].address}`);
+        console.log(`FIFSRegistrar for domain ${name}: ${registrarAddress}`);
         return registrar;
     }
 
@@ -105,7 +108,7 @@ module.exports = async function () {
     async function registerAddress(label: string, domain: string, address: string) {
         const name = `${label}.${domain}`;
         const labelHash = labelhash(label);
-        const nameHash = ethers.utils.namehash(name);
+        const nameHash = ethers.namehash(name);
         // register as subdomain
         await registrars[domain]
             .connect(owner)
@@ -114,7 +117,7 @@ module.exports = async function () {
         // link to ens (resolver & addr)
         await ens
             .connect(owner)
-            .setResolver(nameHash, resolver.address)
+            .setResolver(nameHash, resolverAddress)
             .then((tx) => tx.wait());
         await resolver
             .connect(owner)
@@ -127,7 +130,7 @@ module.exports = async function () {
      */
     async function setReverseName(contractAddress: string, name: string) {
         await ENSIntegration__factory.connect(contractAddress, owner)
-            .setName(ens.address, name)
+            .setName(ensAddress, name)
             .then((tx) => tx.wait());
     }
 
@@ -136,6 +139,6 @@ module.exports = async function () {
      * See: https://docs.ens.domains/resolution/names#labelhash
      */
     function labelhash(label: string) {
-        return ethers.utils.id(label.toLowerCase());
+        return ethers.id(label.toLowerCase());
     }
-};
+}

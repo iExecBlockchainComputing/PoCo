@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BigNumber } from 'ethers';
-import { ethers, expect } from 'hardhat';
-import { loadHardhatFixtureDeployment } from '../../../scripts/hardhat-fixture-deployer';
+import { expect } from 'chai';
+import { AddressLike, ZeroAddress } from 'ethers';
+import { ethers } from 'hardhat';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
@@ -14,16 +14,17 @@ import {
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
+import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { setZeroAddressBalance } from '../../utils/utils';
 
-const value = 100;
-const zeroAddress = ethers.constants.AddressZero;
+const value = 100n;
 
 describe('ERC20', async () => {
     let proxyAddress: string;
     let iexecWrapper: IexecWrapper;
     let [iexecPoco, iexecPocoAsHolder, iexecPocoAsSpender]: IexecInterfaceNative[] = [];
     let [holder, recipient, spender, anyone, zeroAddressSigner]: SignerWithAddress[] = [];
-    let totalSupplyBeforeFirstDeposit: BigNumber;
+    let totalSupplyBeforeFirstDeposit: bigint;
 
     beforeEach('Deploy', async () => {
         // Deploy all contracts
@@ -37,7 +38,8 @@ describe('ERC20', async () => {
         // Setup current test accounts from some arbitrary iExec accounts
         ({ requester: holder, beneficiary: recipient, anyone } = accounts);
         spender = recipient;
-        zeroAddressSigner = await ethers.getImpersonatedSigner(zeroAddress);
+        zeroAddressSigner = await ethers.getImpersonatedSigner(ZeroAddress);
+        await setZeroAddressBalance();
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsHolder = iexecPoco.connect(holder);
@@ -48,7 +50,7 @@ describe('ERC20', async () => {
 
     describe('Total supply', () => {
         it('Should get total supply', async () => {
-            expect(await iexecPoco.totalSupply()).equal(totalSupplyBeforeFirstDeposit.add(value));
+            expect(await iexecPoco.totalSupply()).equal(totalSupplyBeforeFirstDeposit + value);
         });
     });
 
@@ -63,16 +65,22 @@ describe('ERC20', async () => {
 
     describe('Transfer', () => {
         it('Should transfer tokens', async () => {
-            const transferArgs = [recipient.address, BigNumber.from(value)] as [string, BigNumber];
-            expect(await iexecPocoAsHolder.callStatic.transfer(...transferArgs)).to.be.true;
-            await expect(iexecPocoAsHolder.transfer(...transferArgs))
-                .to.changeTokenBalances(iexecPoco, [holder, recipient], [-value, value])
+            const transferArgs = [recipient.address, value] as [string, bigint];
+            expect(await iexecPocoAsHolder.transfer.staticCall(...transferArgs)).to.be.true;
+            const tx = iexecPocoAsHolder.transfer(...transferArgs);
+            await expect(tx).to.changeTokenBalances(
+                iexecPoco,
+                [holder, recipient],
+                [-value, value],
+            );
+            await expect(tx)
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(holder.address, recipient.address, value);
         });
         it('Should transfer zero tokens', async () => {
-            await expect(iexecPocoAsHolder.transfer(recipient.address, 0))
-                .to.changeTokenBalances(iexecPoco, [holder, recipient], [0, 0])
+            const tx = iexecPocoAsHolder.transfer(recipient.address, 0);
+            await expect(tx).to.changeTokenBalances(iexecPoco, [holder, recipient], [0, 0]);
+            await expect(tx)
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(holder.address, recipient.address, 0);
         });
@@ -82,21 +90,21 @@ describe('ERC20', async () => {
             ).to.be.revertedWith('ERC20: transfer from the zero address');
         });
         it('Should not transfer to the zero address', async () => {
-            await expect(iexecPocoAsHolder.transfer(zeroAddress, value)).to.be.revertedWith(
+            await expect(iexecPocoAsHolder.transfer(ZeroAddress, value)).to.be.revertedWith(
                 'ERC20: transfer to the zero address',
             );
         });
         it('Should not transfer when sender balance is too low', async () => {
             await expect(
-                iexecPocoAsHolder.transfer(recipient.address, value + 1),
+                iexecPocoAsHolder.transfer(recipient.address, value + 1n),
             ).to.be.revertedWithoutReason();
         });
     });
 
     describe('Approve', () => {
         it('Should approve tokens', async () => {
-            const approveArgs = [spender.address, BigNumber.from(value)] as [string, BigNumber];
-            expect(await iexecPocoAsHolder.callStatic.approve(...approveArgs)).to.be.true;
+            const approveArgs = [spender.address, value] as [string, bigint];
+            expect(await iexecPocoAsHolder.approve.staticCall(...approveArgs)).to.be.true;
             await expect(iexecPocoAsHolder.approve(...approveArgs))
                 .to.emit(iexecPoco, 'Approval')
                 .withArgs(holder.address, spender.address, value);
@@ -108,7 +116,7 @@ describe('ERC20', async () => {
             ).to.be.revertedWith('ERC20: approve from the zero address');
         });
         it('Should not approve the zero address', async () => {
-            await expect(iexecPocoAsHolder.approve(zeroAddress, value)).to.be.revertedWith(
+            await expect(iexecPocoAsHolder.approve(ZeroAddress, value)).to.be.revertedWith(
                 'ERC20: approve to the zero address',
             );
         });
@@ -122,40 +130,38 @@ describe('ERC20', async () => {
             testReceiver = await new TestReceiver__factory()
                 .connect(anyone)
                 .deploy()
-                .then((instance) => instance.deployed());
+                .then((instance) => instance.waitForDeployment());
         });
 
         it('Should approve and call', async () => {
-            const approveAndCallArgs = [testReceiver.address, BigNumber.from(value), extraData] as [
-                string,
-                BigNumber,
+            const approveAndCallArgs = [testReceiver, value, extraData] as [
+                AddressLike,
+                bigint,
                 string,
             ];
-            expect(await iexecPocoAsHolder.callStatic.approveAndCall(...approveAndCallArgs)).to.be
+            expect(await iexecPocoAsHolder.approveAndCall.staticCall(...approveAndCallArgs)).to.be
                 .true;
             await expect(iexecPocoAsHolder.approveAndCall(...approveAndCallArgs))
                 .to.emit(iexecPoco, 'Approval')
-                .withArgs(holder.address, testReceiver.address, value)
+                .withArgs(holder.address, testReceiver, value)
                 .to.emit(testReceiver, 'GotApproval')
                 .withArgs(holder.address, value, proxyAddress, extraData);
-            expect(await iexecPoco.allowance(holder.address, testReceiver.address)).equal(value);
+            expect(await iexecPoco.allowance(holder.address, testReceiver)).equal(value);
         });
         it('Should not approve and call from the zero address', async () => {
             await expect(
-                iexecPoco
-                    .connect(zeroAddressSigner)
-                    .approveAndCall(testReceiver.address, 0, extraData),
+                iexecPoco.connect(zeroAddressSigner).approveAndCall(testReceiver, 0, extraData),
             ).to.be.revertedWith('ERC20: approve from the zero address');
         });
         it('Should not approve and call for the zero address', async () => {
             await expect(
-                iexecPocoAsHolder.approveAndCall(zeroAddress, 0, extraData),
+                iexecPocoAsHolder.approveAndCall(ZeroAddress, 0, extraData),
             ).to.be.revertedWith('ERC20: approve to the zero address');
         });
         it('Should not approve and call when receiver refuses approval', async () => {
             await expect(
                 iexecPocoAsHolder.approveAndCall(
-                    testReceiver.address,
+                    testReceiver,
                     0, // TestReceiver will revert with this value
                     extraData,
                 ),
@@ -166,15 +172,16 @@ describe('ERC20', async () => {
     describe('Transfer from', () => {
         it('Should transferFrom some tokens', async () => {
             await iexecPocoAsHolder.approve(spender.address, value).then((tx) => tx.wait());
-            const transferFromArgs = [holder.address, spender.address, BigNumber.from(value)] as [
+            const transferFromArgs = [holder.address, spender.address, value] as [
                 string,
                 string,
-                BigNumber,
+                bigint,
             ];
-            expect(await iexecPocoAsSpender.callStatic.transferFrom(...transferFromArgs)).to.be
+            expect(await iexecPocoAsSpender.transferFrom.staticCall(...transferFromArgs)).to.be
                 .true;
-            await expect(iexecPocoAsSpender.transferFrom(...transferFromArgs))
-                .to.changeTokenBalances(iexecPoco, [holder, spender], [-value, value])
+            const tx = iexecPocoAsSpender.transferFrom(...transferFromArgs);
+            await expect(tx).to.changeTokenBalances(iexecPoco, [holder, spender], [-value, value]);
+            await expect(tx)
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(holder.address, spender.address, value)
                 .to.emit(iexecPoco, 'Approval')
@@ -183,21 +190,21 @@ describe('ERC20', async () => {
         });
         it('Should not transferFrom when owner is the zero address', async () => {
             await expect(
-                iexecPocoAsSpender.transferFrom(zeroAddress, spender.address, value),
+                iexecPocoAsSpender.transferFrom(ZeroAddress, spender.address, value),
             ).to.be.revertedWith('ERC20: transfer from the zero address');
         });
         it('Should not transferFrom to the zero address', async () => {
             await expect(
-                iexecPocoAsSpender.transferFrom(holder.address, zeroAddress, value),
+                iexecPocoAsSpender.transferFrom(holder.address, ZeroAddress, value),
             ).to.be.revertedWith('ERC20: transfer to the zero address');
         });
         it('Should not transferFrom when owner balance is too low', async () => {
             await expect(
-                iexecPocoAsSpender.transferFrom(holder.address, spender.address, value + 1),
+                iexecPocoAsSpender.transferFrom(holder.address, spender.address, value + 1n),
             ).to.be.revertedWithoutReason();
         });
         it('Should not transferFrom when spender allowance is too low', async () => {
-            await iexecPocoAsHolder.approve(spender.address, value - 1).then((tx) => tx.wait());
+            await iexecPocoAsHolder.approve(spender.address, value - 1n).then((tx) => tx.wait());
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, spender.address, value),
             ).to.be.revertedWithoutReason();
@@ -207,12 +214,12 @@ describe('ERC20', async () => {
     describe('Increase allowance', () => {
         it('Should increase allowance', async () => {
             await iexecPocoAsHolder.approve(spender.address, value).then((tx) => tx.wait());
-            const allowanceToIncrease = 1;
-            const increaseAllowanceArgs = [
-                spender.address,
-                BigNumber.from(allowanceToIncrease),
-            ] as [string, BigNumber];
-            expect(await iexecPocoAsHolder.callStatic.increaseAllowance(...increaseAllowanceArgs))
+            const allowanceToIncrease = 1n;
+            const increaseAllowanceArgs = [spender.address, allowanceToIncrease] as [
+                string,
+                bigint,
+            ];
+            expect(await iexecPocoAsHolder.increaseAllowance.staticCall(...increaseAllowanceArgs))
                 .to.be.true;
             await expect(iexecPocoAsHolder.increaseAllowance(...increaseAllowanceArgs))
                 .to.emit(iexecPoco, 'Approval')
@@ -228,7 +235,7 @@ describe('ERC20', async () => {
         });
         it('Should not increase allowance for the zero address', async () => {
             await expect(
-                iexecPocoAsHolder.increaseAllowance(zeroAddress, value),
+                iexecPocoAsHolder.increaseAllowance(ZeroAddress, value),
             ).to.be.revertedWith('ERC20: approve to the zero address');
         });
     });
@@ -236,12 +243,12 @@ describe('ERC20', async () => {
     describe('Decrease allowance', () => {
         it('Should decrease allowance', async () => {
             await iexecPocoAsHolder.approve(spender.address, value).then((tx) => tx.wait());
-            const allowanceToDecrease = 1;
-            const decreaseAllowanceArgs = [
-                spender.address,
-                BigNumber.from(allowanceToDecrease),
-            ] as [string, BigNumber];
-            expect(await iexecPocoAsHolder.callStatic.decreaseAllowance(...decreaseAllowanceArgs))
+            const allowanceToDecrease = 1n;
+            const decreaseAllowanceArgs = [spender.address, allowanceToDecrease] as [
+                string,
+                bigint,
+            ];
+            expect(await iexecPocoAsHolder.decreaseAllowance.staticCall(...decreaseAllowanceArgs))
                 .to.be.true;
             await expect(iexecPocoAsHolder.decreaseAllowance(...decreaseAllowanceArgs))
                 .to.emit(iexecPoco, 'Approval')
@@ -261,7 +268,7 @@ describe('ERC20', async () => {
             ).to.be.revertedWith('ERC20: approve from the zero address');
         });
         it('Should not decrease allowance for the zero address', async () => {
-            await expect(iexecPocoAsHolder.decreaseAllowance(zeroAddress, 0)).to.be.revertedWith(
+            await expect(iexecPocoAsHolder.decreaseAllowance(ZeroAddress, 0)).to.be.revertedWith(
                 'ERC20: approve to the zero address',
             );
         });

@@ -1,12 +1,12 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { ContractFactory } from '@ethersproject/contracts';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { ContractFactory } from 'ethers';
 import { deployments } from 'hardhat';
 
 /**
- * Deploy a contract.
+ * Deploy a contract and save its deployment.
  * @param contractFactory The contract to deploy
  * @param deployer The signer to deploy the contract
  * @param constructorArgs Arguments passed to the contract constructor at deployment
@@ -22,14 +22,15 @@ export async function deploy(
     const contractInstance = await contractFactory
         .connect(deployer)
         .deploy(...(constructorArgs ?? []))
-        .then((x) => x.deployed());
+        .then((x) => x.waitForDeployment());
     const contractName = getBaseNameFromContractFactory(contractFactory);
+    const contractAddress = await contractInstance.getAddress();
     await deployments.save(contractName, {
         abi: (contractFactory as any).constructor.abi,
-        address: contractInstance.address,
+        address: contractAddress,
     });
     if (!opts || (opts && !opts.quiet)) {
-        console.log(`${contractName}: ${contractInstance.address}`);
+        console.log(`${contractName}: ${contractAddress}`);
     }
     return contractInstance;
 }
