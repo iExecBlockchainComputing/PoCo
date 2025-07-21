@@ -252,9 +252,12 @@ const config: HardhatUserConfig = {
     dependencyCompiler: {
         paths: [
             'rlc-faucet-contract/contracts/RLC.sol',
-            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Update.sol',
-            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Query.sol',
-            '@iexec/solidity/contracts/ERC1538/ERC1538Proxy/ERC1538Proxy.sol',
+            '@mudgen/diamond-1/contracts/Diamond.sol',
+            '@mudgen/diamond-1/contracts/facets/DiamondCutFacet.sol',
+            '@mudgen/diamond-1/contracts/facets/DiamondLoupeFacet.sol',
+            '@mudgen/diamond-1/contracts/facets/OwnershipFacet.sol',
+            '@mudgen/diamond-1/contracts/libraries/LibDiamond.sol',
+            '@mudgen/diamond-1/contracts/upgradeInitializers/DiamondInit.sol',
             // ENS
             '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol',
             '@ensdomains/ens-contracts/contracts/registry/FIFSRegistrar.sol',
