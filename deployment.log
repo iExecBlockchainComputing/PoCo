@@ -1,0 +1,181 @@
+Nothing to compile
+No need to generate any newer typings.
+Deploying PoCo..
+Deploying new RLC token...
+New RLC token deployed at: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+RLC: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+→ CreateX is not yet deployed on this network
+→ CreateX successfully deployed at address: 0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed
+Deploying at 0x93b9a0CD7353C6791274e1C0Ca2fFaE79c0dB8E8
+ERC1538UpdateDelegate: 0x93b9a0CD7353C6791274e1C0Ca2fFaE79c0dB8E8
+Deploying at 0x14B465079537655E1662F012e99EBa3863c8B9E0
+ERC1538Proxy: 0x14B465079537655E1662F012e99EBa3863c8B9E0
+IexecInstance found at address: 0x14B465079537655E1662F012e99EBa3863c8B9E0
+[Warning] Invalid Fragment {"inputs":[{"components":[{"components":[{"internalType":"address","name":"app","type":"address"},{"internalType":"uint256","name":"appmaxprice","type":"uint256"},{"internalType":"address","name":"dataset","type":"address"},{"internalType":"uint256","name":"datasetmaxprice","type":"uint256"},{"internalType":"address","name":"workerpool","type":"address"},{"internalType":"uint256","name":"workerpoolmaxprice","type":"uint256"},{"internalType":"address","name":"requester","type":"address"},{"internalType":"uint256","name":"volume","type":"uint256"},{"internalType":"bytes32","name":"tag","type":"bytes32"},{"internalType":"uint256","name":"category","type":"uint256"},{"internalType":"uint256","name":"trust","type":"uint256"},{"internalType":"address","name":"beneficiary","type":"address"},{"internalType":"address","name":"callback","type":"address"},{"internalType":"string","name":"params","type":"string"},{"internalType":"bytes32","name":"salt","type":"bytes32"},{"internalType":"bytes","name":"sign","type":"bytes"}],"internalType":"struct IexecLibOrders_v5.RequestOrder","name":"order","type":"tuple"},{"internalType":"enum IexecLibOrders_v5.OrderOperationEnum","name":"operation","type":"IexecLibOrders_v5.OrderOperationEnum"},{"internalType":"bytes","name":"sign","type":"bytes"}],"internalType":"struct IexecLibOrders_v5.RequestOrderOperation","name":"_requestorderoperation","type":"tuple"}],"name":"hash","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"pure","type":"function"}: invalid type (argument="type", value="IexecLibOrders_v5.OrderOperationEnum", code=INVALID_ARGUMENT, version=6.13.5)
+[Warning] Invalid Fragment {"inputs":[{"components":[{"components":[{"internalType":"address","name":"dataset","type":"address"},{"internalType":"uint256","name":"datasetprice","type":"uint256"},{"internalType":"uint256","name":"volume","type":"uint256"},{"internalType":"bytes32","name":"tag","type":"bytes32"},{"internalType":"address","name":"apprestrict","type":"address"},{"internalType":"address","name":"workerpoolrestrict","type":"address"},{"internalType":"address","name":"requesterrestrict","type":"address"},{"internalType":"bytes32","name":"salt","type":"bytes32"},{"internalType":"bytes","name":"sign","type":"bytes"}],"internalType":"struct IexecLibOrders_v5.DatasetOrder","name":"order","type":"tuple"},{"internalType":"enum IexecLibOrders_v5.OrderOperationEnum","name":"operation","type":"IexecLibOrders_v5.OrderOperationEnum"},{"internalType":"bytes","name":"sign","type":"bytes"}],"internalType":"struct IexecLibOrders_v5.DatasetOrderOperation","name":"_datasetorderoperation","type":"tuple"}],"name":"hash","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"pure","type":"function"}: invalid type (argument="type", value="IexecLibOrders_v5.OrderOperationEnum", code=INVALID_ARGUMENT, version=6.13.5)
+[Warning] Invalid Fragment {"inputs":[{"components":[{"components":[{"internalType":"address","name":"workerpool","type":"address"},{"internalType":"uint256","name":"workerpoolprice","type":"uint256"},{"internalType":"uint256","name":"volume","type":"uint256"},{"internalType":"bytes32","name":"tag","type":"bytes32"},{"internalType":"uint256","name":"category","type":"uint256"},{"internalType":"uint256","name":"trust","type":"uint256"},{"internalType":"address","name":"apprestrict","type":"address"},{"internalType":"address","name":"datasetrestrict","type":"address"},{"internalType":"address","name":"requesterrestrict","type":"address"},{"internalType":"bytes32","name":"salt","type":"bytes32"},{"internalType":"bytes","name":"sign","type":"bytes"}],"internalType":"struct IexecLibOrders_v5.WorkerpoolOrder","name":"order","type":"tuple"},{"internalType":"enum IexecLibOrders_v5.OrderOperationEnum","name":"operation","type":"IexecLibOrders_v5.OrderOperationEnum"},{"internalType":"bytes","name":"sign","type":"bytes"}],"internalType":"struct IexecLibOrders_v5.WorkerpoolOrderOperation","name":"_workerpoolorderoperation","type":"tuple"}],"name":"hash","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"pure","type":"function"}: invalid type (argument="type", value="IexecLibOrders_v5.OrderOperationEnum", code=INVALID_ARGUMENT, version=6.13.5)
+[Warning] Invalid Fragment {"inputs":[{"components":[{"components":[{"internalType":"address","name":"app","type":"address"},{"internalType":"uint256","name":"appprice","type":"uint256"},{"internalType":"uint256","name":"volume","type":"uint256"},{"internalType":"bytes32","name":"tag","type":"bytes32"},{"internalType":"address","name":"datasetrestrict","type":"address"},{"internalType":"address","name":"workerpoolrestrict","type":"address"},{"internalType":"address","name":"requesterrestrict","type":"address"},{"internalType":"bytes32","name":"salt","type":"bytes32"},{"internalType":"bytes","name":"sign","type":"bytes"}],"internalType":"struct IexecLibOrders_v5.AppOrder","name":"order","type":"tuple"},{"internalType":"enum IexecLibOrders_v5.OrderOperationEnum","name":"operation","type":"IexecLibOrders_v5.OrderOperationEnum"},{"internalType":"bytes","name":"sign","type":"bytes"}],"internalType":"struct IexecLibOrders_v5.AppOrderOperation","name":"_apporderoperation","type":"tuple"}],"name":"hash","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"pure","type":"function"}: invalid type (argument="type", value="IexecLibOrders_v5.OrderOperationEnum", code=INVALID_ARGUMENT, version=6.13.5)
+Deploying at 0xCa34e763FbB1475FDb76E4Da8FbF2E7003b68E76
+IexecLibOrders_v5: 0xCa34e763FbB1475FDb76E4Da8FbF2E7003b68E76
+Deploying at 0xf523338AdaDef02CbaeF105D9181079c0F771744
+ERC1538QueryDelegate: 0xf523338AdaDef02CbaeF105D9181079c0F771744
+Deploying at 0xbd8e8903a4440674cb0BE22F199D3e15304F5917
+IexecAccessorsDelegate: 0xbd8e8903a4440674cb0BE22F199D3e15304F5917
+Deploying at 0x489CaF933E3fEa86fF4BE6B5D3301a094824C8EC
+IexecAccessorsABILegacyDelegate: 0x489CaF933E3fEa86fF4BE6B5D3301a094824C8EC
+Deploying at 0xd748f8f164d9E796EA82963388F579C41d1c2C82
+IexecCategoryManagerDelegate: 0xd748f8f164d9E796EA82963388F579C41d1c2C82
+Deploying at 0x77D7d8067882B6c71c307a1AaEbAbc81396D806e
+IexecERC20Delegate: 0x77D7d8067882B6c71c307a1AaEbAbc81396D806e
+Deploying at 0x4b85DF0CbB71220E095001AF436146dd335833E6
+IexecEscrowTokenDelegate: 0x4b85DF0CbB71220E095001AF436146dd335833E6
+Deploying at 0x61D0D43fff556908E509C4ef18AC7dF9a0b4BCD8
+IexecMaintenanceDelegate: 0x61D0D43fff556908E509C4ef18AC7dF9a0b4BCD8
+Deploying at 0x2BF55c962529dD140DBa384b13B797E050a30e5e
+IexecOrderManagementDelegate: 0x2BF55c962529dD140DBa384b13B797E050a30e5e
+Deploying at 0xA9a1BF0148F6cbACa9e17753d9299a667132da01
+IexecPoco1Delegate: 0xA9a1BF0148F6cbACa9e17753d9299a667132da01
+Deploying at 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a
+IexecPoco2Delegate: 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a
+Deploying at 0x50870e798a5956fc57E6bf797c3045a22d3fe981
+IexecRelayDelegate: 0x50870e798a5956fc57E6bf797c3045a22d3fe981
+Deploying at 0xf8406fc45C2a18F7d0EB925E02127D52F430a9d2
+ENSIntegrationDelegate: 0xf8406fc45C2a18F7d0EB925E02127D52F430a9d2
+Deploying at 0x791B7687A1CaA4d7a7b73d79D4D14D3A1532D349
+IexecMaintenanceExtraDelegate: 0x791B7687A1CaA4d7a7b73d79D4D14D3A1532D349
+Deploying at 0x9bD972B57A76339E089548E07a1C3b2C9741477B
+IexecPocoAccessorsDelegate: 0x9bD972B57A76339E089548E07a1C3b2C9741477B
+Deploying at 0x652531a82613140B27d07CA50bE3026a9894d908
+IexecPocoBoostDelegate: 0x652531a82613140B27d07CA50bE3026a9894d908
+Deploying at 0x00a116df6c7d70E92b415A6CE736EA5d4ecb2a74
+IexecPocoBoostAccessorsDelegate: 0x00a116df6c7d70E92b415A6CE736EA5d4ecb2a74
+The deployed ERC1538Proxy now supports 104 functions:
+[0] 0x93b9a0CD7353C6791274e1C0Ca2fFaE79c0dB8E8 updateContract(address,string,string)
+[1] 0xf523338AdaDef02CbaeF105D9181079c0F771744 delegateAddress(string)
+[2] 0xf523338AdaDef02CbaeF105D9181079c0F771744 delegateAddresses()
+[3] 0xf523338AdaDef02CbaeF105D9181079c0F771744 delegateFunctionSignatures(address)
+[4] 0xf523338AdaDef02CbaeF105D9181079c0F771744 functionById(bytes4)
+[5] 0xf523338AdaDef02CbaeF105D9181079c0F771744 functionByIndex(uint256)
+[6] 0xf523338AdaDef02CbaeF105D9181079c0F771744 functionExists(string)
+[7] 0xf523338AdaDef02CbaeF105D9181079c0F771744 functionSignatures()
+[8] 0x00a116df6c7d70E92b415A6CE736EA5d4ecb2a74 owner()
+[9] 0x00a116df6c7d70E92b415A6CE736EA5d4ecb2a74 renounceOwnership()
+[10] 0xf523338AdaDef02CbaeF105D9181079c0F771744 totalFunctions()
+[11] 0x00a116df6c7d70E92b415A6CE736EA5d4ecb2a74 transferOwnership(address)
+[12] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 allowance(address,address)
+[13] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 appregistry()
+[14] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 balanceOf(address)
+[15] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 callbackgas()
+[16] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 contribution_deadline_ratio()
+[17] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 countCategory()
+[18] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 datasetregistry()
+[19] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 decimals()
+[20] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 eip712domain_separator()
+[21] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 final_deadline_ratio()
+[22] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 frozenOf(address)
+[23] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 groupmember_purpose()
+[24] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 kitty_address()
+[25] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 kitty_min()
+[26] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 kitty_ratio()
+[27] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 name()
+[28] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 resultFor(bytes32)
+[29] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 reveal_deadline_ratio()
+[30] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 symbol()
+[31] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 teebroker()
+[32] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 token()
+[33] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 totalSupply()
+[34] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 viewAccount(address)
+[35] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 viewCategory(uint256)
+[36] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 viewConsumed(bytes32)
+[37] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 viewContribution(bytes32,address)
+[38] 0x9bD972B57A76339E089548E07a1C3b2C9741477B viewDeal(bytes32)
+[39] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 viewPresigned(bytes32)
+[40] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 viewScore(address)
+[41] 0x9bD972B57A76339E089548E07a1C3b2C9741477B viewTask(bytes32)
+[42] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 workerpool_stake_ratio()
+[43] 0xbd8e8903a4440674cb0BE22F199D3e15304F5917 workerpoolregistry()
+[44] 0x489CaF933E3fEa86fF4BE6B5D3301a094824C8EC viewAccountABILegacy(address)
+[45] 0x489CaF933E3fEa86fF4BE6B5D3301a094824C8EC viewCategoryABILegacy(uint256)
+[46] 0x489CaF933E3fEa86fF4BE6B5D3301a094824C8EC viewConfigABILegacy(bytes32)
+[47] 0x489CaF933E3fEa86fF4BE6B5D3301a094824C8EC viewContributionABILegacy(bytes32,address)
+[48] 0x489CaF933E3fEa86fF4BE6B5D3301a094824C8EC viewDealABILegacy_pt1(bytes32)
+[49] 0x489CaF933E3fEa86fF4BE6B5D3301a094824C8EC viewDealABILegacy_pt2(bytes32)
+[50] 0x489CaF933E3fEa86fF4BE6B5D3301a094824C8EC viewTaskABILegacy(bytes32)
+[51] 0xd748f8f164d9E796EA82963388F579C41d1c2C82 createCategory(string,string,uint256)
+[52] 0x77D7d8067882B6c71c307a1AaEbAbc81396D806e approve(address,uint256)
+[53] 0x77D7d8067882B6c71c307a1AaEbAbc81396D806e approveAndCall(address,uint256,bytes)
+[54] 0x77D7d8067882B6c71c307a1AaEbAbc81396D806e decreaseAllowance(address,uint256)
+[55] 0x77D7d8067882B6c71c307a1AaEbAbc81396D806e increaseAllowance(address,uint256)
+[56] 0x77D7d8067882B6c71c307a1AaEbAbc81396D806e transfer(address,uint256)
+[57] 0x77D7d8067882B6c71c307a1AaEbAbc81396D806e transferFrom(address,address,uint256)
+[58] 0x4b85DF0CbB71220E095001AF436146dd335833E6 receive
+[59] 0x4b85DF0CbB71220E095001AF436146dd335833E6 fallback
+[60] 0x4b85DF0CbB71220E095001AF436146dd335833E6 deposit(uint256)
+[61] 0x4b85DF0CbB71220E095001AF436146dd335833E6 depositFor(uint256,address)
+[62] 0x4b85DF0CbB71220E095001AF436146dd335833E6 depositForArray(uint256[],address[])
+[63] 0x4b85DF0CbB71220E095001AF436146dd335833E6 receiveApproval(address,uint256,address,bytes)
+[64] 0x4b85DF0CbB71220E095001AF436146dd335833E6 recover()
+[65] 0x4b85DF0CbB71220E095001AF436146dd335833E6 withdraw(uint256)
+[66] 0x4b85DF0CbB71220E095001AF436146dd335833E6 withdrawTo(uint256,address)
+[67] 0x61D0D43fff556908E509C4ef18AC7dF9a0b4BCD8 configure(address,string,string,uint8,address,address,address,address)
+[68] 0x61D0D43fff556908E509C4ef18AC7dF9a0b4BCD8 domain()
+[69] 0x61D0D43fff556908E509C4ef18AC7dF9a0b4BCD8 importScore(address)
+[70] 0x61D0D43fff556908E509C4ef18AC7dF9a0b4BCD8 setCallbackGas(uint256)
+[71] 0x61D0D43fff556908E509C4ef18AC7dF9a0b4BCD8 setTeeBroker(address)
+[72] 0x61D0D43fff556908E509C4ef18AC7dF9a0b4BCD8 updateDomainSeparator()
+[73] 0x2BF55c962529dD140DBa384b13B797E050a30e5e manageAppOrder(((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes))
+[74] 0x2BF55c962529dD140DBa384b13B797E050a30e5e manageDatasetOrder(((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes))
+[75] 0x2BF55c962529dD140DBa384b13B797E050a30e5e manageRequestOrder(((address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes),uint8,bytes))
+[76] 0x2BF55c962529dD140DBa384b13B797E050a30e5e manageWorkerpoolOrder(((address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),uint8,bytes))
+[77] 0xA9a1BF0148F6cbACa9e17753d9299a667132da01 matchOrders((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes))
+[78] 0xA9a1BF0148F6cbACa9e17753d9299a667132da01 sponsorMatchOrders((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes))
+[79] 0xA9a1BF0148F6cbACa9e17753d9299a667132da01 verifyPresignature(address,bytes32)
+[80] 0xA9a1BF0148F6cbACa9e17753d9299a667132da01 verifyPresignatureOrSignature(address,bytes32,bytes)
+[81] 0xA9a1BF0148F6cbACa9e17753d9299a667132da01 verifySignature(address,bytes32,bytes)
+[82] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a claim(bytes32)
+[83] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a claimArray(bytes32[])
+[84] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a contribute(bytes32,bytes32,bytes32,address,bytes,bytes)
+[85] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a contributeAndFinalize(bytes32,bytes32,bytes,bytes,address,bytes,bytes)
+[86] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a finalize(bytes32,bytes,bytes)
+[87] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a initialize(bytes32,uint256)
+[88] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a initializeAndClaimArray(bytes32[],uint256[])
+[89] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a initializeArray(bytes32[],uint256[])
+[90] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a reopen(bytes32)
+[91] 0xe9e852E7caF82D308D4AAdbBCd5a9a835EAeC92a reveal(bytes32,bytes32)
+[92] 0x50870e798a5956fc57E6bf797c3045a22d3fe981 broadcastAppOrder((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes))
+[93] 0x50870e798a5956fc57E6bf797c3045a22d3fe981 broadcastDatasetOrder((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes))
+[94] 0x50870e798a5956fc57E6bf797c3045a22d3fe981 broadcastRequestOrder((address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes))
+[95] 0x50870e798a5956fc57E6bf797c3045a22d3fe981 broadcastWorkerpoolOrder((address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes))
+[96] 0xf8406fc45C2a18F7d0EB925E02127D52F430a9d2 setName(address,string)
+[97] 0x791B7687A1CaA4d7a7b73d79D4D14D3A1532D349 changeRegistries(address,address,address)
+[98] 0x9bD972B57A76339E089548E07a1C3b2C9741477B computeDealVolume((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes))
+[99] 0x652531a82613140B27d07CA50bE3026a9894d908 claimBoost(bytes32,uint256)
+[100] 0x652531a82613140B27d07CA50bE3026a9894d908 matchOrdersBoost((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes))
+[101] 0x652531a82613140B27d07CA50bE3026a9894d908 pushResultBoost(bytes32,uint256,bytes,bytes,bytes,address,bytes)
+[102] 0x652531a82613140B27d07CA50bE3026a9894d908 sponsorMatchOrdersBoost((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes))
+[103] 0x00a116df6c7d70E92b415A6CE736EA5d4ecb2a74 viewDealBoost(bytes32)
+Deploying at 0x4a6531ce5150ee716b2d93865D0fbB9ce5492D17
+AppRegistry: 0x4a6531ce5150ee716b2d93865D0fbB9ce5492D17
+Deploying at 0x3441A0C9FE488c51fcABa2bAAA048720f4D4F72D
+DatasetRegistry: 0x3441A0C9FE488c51fcABa2bAAA048720f4D4F72D
+Deploying at 0xf81970E3CB0f8711bEaA79135e686873FfbBAC4A
+WorkerpoolRegistry: 0xf81970E3CB0f8711bEaA79135e686873FfbBAC4A
+countCategory is now: 5 (was 0)
+Category 0: XS,"",300
+Category 1: S,"",1200
+Category 2: M,"",3600
+Category 3: L,"",10800
+Category 4: XL,"",36000
+Deploying and configuring ENS..
+ENSRegistry: 0xb7278A61aa25c888815aFC32Ad3cC52fF24fE575
+PublicResolver: 0xCD8a1C3ba11CF5ECfa6267617243239504a98d90
+ReverseRegistrar: 0x82e01223d51Eb87e16A03E24687EDF0F294da6f1
+FIFSRegistrar for domain : 0x2bdCC0de6bE1f7D2ee689a0342D76F52E8EFABa3
+FIFSRegistrar for domain eth: 0xFD471836031dc5108809D173A067e8486B9047A3
+FIFSRegistrar for domain iexec.eth: 0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f
+FIFSRegistrar for domain v5.iexec.eth: 0x162A433068F51e18b7d13932F27e66a3f99E6890
+FIFSRegistrar for domain users.iexec.eth: 0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f
+FIFSRegistrar for domain apps.iexec.eth: 0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6
+FIFSRegistrar for domain datasets.iexec.eth: 0x4C4a2f8c81640e47606d3fd77B353E87Ba015584
+FIFSRegistrar for domain pools.iexec.eth: 0x2E2Ed0Cfd3AD2f1d34481277b3204d807Ca2F8c2
+
