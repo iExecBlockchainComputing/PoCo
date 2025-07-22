@@ -21,10 +21,12 @@ import "./registries/IRegistry.sol";
  * If you want add new variables for expanded features, add them at the     *
  * end, or (better?) create a Store_v2 that inherits from this Store.       *
  *                                                                          *
- * If in doubt, read about ERC1538 memory store.                            *
+ * If in doubt, read about Diamond proxy storage.                           *
  ****************************************************************************/
 
-abstract contract Store is ERC1538Store
+// TODO replace with AppStorage
+// TODO check storage padding.
+abstract contract Store
 {
 	// Registries
 	IRegistry internal m_appregistry;

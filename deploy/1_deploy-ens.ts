@@ -26,7 +26,7 @@ export default async function deployEns() {
         return;
     }
     const [owner] = await ethers.getSigners();
-    const erc1538ProxyAddress = (await deployments.get('ERC1538Proxy')).address;
+    const erc1538ProxyAddress = (await deployments.get('Diamond')).address;
     const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
     const appRegistryAddress = await iexecAccessorsInstance.appregistry();
     const datasetRegistryAddress = await iexecAccessorsInstance.datasetregistry();

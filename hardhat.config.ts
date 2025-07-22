@@ -71,6 +71,13 @@ const v8Settings = {
             },
         },
     },
+    // TODO remove this to target the latest EVM version.
+    /**
+     * @dev The 0.8.20 compiler switches the default target EVM version to Shanghai.
+     * At this time, the iExec Bellecour blockchain does not support new OPCODES
+     * brought by the Shanghai fork, hence the target must be lowered.
+     */
+    evmVersion: bellecourBaseConfig.hardfork,
 };
 
 const config: HardhatUserConfig = {

@@ -3,19 +3,30 @@
 
 pragma solidity ^0.8.0;
 
-import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
-
 import {Store} from "../Store.v8.sol";
 
 /**
  * @title Base contract of all Delegate contracts.
  * @dev Every module must inherit from this contract.
  */
+// TODO use DiamondLib for ownership management.
 abstract contract DelegateBase is Store {
-    /**
-     * @dev Constructor used by all PoCo modules.
-     */
-    constructor() Ownable(msg.sender) {
-        renounceOwnership();
+    modifier onlyOwner() {
+        require(_msgSender() == owner(), "Ownable: caller is not the owner");
+        _;
+    }
+
+    function owner() public view returns (address) {
+        // Make an external call to delegatecall the OwnershipFacet.
+        return IOwnable(address(this)).owner();
+    }
+
+    function _msgSender() internal view returns (address ) {
+        return msg.sender;
     }
 }
+
+interface IOwnable {
+    function owner() external view returns (address);
+}
+
