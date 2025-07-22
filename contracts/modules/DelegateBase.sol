@@ -4,6 +4,12 @@
 pragma solidity ^0.6.0;
 
 import "../Store.sol";
+import "./interfaces/IOwnable.sol";
+
+// Functions that were declared in ERC1538Store are re-declared here.
+// TODO clean this (use LibDiamond)
+//      - All calls to `owner()` should use `LibDiamond.contractOwner()`.
+// TODO rename this contract to `FacetBase`.
 
 abstract contract DelegateBase is Store {
 
@@ -20,8 +26,4 @@ abstract contract DelegateBase is Store {
         return msg.sender;
     }
 
-}
-
-interface IOwnable {
-    function owner() external view returns (address);
 }
