@@ -32,6 +32,7 @@ import {
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate__factory,
     IexecRelayDelegate__factory,
+    OwnershipFacet__factory,
     RLC__factory,
     WorkerpoolRegistry__factory,
 } from '../typechain';
@@ -40,6 +41,7 @@ import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
 import { getSelectors, linkContractToProxy } from '../utils/proxy-tools';
 import { DiamondArgsStruct } from '../typechain/@mudgen/diamond-1/contracts/Diamond';
+import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 
 /**
  * @dev Deploying contracts with `npx hardhat deploy` task brought by
@@ -271,12 +273,18 @@ async function deployDiamondProxyWithDefaultFacets(
     transferOwnershipCall: string,
 ): Promise<string> {
     // Deploy required proxy facets.
-    const facetNames = ['DiamondInit', 'DiamondCutFacet', 'DiamondLoupeFacet', 'OwnershipFacet'];
+    const facetFactories = [
+        new DiamondInit__factory(),
+        new DiamondCutFacet__factory(),
+        new DiamondLoupeFacet__factory(),
+        new OwnershipFacet__factory(),
+    ];
+    const facetNames = facetFactories.map((factory) => getBaseNameFromContractFactory(factory));
     const facetCuts: FacetCut[] = [];
-    for (const facetName of facetNames) {
-        const facetAddress = await factoryDeployer.deployContract(
-            await ethers.getContractFactory(facetName),
-        );
+    for (let i = 0; i < facetFactories.length; i++) {
+        const facetFactory = facetFactories[i];
+        const facetName = facetNames[i];
+        const facetAddress = await factoryDeployer.deployContract(facetFactory);
         facetCuts.push({
             facetAddress: facetAddress,
             action: FacetCutAction.Add,
