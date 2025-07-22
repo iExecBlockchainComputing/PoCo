@@ -1,27 +1,15 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { FunctionFragment, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
+import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import { DiamondCutFacet, DiamondLoupeFacet__factory } from '../typechain';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
-import { FunctionFragment, ZeroAddress } from 'ethers';
 
 interface AbiParameter {
     type: string;
     components?: AbiParameter[];
-}
-
-export enum FacetCutAction {
-    Add = 0,
-    Replace = 1,
-    Remove = 2,
-}
-
-// Interface for a facet cut operation
-export interface FacetCut {
-    facetAddress: string;
-    action: FacetCutAction;
-    functionSelectors: string[];
 }
 
 /**

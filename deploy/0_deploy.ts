@@ -4,6 +4,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
+import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
@@ -37,7 +38,7 @@ import {
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
-import { FacetCut, FacetCutAction, getSelectors, linkContractToProxy } from '../utils/proxy-tools';
+import { getSelectors, linkContractToProxy } from '../utils/proxy-tools';
 import { DiamondArgsStruct } from '../typechain/@mudgen/diamond-1/contracts/Diamond';
 
 /**
