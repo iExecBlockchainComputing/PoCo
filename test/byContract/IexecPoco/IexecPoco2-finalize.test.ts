@@ -879,7 +879,7 @@ describe('IexecPoco2#finalize', async () => {
                     ['address', 'uint256'],
                     [
                         worker,
-                        23, // Slot index of m_workerScores in Store
+                        18, // Slot index of m_workerScores in Store
                     ],
                 ),
             ),

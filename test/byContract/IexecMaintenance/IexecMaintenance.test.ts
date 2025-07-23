@@ -127,7 +127,7 @@ describe('IexecMaintenance', async () => {
                         ['address', 'uint256'],
                         [
                             worker.address,
-                            28, // Slot index of m_v3_scoreImported in Store
+                            23, // Slot index of m_v3_scoreImported in Store
                         ],
                     ),
                 ),
@@ -204,7 +204,7 @@ describe('IexecMaintenance', async () => {
     async function setDomainSeparatorInStorage(domainSeparator: string) {
         await setStorageAt(
             proxyAddress,
-            '0x10', // Slot index of EIP712DOMAIN_SEPARATOR in Store
+            '0x0b', // Slot index of EIP712DOMAIN_SEPARATOR in Store
             domainSeparator,
         );
         // Double check the update of the domain separator happened
