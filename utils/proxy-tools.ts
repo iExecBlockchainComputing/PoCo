@@ -62,14 +62,14 @@ function getSerializedObject(entry: AbiParameter): string {
  * @param contractFactory - The deployed contract instance
  * @returns Array of function signatures
  */
-function getFunctionSignatures(contractFactory: ContractFactory): string[] {
+export function getFunctionSignatures(contractFactory: ContractFactory): string[] {
     return contractFactory.interface.fragments // Get all fragments from the contract's ABI
         .filter((f) => f.type === 'function' || f.type === 'fallback') // function + fallback + receive
-        .map((f) => f.format()) // Format them to get clean function signatures
-        .map((f) => {
-            console.log(getBaseNameFromContractFactory(contractFactory), ':', f); // Log the function names
-            return f;
-        });
+        .map((f) => f.format()); // Format them to get clean function signatures
+    // .map((f) => {
+    //     console.log(getBaseNameFromContractFactory(contractFactory), ':', f); // Log the function names
+    //     return f;
+    // });
 }
 
 /**
@@ -78,7 +78,6 @@ function getFunctionSignatures(contractFactory: ContractFactory): string[] {
  * @returns Array of function selectors with utility methods
  */
 export function getFunctionSelectors(contractFactory: ContractFactory): string[] {
-    const contractName = getBaseNameFromContractFactory(contractFactory);
     return (
         getFunctionSignatures(contractFactory) // Get all function signatures from the contract's ABI
             // Get the 4-byte function selectors

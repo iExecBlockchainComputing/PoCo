@@ -79,10 +79,14 @@ export default async function deploy() {
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
+    const initAddress = await factoryDeployer.deployContract(new DiamondInit__factory());
+    const initCalldata = DiamondInit__factory.createInterface().encodeFunctionData('init');
     const erc1538ProxyAddress = await deployDiamondProxyWithDefaultFacets(
         factoryDeployer,
         owner.address,
-        transferOwnershipCall,
+        // transferOwnershipCall, //TODO
+        initAddress,
+        initCalldata,
     );
     const erc1538 = DiamondCutFacet__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${await erc1538.getAddress()}`);
@@ -121,27 +125,16 @@ export default async function deploy() {
         erc1538ProxyAddress,
         owner,
     );
-    const functionCount = await erc1538QueryInstance
-        .facets()
-        .then((facets) => facets.map((facet) => facet.functionSelectors.length))
-        .then((counts) => counts.reduce((acc, curr) => acc + curr, 0));
+    const facets = await erc1538QueryInstance.facets();
+    const functionCount = facets
+        .map((facet) => facet.functionSelectors.length)
+        .reduce((acc, curr) => acc + curr, 0);
     console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
+    // TODO
     // for (let i = 0; i < Number(functionCount); i++) {
     //     const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
     //     console.log(`[${i}] ${contract} ${method}`);
     // }
-    /**
-     * Init proxy.
-     */
-    console.log('Initializing proxy...');
-    await DiamondInit__factory.connect(erc1538ProxyAddress, owner)
-        .init()
-        .then((tx) => tx.wait())
-        .catch((err) => {
-            console.log('Failed to init proxy');
-            throw err;
-        });
-    console.log('Initialized proxy');
     /**
      * Deploy registries and link them to the proxy.
      */
@@ -264,18 +257,18 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
 }
 
 /**
- * Deploys a Diamond proxy contract owned by the specified owner,
- * with no initializers.
+ * Deploys and initializes a Diamond proxy contract with default facets.
  * @returns The address of the deployed Diamond proxy contract.
  */
 async function deployDiamondProxyWithDefaultFacets(
     factoryDeployer: FactoryDeployer,
     ownerAddress: string,
-    transferOwnershipCall: string,
+    // transferOwnershipCall: string, // TODO
+    initAddress: string,
+    initCalldata: string,
 ): Promise<string> {
     // Deploy required proxy facets.
     const facetFactories = [
-        new DiamondInit__factory(),
         new DiamondCutFacet__factory(),
         new DiamondLoupeFacet__factory(),
         new OwnershipFacet__factory(),
@@ -300,8 +293,8 @@ async function deployDiamondProxyWithDefaultFacets(
     // Set diamond constructor arguments
     const diamondArgs: DiamondArgsStruct = {
         owner: ownerAddress,
-        init: ZeroAddress, // no init function
-        initCalldata: '0x', // no init function
+        init: initAddress,
+        initCalldata: initCalldata,
     };
     return await factoryDeployer.deployContract(
         new Diamond__factory(),
