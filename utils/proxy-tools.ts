@@ -74,7 +74,6 @@ function getFunctionSignatures(contractFactory: ContractFactory): string[] {
 
 /**
  * Gets function selectors from a contract's ABI.
- * Filters out the 'init(bytes)' function.
  * @param contract - The deployed contract instance
  * @returns Array of function selectors with utility methods
  */
@@ -82,10 +81,6 @@ export function getFunctionSelectors(contractFactory: ContractFactory): string[]
     const contractName = getBaseNameFromContractFactory(contractFactory);
     return (
         getFunctionSignatures(contractFactory) // Get all function signatures from the contract's ABI
-            // Exclude the 'init()' function if not in the DiamondInit facet.
-            .filter(
-                (functionName) => !(contractName !== 'DiamondInit' && functionName === 'init()'),
-            )
             // Get the 4-byte function selectors
             .map((functionName) => {
                 if (functionName === 'receive() payable') {
