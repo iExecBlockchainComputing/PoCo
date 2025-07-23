@@ -254,7 +254,9 @@ async function deployDiamondProxyWithDefaultFacets(
     const initAddress = await factoryDeployer.deployContract(new DiamondInit__factory());
     const initCalldata = DiamondInit__factory.createInterface().encodeFunctionData('init');
     // Deploy LibDiamond and link it to fix coverage task issue.
-    const libDiamondAddress = await factoryDeployer.deployContract(new LibDiamond__factory());
+    const libDiamondAddress =
+        (hre as any).__SOLIDITY_COVERAGE_RUNNING &&
+        (await factoryDeployer.deployContract(new LibDiamond__factory()));
     const libDiamondConfig = (hre as any).__SOLIDITY_COVERAGE_RUNNING && {
         ['@mudgen/diamond-1/contracts/libraries/LibDiamond.sol:LibDiamond']: libDiamondAddress,
     };
