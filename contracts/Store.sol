@@ -23,7 +23,7 @@ import "./registries/IRegistry.sol";
  * If in doubt, read about Diamond proxy storage.                           *
  ****************************************************************************/
 
-// TODO replace with AppStorage
+// TODO replace with diamond AppStorage using namespaced storage.
 // TODO check storage padding.
 abstract contract Store
 {

@@ -29,7 +29,7 @@ interface IRegistry is IERC721Enumerable {
  * @dev note the new added state variable "m_dealsBoost" that holds a new type
  * of deals for the PoCo Boost workflow.
  */
-// TODO replace with AppStorage
+// TODO replace with diamond AppStorage using namespaced storage.
 // TODO check storage padding.
 abstract contract Store {
     // Registries
