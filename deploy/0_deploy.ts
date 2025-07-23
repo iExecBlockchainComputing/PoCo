@@ -39,7 +39,7 @@ import {
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
-import { getSelectors, linkContractToProxy } from '../utils/proxy-tools';
+import { getFunctionSelectors, linkContractToProxy } from '../utils/proxy-tools';
 import { DiamondArgsStruct } from '../typechain/@mudgen/diamond-1/contracts/Diamond';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 
@@ -280,16 +280,14 @@ async function deployDiamondProxyWithDefaultFacets(
         new DiamondLoupeFacet__factory(),
         new OwnershipFacet__factory(),
     ];
-    const facetNames = facetFactories.map((factory) => getBaseNameFromContractFactory(factory));
     const facetCuts: FacetCut[] = [];
     for (let i = 0; i < facetFactories.length; i++) {
         const facetFactory = facetFactories[i];
-        const facetName = facetNames[i];
         const facetAddress = await factoryDeployer.deployContract(facetFactory);
         facetCuts.push({
             facetAddress: facetAddress,
             action: FacetCutAction.Add,
-            functionSelectors: getSelectors(facetFactory),
+            functionSelectors: getFunctionSelectors(facetFactory),
         });
     }
     // const facetNames = facetFactories.map((factory) => getBaseNameFromContractFactory(factory));

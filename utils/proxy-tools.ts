@@ -31,7 +31,7 @@ export async function linkContractToProxy(
         .facets()
         .then((facets) => facets.flatMap((facet) => facet.functionSelectors));
     // Get the contract selectors from its ABI.
-    const contractSelectors = getSelectors(contractFactory);
+    const contractSelectors = getFunctionSelectors(contractFactory);
     // Exclude existing selectors to avoid the error `CannotAddFunctionToDiamondThatAlreadyExists`.
     // This appears for `owner()` function.
     const selectors = contractSelectors.filter((selector) => !existingSelectors.includes(selector));
@@ -50,25 +50,27 @@ export async function linkContractToProxy(
         });
 }
 
+// TODO remove.
 function getSerializedObject(entry: AbiParameter): string {
     return entry.type === 'tuple'
         ? `(${entry.components?.map(getSerializedObject).join(',') ?? ''})`
         : entry.type;
 }
 
-function getFunctionSignatures(abi: any[]): string {
-    return [
-        ...abi.filter((entry) => entry.type === 'receive').map(() => 'receive;'),
-        ...abi.filter((entry) => entry.type === 'fallback').map(() => 'fallback;'),
-        ...abi
-            .filter((entry) => entry.type === 'function')
-            .map(
-                (entry) =>
-                    `${entry.name}(${entry.inputs?.map(getSerializedObject).join(',') ?? ''});`,
-            ),
-    ]
-        .filter(Boolean)
-        .join('');
+/**
+ * Gets formatted function signatures from a contract's ABI.
+ * @param contractFactory - The deployed contract instance
+ * @returns Array of function signatures
+ */
+function getFunctionSignatures(contractFactory: ContractFactory): string[] {
+    const contractName = getBaseNameFromContractFactory(contractFactory);
+    return contractFactory.interface.fragments // Get all fragments from the contract's ABI
+        .filter((f) => f.type === 'function' || f.type === 'fallback') // function + fallback + receive
+        .map((f) => f.format()) // Format them to get clean function signatures
+        .map((f) => {
+            console.log(contractName, ':', f); // Log the function names
+            return f;
+        });
 }
 
 /**
@@ -78,10 +80,10 @@ function getFunctionSignatures(abi: any[]): string {
  * @returns Array of function selectors with utility methods
  */
 // TODO check for `receive` and `fallback` functions.
-export function getSelectors(contractFactory: ContractFactory): string[] {
+export function getFunctionSelectors(contractFactory: ContractFactory): string[] {
     const contractName = getBaseNameFromContractFactory(contractFactory);
     return (
-        getSignatures(contractFactory) // Get all function signatures from the contract's ABI
+        getFunctionSignatures(contractFactory) // Get all function signatures from the contract's ABI
             // Exclude the 'init()' function if not in the DiamondInit facet.
             .filter(
                 (functionName) => !(contractName !== 'DiamondInit' && functionName === 'init()'),
@@ -96,23 +98,5 @@ export function getSelectors(contractFactory: ContractFactory): string[] {
                 }
                 return contractFactory.interface.getFunction(functionName)!.selector;
             })
-    );
-}
-
-/**
- * Gets formatted function signatures from a contract's ABI.
- * @param contractFactory - The deployed contract instance
- * @returns Array of function signatures
- */
-export function getSignatures(contractFactory: ContractFactory): string[] {
-    const contractName = getBaseNameFromContractFactory(contractFactory);
-    return (
-        contractFactory.interface.fragments // Get all fragments from the contract's ABI
-            .filter((f) => f.type === 'function' || f.type === 'fallback') // function + fallback + receive
-            .map((f) => f.format()) // Format them to get clean function signatures
-            // .map((f) => {
-            //     console.log(contractName, ':', f); // Log the function names
-            //     return f;
-            // })
     );
 }
