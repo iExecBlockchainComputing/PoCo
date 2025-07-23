@@ -41,25 +41,16 @@ import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
 import { getFunctionSelectors, linkContractToProxy } from '../utils/proxy-tools';
 import { DiamondArgsStruct } from '../typechain/@mudgen/diamond-1/contracts/Diamond';
-import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 
-/**
- * @dev Deploying contracts with `npx hardhat deploy` task brought by
- * `hardhat-deploy` plugin.
- * Previous deployments made with `npx hardhat run scripts/deploy.ts` used to
- * hang at the end of deployments (terminal did not return at the end).
- *
- * Note:
- * The`hardhat-deploy` plugin is currently being under used compared to all
- * features available in it.
- */
+let factoryDeployer: FactoryDeployer;
+
 export default async function deploy() {
     console.log('Deploying PoCo..');
     const network = await ethers.provider.getNetwork();
     const chainId = network.chainId;
     const [owner] = await ethers.getSigners();
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
-    const factoryDeployer = new FactoryDeployer(owner, chainId);
+    factoryDeployer = new FactoryDeployer(owner, chainId);
     // Deploy RLC
     const isTokenMode = !config.isNativeChain(deploymentOptions);
     let rlcInstanceAddress = isTokenMode
@@ -79,14 +70,9 @@ export default async function deploy() {
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const initAddress = await factoryDeployer.deployContract(new DiamondInit__factory());
-    const initCalldata = DiamondInit__factory.createInterface().encodeFunctionData('init');
     const erc1538ProxyAddress = await deployDiamondProxyWithDefaultFacets(
-        factoryDeployer,
         owner.address,
         // transferOwnershipCall, //TODO
-        initAddress,
-        initCalldata,
     );
     const erc1538 = DiamondCutFacet__factory.connect(erc1538ProxyAddress, owner);
     console.log(`IexecInstance found at address: ${await erc1538.getAddress()}`);
@@ -261,13 +247,18 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
  * @returns The address of the deployed Diamond proxy contract.
  */
 async function deployDiamondProxyWithDefaultFacets(
-    factoryDeployer: FactoryDeployer,
     ownerAddress: string,
     // transferOwnershipCall: string, // TODO
-    initAddress: string,
-    initCalldata: string,
 ): Promise<string> {
+    const initAddress = await factoryDeployer.deployContract(new DiamondInit__factory());
+    const initCalldata = DiamondInit__factory.createInterface().encodeFunctionData('init');
     // Deploy required proxy facets.
+    const libDiamondAddress = await factoryDeployer.deployContract(new LibDiamond__factory());
+    const libDiamond = (hre as any).__SOLIDITY_COVERAGE_RUNNING
+        ? {
+              ['@mudgen/diamond/contracts/libraries/LibDiamond.sol:LibDiamond']: libDiamondAddress,
+          }
+        : {};
     const facetFactories = [
         new DiamondCutFacet__factory(),
         new DiamondLoupeFacet__factory(),
