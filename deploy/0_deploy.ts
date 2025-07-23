@@ -141,6 +141,7 @@ export default async function deploy() {
             console.log('Failed to init ERC1538Proxy');
             throw err;
         });
+    console.log('Initialized proxy');
     /**
      * Deploy registries and link them to the proxy.
      */
@@ -288,7 +289,7 @@ async function deployDiamondProxyWithDefaultFacets(
         facetCuts.push({
             facetAddress: facetAddress,
             action: FacetCutAction.Add,
-            functionSelectors: await getSelectors(facetName, facetAddress),
+            functionSelectors: getSelectors(facetFactory),
         });
     }
     for (let i = 0; i < facetNames.length; i++) {
