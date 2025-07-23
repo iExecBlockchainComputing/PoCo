@@ -23,7 +23,8 @@ import "@iexec/solidity/contracts/ENStools/ENSReverseRegistration.sol";
 import "../DelegateBase.sol";
 import "../interfaces/ENSIntegration.sol";
 
-
+// TODO don't deploy this as ENSReverseRegistration.ADDR_REVERSE_NODE is not defined on Arbitrum.
+// TODO update this to use ENS on Arbitrum (update everywhere this is used).
 contract ENSIntegrationDelegate is ENSIntegration, ENSReverseRegistration, DelegateBase
 {
 	function setName(address _ens, string calldata _name)

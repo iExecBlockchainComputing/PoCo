@@ -138,7 +138,7 @@ export default async function deploy() {
         .init()
         .then((tx) => tx.wait())
         .catch((err) => {
-            console.log('Failed to init ERC1538Proxy');
+            console.log('Failed to init proxy');
             throw err;
         });
     console.log('Initialized proxy');

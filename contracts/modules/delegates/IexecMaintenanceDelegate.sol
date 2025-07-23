@@ -9,12 +9,12 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../DelegateBase.sol";
 import "../interfaces/IexecMaintenance.sol";
 
-
 contract IexecMaintenanceDelegate is IexecMaintenance, DelegateBase
 {
 	using SafeMathExtended  for uint256;
 	using IexecLibOrders_v5 for IexecLibOrders_v5.EIP712Domain;
 
+	// TODO move this to DiamondInit.init().
 	function configure(
 		address          _token,
 		string  calldata _name,
