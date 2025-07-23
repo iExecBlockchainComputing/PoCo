@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
-import { deployments, ethers } from 'hardhat';
+import hre, { deployments, ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
     AppRegistry__factory,
@@ -32,6 +32,7 @@ import {
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate__factory,
     IexecRelayDelegate__factory,
+    LibDiamond__factory,
     OwnershipFacet__factory,
     RLC__factory,
     WorkerpoolRegistry__factory,
@@ -252,11 +253,16 @@ async function deployDiamondProxyWithDefaultFacets(
 ): Promise<string> {
     const initAddress = await factoryDeployer.deployContract(new DiamondInit__factory());
     const initCalldata = DiamondInit__factory.createInterface().encodeFunctionData('init');
+    // Deploy LibDiamond and link it to fix coverage task issue.
+    const libDiamondAddress = await factoryDeployer.deployContract(new LibDiamond__factory());
+    const libDiamondConfig = (hre as any).__SOLIDITY_COVERAGE_RUNNING && {
+        ['@mudgen/diamond-1/contracts/libraries/LibDiamond.sol:LibDiamond']: libDiamondAddress,
+    };
     // Deploy required proxy facets.
     const facetFactories = [
-        new DiamondCutFacet__factory(),
+        new DiamondCutFacet__factory(libDiamondConfig),
         new DiamondLoupeFacet__factory(),
-        new OwnershipFacet__factory(),
+        new OwnershipFacet__factory(libDiamondConfig),
     ];
     const facetCuts: FacetCut[] = [];
     for (let i = 0; i < facetFactories.length; i++) {
@@ -275,7 +281,7 @@ async function deployDiamondProxyWithDefaultFacets(
         initCalldata: initCalldata,
     };
     return await factoryDeployer.deployContract(
-        new Diamond__factory(),
+        new Diamond__factory(libDiamondConfig),
         [facetCuts, diamondArgs],
         // transferOwnershipCall, // TODO
     );
