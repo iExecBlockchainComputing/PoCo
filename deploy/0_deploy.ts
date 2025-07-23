@@ -292,12 +292,13 @@ async function deployDiamondProxyWithDefaultFacets(
             functionSelectors: getSelectors(facetFactory),
         });
     }
-    for (let i = 0; i < facetNames.length; i++) {
-        const facetName = facetNames[i];
-        const facetAddress = facetCuts[i].facetAddress;
-        const functionSelectors = facetCuts[i].functionSelectors;
-        console.log(`${facetName}: ${facetAddress} - Selectors: [${functionSelectors.join(', ')}]`);
-    }
+    // const facetNames = facetFactories.map((factory) => getBaseNameFromContractFactory(factory));
+    // for (let i = 0; i < facetNames.length; i++) {
+    //     const facetName = facetNames[i];
+    //     const facetAddress = facetCuts[i].facetAddress;
+    //     const functionSelectors = facetCuts[i].functionSelectors;
+    //     console.log(`${facetName}: ${facetAddress} - Selectors: [${functionSelectors.join(', ')}]`);
+    // }
     // Set diamond constructor arguments
     const diamondArgs: DiamondArgsStruct = {
         owner: ownerAddress,

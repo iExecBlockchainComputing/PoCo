@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { ContractFactory, FunctionFragment, ZeroAddress } from 'ethers';
+import { ContractFactory, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import { DiamondCutFacet, DiamondLoupeFacet__factory } from '../typechain';
@@ -83,24 +83,36 @@ export function getSelectors(contractFactory: ContractFactory): string[] {
     return (
         getSignatures(contractFactory) // Get all function signatures from the contract's ABI
             // Exclude the 'init()' function if not in the DiamondInit facet.
-            .filter((val) => !(contractName !== 'DiamondInit' && val === 'init()'))
+            .filter(
+                (functionName) => !(contractName !== 'DiamondInit' && functionName === 'init()'),
+            )
             // Get the 4-byte function selectors
-            .map((val) => contractFactory.interface.getFunction(val)!.selector)
+            .map((functionName) => {
+                if (functionName === 'receive() payable') {
+                    return '0x00000000'; // Receive function selector
+                }
+                if (functionName === 'fallback() payable') {
+                    return '0xffffffff'; // Fallback function selector
+                }
+                return contractFactory.interface.getFunction(functionName)!.selector;
+            })
     );
 }
 
 /**
  * Gets formatted function signatures from a contract's ABI.
- * @param contract - The deployed contract instance
+ * @param contractFactory - The deployed contract instance
  * @returns Array of function signatures
  */
-export function getSignatures(contract: ContractFactory): string[] {
-    return contract.interface.fragments // Get all fragments from the contract's ABI
-        .filter((f) => f.type === 'function') // Filter only function fragments
-        .map((f) => FunctionFragment.from(f)) // Convert to FunctionFragment
-        .map((f) => f.format()); // Format them to get clean function signatures
-    // .map((f) => {
-    //     console.log(contractName, ':', f); // Log the function names
-    //     return f;
-    // })
+export function getSignatures(contractFactory: ContractFactory): string[] {
+    const contractName = getBaseNameFromContractFactory(contractFactory);
+    return (
+        contractFactory.interface.fragments // Get all fragments from the contract's ABI
+            .filter((f) => f.type === 'function' || f.type === 'fallback') // function + fallback + receive
+            .map((f) => f.format()) // Format them to get clean function signatures
+            // .map((f) => {
+            //     console.log(contractName, ':', f); // Log the function names
+            //     return f;
+            // })
+    );
 }
