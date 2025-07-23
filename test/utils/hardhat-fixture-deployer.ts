@@ -16,7 +16,7 @@ import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixtur
 async function deployAll() {
     await deploy();
     await deployEns();
-    return (await deployments.get('ERC1538Proxy')).address;
+    return (await deployments.get('Diamond')).address;
 }
 
 /**
