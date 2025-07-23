@@ -253,12 +253,6 @@ async function deployDiamondProxyWithDefaultFacets(
     const initAddress = await factoryDeployer.deployContract(new DiamondInit__factory());
     const initCalldata = DiamondInit__factory.createInterface().encodeFunctionData('init');
     // Deploy required proxy facets.
-    const libDiamondAddress = await factoryDeployer.deployContract(new LibDiamond__factory());
-    const libDiamond = (hre as any).__SOLIDITY_COVERAGE_RUNNING
-        ? {
-              ['@mudgen/diamond/contracts/libraries/LibDiamond.sol:LibDiamond']: libDiamondAddress,
-          }
-        : {};
     const facetFactories = [
         new DiamondCutFacet__factory(),
         new DiamondLoupeFacet__factory(),
