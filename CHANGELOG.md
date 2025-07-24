@@ -5,6 +5,7 @@
 - Migrate proxy to Diamond pattern (ERC-2535):
   - Fix `fallback` and `receive` (#223)
   - Migrate contracts (#222)
+  - Remove ENS module (#225)
 - Add Github Action CI in order to publish NPM package
 
 ### Updated contracts

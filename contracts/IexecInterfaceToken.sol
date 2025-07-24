@@ -31,24 +31,21 @@ import "./modules/interfaces/IexecPoco1.sol";
 import "./modules/interfaces/IexecPoco2.sol";
 import "./modules/interfaces/IexecRelay.sol";
 import "./modules/interfaces/IexecTokenSpender.sol";
-import "./modules/interfaces/ENSIntegration.sol";
-
 
 interface IexecInterfaceToken is
-	IOwnable,
-	IexecAccessors,
-	IexecCategoryManager,
-	IexecERC20,
-	IexecEscrowToken,
-	IexecEscrowTokenSwap,
-	IexecMaintenance,
-	IexecOrderManagement,
-	IexecPoco1,
-	IexecPoco2,
-	IexecRelay,
-	IexecTokenSpender,
-	ENSIntegration
+    IOwnable,
+    IexecAccessors,
+    IexecCategoryManager,
+    IexecERC20,
+    IexecEscrowToken,
+    IexecEscrowTokenSwap,
+    IexecMaintenance,
+    IexecOrderManagement,
+    IexecPoco1,
+    IexecPoco2,
+    IexecRelay,
+    IexecTokenSpender
 {
-	receive()  external override(IexecEscrowToken, IexecEscrowTokenSwap) payable;
-	fallback() external override(IexecEscrowToken, IexecEscrowTokenSwap) payable;
+    receive() external payable override(IexecEscrowToken, IexecEscrowTokenSwap);
+    fallback() external payable override(IexecEscrowToken, IexecEscrowTokenSwap);
 }

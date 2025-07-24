@@ -30,21 +30,17 @@ import "./modules/interfaces/IexecPoco1.sol";
 import "./modules/interfaces/IexecPoco2.sol";
 import "./modules/interfaces/IexecRelay.sol";
 import "./modules/interfaces/IexecTokenSpender.sol";
-import "./modules/interfaces/ENSIntegration.sol";
-
 
 interface IexecInterfaceNative is
-	IOwnable,
-	IexecAccessors,
-	IexecCategoryManager,
-	IexecERC20,
-	IexecEscrowNative,
-	IexecMaintenance,
-	IexecOrderManagement,
-	IexecPoco1,
-	IexecPoco2,
-	IexecRelay,
-	IexecTokenSpender,
-	ENSIntegration
-{
-}
+    IOwnable,
+    IexecAccessors,
+    IexecCategoryManager,
+    IexecERC20,
+    IexecEscrowNative,
+    IexecMaintenance,
+    IexecOrderManagement,
+    IexecPoco1,
+    IexecPoco2,
+    IexecRelay,
+    IexecTokenSpender
+{}
