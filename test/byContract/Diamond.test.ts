@@ -64,9 +64,27 @@ describe('Diamond', async () => {
                     '0x',
                 );
         });
+    });
 
-        it.skip('[TODO] Should redirect fallback', async () => {});
-        it.skip('[TODO] Should redirect receive', async () => {});
+    describe('Delegatecall', () => {
+        it.skip('[TODO] Should delegate `fallback` call', async () => {});
+
+        it.skip('[TODO] Should delegate `receive` call', async () => {});
+
+        it.skip('[TODO] Should delegate any function call', async () => {});
+
+        it('Should revert when function not found', async () => {
+            const diamond = await _deployDiamond([]);
+            const randomData = ethers.id('0xrandom');
+            const tx = owner.sendTransaction({
+                to: await diamond.getAddress(),
+                value: 0,
+                data: randomData,
+            });
+            await expect(tx)
+                .to.be.revertedWithCustomError(diamond, 'FunctionNotFound')
+                .withArgs(randomData.slice(0, 10)); // First 4 bytes.
+        });
     });
 
     async function _deployDiamond(facetCuts: IDiamond.FacetCutStruct[]) {
