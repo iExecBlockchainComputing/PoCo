@@ -259,11 +259,6 @@ const config: HardhatUserConfig = {
             '@mudgen/diamond-1/contracts/facets/OwnershipFacet.sol',
             '@mudgen/diamond-1/contracts/libraries/LibDiamond.sol',
             '@mudgen/diamond-1/contracts/upgradeInitializers/DiamondInit.sol',
-            // ENS
-            '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol',
-            '@ensdomains/ens-contracts/contracts/registry/FIFSRegistrar.sol',
-            '@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar.sol',
-            '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol',
             // Used as mock or fake in UTs
             '@openzeppelin/contracts-v5/interfaces/IERC1271.sol',
             // Used in deployment
