@@ -2,14 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { getStorageAt, loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { getStorageAt } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { AddressLike, ZeroAddress } from 'ethers';
+import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import {
-    Diamond,
     Diamond__factory,
-    DiamondCutFacet__factory,
     DiamondLoupeFacet__factory,
     IDiamond,
     LibDiamond__factory,
@@ -17,8 +15,9 @@ import {
 import { DiamondArgsStruct } from '../../typechain/contracts/Diamond';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import { getFunctionSelectors } from '../../utils/proxy-tools';
+import { getLibDiamondConfigOrEmpty } from '../../utils/tools';
 
-const DIAMOND_STORAGE_POSITION = ethers.id("diamond.standard.diamond.storage");
+const DIAMOND_STORAGE_POSITION = ethers.id('diamond.standard.diamond.storage');
 
 describe('Diamond', async () => {
     let deployer: SignerWithAddress;
@@ -30,7 +29,7 @@ describe('Diamond', async () => {
 
     describe('Deployment', () => {
         it('Should set owner at deployment', async () => {
-            const diamond = await _deployDiamond([], owner.address); // No facets
+            const diamond = await _deployDiamond([]); // No facets
             const diamondAddress = await diamond.getAddress();
             // Check the owner.
             const ownerSlotPosition = ethers.toBeHex(BigInt(DIAMOND_STORAGE_POSITION) + 3n);
@@ -45,21 +44,24 @@ describe('Diamond', async () => {
 
         it('Should apply diamond cuts at deployment', async () => {
             // Deploy any facet.
-            const facet = await new DiamondLoupeFacet__factory(deployer)
+            const facet = await new DiamondLoupeFacet__factory()
+                .connect(deployer)
                 .deploy()
                 .then((tx) => tx.waitForDeployment());
-            const facetCuts = [{
-                facetAddress: await facet.getAddress(),
-                action: FacetCutAction.Add,
-                functionSelectors: getFunctionSelectors(new DiamondLoupeFacet__factory()),
-            }];
-            const diamond = await _deployDiamond(facetCuts, owner.address);
+            const facetCuts = [
+                {
+                    facetAddress: await facet.getAddress(),
+                    action: FacetCutAction.Add,
+                    functionSelectors: getFunctionSelectors(new DiamondLoupeFacet__factory()),
+                },
+            ];
+            const diamond = await _deployDiamond(facetCuts);
             await expect(diamond.deploymentTransaction())
                 .to.emit(diamond, 'DiamondCut')
                 .withArgs(
                     [Object.values(facetCuts[0])], // Convert object to array for deep comparison.
                     ZeroAddress,
-                    '0x'
+                    '0x',
                 );
         });
 
@@ -67,16 +69,15 @@ describe('Diamond', async () => {
         it.skip('[TODO] Should redirect receive', async () => {});
     });
 
-    async function _deployDiamond(facetCuts: IDiamond.FacetCutStruct[], ownerAddress: string) {
-        return await new Diamond__factory(deployer)
-            .deploy(
-                facetCuts,
-                {
-                    owner: owner.address,
-                    init: ZeroAddress,
-                    initCalldata: '0x',
-                } as DiamondArgsStruct
-            ).then((tx) => tx.waitForDeployment());
+    async function _deployDiamond(facetCuts: IDiamond.FacetCutStruct[]) {
+        const libDiamondConfig = await getLibDiamondConfigOrEmpty(deployer);
+        return await new Diamond__factory(libDiamondConfig)
+            .connect(deployer)
+            .deploy(facetCuts, {
+                owner: owner.address,
+                init: ZeroAddress,
+                initCalldata: '0x',
+            } as DiamondArgsStruct)
+            .then((tx) => tx.waitForDeployment());
     }
-
 });
