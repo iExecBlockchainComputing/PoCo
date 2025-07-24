@@ -253,7 +253,7 @@ const config: HardhatUserConfig = {
     dependencyCompiler: {
         paths: [
             'rlc-faucet-contract/contracts/RLC.sol',
-            '@mudgen/diamond-1/contracts/Diamond.sol',
+            // ERC-2535 Diamond
             '@mudgen/diamond-1/contracts/facets/DiamondCutFacet.sol',
             '@mudgen/diamond-1/contracts/facets/DiamondLoupeFacet.sol',
             '@mudgen/diamond-1/contracts/facets/OwnershipFacet.sol',
