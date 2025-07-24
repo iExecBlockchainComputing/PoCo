@@ -40,6 +40,7 @@ contract Diamond {
 
     /**
      * `fallback` function must be added to the diamond with selector `0xffffffff`.
+     * The function is defined in IexecEscrow(Native/Token) facet.
      */
     fallback() external payable{
         _fallback();
@@ -47,6 +48,7 @@ contract Diamond {
 
     /**
      * `receive` function must be added to the diamond with selector `0x00000000`.
+     * The function is defined in IexecEscrow(Native/Token) facet.
      */
     receive() external payable {
         _fallback();
