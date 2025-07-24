@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-//******************************************************************************\
-//* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
+//*************************************************************************************\
+//* Adapted from Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
 //* EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
 //*
 //* Implementation of a diamond.
-//******************************************************************************/
+//*************************************************************************************/
+
+// Diamond proxy implementation adapted from Mudgen's to re-direct
+// `receive` and `fallback` calls to the implementations in facets.
 
 import { LibDiamond } from "@mudgen/diamond-1/contracts/libraries/LibDiamond.sol";
 import { IDiamondCut } from "@mudgen/diamond-1/contracts/interfaces/IDiamondCut.sol";
@@ -35,9 +38,23 @@ contract Diamond {
         // Code can be added here to perform actions and set state variables.
     }
 
+    /**
+     * `fallback` function must be added to the diamond with selector `0xffffffff`.
+     */
+    fallback() external payable{
+        _fallback();
+    }
+
+    /**
+     * `receive` function must be added to the diamond with selector `0x00000000`.
+     */
+    receive() external payable {
+        _fallback();
+    }
+
     // Find facet for function that is called and execute the
     // function if a facet is found and return any value.
-    fallback() external payable {
+    function _fallback() internal {
         LibDiamond.DiamondStorage storage ds;
         bytes32 position = LibDiamond.DIAMOND_STORAGE_POSITION;
         // get diamond storage
@@ -46,6 +63,9 @@ contract Diamond {
         }
         // get facet from function selector
         address facet = ds.facetAddressAndSelectorPosition[msg.sig].facetAddress;
+        if (facet == address(0)) {
+            facet = ds.facetAddressAndSelectorPosition[0xffffffff].facetAddress;
+        }
         if(facet == address(0)) {
             revert FunctionNotFound(msg.sig);
         }
@@ -67,6 +87,4 @@ contract Diamond {
                 }
         }
     }
-
-    receive() external payable {}
 }
