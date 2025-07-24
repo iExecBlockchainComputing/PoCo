@@ -69,10 +69,10 @@ jobs:
       - name: Set environment variables
         id: set-env
         run: |
-          echo "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}" >> $GITHUB_ENV
+          echo "DEPLOYER_PRIVATE_KEY=${{ secrets.DEPLOYER_PRIVATE_KEY }}" >> $GITHUB_ENV
           if [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
             echo "FUJI_RPC_URL=${{ secrets.FUJI_RPC_URL }}" >> $GITHUB_ENV
-            echo "SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}" >> $GITHUB_ENV  
+            echo "SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}" >> $GITHUB_ENV
           fi
 
           if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
