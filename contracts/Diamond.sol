@@ -10,7 +10,7 @@ pragma solidity ^0.8.0;
 //* Implementation of a diamond.
 //*************************************************************************************/
 
-// Diamond proxy implementation adapted from Mudgen's to re-direct
+// Diamond proxy implementation adapted from Mudgen's to redirect
 // `receive` and `fallback` calls to the implementations in facets.
 // See diff at: https://github.com/iExecBlockchainComputing/PoCo/pull/223/commits/0562f982
 
