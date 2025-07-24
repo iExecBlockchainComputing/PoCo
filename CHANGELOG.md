@@ -2,7 +2,9 @@
 
 ## vNEXT
 
-- Migrate contracts to Diamond pattern - Part1 (#222)
+- Migrate proxy to Diamond pattern (ERC-2535):
+  - Fix `fallback` and `receive` (#223)
+  - Migrate contracts (#222)
 - Add Github Action CI in order to publish NPM package
 
 ### Updated contracts

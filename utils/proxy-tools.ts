@@ -50,13 +50,6 @@ export async function linkContractToProxy(
         });
 }
 
-// TODO remove.
-function getSerializedObject(entry: AbiParameter): string {
-    return entry.type === 'tuple'
-        ? `(${entry.components?.map(getSerializedObject).join(',') ?? ''})`
-        : entry.type;
-}
-
 /**
  * Gets formatted function signatures from a contract's ABI.
  * @param contractFactory - The deployed contract instance
@@ -66,10 +59,6 @@ export function getFunctionSignatures(contractFactory: ContractFactory): string[
     return contractFactory.interface.fragments // Get all fragments from the contract's ABI
         .filter((f) => f.type === 'function' || f.type === 'fallback') // function + fallback + receive
         .map((f) => f.format()); // Format them to get clean function signatures
-    // .map((f) => {
-    //     console.log(getBaseNameFromContractFactory(contractFactory), ':', f); // Log the function names
-    //     return f;
-    // });
 }
 
 /**

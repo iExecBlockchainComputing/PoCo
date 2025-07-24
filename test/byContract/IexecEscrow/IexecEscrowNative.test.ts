@@ -291,7 +291,7 @@ if (config.isNativeChain()) {
                 const expectedDelta = 5n;
                 await setStorageAt(
                     proxyAddress,
-                    '0x0c', // Slot index of `m_totalSupply` in Store
+                    '0x07', // Slot index of `m_totalSupply` in Store
                     ethers.toBeHex(initTotalSupply - expectedDelta),
                 );
                 expect(await iexecPoco.totalSupply()).to.equal(
