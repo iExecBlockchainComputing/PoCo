@@ -26,8 +26,8 @@ export default async function deployEns() {
         return;
     }
     const [owner] = await ethers.getSigners();
-    const erc1538ProxyAddress = (await deployments.get('Diamond')).address;
-    const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
+    const diamondProxyAddress = (await deployments.get('Diamond')).address;
+    const iexecAccessorsInstance = IexecAccessors__factory.connect(diamondProxyAddress, owner);
     const appRegistryAddress = await iexecAccessorsInstance.appregistry();
     const datasetRegistryAddress = await iexecAccessorsInstance.datasetregistry();
     const workerpoolRegistryAddress = await iexecAccessorsInstance.workerpoolregistry();
@@ -61,12 +61,12 @@ export default async function deployEns() {
     await registerDomain('pools', 'iexec.eth');
     await registerAddress('admin', 'iexec.eth', owner.address);
     await registerAddress('rlc', 'iexec.eth', await iexecAccessorsInstance.token());
-    await registerAddress('core', 'v5.iexec.eth', erc1538ProxyAddress);
+    await registerAddress('core', 'v5.iexec.eth', diamondProxyAddress);
     await registerAddress('apps', 'v5.iexec.eth', appRegistryAddress);
     await registerAddress('datasets', 'v5.iexec.eth', datasetRegistryAddress);
     await registerAddress('workerpools', 'v5.iexec.eth', workerpoolRegistryAddress);
     await reverseRegistrar.setName('admin.iexec.eth').then((tx) => tx.wait());
-    await setReverseName(erc1538ProxyAddress, 'core.v5.iexec.eth');
+    await setReverseName(diamondProxyAddress, 'core.v5.iexec.eth');
     await setReverseName(appRegistryAddress, 'apps.v5.iexec.eth');
     await setReverseName(datasetRegistryAddress, 'datasets.v5.iexec.eth');
     await setReverseName(workerpoolRegistryAddress, 'workerpools.v5.iexec.eth');

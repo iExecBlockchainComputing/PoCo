@@ -89,7 +89,7 @@ jobs:
           echo "Deploying to: ${{ inputs.network }} with ${{ inputs.environment }} environment"
           npm run deploy -- --network ${{ inputs.network }}
 
-      - name: Update config.json with ERC1538Proxy address
+      - name: Update config.json with DiamondProxy address
         if: inputs.network != 'hardhat'
         run: npx hardhat run scripts/tools/update-config.ts --network ${{ inputs.network }}
 

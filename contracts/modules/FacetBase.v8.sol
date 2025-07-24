@@ -6,16 +6,16 @@ pragma solidity ^0.8.0;
 import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
 import {Store} from "../Store.v8.sol";
 
-// Functions that were declared in ERC1538Store are re-declared here.
+// Functions that were declared in ERC2535Store are re-declared here.
 // TODO clean this (use LibDiamond)
 //      - All calls to `owner()` should use `LibDiamond.contractOwner()`.
 // TODO rename this contract to `FacetBase`.
 
 /**
- * @title Base contract of all Delegate contracts.
- * @dev Every module must inherit from this contract.
+ * @title Base contract of all Facet contracts.
+ * @dev Every facet must inherit from this contract.
  */
-abstract contract DelegateBase is Store {
+abstract contract FacetBase is Store {
     modifier onlyOwner() {
         require(_msgSender() == owner(), "Ownable: caller is not the owner");
         _;
@@ -26,7 +26,7 @@ abstract contract DelegateBase is Store {
         return IERC5313(address(this)).owner();
     }
 
-    function _msgSender() internal view returns (address ) {
+    function _msgSender() internal view returns (address) {
         return msg.sender;
     }
 }

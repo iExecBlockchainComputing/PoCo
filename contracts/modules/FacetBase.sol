@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.6.0;
@@ -6,13 +6,12 @@ pragma solidity ^0.6.0;
 import "../Store.sol";
 import "./interfaces/IOwnable.sol";
 
-// Functions that were declared in ERC1538Store are re-declared here.
+// Functions that were declared in ERC2535Store are re-declared here.
 // TODO clean this (use LibDiamond)
 //      - All calls to `owner()` should use `LibDiamond.contractOwner()`.
 // TODO rename this contract to `FacetBase`.
 
-abstract contract DelegateBase is Store {
-
+abstract contract FacetBase is Store {
     modifier onlyOwner() {
         require(_msgSender() == owner(), "Ownable: caller is not the owner");
         _;
@@ -22,8 +21,7 @@ abstract contract DelegateBase is Store {
         return IOwnable(address(this)).owner();
     }
 
-    function _msgSender() internal view returns (address ) {
+    function _msgSender() internal view returns (address) {
         return msg.sender;
     }
-
 }

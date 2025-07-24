@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -7,14 +7,14 @@ import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
-import {DelegateBase} from "../DelegateBase.v8.sol";
+import {FacetBase} from "../FacetBase.v8.sol";
 import {IexecPoco2} from "../interfaces/IexecPoco2.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 // TODO: Revert with custom errors
 
-contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureVerifier {
+contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifier {
     modifier onlyScheduler(bytes32 _taskId) {
         require(_msgSender() == m_deals[m_tasks[_taskId].dealid].workerpool.owner);
         _;

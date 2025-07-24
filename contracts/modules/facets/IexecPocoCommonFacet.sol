@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -6,9 +6,9 @@ pragma solidity ^0.8.0;
 import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
-import {DelegateBase} from "../DelegateBase.v8.sol";
+import {FacetBase} from "../FacetBase.v8.sol";
 
-contract IexecPocoCommonDelegate is DelegateBase {
+contract IexecPocoCommonFacet is FacetBase {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;

@@ -1,23 +1,23 @@
-// SPDX-FileCopyrightText: 2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
 
-import {DelegateBase} from "../DelegateBase.v8.sol";
+import {FacetBase} from "../FacetBase.v8.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
-import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
+import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 /**
  * @title Getters contract for PoCo module.
  */
-contract IexecPocoAccessorsDelegate is
+contract IexecPocoAccessorsFacet is
     IexecPocoAccessors,
-    DelegateBase,
+    FacetBase,
     SignatureVerifier,
-    IexecPocoCommonDelegate
+    IexecPocoCommonFacet
 {
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;

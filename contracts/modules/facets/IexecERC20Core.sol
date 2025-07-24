@@ -1,12 +1,12 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../DelegateBase.sol";
+import "../FacetBase.sol";
 
-contract IexecERC20Core is DelegateBase {
+contract IexecERC20Core is FacetBase {
     using SafeMathExtended for uint256;
 
     event Transfer(address indexed from, address indexed to, uint256 value);

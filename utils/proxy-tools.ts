@@ -13,8 +13,8 @@ interface AbiParameter {
 }
 
 /**
- * Link a contract to an ERC1538 proxy.
- * @param proxy contract to ERC1538 proxy.
+ * Link a contract to a Diamond proxy.
+ * @param proxy contract to Diamond proxy.
  * @param contractAddress The contract address to link to the proxy.
  * @param contractFactory The contract factory to link to the proxy.
  */

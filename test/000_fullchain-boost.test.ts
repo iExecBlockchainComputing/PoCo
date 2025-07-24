@@ -10,9 +10,9 @@ import {
     IexecAccessors,
     IexecAccessors__factory,
     IexecOrderManagement__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    IexecPocoBoostDelegate,
-    IexecPocoBoostDelegate__factory,
+    IexecPocoBoostAccessorsFacet__factory,
+    IexecPocoBoostFacet,
+    IexecPocoBoostFacet__factory,
     TestClient__factory,
     WorkerpoolInterface__factory,
 } from '../typechain';
@@ -46,11 +46,11 @@ const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 
-describe('IexecPocoBoostDelegate (IT)', function () {
+describe('IexecPocoBoostFacet (IT)', function () {
     let domain: TypedDataDomain;
     let proxyAddress: string;
     let iexecInstance: IexecAccessors;
-    let iexecPocoBoostInstance: IexecPocoBoostDelegate;
+    let iexecPocoBoostInstance: IexecPocoBoostFacet;
     let iexecWrapper: IexecWrapper;
     let appAddress = '';
     let workerpoolAddress = '';
@@ -72,7 +72,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
 
-    beforeEach('Deploy IexecPocoBoostDelegate', async () => {
+    beforeEach('Deploy IexecPocoBoostFacet', async () => {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.
@@ -86,7 +86,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             workerpoolOwner: scheduler,
             requester: requester,
         };
-        iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
+        iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
         domain = {
             name: 'iExecODB',
@@ -773,7 +773,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     });
 
     async function viewDealBoost(dealId: string) {
-        return await IexecPocoBoostAccessorsDelegate__factory.connect(
+        return await IexecPocoBoostAccessorsFacet__factory.connect(
             proxyAddress,
             anyone,
         ).viewDealBoost(dealId);

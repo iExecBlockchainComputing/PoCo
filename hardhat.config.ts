@@ -277,10 +277,10 @@ const config: HardhatUserConfig = {
         templates: 'docs/solidity/templates',
         exclude: [
             'external',
-            'modules/delegates/IexecAccessorsABILegacyDelegate.sol', // not relevant
-            'modules/delegates/IexecEscrowTokenSwapDelegate.sol', // not relevant
-            'modules/delegates/SignatureVerifier.sol', // contains only internal/private
-            'modules/delegates/SignatureVerifier.v8.sol',
+            'modules/facets/IexecAccessorsABILegacyFacet.sol', // not relevant
+            'modules/facets/IexecEscrowTokenSwapFacet.sol', // not relevant
+            'modules/facets/SignatureVerifier.sol', // contains only internal/private
+            'modules/facets/SignatureVerifier.v8.sol',
             'modules/interfaces', // interesting for events but too much doc duplication if enabled
             'registries', // ignore them for now
             'tools',

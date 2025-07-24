@@ -13,35 +13,35 @@ import {
     DiamondLoupeFacet,
     DiamondLoupeFacet__factory,
     Diamond__factory,
-    ENSIntegrationDelegate__factory,
-    IexecAccessorsABILegacyDelegate__factory,
-    IexecAccessorsDelegate__factory,
+    ENSIntegrationFacet__factory,
+    IexecAccessorsABILegacyFacet__factory,
+    IexecAccessorsFacet__factory,
     IexecAccessors__factory,
-    IexecCategoryManagerDelegate__factory,
+    IexecCategoryManagerFacet__factory,
     IexecCategoryManager__factory,
-    IexecERC20Delegate__factory,
-    IexecEscrowNativeDelegate__factory,
-    IexecEscrowTokenDelegate__factory,
+    IexecERC20Facet__factory,
+    IexecEscrowNativeFacet__factory,
+    IexecEscrowTokenFacet__factory,
     IexecLibOrders_v5__factory,
-    IexecMaintenanceDelegate__factory,
-    IexecMaintenanceExtraDelegate__factory,
-    IexecOrderManagementDelegate__factory,
-    IexecPoco1Delegate__factory,
-    IexecPoco2Delegate__factory,
-    IexecPocoAccessorsDelegate__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    IexecPocoBoostDelegate__factory,
-    IexecRelayDelegate__factory,
+    IexecMaintenanceExtraFacet__factory,
+    IexecMaintenanceFacet__factory,
+    IexecOrderManagementFacet__factory,
+    IexecPoco1Facet__factory,
+    IexecPoco2Facet__factory,
+    IexecPocoAccessorsFacet__factory,
+    IexecPocoBoostAccessorsFacet__factory,
+    IexecPocoBoostFacet__factory,
+    IexecRelayFacet__factory,
     LibDiamond__factory,
     OwnershipFacet__factory,
     RLC__factory,
     WorkerpoolRegistry__factory,
 } from '../typechain';
+import { DiamondArgsStruct } from '../typechain/@mudgen/diamond-1/contracts/Diamond';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
 import { getFunctionSelectors, linkContractToProxy } from '../utils/proxy-tools';
-import { DiamondArgsStruct } from '../typechain/@mudgen/diamond-1/contracts/Diamond';
 
 let factoryDeployer: FactoryDeployer;
 
@@ -71,12 +71,12 @@ export default async function deploy() {
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const erc1538ProxyAddress = await deployDiamondProxyWithDefaultFacets(
+    const diamondProxyAddress = await deployDiamondProxyWithDefaultFacets(
         owner.address,
         // transferOwnershipCall, //TODO
     );
-    const erc1538 = DiamondCutFacet__factory.connect(erc1538ProxyAddress, owner);
-    console.log(`IexecInstance found at address: ${await erc1538.getAddress()}`);
+    const diamondProxy = DiamondCutFacet__factory.connect(diamondProxyAddress, owner);
+    console.log(`IexecInstance found at address: ${await diamondProxy.getAddress()}`);
     // Deploy library & modules
     const iexecLibOrdersAddress = await factoryDeployer.deployContract(
         new IexecLibOrders_v5__factory(),
@@ -85,41 +85,39 @@ export default async function deploy() {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
     const modules = [
-        new IexecAccessorsDelegate__factory(),
-        new IexecAccessorsABILegacyDelegate__factory(),
-        new IexecCategoryManagerDelegate__factory(),
-        new IexecERC20Delegate__factory(),
-        isTokenMode
-            ? new IexecEscrowTokenDelegate__factory()
-            : new IexecEscrowNativeDelegate__factory(),
-        new IexecMaintenanceDelegate__factory(iexecLibOrders),
-        new IexecOrderManagementDelegate__factory(iexecLibOrders),
-        new IexecPoco1Delegate__factory(iexecLibOrders),
-        new IexecPoco2Delegate__factory(),
-        new IexecRelayDelegate__factory(),
-        new ENSIntegrationDelegate__factory(),
-        new IexecMaintenanceExtraDelegate__factory(),
-        new IexecPocoAccessorsDelegate__factory(iexecLibOrders),
-        new IexecPocoBoostDelegate__factory(iexecLibOrders),
-        new IexecPocoBoostAccessorsDelegate__factory(),
+        new IexecAccessorsFacet__factory(),
+        new IexecAccessorsABILegacyFacet__factory(),
+        new IexecCategoryManagerFacet__factory(),
+        new IexecERC20Facet__factory(),
+        isTokenMode ? new IexecEscrowTokenFacet__factory() : new IexecEscrowNativeFacet__factory(),
+        new IexecMaintenanceFacet__factory(iexecLibOrders),
+        new IexecOrderManagementFacet__factory(iexecLibOrders),
+        new IexecPoco1Facet__factory(iexecLibOrders),
+        new IexecPoco2Facet__factory(),
+        new IexecRelayFacet__factory(),
+        new ENSIntegrationFacet__factory(),
+        new IexecMaintenanceExtraFacet__factory(),
+        new IexecPocoAccessorsFacet__factory(iexecLibOrders),
+        new IexecPocoBoostFacet__factory(iexecLibOrders),
+        new IexecPocoBoostAccessorsFacet__factory(),
     ];
     for (const module of modules) {
         const address = await factoryDeployer.deployContract(module);
-        await linkContractToProxy(erc1538, address, module);
+        await linkContractToProxy(diamondProxy, address, module);
     }
-    // Verify linking on ERC1538Proxy
-    const erc1538QueryInstance: DiamondLoupeFacet = DiamondLoupeFacet__factory.connect(
-        erc1538ProxyAddress,
+    // Verify linking on DiamondProxy
+    const diamondloupeFacetInstance: DiamondLoupeFacet = DiamondLoupeFacet__factory.connect(
+        diamondProxyAddress,
         owner,
     );
-    const facets = await erc1538QueryInstance.facets();
+    const facets = await diamondloupeFacetInstance.facets();
     const functionCount = facets
         .map((facet) => facet.functionSelectors.length)
         .reduce((acc, curr) => acc + curr, 0);
-    console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
+    console.log(`The deployed DiamondProxy now supports ${functionCount} functions:`);
     // TODO
     // for (let i = 0; i < Number(functionCount); i++) {
-    //     const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
+    //     const [method, , contract] = await diamondloupeFacetInstance.functionByIndex(i);
     //     console.log(`[${i}] ${contract} ${method}`);
     // }
     /**
@@ -176,11 +174,11 @@ export default async function deploy() {
     }
 
     // Set main configuration
-    const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
+    const iexecAccessorsInstance = IexecAccessors__factory.connect(diamondProxyAddress, owner);
     const iexecInitialized = (await iexecAccessorsInstance.eip712domain_separator()) != ZeroHash;
     if (!iexecInitialized) {
         // TODO replace this with DiamondInit.init().
-        await IexecMaintenanceDelegate__factory.connect(erc1538ProxyAddress, owner)
+        await IexecMaintenanceFacet__factory.connect(diamondProxyAddress, owner)
             .configure(
                 rlcInstanceAddress,
                 'Staked RLC',
@@ -197,7 +195,7 @@ export default async function deploy() {
     const catCountBefore = await iexecAccessorsInstance.countCategory();
     for (let i = Number(catCountBefore); i < config.categories.length; i++) {
         const category = config.categories[i];
-        await IexecCategoryManager__factory.connect(erc1538ProxyAddress, owner)
+        await IexecCategoryManager__factory.connect(diamondProxyAddress, owner)
             .createCategory(
                 category.name,
                 JSON.stringify(category.description),

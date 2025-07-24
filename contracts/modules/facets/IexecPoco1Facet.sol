@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -9,10 +9,10 @@ import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
-import {DelegateBase} from "../DelegateBase.v8.sol";
+import {FacetBase} from "../FacetBase.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
-import {IexecPocoCommonDelegate} from "./IexecPocoCommonDelegate.sol";
+import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 struct Matching {
@@ -26,12 +26,12 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Delegate is
+contract IexecPoco1Facet is
     IexecPoco1,
-    DelegateBase,
+    FacetBase,
     IexecEscrow,
     SignatureVerifier,
-    IexecPocoCommonDelegate
+    IexecPocoCommonFacet
 {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
