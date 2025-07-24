@@ -71,6 +71,7 @@ const v8Settings = {
             },
         },
     },
+    // TODO remove this to target the latest EVM version.
     /**
      * @dev The 0.8.20 compiler switches the default target EVM version to Shanghai.
      * At this time, the iExec Bellecour blockchain does not support new OPCODES
@@ -252,9 +253,12 @@ const config: HardhatUserConfig = {
     dependencyCompiler: {
         paths: [
             'rlc-faucet-contract/contracts/RLC.sol',
-            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Update.sol',
-            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Query.sol',
-            '@iexec/solidity/contracts/ERC1538/ERC1538Proxy/ERC1538Proxy.sol',
+            '@mudgen/diamond-1/contracts/Diamond.sol',
+            '@mudgen/diamond-1/contracts/facets/DiamondCutFacet.sol',
+            '@mudgen/diamond-1/contracts/facets/DiamondLoupeFacet.sol',
+            '@mudgen/diamond-1/contracts/facets/OwnershipFacet.sol',
+            '@mudgen/diamond-1/contracts/libraries/LibDiamond.sol',
+            '@mudgen/diamond-1/contracts/upgradeInitializers/DiamondInit.sol',
             // ENS
             '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol',
             '@ensdomains/ens-contracts/contracts/registry/FIFSRegistrar.sol',

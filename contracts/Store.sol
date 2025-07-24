@@ -5,7 +5,6 @@ pragma solidity ^0.6.0;
 
 import "@iexec/interface/contracts/IexecHub.sol";
 import "@iexec/solidity/contracts/Libs/SafeMathExtended.sol";
-import "@iexec/solidity/contracts/ERC1538/ERC1538Store.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./libs/IexecLibCore_v5.sol";
@@ -21,10 +20,12 @@ import "./registries/IRegistry.sol";
  * If you want add new variables for expanded features, add them at the     *
  * end, or (better?) create a Store_v2 that inherits from this Store.       *
  *                                                                          *
- * If in doubt, read about ERC1538 memory store.                            *
+ * If in doubt, read about Diamond proxy storage.                           *
  ****************************************************************************/
 
-abstract contract Store is ERC1538Store
+// TODO replace with diamond AppStorage using namespaced storage.
+// TODO check storage padding.
+abstract contract Store
 {
 	// Registries
 	IRegistry internal m_appregistry;

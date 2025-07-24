@@ -100,7 +100,6 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         return taskid;
     }
 
-    // TODO / COMPILER ERROR: making it external causes "stack too deep" error
     function contribute(
         bytes32 _taskid,
         bytes32 _resultHash,
@@ -175,7 +174,6 @@ contract IexecPoco2Delegate is IexecPoco2, DelegateBase, IexecEscrow, SignatureV
         checkConsensus(_taskid, _resultHash);
     }
 
-    // TODO / COMPILER ERROR: making it external causes "stack too deep" error
     function contributeAndFinalize(
         bytes32 _taskid,
         bytes32 _resultDigest,

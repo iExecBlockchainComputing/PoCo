@@ -3,7 +3,27 @@
 
 pragma solidity ^0.6.0;
 
-import "@iexec/solidity/contracts/ERC1538/ERC1538Module.sol";
 import "../Store.sol";
+import "./interfaces/IOwnable.sol";
 
-abstract contract DelegateBase is Store, ERC1538Module {}
+// Functions that were declared in ERC1538Store are re-declared here.
+// TODO clean this (use LibDiamond)
+//      - All calls to `owner()` should use `LibDiamond.contractOwner()`.
+// TODO rename this contract to `FacetBase`.
+
+abstract contract DelegateBase is Store {
+
+    modifier onlyOwner() {
+        require(_msgSender() == owner(), "Ownable: caller is not the owner");
+        _;
+    }
+
+    function owner() public view returns (address) {
+        return IOwnable(address(this)).owner();
+    }
+
+    function _msgSender() internal view returns (address ) {
+        return msg.sender;
+    }
+
+}

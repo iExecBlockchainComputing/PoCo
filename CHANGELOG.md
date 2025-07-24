@@ -2,6 +2,7 @@
 
 ## vNEXT
 
+- Migrate contracts to Diamond pattern - Part1 (#222)
 - Add Github Action CI in order to publish NPM package
 
 ### Updated contracts
@@ -9,12 +10,13 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+<!-- TODO update this with v5.5.1 release notes -->
 - Add gitub action workflow for deployment (#218)
 - Fix new testnets chain name (#217)
 - Deploy on new testnet chains using CreateX factory (#216)
 - Add CreateX factory for new chain deployment (#215)
 - Support Arbitrum & Avalanche Fuji testnets (#215)
-- Housekeeping (#207, )
+- Housekeeping (#208)
 - Add Halborn "Poco v5.5 & Voucher v1.0" audit report (#205)
 - Refactor Factory deployer (#206)
 - Enable native tests on CI (#204)

@@ -46,6 +46,7 @@ abstract contract RegistryEntry is ENSReverseRegistration
 	function setName(address _ens, string calldata _name)
 	external onlyOwner()
 	{
+		// TODO update this as ENSReverseRegistration.ADDR_REVERSE_NODE is not defined on Arbitrum.
 		_setName(IENS(_ens), _name);
 	}
 }

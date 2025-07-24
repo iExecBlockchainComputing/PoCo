@@ -14,29 +14,8 @@ import {IexecLibCore_v5} from "./libs/IexecLibCore_v5.sol";
  * If you want add new variables for expanded features, add them at the     *
  * end, or (better?) create a Store_v2 that inherits from this Store.       *
  *                                                                          *
- * If in doubt, read about ERC1538 memory store.                            *
+ * If in doubt, read about Diamond proxy storage.                           *
  ****************************************************************************/
-
-/// @dev Solstruct translation for v0.8.0
-library LibSet_bytes4 {
-    struct set {
-        bytes4[] values;
-        mapping(bytes4 => uint256) indexes;
-    }
-}
-
-library LibMap2_bytes4_address_bytes {
-    struct map {
-        LibSet_bytes4.set keyset;
-        mapping(bytes4 => address) values1;
-        mapping(bytes4 => bytes) values2;
-    }
-}
-
-/// @dev @iexec/solidity ERC1538
-abstract contract ERC1538Store is Ownable {
-    LibMap2_bytes4_address_bytes.map internal m_funcs;
-}
 
 /// @dev registries
 interface IRegistry is IERC721Enumerable {
@@ -45,12 +24,14 @@ interface IRegistry is IERC721Enumerable {
 
 /// @dev Poco store
 /**
- * @title Central storage of all modules contracts. It follows the transparent
- * contract standard aka ERC-1538.
+ * @title Central storage of all modules contracts. It follows the Diamond
+ * pattern aka ERC-2535.
  * @dev note the new added state variable "m_dealsBoost" that holds a new type
  * of deals for the PoCo Boost workflow.
  */
-abstract contract Store is ERC1538Store {
+// TODO replace with diamond AppStorage using namespaced storage.
+// TODO check storage padding.
+abstract contract Store {
     // Registries
     //slither-disable-next-line constable-states
     IRegistry internal m_appregistry;

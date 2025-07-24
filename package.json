@@ -50,11 +50,16 @@
   "dependencies": {
     "@iexec/interface": "3.0.35-8",
     "@iexec/solidity": "^0.1.1",
+    "@mudgen/diamond-1": "github:mudgen/diamond-1-hardhat#3da037b",
     "@openzeppelin/contracts": "3.3.0",
     "@openzeppelin/contracts-v5": "npm:@openzeppelin/contracts@^5.0.2",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
     "createx": "github:pcaversaccio/createx#v1.0.0",
     "rlc-faucet-contract": "1.0.10"
+  },
+  "__dependenciesComments": {
+    "@iexec/solidity": "TODO replace with openzeppelin contracts when possible",
+    "rlc-faucet-contract": "TODO Replace with rlc-token if possible"
   },
   "devDependencies": {
     "@amxx/factory": "^1.0.0",
@@ -77,8 +82,8 @@
     "solidity-docgen": "^0.6.0-beta.36",
     "zx": "^8.1.6"
   },
-  "devDependenciesComment": {
-    "mocha": "Mocha Test Explorer in VSCode",
+  "__devDependenciesComments": {
+    "mocha": "[Optional] Install Mocha Test Explorer in VSCode to see tests in VSCode UI",
     "sol2uml": "After 2.5.19, see https://github.com/naddison36/sol2uml/issues/183",
     "solidity-coverage": "Fixing Hardhat's solidity-coverage: TypeError: provider.send is not a function"
   }
