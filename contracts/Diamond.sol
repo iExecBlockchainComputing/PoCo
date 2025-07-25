@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 pragma solidity ^0.8.0;
 
 //*************************************************************************************\
@@ -8,8 +10,9 @@ pragma solidity ^0.8.0;
 //* Implementation of a diamond.
 //*************************************************************************************/
 
-// Diamond proxy implementation adapted from Mudgen's to re-direct
+// Diamond proxy implementation adapted from Mudgen's to redirect
 // `receive` and `fallback` calls to the implementations in facets.
+// See diff at: https://github.com/iExecBlockchainComputing/PoCo/pull/223/commits/0562f982
 
 import { LibDiamond } from "@mudgen/diamond-1/contracts/libraries/LibDiamond.sol";
 import { IDiamondCut } from "@mudgen/diamond-1/contracts/interfaces/IDiamondCut.sol";
