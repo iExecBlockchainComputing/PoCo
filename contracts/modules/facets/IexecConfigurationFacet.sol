@@ -7,9 +7,9 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "../FacetBase.sol";
-import "../interfaces/IexecMaintenance.sol";
+import "../interfaces/IexecConfiguration.sol";
 
-contract IexecMaintenanceFacet is IexecMaintenance, FacetBase {
+contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     using SafeMathExtended for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.EIP712Domain;
 

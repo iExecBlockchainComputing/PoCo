@@ -25,7 +25,7 @@ import "./modules/interfaces/IexecAccessorsABILegacy.sol";
 import "./modules/interfaces/IexecCategoryManager.sol";
 import "./modules/interfaces/IexecERC20.sol";
 import "./modules/interfaces/IexecEscrowNative.sol";
-import "./modules/interfaces/IexecMaintenance.sol";
+import "./modules/interfaces/IexecConfiguration.sol";
 import "./modules/interfaces/IexecOrderManagement.sol";
 import "./modules/interfaces/IexecPoco1.sol";
 import "./modules/interfaces/IexecPoco2.sol";
@@ -39,7 +39,7 @@ interface IexecInterfaceNativeABILegacy is
     IexecCategoryManager,
     IexecERC20,
     IexecEscrowNative,
-    IexecMaintenance,
+    IexecConfiguration,
     IexecOrderManagement,
     IexecPoco1,
     IexecPoco2,

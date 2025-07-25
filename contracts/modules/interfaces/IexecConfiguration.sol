@@ -19,17 +19,22 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../FacetBase.sol";
-import "../interfaces/IexecMaintenanceExtra.sol";
+import "../../libs/IexecLibOrders_v5.sol";
 
-contract IexecMaintenanceExtraFacet is IexecMaintenanceExtra, FacetBase {
-    function changeRegistries(
-        address _appregistryAddress,
-        address _datasetregistryAddress,
-        address _workerpoolregistryAddress
-    ) external override onlyOwner {
-        m_appregistry = IRegistry(_appregistryAddress);
-        m_datasetregistry = IRegistry(_datasetregistryAddress);
-        m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
-    }
+interface IexecConfiguration {
+    function configure(
+        address,
+        string calldata,
+        string calldata,
+        uint8,
+        address,
+        address,
+        address,
+        address
+    ) external;
+    function domain() external view returns (IexecLibOrders_v5.EIP712Domain memory);
+    function updateDomainSeparator() external;
+    function importScore(address) external;
+    function setTeeBroker(address) external;
+    function setCallbackGas(uint256) external;
 }

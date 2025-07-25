@@ -16,8 +16,8 @@ import {
     IOracleConsumer__factory,
     IexecAccessors,
     IexecAccessors__factory,
-    IexecMaintenance,
-    IexecMaintenance__factory,
+    IexecConfiguration,
+    IexecConfiguration__factory,
     IexecOrderManagement__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
@@ -73,7 +73,7 @@ const randomEOAAddress = ethers.Wallet.createRandom().address;
 
 let proxyAddress: string;
 let iexecPocoBoostInstance: IexecPocoBoostFacet;
-let iexecMaintenanceAsAdmin: IexecMaintenance;
+let iexecMaintenanceAsAdmin: IexecConfiguration;
 let iexecAccessor: IexecAccessors;
 let oracleConsumerInstance: TestClient;
 let gasWasterClientInstance: GasWasterClient;
@@ -125,7 +125,7 @@ describe('IexecPocoBoost', function () {
         domain = iexecWrapper.getDomain();
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, anyone);
-        iexecMaintenanceAsAdmin = IexecMaintenance__factory.connect(
+        iexecMaintenanceAsAdmin = IexecConfiguration__factory.connect(
             proxyAddress,
             accounts.iexecAdmin,
         );
