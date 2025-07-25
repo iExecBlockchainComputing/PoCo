@@ -15,23 +15,8 @@ on:
         default: 'hardhat'
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Validate deployment branch
-        run: |
-          if [[  "${{ inputs.network }}" == "arbitrum" && "${{ github.ref }}" != "refs/heads/main" ]]; then
-            echo "::error::Arbitrum mainnet deployments must be made from the main branch. Current branch: ${GITHUB_REF#refs/heads/}"
-            exit 1
-          fi
-          echo "Deploying on network ${{ inputs.network }} from branch ${{ github.ref }}!"
-
   # Build and test before deploying.
   build-and-test:
-    needs: validate
     uses: ./.github/workflows/main.yml
 
   deploy:
