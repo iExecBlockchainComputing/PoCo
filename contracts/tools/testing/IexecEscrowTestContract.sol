@@ -32,7 +32,7 @@ contract IexecEscrowTestContract is IexecEscrow {
         m_balances[account] = value;
     }
 
-    // TODO remove the following function and inherit `IexecAccessorsDelegate`
+    // TODO remove the following function and inherit `IexecAccessorsFacet`
     // when it is migrated to solidity v8.
 
     function balanceOf(address account) external view returns (uint256) {

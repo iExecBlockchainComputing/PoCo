@@ -10,9 +10,9 @@ import {
     IexecAccessors,
     IexecAccessors__factory,
     IexecOrderManagement__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    IexecPocoBoostDelegate,
-    IexecPocoBoostDelegate__factory,
+    IexecPocoBoostAccessorsFacet__factory,
+    IexecPocoBoostFacet,
+    IexecPocoBoostFacet__factory,
     TestClient__factory,
     WorkerpoolInterface__factory,
 } from '../typechain';
@@ -50,7 +50,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     let domain: TypedDataDomain;
     let proxyAddress: string;
     let iexecInstance: IexecAccessors;
-    let iexecPocoBoostInstance: IexecPocoBoostDelegate;
+    let iexecPocoBoostInstance: IexecPocoBoostFacet;
     let iexecWrapper: IexecWrapper;
     let appAddress = '';
     let workerpoolAddress = '';
@@ -86,7 +86,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
             workerpoolOwner: scheduler,
             requester: requester,
         };
-        iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, owner);
+        iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, owner);
         iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
         domain = {
             name: 'iExecODB',
@@ -773,7 +773,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     });
 
     async function viewDealBoost(dealId: string) {
-        return await IexecPocoBoostAccessorsDelegate__factory.connect(
+        return await IexecPocoBoostAccessorsFacet__factory.connect(
             proxyAddress,
             anyone,
         ).viewDealBoost(dealId);

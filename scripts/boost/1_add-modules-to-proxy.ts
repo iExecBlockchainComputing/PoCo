@@ -25,19 +25,19 @@ import {
         throw new Error('DiamondProxy is required');
     }
     const diamondProxyAddress = deploymentOptions.DiamondProxy;
-    const iexecPocoBoostDelegateAddress = (await deployments.get('IexecPocoBoostDelegate')).address; // Bellecour: 0x8425229f979AB3b0dDDe00D475D762cA4d6a5eFc
-    const iexecPocoBoostAccessorsDelegateAddress = (
-        await deployments.get('IexecPocoBoostAccessorsDelegate')
+    const iexecPocoBoostFacetAddress = (await deployments.get('IexecPocoBoostFacet')).address; // Bellecour: 0x8425229f979AB3b0dDDe00D475D762cA4d6a5eFc
+    const iexecPocoBoostAccessorsFacetAddress = (
+        await deployments.get('IexecPocoBoostAccessorsFacet')
     ).address; // Bellecour: 0x56185a2b0dc8b556BBfBAFB702BC971Ed75e868C
     const [account] = await ethers.getSigners();
     const timelockAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner(); // Bellecour: 0x4611B943AA1d656Fc669623b5DA08756A7e288E9
     const iexecPocoBoostProxyUpdate = encodeModuleProxyUpdate(
         IexecPocoBoost__factory.createInterface(),
-        iexecPocoBoostDelegateAddress,
+        iexecPocoBoostFacetAddress,
     );
     const iexecPocoBoostAccessorsProxyUpdate = encodeModuleProxyUpdate(
         IexecPocoBoostAccessors__factory.createInterface(),
-        iexecPocoBoostAccessorsDelegateAddress,
+        iexecPocoBoostAccessorsFacetAddress,
     );
     // Salt but must be the same for schedule & execute
     const operationSalt = '0x0be814a62c44af32241a2c964e5680d1b25c783473c6e7875cbc8071770d7ff0'; // Random

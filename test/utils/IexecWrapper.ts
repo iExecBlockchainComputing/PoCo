@@ -21,7 +21,7 @@ import {
     IexecAccessors__factory,
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
-    IexecMaintenanceDelegate__factory,
+    IexecMaintenanceFacet__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
     IexecPocoBoostAccessors__factory,
@@ -33,6 +33,7 @@ import {
 } from '../../typechain';
 import { TransferEvent } from '../../typechain/contracts/registries/IRegistry';
 import { IexecPoco1__factory } from '../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
+import config from '../../utils/config';
 import {
     IexecOrders,
     OrderOperation,
@@ -50,7 +51,6 @@ import {
     getTaskId,
     setNextBlockTimestamp,
 } from '../../utils/poco-tools';
-import config from '../../utils/config';
 
 export class IexecWrapper {
     proxyAddress: string;
@@ -176,7 +176,7 @@ export class IexecWrapper {
     }
 
     async setTeeBroker(brokerAddress: string) {
-        await IexecMaintenanceDelegate__factory.connect(this.proxyAddress, this.accounts.iexecAdmin)
+        await IexecMaintenanceFacet__factory.connect(this.proxyAddress, this.accounts.iexecAdmin)
             .setTeeBroker(brokerAddress)
             .then((tx) => tx.wait());
     }
