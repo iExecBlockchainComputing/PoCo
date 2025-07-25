@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
 pragma solidity ^0.8.0;
 
 //*************************************************************************************\
@@ -8,14 +10,15 @@ pragma solidity ^0.8.0;
 //* Implementation of a diamond.
 //*************************************************************************************/
 
-// Diamond proxy implementation adapted from Mudgen's to re-direct
+// Diamond proxy implementation adapted from Mudgen's to redirect
 // `receive` and `fallback` calls to the implementations in facets.
+// See diff at: https://github.com/iExecBlockchainComputing/PoCo/pull/223/commits/0562f982
 
-import { LibDiamond } from "@mudgen/diamond-1/contracts/libraries/LibDiamond.sol";
-import { IDiamondCut } from "@mudgen/diamond-1/contracts/interfaces/IDiamondCut.sol";
-import { IDiamondLoupe } from "@mudgen/diamond-1/contracts/interfaces/IDiamondLoupe.sol";
-import { IERC173 } from "@mudgen/diamond-1/contracts/interfaces/IERC173.sol";
-import { IERC165} from "@mudgen/diamond-1/contracts/interfaces/IERC165.sol";
+import {LibDiamond} from "@mudgen/diamond-1/contracts/libraries/LibDiamond.sol";
+import {IDiamondCut} from "@mudgen/diamond-1/contracts/interfaces/IDiamondCut.sol";
+import {IDiamondLoupe} from "@mudgen/diamond-1/contracts/interfaces/IDiamondLoupe.sol";
+import {IERC173} from "@mudgen/diamond-1/contracts/interfaces/IERC173.sol";
+import {IERC165} from "@mudgen/diamond-1/contracts/interfaces/IERC165.sol";
 
 // When no function exists for function called
 error FunctionNotFound(bytes4 _functionSelector);
@@ -30,7 +33,6 @@ struct DiamondArgs {
 }
 
 contract Diamond {
-
     constructor(IDiamondCut.FacetCut[] memory _diamondCut, DiamondArgs memory _args) payable {
         LibDiamond.setContractOwner(_args.owner);
         LibDiamond.diamondCut(_diamondCut, _args.init, _args.initCalldata);
@@ -42,7 +44,7 @@ contract Diamond {
      * `fallback` function must be added to the diamond with selector `0xffffffff`.
      * The function is defined in IexecEscrow(Native/Token) facet.
      */
-    fallback() external payable{
+    fallback() external payable {
         _fallback();
     }
 
@@ -68,25 +70,25 @@ contract Diamond {
         if (facet == address(0)) {
             facet = ds.facetAddressAndSelectorPosition[0xffffffff].facetAddress;
         }
-        if(facet == address(0)) {
+        if (facet == address(0)) {
             revert FunctionNotFound(msg.sig);
         }
         // Execute external function from facet using delegatecall and return any value.
         assembly {
             // copy function selector and any arguments
             calldatacopy(0, 0, calldatasize())
-             // execute function call using the facet
+            // execute function call using the facet
             let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)
             // get any return value
             returndatacopy(0, 0, returndatasize())
             // return any return value or error back to the caller
             switch result
-                case 0 {
-                    revert(0, returndatasize())
-                }
-                default {
-                    return(0, returndatasize())
-                }
+            case 0 {
+                revert(0, returndatasize())
+            }
+            default {
+                return(0, returndatasize())
+            }
         }
     }
 }
