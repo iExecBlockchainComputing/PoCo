@@ -20,7 +20,7 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
-import "./SignatureVerifier.sol";
+import "./SignatureVerifierFacet.sol";
 import "../BaseFacet.sol";
 import "../interfaces/IexecEscrowTokenSwap.sol";
 import "../interfaces/IexecPoco1.sol";
@@ -29,7 +29,7 @@ contract IexecEscrowTokenSwapFacet is
     IexecEscrowTokenSwap,
     BaseFacet,
     IexecERC20Core,
-    SignatureVerifier
+    SignatureVerifierFacet
 {
     using SafeMathExtended for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;

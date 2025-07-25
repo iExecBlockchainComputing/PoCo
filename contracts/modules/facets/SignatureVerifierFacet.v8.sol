@@ -9,7 +9,7 @@ import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/Me
 import {IERC734} from "../../external/interfaces/IERC734.sol";
 import {BaseFacet} from "../BaseFacet.v8.sol";
 
-contract SignatureVerifier is BaseFacet {
+contract SignatureVerifierFacet is BaseFacet {
     using ECDSA for bytes32;
 
     /**

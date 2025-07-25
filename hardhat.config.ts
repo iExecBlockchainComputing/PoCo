@@ -274,8 +274,8 @@ const config: HardhatUserConfig = {
             'external',
             'modules/facets/IexecAccessorsABILegacyFacet.sol', // not relevant
             'modules/facets/IexecEscrowTokenSwapFacet.sol', // not relevant
-            'modules/facets/SignatureVerifier.sol', // contains only internal/private
-            'modules/facets/SignatureVerifier.v8.sol',
+            'modules/facets/SignatureVerifierFacet.sol', // contains only internal/private
+            'modules/facets/SignatureVerifierFacet.v8.sol',
             'modules/interfaces', // interesting for events but too much doc duplication if enabled
             'registries', // ignore them for now
             'tools',

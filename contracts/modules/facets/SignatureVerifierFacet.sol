@@ -24,7 +24,7 @@ import "@iexec/solidity/contracts/ERC1271/IERC1271.sol";
 import "@iexec/solidity/contracts/ERC1654/IERC1654.sol";
 import "../BaseFacet.sol";
 
-contract SignatureVerifier is BaseFacet {
+contract SignatureVerifierFacet is BaseFacet {
     /**
      * Prepare message/structure predicat used for signing
      */

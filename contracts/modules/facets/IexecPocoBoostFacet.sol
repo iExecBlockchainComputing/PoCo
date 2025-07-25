@@ -17,7 +17,7 @@ import {BaseFacet} from "../BaseFacet.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
-import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
+import {SignatureVerifierFacet} from "./SignatureVerifierFacet.v8.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
@@ -27,7 +27,7 @@ contract IexecPocoBoostFacet is
     IexecPocoBoost,
     BaseFacet,
     IexecEscrow,
-    SignatureVerifier,
+    SignatureVerifierFacet,
     IexecPocoCommonFacet
 {
     using ECDSA for bytes32;

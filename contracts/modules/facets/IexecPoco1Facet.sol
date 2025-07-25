@@ -13,7 +13,7 @@ import {BaseFacet} from "../BaseFacet.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
-import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
+import {SignatureVerifierFacet} from "./SignatureVerifierFacet.v8.sol";
 
 struct Matching {
     bytes32 apporderHash;
@@ -30,7 +30,7 @@ contract IexecPoco1Facet is
     IexecPoco1,
     BaseFacet,
     IexecEscrow,
-    SignatureVerifier,
+    SignatureVerifierFacet,
     IexecPocoCommonFacet
 {
     using Math for uint256;

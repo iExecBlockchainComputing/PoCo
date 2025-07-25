@@ -10,11 +10,11 @@ import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {BaseFacet} from "../BaseFacet.v8.sol";
 import {IexecPoco2} from "../interfaces/IexecPoco2.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
-import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
+import {SignatureVerifierFacet} from "./SignatureVerifierFacet.v8.sol";
 
 // TODO: Revert with custom errors
 
-contract IexecPoco2Facet is IexecPoco2, BaseFacet, IexecEscrow, SignatureVerifier {
+contract IexecPoco2Facet is IexecPoco2, BaseFacet, IexecEscrow, SignatureVerifierFacet {
     modifier onlyScheduler(bytes32 _taskId) {
         require(_msgSender() == m_deals[m_tasks[_taskId].dealid].workerpool.owner);
         _;
