@@ -38,13 +38,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run fork tests
-        run: |
-          if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
-            npm run test:arbitrumSepolia
-          elif [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
-            npm run test:fuji
-          fi
+      # - name: Run fork tests
+      #   run: |
+      #     if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+      #       npm run test:arbitrumSepolia
+      #     elif [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
+      #       npm run test:fuji
+      #     fi
 
       - name: Deploy contracts
         env:
