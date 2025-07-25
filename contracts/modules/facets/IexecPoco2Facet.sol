@@ -7,14 +7,14 @@ import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
-import {FacetBase} from "../FacetBase.v8.sol";
+import {BaseFacet} from "../BaseFacet.v8.sol";
 import {IexecPoco2} from "../interfaces/IexecPoco2.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 // TODO: Revert with custom errors
 
-contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifier {
+contract IexecPoco2Facet is IexecPoco2, BaseFacet, IexecEscrow, SignatureVerifier {
     modifier onlyScheduler(bytes32 _taskId) {
         require(_msgSender() == m_deals[m_tasks[_taskId].dealid].workerpool.owner);
         _;

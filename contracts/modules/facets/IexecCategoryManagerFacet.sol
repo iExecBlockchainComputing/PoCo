@@ -19,10 +19,10 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../FacetBase.sol";
+import "../BaseFacet.sol";
 import "../interfaces/IexecCategoryManager.sol";
 
-contract IexecCategoryManagerFacet is IexecCategoryManager, FacetBase {
+contract IexecCategoryManagerFacet is IexecCategoryManager, BaseFacet {
     /**
      * Methods
      */

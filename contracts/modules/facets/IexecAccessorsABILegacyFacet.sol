@@ -19,10 +19,10 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../FacetBase.sol";
+import "../BaseFacet.sol";
 import "../interfaces/IexecAccessorsABILegacy.sol";
 
-contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
+contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, BaseFacet {
     function viewDealABILegacy_pt1(
         bytes32 _id
     )

@@ -19,10 +19,10 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../FacetBase.sol";
+import "../BaseFacet.sol";
 import "../interfaces/IexecRelay.sol";
 
-contract IexecRelayFacet is IexecRelay, FacetBase {
+contract IexecRelayFacet is IexecRelay, BaseFacet {
     function broadcastAppOrder(IexecLibOrders_v5.AppOrder calldata _apporder) external override {
         emit BroadcastAppOrder(_apporder);
     }

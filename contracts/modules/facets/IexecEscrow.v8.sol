@@ -3,12 +3,12 @@
 
 pragma solidity ^0.8.0;
 
-import {FacetBase} from "../FacetBase.v8.sol";
+import {BaseFacet} from "../BaseFacet.v8.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.
  */
-contract IexecEscrow is FacetBase {
+contract IexecEscrow is BaseFacet {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Lock(address owner, uint256 amount);
     event Unlock(address owner, uint256 amount);

@@ -20,11 +20,11 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
-import "../FacetBase.sol";
+import "../BaseFacet.sol";
 import "../interfaces/IexecEscrowToken.sol";
 import "../interfaces/IexecTokenSpender.sol";
 
-contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
+contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, BaseFacet, IexecERC20Core {
     using SafeMathExtended for uint256;
 
     /***************************************************************************

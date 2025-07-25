@@ -14,7 +14,7 @@ import {Store} from "../Store.v8.sol";
  * @title Base contract of all Facet contracts.
  * @dev Every module must inherit from this contract.
  */
-abstract contract FacetBase is Store {
+abstract contract BaseFacet is Store {
     modifier onlyOwner() {
         require(_msgSender() == owner(), "Ownable: caller is not the owner");
         _;

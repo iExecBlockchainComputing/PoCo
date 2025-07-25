@@ -10,7 +10,7 @@ import "./interfaces/IOwnable.sol";
 // TODO clean this (use LibDiamond)
 //      - All calls to `owner()` should use `LibDiamond.contractOwner()`.
 
-abstract contract FacetBase is Store {
+abstract contract BaseFacet is Store {
     modifier onlyOwner() {
         require(_msgSender() == owner(), "Ownable: caller is not the owner");
         _;

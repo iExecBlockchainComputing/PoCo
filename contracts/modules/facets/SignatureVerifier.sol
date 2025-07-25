@@ -22,9 +22,9 @@ pragma experimental ABIEncoderV2;
 import "@iexec/solidity/contracts/ERC734/IERC734.sol";
 import "@iexec/solidity/contracts/ERC1271/IERC1271.sol";
 import "@iexec/solidity/contracts/ERC1654/IERC1654.sol";
-import "../FacetBase.sol";
+import "../BaseFacet.sol";
 
-contract SignatureVerifier is FacetBase {
+contract SignatureVerifier is BaseFacet {
     /**
      * Prepare message/structure predicat used for signing
      */

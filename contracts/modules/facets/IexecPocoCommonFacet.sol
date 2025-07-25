@@ -6,9 +6,9 @@ pragma solidity ^0.8.0;
 import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
-import {FacetBase} from "../FacetBase.v8.sol";
+import {BaseFacet} from "../BaseFacet.v8.sol";
 
-contract IexecPocoCommonFacet is FacetBase {
+contract IexecPocoCommonFacet is BaseFacet {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;

@@ -20,10 +20,10 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
-import "../FacetBase.sol";
+import "../BaseFacet.sol";
 import "../interfaces/IexecEscrowNative.sol";
 
-contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core {
+contract IexecEscrowNativeFacet is IexecEscrowNative, BaseFacet, IexecERC20Core {
     using SafeMathExtended for uint256;
 
     uint256 internal constant nRLCtoWei = 10 ** 9;

@@ -4,9 +4,9 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../FacetBase.sol";
+import "../BaseFacet.sol";
 
-contract IexecERC20Core is FacetBase {
+contract IexecERC20Core is BaseFacet {
     using SafeMathExtended for uint256;
 
     event Transfer(address indexed from, address indexed to, uint256 value);

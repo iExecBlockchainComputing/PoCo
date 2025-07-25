@@ -20,11 +20,11 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
-import "../FacetBase.sol";
+import "../BaseFacet.sol";
 import "../interfaces/IexecERC20.sol";
 import "../interfaces/IexecTokenSpender.sol";
 
-contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
+contract IexecERC20Facet is IexecERC20, BaseFacet, IexecERC20Core {
     function transfer(address recipient, uint256 amount) external override returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;

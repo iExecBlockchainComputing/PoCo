@@ -19,10 +19,10 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../FacetBase.sol";
+import "../BaseFacet.sol";
 import "../interfaces/IexecAccessors.sol";
 
-contract IexecAccessorsFacet is IexecAccessors, FacetBase {
+contract IexecAccessorsFacet is IexecAccessors, BaseFacet {
     function name() external view override returns (string memory) {
         return m_name;
     }
