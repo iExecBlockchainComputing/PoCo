@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
-import hre, { deployments, ethers } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
     AppRegistry__factory,
@@ -31,7 +31,6 @@ import {
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate__factory,
     IexecRelayDelegate__factory,
-    LibDiamond__factory,
     OwnershipFacet__factory,
     RLC__factory,
     WorkerpoolRegistry__factory,
@@ -41,6 +40,7 @@ import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
 import { getFunctionSelectors, linkContractToProxy } from '../utils/proxy-tools';
+import { getLibDiamondConfigOrEmpty } from '../utils/tools';
 
 let factoryDeployer: FactoryDeployer;
 
@@ -71,7 +71,7 @@ export default async function deploy() {
             throw new Error('Failed to prepare transferOwnership data');
         });
     const erc1538ProxyAddress = await deployDiamondProxyWithDefaultFacets(
-        owner.address,
+        owner,
         // transferOwnershipCall, //TODO
     );
     const erc1538 = DiamondCutFacet__factory.connect(erc1538ProxyAddress, owner);
@@ -246,18 +246,12 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
  * @returns The address of the deployed Diamond proxy contract.
  */
 async function deployDiamondProxyWithDefaultFacets(
-    ownerAddress: string,
+    owner: SignerWithAddress,
     // transferOwnershipCall: string, // TODO
 ): Promise<string> {
     const initAddress = await factoryDeployer.deployContract(new DiamondInit__factory());
     const initCalldata = DiamondInit__factory.createInterface().encodeFunctionData('init');
-    // Deploy LibDiamond and link it to fix coverage task issue.
-    const libDiamondAddress =
-        (hre as any).__SOLIDITY_COVERAGE_RUNNING &&
-        (await factoryDeployer.deployContract(new LibDiamond__factory()));
-    const libDiamondConfig = (hre as any).__SOLIDITY_COVERAGE_RUNNING && {
-        ['@mudgen/diamond-1/contracts/libraries/LibDiamond.sol:LibDiamond']: libDiamondAddress,
-    };
+    const libDiamondConfig = await getLibDiamondConfigOrEmpty(owner);
     // Deploy required proxy facets.
     const facetFactories = [
         new DiamondCutFacet__factory(libDiamondConfig),
@@ -276,7 +270,7 @@ async function deployDiamondProxyWithDefaultFacets(
     }
     // Set diamond constructor arguments
     const diamondArgs: DiamondArgsStruct = {
-        owner: ownerAddress,
+        owner: owner.address,
         init: initAddress,
         initCalldata: initCalldata,
     };
