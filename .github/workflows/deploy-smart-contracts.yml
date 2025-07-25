@@ -8,18 +8,11 @@ on:
         type: choice
         options:
           - hardhat
-          - avalancheFujiTestnet
           - arbitrumSepolia
+          - arbitrum
+          - avalancheFujiTestnet
           - bellecour
         default: 'hardhat'
-      environment:
-        description: 'Environment'
-        required: true
-        type: choice
-        options:
-          - testnets
-          - mainnets
-        default: 'testnets'
 
 jobs:
   validate:
@@ -28,21 +21,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Validate mainnet deployment conditions
+      - name: Validate deployment branch
         run: |
-          #TODO remove this when we have other mainnets
-          if [[ "${{ inputs.environment }}" == "mainnets" && !("${{ inputs.network }}" == "bellecour" && "${{ github.ref }}" == "refs/heads/main") ]]; then
-            echo "::error::Bellecour mainnet deployments must be made from the main branch. Current branch: ${GITHUB_REF#refs/heads/}"
+          if [[  "${{ inputs.network }}" == "arbitrum" && "${{ github.ref }}" != "refs/heads/main" ]]; then
+            echo "::error::Arbitrum mainnet deployments must be made from the main branch. Current branch: ${GITHUB_REF#refs/heads/}"
             exit 1
           fi
+          echo "Deploying on network ${{ inputs.network }} from branch ${{ github.ref }}!"
 
-          echo "Deployment validation passed!"
-  deploy:
+  # Build and test before deploying.
+  build-and-test:
     needs: validate
+    uses: ./.github/workflows/main.yml
+
+  deploy:
+    needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required for saving deployment
-    environment: ${{ inputs.environment }} # Use the selected environment
+    environment: ${{ inputs.network }} # Use the selected environment
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,38 +53,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
+      - name: Run fork tests
         run: |
           if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
             npm run test:arbitrumSepolia
           elif [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
             npm run test:fuji
-          else
-            npm run test
-          fi
-
-      - name: Set environment variables
-        id: set-env
-        run: |
-          echo "DEPLOYER_PRIVATE_KEY=${{ secrets.DEPLOYER_PRIVATE_KEY }}" >> $GITHUB_ENV
-          if [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
-            echo "FUJI_RPC_URL=${{ secrets.FUJI_RPC_URL }}" >> $GITHUB_ENV
-            echo "SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}" >> $GITHUB_ENV
-          fi
-
-          if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
-            echo "ARBITRUM_SEPOLIA_RPC_URL=${{ secrets.ARBITRUM_SEPOLIA_RPC_URL }}" >> $GITHUB_ENV
-            echo "ARBISCAN_API_KEY=${{ secrets.ARBISCAN_API_KEY }}" >> $GITHUB_ENV
-          fi
-
-          if [ "${{ inputs.network }}" == "bellecour" ]; then
-            echo "BELLECOUR_RPC_URL=${{ secrets.BELLECOUR_RPC_URL }}" >> $GITHUB_ENV
           fi
 
       - name: Deploy contracts
         run: |
-          echo "Deploying to: ${{ inputs.network }} with ${{ inputs.environment }} environment"
-          npm run deploy -- --network ${{ inputs.network }}
+          DEPLOYER_PRIVATE_KEY=${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+          RPC_URL=${{ secrets.RPC_URL }} \
+          EXPLORER_API_KEY=${{ secrets.EXPLORER_API_KEY }} \
+            npm run deploy -- --network ${{ inputs.network }}
 
       - name: Update config.json with ERC1538Proxy address
         if: inputs.network != 'hardhat'
@@ -97,7 +76,7 @@ jobs:
         if: inputs.network != 'hardhat'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'chore: save deployment artifacts for ${{ inputs.network }} (${{ inputs.environment }}, ${{ github.run_id }})'
+          commit_message: 'chore: Save deployment artifacts for ${{ inputs.network }} (run_id: ${{ github.run_id }})'
           file_pattern: 'deployments/${{ inputs.network }}/* config/config.json'
           commit_user_name: 'GitHub Actions Bot'
           commit_user_email: 'github-actions[bot]@users.noreply.github.com'

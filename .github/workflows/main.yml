@@ -8,6 +8,7 @@ on:
       - hotfix/*
       - main
       - v5
+  workflow_call:
 
 jobs:
   # Note: changing the name of the job disables Slither checks with the error:
