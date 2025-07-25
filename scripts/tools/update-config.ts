@@ -13,15 +13,15 @@ async function main(): Promise<void> {
     const chainId = network.chainId.toString();
 
     console.log(`Working with network: ${networkName} (Chain ID: ${chainId})`);
-    const deployment = await deployments.get('ERC1538Proxy');
+    const deployment = await deployments.get('DiamondProxy');
     const contractAddress = deployment.address;
 
     if (!contractAddress || contractAddress === 'null') {
-        console.error(`Failed to extract a valid ERC1538Proxy address from deployment file`);
+        console.error(`Failed to extract a valid DiamondProxy address from deployment file`);
         process.exit(1);
     }
 
-    console.log(`Found ERC1538Proxy address: ${contractAddress}`);
+    console.log(`Found DiamondProxy address: ${contractAddress}`);
     const localConfig = config;
 
     // Ensure the chain structure exists
@@ -47,7 +47,7 @@ async function main(): Promise<void> {
         localConfig.chains[chainId].v5 = {};
     }
 
-    const contractKey = 'ERC1538Proxy';
+    const contractKey = 'DiamondProxy';
     const previousValue = localConfig.chains[chainId].v5[contractKey] || 'null';
     localConfig.chains[chainId].v5[contractKey] = contractAddress;
 

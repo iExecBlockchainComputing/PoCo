@@ -12,13 +12,13 @@ import { IexecAccessors__factory, IexecMaintenanceDelegate__factory } from '../t
     }
     console.log(`Setting callback-gas to ${requestedCallbackGas.toLocaleString()} ..`);
     const [owner] = await ethers.getSigners();
-    const erc1538ProxyAddress = (await deployments.get('ERC1538Proxy')).address;
+    const diamondProxyAddress = (await deployments.get('DiamondProxy')).address;
     const viewCallbackGas = async () =>
-        (await IexecAccessors__factory.connect(erc1538ProxyAddress, owner).callbackgas())
+        (await IexecAccessors__factory.connect(diamondProxyAddress, owner).callbackgas())
             .toNumber()
             .toLocaleString();
     const callbackGasBefore = await viewCallbackGas();
-    await IexecMaintenanceDelegate__factory.connect(erc1538ProxyAddress, owner)
+    await IexecMaintenanceDelegate__factory.connect(diamondProxyAddress, owner)
         .setCallbackGas(requestedCallbackGas)
         .then((tx) => tx.wait());
     console.log(`Changed callback-gas from ${callbackGasBefore} to ${await viewCallbackGas()}`);
