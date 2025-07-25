@@ -46,7 +46,7 @@ const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 
-describe('IexecPocoBoostDelegate (IT)', function () {
+describe('IexecPocoBoostFacet (IT)', function () {
     let domain: TypedDataDomain;
     let proxyAddress: string;
     let iexecInstance: IexecAccessors;
@@ -72,7 +72,7 @@ describe('IexecPocoBoostDelegate (IT)', function () {
     let ordersAssets: OrdersAssets;
     let ordersPrices: OrdersPrices;
 
-    beforeEach('Deploy IexecPocoBoostDelegate', async () => {
+    beforeEach('Deploy IexecPocoBoostFacet', async () => {
         // We define a fixture to reuse the same setup in every test.
         // We use loadFixture to run this setup once, snapshot that state,
         // and reset Hardhat Network to that snapshot in every test.

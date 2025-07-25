@@ -7,7 +7,7 @@
 $.verbose = false // Disable bash commands logging.
 
 const projectRootDir = await $`dirname ${__dirname}`
-generateStorageDiagram('IexecPocoBoostDelegate')
+generateStorageDiagram('IexecPocoBoostFacet')
 
 /**
  * Generate storage diagram of a given contract.
