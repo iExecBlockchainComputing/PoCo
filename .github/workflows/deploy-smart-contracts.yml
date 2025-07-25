@@ -46,7 +46,7 @@ jobs:
             npm run test:fuji
           fi
 
-      - name: Deploy and verify contracts
+      - name: Deploy contracts
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
