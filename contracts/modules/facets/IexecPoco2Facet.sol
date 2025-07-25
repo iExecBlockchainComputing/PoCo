@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -11,8 +11,6 @@ import {FacetBase} from "../FacetBase.v8.sol";
 import {IexecPoco2} from "../interfaces/IexecPoco2.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
-
-// TODO: Revert with custom errors
 
 contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifier {
     modifier onlyScheduler(bytes32 _taskId) {
