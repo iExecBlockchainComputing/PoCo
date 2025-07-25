@@ -55,7 +55,7 @@ type ChainConfig = {
         AppRegistry?: string;
         DatasetRegistry?: string;
         WorkerpoolRegistry?: string;
-        ERC1538Proxy?: string; // Deprecated, use DiamondProxy instead
+        ERC1538Proxy?: string; // Deprecated, use DiamondProxy instead TODO: to remove
         DiamondProxy?: string;
         IexecLibOrders_v5?: string;
     };
