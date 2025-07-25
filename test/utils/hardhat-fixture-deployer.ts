@@ -23,9 +23,9 @@ async function deployAll() {
  */
 async function setUpLocalForkInNativeMode() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const proxyAddress = config.getChainConfig(chainId).v5.ERC1538Proxy;
+    const proxyAddress = config.getChainConfig(chainId).v5.DiamondProxy;
     if (!proxyAddress) {
-        throw new Error('ERC1538Proxy is required');
+        throw new Error('DiamondProxy is required');
     }
     await fundAccounts(proxyAddress, proxyAddress, true);
     await transferAllOwnerships(config.getChainConfig(chainId));
@@ -48,16 +48,16 @@ async function setUpLocalForkInTokenMode() {
     }
     await transferAllOwnerships(chainConfig);
 
-    const proxyAddress = chainConfig.v5.ERC1538Proxy;
+    const proxyAddress = chainConfig.v5.DiamondProxy;
     if (proxyAddress) {
-        console.log(`Using existing ERC1538Proxy at ${proxyAddress}`);
+        console.log(`Using existing DiamondProxy at ${proxyAddress}`);
         return proxyAddress;
     } else {
-        console.log('No existing ERC1538Proxy found, deploying new contracts');
+        console.log('No existing DiamondProxy found, deploying new contracts');
         // Deploy all contracts
         await deploy();
-        const newProxyAddress = (await deployments.get('ERC1538Proxy')).address;
-        console.log(`Deployed new ERC1538Proxy at ${newProxyAddress}`);
+        const newProxyAddress = (await deployments.get('Diamond')).address;
+        console.log(`Deployed new DiamondProxy at ${newProxyAddress}`);
         return newProxyAddress;
     }
 }

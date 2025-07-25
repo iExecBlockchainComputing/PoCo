@@ -29,15 +29,16 @@ async function printBlockTime() {
     }
 }
 
-async function printFunctions(erc1538ProxyAddress: string) {
-    const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(
-        erc1538ProxyAddress,
+// TODO: update this function to use DiamonLoup
+async function printFunctions(diamondProxyAddress: string) {
+    const diamondQueryInstance: ERC1538Query = ERC1538Query__factory.connect(
+        diamondProxyAddress,
         ethers.provider,
     );
-    const functionCount = Number(await erc1538QueryInstance.totalFunctions());
-    console.log(`ERC1538Proxy supports ${functionCount} functions:`);
+    const functionCount = Number(await diamondQueryInstance.totalFunctions());
+    console.log(`DiamondProxy supports ${functionCount} functions:`);
     for (let i = 0; i < functionCount; i++) {
-        const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
+        const [method, , contract] = await diamondQueryInstance.functionByIndex(i);
         console.log(`[${i}] ${contract} ${method}`);
     }
 }

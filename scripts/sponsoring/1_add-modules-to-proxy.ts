@@ -29,10 +29,10 @@ export async function addModulesToProxy() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;
     console.log('Link functions to proxy:');
-    if (!deploymentOptions.ERC1538Proxy) {
-        throw new Error('ERC1538Proxy is required');
+    if (!deploymentOptions.DiamondProxy) {
+        throw new Error('DiamondProxy is required');
     }
-    const erc1538ProxyAddress = deploymentOptions.ERC1538Proxy;
+    const diamondProxyAddress = deploymentOptions.DiamondProxy;
     const iexecOrderManagementAddress = (await hre.deployments.get('IexecOrderManagementDelegate'))
         .address;
     const iexecPoco1DelegateAddress = (await hre.deployments.get('IexecPoco1Delegate')).address;
@@ -40,11 +40,11 @@ export async function addModulesToProxy() {
     const iexecPocoAccessorsDelegateAddress = (
         await hre.deployments.get('IexecPocoAccessorsDelegate')
     ).address;
-    await printFunctions(erc1538ProxyAddress);
+    await printFunctions(diamondProxyAddress);
 
     console.log('Functions about to be added to proxy:');
     const timelockAddress = await Ownable__factory.connect(
-        erc1538ProxyAddress,
+        diamondProxyAddress,
         ethers.provider,
     ).owner();
     const iexecOrderManagementProxyUpdate = encodeModuleProxyUpdate(
@@ -73,7 +73,7 @@ export async function addModulesToProxy() {
         iexecPocoAccessorsProxyUpdate,
     ];
     const updateProxyArgs = [
-        Array(updates.length).fill(erc1538ProxyAddress),
+        Array(updates.length).fill(diamondProxyAddress),
         Array(updates.length).fill(0),
         updates,
         ZeroHash,
@@ -104,7 +104,7 @@ export async function addModulesToProxy() {
     console.log('Time traveling..');
     await executeUpgrade();
 
-    return erc1538ProxyAddress;
+    return diamondProxyAddress;
 
     async function scheduleUpgrade() {
         await timelockInstance
@@ -118,7 +118,7 @@ export async function addModulesToProxy() {
 
     async function executeUpgrade() {
         await printBlockTime();
-        await printFunctions(erc1538ProxyAddress);
+        await printFunctions(diamondProxyAddress);
         console.log('Executing proxy update..');
         await timelockInstance
             .connect(timelockAdminSigner)
@@ -127,6 +127,6 @@ export async function addModulesToProxy() {
                 console.log(x);
                 return x.wait();
             });
-        await printFunctions(erc1538ProxyAddress);
+        await printFunctions(diamondProxyAddress);
     }
 }

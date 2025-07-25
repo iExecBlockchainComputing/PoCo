@@ -21,16 +21,16 @@ import {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;
     console.log('Link Boost functions to proxy:');
-    if (!deploymentOptions.ERC1538Proxy) {
-        throw new Error('ERC1538Proxy is required');
+    if (!deploymentOptions.DiamondProxy) {
+        throw new Error('DiamondProxy is required');
     }
-    const erc1538ProxyAddress = deploymentOptions.ERC1538Proxy;
+    const diamondProxyAddress = deploymentOptions.DiamondProxy;
     const iexecPocoBoostDelegateAddress = (await deployments.get('IexecPocoBoostDelegate')).address; // Bellecour: 0x8425229f979AB3b0dDDe00D475D762cA4d6a5eFc
     const iexecPocoBoostAccessorsDelegateAddress = (
         await deployments.get('IexecPocoBoostAccessorsDelegate')
     ).address; // Bellecour: 0x56185a2b0dc8b556BBfBAFB702BC971Ed75e868C
     const [account] = await ethers.getSigners();
-    const timelockAddress = await Ownable__factory.connect(erc1538ProxyAddress, account).owner(); // Bellecour: 0x4611B943AA1d656Fc669623b5DA08756A7e288E9
+    const timelockAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner(); // Bellecour: 0x4611B943AA1d656Fc669623b5DA08756A7e288E9
     const iexecPocoBoostProxyUpdate = encodeModuleProxyUpdate(
         IexecPocoBoost__factory.createInterface(),
         iexecPocoBoostDelegateAddress,
@@ -43,7 +43,7 @@ import {
     const operationSalt = '0x0be814a62c44af32241a2c964e5680d1b25c783473c6e7875cbc8071770d7ff0'; // Random
     const delay = BigInt(60 * 60 * 24 * 7);
     const updateProxyArgs = [
-        Array(2).fill(erc1538ProxyAddress),
+        Array(2).fill(diamondProxyAddress),
         Array(2).fill(0),
         [iexecPocoBoostProxyUpdate, iexecPocoBoostAccessorsProxyUpdate],
         ZeroHash,
@@ -68,7 +68,7 @@ import {
     await time.increase(delay);
     console.log('Time traveling..');
     await printBlockTime();
-    await printFunctions(erc1538ProxyAddress);
+    await printFunctions(diamondProxyAddress);
     console.log('Executing proxy update..');
     await timelockInstance
         .connect(timelockAdminSigner)
@@ -77,5 +77,5 @@ import {
             console.log(tx);
             tx.wait();
         });
-    await printFunctions(erc1538ProxyAddress);
+    await printFunctions(diamondProxyAddress);
 })();
