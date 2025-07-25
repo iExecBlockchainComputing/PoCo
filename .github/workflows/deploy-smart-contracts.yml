@@ -17,11 +17,7 @@ on:
 jobs:
   # Build and test before deploying.
   build-and-test:
-    # uses: ./.github/workflows/main.yml
-    runs-on: ubuntu-latest
-    steps:
-      - name: Mock
-        run: echo "Done."
+    uses: ./.github/workflows/main.yml
 
   deploy:
     needs: build-and-test
