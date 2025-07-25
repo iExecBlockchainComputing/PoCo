@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { deployments, ethers } from 'hardhat';
-import { IexecAccessors__factory, IexecMaintenanceDelegate__factory } from '../typechain';
+import { IexecAccessors__factory, IexecMaintenanceFacet__factory } from '../typechain';
 
 (async () => {
     const requestedCallbackGas = Number(process.env.CALLBACK_GAS);
@@ -18,7 +18,7 @@ import { IexecAccessors__factory, IexecMaintenanceDelegate__factory } from '../t
             .toNumber()
             .toLocaleString();
     const callbackGasBefore = await viewCallbackGas();
-    await IexecMaintenanceDelegate__factory.connect(diamondProxyAddress, owner)
+    await IexecMaintenanceFacet__factory.connect(diamondProxyAddress, owner)
         .setCallbackGas(requestedCallbackGas)
         .then((tx) => tx.wait());
     console.log(`Changed callback-gas from ${callbackGasBefore} to ${await viewCallbackGas()}`);

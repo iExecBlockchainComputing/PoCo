@@ -3,15 +3,15 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecPocoBoostAccessorsDelegate} from "../../../modules/delegates/IexecPocoBoostAccessorsDelegate.sol";
-import {IexecPocoBoostDelegate} from "../../../modules/delegates/IexecPocoBoostDelegate.sol";
+import {IexecPocoBoostAccessorsFacet} from "../../../modules/facets/IexecPocoBoostAccessorsFacet.sol";
+import {IexecPocoBoostFacet} from "../../../modules/facets/IexecPocoBoostFacet.sol";
 
 /**
  * @notice This contract is dedicated to slither analysis.
  *
- * @dev This contract aggregates multiple delegate contracts into a single entry point
+ * @dev This contract aggregates multiple facet contracts into a single entry point
  *      to facilitate static analysis using Slither.
  */
 //slither-disable-start unused-state
-contract SlitherBoost is IexecPocoBoostDelegate, IexecPocoBoostAccessorsDelegate {}
+contract SlitherBoost is IexecPocoBoostFacet, IexecPocoBoostAccessorsFacet {}
 //slither-disable-end unused-state

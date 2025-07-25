@@ -21,9 +21,9 @@ import {
     IexecOrderManagement__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    IexecPocoBoostDelegate,
-    IexecPocoBoostDelegate__factory,
+    IexecPocoBoostAccessorsFacet__factory,
+    IexecPocoBoostFacet,
+    IexecPocoBoostFacet__factory,
     OwnableMock__factory,
     TestClient,
     TestClient__factory,
@@ -72,7 +72,7 @@ const someSignature = '0xabcd'; // contract signatures could have arbitrary form
 const randomEOAAddress = ethers.Wallet.createRandom().address;
 
 let proxyAddress: string;
-let iexecPocoBoostInstance: IexecPocoBoostDelegate;
+let iexecPocoBoostInstance: IexecPocoBoostFacet;
 let iexecMaintenanceAsAdmin: IexecMaintenance;
 let iexecAccessor: IexecAccessors;
 let oracleConsumerInstance: TestClient;
@@ -124,7 +124,7 @@ describe('IexecPocoBoost', function () {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         domain = iexecWrapper.getDomain();
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, anyone);
+        iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, anyone);
         iexecMaintenanceAsAdmin = IexecMaintenance__factory.connect(
             proxyAddress,
             accounts.iexecAdmin,
@@ -2442,7 +2442,7 @@ async function expectFrozen(account: string, expectedFrozenValue: bigint) {
 }
 
 async function viewDealBoost(dealId: string) {
-    return await IexecPocoBoostAccessorsDelegate__factory.connect(
+    return await IexecPocoBoostAccessorsFacet__factory.connect(
         proxyAddress,
         ethers.provider,
     ).viewDealBoost(dealId);

@@ -5,10 +5,10 @@ import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { BytesLike, ZeroHash } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import {
-    IexecOrderManagementDelegate__factory,
-    IexecPoco1Delegate__factory,
-    IexecPoco2Delegate__factory,
-    IexecPocoAccessorsDelegate__factory,
+    IexecOrderManagementFacet__factory,
+    IexecPoco1Facet__factory,
+    IexecPoco2Facet__factory,
+    IexecPocoAccessorsFacet__factory,
     Ownable__factory,
     TimelockController__factory,
 } from '../../typechain';
@@ -33,13 +33,12 @@ export async function addModulesToProxy() {
         throw new Error('DiamondProxy is required');
     }
     const diamondProxyAddress = deploymentOptions.DiamondProxy;
-    const iexecOrderManagementAddress = (await hre.deployments.get('IexecOrderManagementDelegate'))
+    const iexecOrderManagementAddress = (await hre.deployments.get('IexecOrderManagementFacet'))
         .address;
-    const iexecPoco1DelegateAddress = (await hre.deployments.get('IexecPoco1Delegate')).address;
-    const iexecPoco2DelegateAddress = (await hre.deployments.get('IexecPoco2Delegate')).address;
-    const iexecPocoAccessorsDelegateAddress = (
-        await hre.deployments.get('IexecPocoAccessorsDelegate')
-    ).address;
+    const iexecPoco1FacetAddress = (await hre.deployments.get('IexecPoco1Facet')).address;
+    const iexecPoco2FacetAddress = (await hre.deployments.get('IexecPoco2Facet')).address;
+    const iexecPocoAccessorsFacetAddress = (await hre.deployments.get('IexecPocoAccessorsFacet'))
+        .address;
     await printFunctions(diamondProxyAddress);
 
     console.log('Functions about to be added to proxy:');
@@ -48,20 +47,20 @@ export async function addModulesToProxy() {
         ethers.provider,
     ).owner();
     const iexecOrderManagementProxyUpdate = encodeModuleProxyUpdate(
-        IexecOrderManagementDelegate__factory.createInterface(),
+        IexecOrderManagementFacet__factory.createInterface(),
         iexecOrderManagementAddress,
     );
     const iexecPoco1ProxyUpdate = encodeModuleProxyUpdate(
-        IexecPoco1Delegate__factory.createInterface(),
-        iexecPoco1DelegateAddress,
+        IexecPoco1Facet__factory.createInterface(),
+        iexecPoco1FacetAddress,
     );
     const iexecPoco2ProxyUpdate = encodeModuleProxyUpdate(
-        IexecPoco2Delegate__factory.createInterface(),
-        iexecPoco2DelegateAddress,
+        IexecPoco2Facet__factory.createInterface(),
+        iexecPoco2FacetAddress,
     );
     const iexecPocoAccessorsProxyUpdate = encodeModuleProxyUpdate(
-        IexecPocoAccessorsDelegate__factory.createInterface(),
-        iexecPocoAccessorsDelegateAddress,
+        IexecPocoAccessorsFacet__factory.createInterface(),
+        iexecPocoAccessorsFacetAddress,
     );
     // The salt must be the same for a given schedule & execute operation set
     // Please increment salt in case of operation ID collision
