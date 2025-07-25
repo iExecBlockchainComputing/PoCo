@@ -21,8 +21,9 @@ contract IexecEscrow is FacetBase {
      * @param value The value to lock.
      */
     function lock(address account, uint256 value) internal {
+        PocoStorage storage $ = getPocoStorage();
         _transfer(account, address(this), value);
-        m_frozens[account] += value;
+        $.m_frozens[account] += value;
         emit Lock(account, value);
     }
 
@@ -32,8 +33,9 @@ contract IexecEscrow is FacetBase {
      * @param value The value to unlock.
      */
     function unlock(address account, uint256 value) internal {
+        PocoStorage storage $ = getPocoStorage();
         _transfer(address(this), account, value);
-        m_frozens[account] -= value;
+        $.m_frozens[account] -= value;
         emit Unlock(account, value);
     }
 
@@ -55,7 +57,8 @@ contract IexecEscrow is FacetBase {
      * @param ref A reference of the seize context.
      */
     function seize(address account, uint256 value, bytes32 ref) internal {
-        m_frozens[account] -= value;
+        PocoStorage storage $ = getPocoStorage();
+        $.m_frozens[account] -= value;
         emit Seize(account, value, ref);
     }
 
@@ -75,14 +78,15 @@ contract IexecEscrow is FacetBase {
     function _transfer(address from, address to, uint256 value) private {
         require(from != address(0), "IexecEscrow: Transfer from empty address");
         require(to != address(0), "IexecEscrow: Transfer to empty address");
-        uint256 fromBalance = m_balances[from];
+        PocoStorage storage $ = getPocoStorage();
+        uint256 fromBalance = $.m_balances[from];
         require(value <= fromBalance, "IexecEscrow: Transfer amount exceeds balance");
         // This block is guaranteed to not underflow because we check the from balance
         // and guaranteed to not overflow because the total supply is capped and there
         // is no minting involved.
         unchecked {
-            m_balances[from] = fromBalance - value;
-            m_balances[to] += value;
+            $.m_balances[from] = fromBalance - value;
+            $.m_balances[to] += value;
         }
         emit Transfer(from, to, value);
     }

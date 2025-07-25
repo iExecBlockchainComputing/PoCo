@@ -29,7 +29,8 @@ contract IexecPocoAccessorsFacet is
      * @param id The ID of the deal.
      */
     function viewDeal(bytes32 id) external view returns (IexecLibCore_v5.Deal memory deal) {
-        return m_deals[id];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_deals[id];
     }
 
     /**
@@ -37,7 +38,8 @@ contract IexecPocoAccessorsFacet is
      * @param id id of the task
      */
     function viewTask(bytes32 id) external view returns (IexecLibCore_v5.Task memory) {
-        return m_tasks[id];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_tasks[id];
     }
 
     /**

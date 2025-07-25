@@ -24,18 +24,19 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
         address _workerpoolregistryAddress,
         address _v3_iexecHubAddress
     ) external override onlyOwner {
-        require(EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
-        EIP712DOMAIN_SEPARATOR = _domain().hash();
+        PocoStorage storage $ = getPocoStorage();
+        require($.EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
+        $.EIP712DOMAIN_SEPARATOR = _domain().hash();
 
-        m_baseToken = IERC20(_token);
-        m_name = _name;
-        m_symbol = _symbol;
-        m_decimals = _decimal;
-        m_appregistry = IRegistry(_appregistryAddress);
-        m_datasetregistry = IRegistry(_datasetregistryAddress);
-        m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
-        m_v3_iexecHub = IexecHubInterface(_v3_iexecHubAddress);
-        m_callbackgas = 100000;
+        $.m_baseToken = IERC20(_token);
+        $.m_name = _name;
+        $.m_symbol = _symbol;
+        $.m_decimals = _decimal;
+        $.m_appregistry = IRegistry(_appregistryAddress);
+        $.m_datasetregistry = IRegistry(_datasetregistryAddress);
+        $.m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
+        $.m_v3_iexecHub = IexecHubInterface(_v3_iexecHubAddress);
+        $.m_callbackgas = 100000;
     }
 
     function domain() external view override returns (IexecLibOrders_v5.EIP712Domain memory) {
@@ -43,22 +44,24 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     }
 
     function updateDomainSeparator() external override {
-        require(EIP712DOMAIN_SEPARATOR != bytes32(0), "not-configured");
-        EIP712DOMAIN_SEPARATOR = _domain().hash();
+        PocoStorage storage $ = getPocoStorage();
+        require($.EIP712DOMAIN_SEPARATOR != bytes32(0), "not-configured");
+        $.EIP712DOMAIN_SEPARATOR = _domain().hash();
     }
 
     function importScore(address _worker) external override {
-        require(!m_v3_scoreImported[_worker], "score-already-imported");
-        m_workerScores[_worker] = m_workerScores[_worker].max(m_v3_iexecHub.viewScore(_worker));
-        m_v3_scoreImported[_worker] = true;
+        PocoStorage storage $ = getPocoStorage();
+        require(!$.m_v3_scoreImported[_worker], "score-already-imported");
+        $.m_workerScores[_worker] = $.m_workerScores[_worker].max($.m_v3_iexecHub.viewScore(_worker));
+        $.m_v3_scoreImported[_worker] = true;
     }
 
     function setTeeBroker(address _teebroker) external override onlyOwner {
-        m_teebroker = _teebroker;
+        getPocoStorage().m_teebroker = _teebroker;
     }
 
     function setCallbackGas(uint256 _callbackgas) external override onlyOwner {
-        m_callbackgas = _callbackgas;
+        getPocoStorage().m_callbackgas = _callbackgas;
     }
 
     function _chainId() internal pure returns (uint256 id) {

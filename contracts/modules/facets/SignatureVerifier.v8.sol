@@ -17,7 +17,8 @@ contract SignatureVerifier is FacetBase {
      * @param structHash The original structure hash.
      */
     function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
-        return MessageHashUtils.toTypedDataHash(EIP712DOMAIN_SEPARATOR, structHash);
+        PocoStorage storage $ = getPocoStorage();
+        return MessageHashUtils.toTypedDataHash($.EIP712DOMAIN_SEPARATOR, structHash);
     }
 
     /**
@@ -89,7 +90,8 @@ contract SignatureVerifier is FacetBase {
         address account,
         bytes32 messageHash
     ) internal view returns (bool) {
-        return account != address(0) && account == m_presigned[messageHash];
+        PocoStorage storage $ = getPocoStorage();
+        return account != address(0) && account == $.m_presigned[messageHash];
     }
 
     /**

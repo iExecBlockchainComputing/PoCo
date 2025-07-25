@@ -25,6 +25,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageAppOrder(
         IexecLibOrders_v5.AppOrderOperation calldata _apporderoperation
     ) external override {
+        PocoStorage storage $ = getPocoStorage();
         address owner = IERC5313(_apporderoperation.order.app).owner();
         require(
             owner == _msgSender() ||
@@ -38,10 +39,10 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
 
         bytes32 apporderHash = _toTypedDataHash(_apporderoperation.order.hash());
         if (_apporderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
-            m_presigned[apporderHash] = owner;
+            $.m_presigned[apporderHash] = owner;
             emit SignedAppOrder(apporderHash);
         } else if (_apporderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE) {
-            m_consumed[apporderHash] = _apporderoperation.order.volume;
+            $.m_consumed[apporderHash] = _apporderoperation.order.volume;
             emit ClosedAppOrder(apporderHash);
         }
     }
@@ -49,6 +50,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageDatasetOrder(
         IexecLibOrders_v5.DatasetOrderOperation calldata _datasetorderoperation
     ) external override {
+        PocoStorage storage $ = getPocoStorage();
         address owner = IERC5313(_datasetorderoperation.order.dataset).owner();
         require(
             owner == _msgSender() ||
@@ -62,10 +64,10 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
 
         bytes32 datasetorderHash = _toTypedDataHash(_datasetorderoperation.order.hash());
         if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
-            m_presigned[datasetorderHash] = owner;
+            $.m_presigned[datasetorderHash] = owner;
             emit SignedDatasetOrder(datasetorderHash);
         } else if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE) {
-            m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
+            $.m_consumed[datasetorderHash] = _datasetorderoperation.order.volume;
             emit ClosedDatasetOrder(datasetorderHash);
         }
     }
@@ -73,6 +75,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageWorkerpoolOrder(
         IexecLibOrders_v5.WorkerpoolOrderOperation calldata _workerpoolorderoperation
     ) external override {
+        PocoStorage storage $ = getPocoStorage();
         address owner = IERC5313(_workerpoolorderoperation.order.workerpool).owner();
         require(
             owner == _msgSender() ||
@@ -86,12 +89,12 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
 
         bytes32 workerpoolorderHash = _toTypedDataHash(_workerpoolorderoperation.order.hash());
         if (_workerpoolorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
-            m_presigned[workerpoolorderHash] = owner;
+            $.m_presigned[workerpoolorderHash] = owner;
             emit SignedWorkerpoolOrder(workerpoolorderHash);
         } else if (
             _workerpoolorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE
         ) {
-            m_consumed[workerpoolorderHash] = _workerpoolorderoperation.order.volume;
+            $.m_consumed[workerpoolorderHash] = _workerpoolorderoperation.order.volume;
             emit ClosedWorkerpoolOrder(workerpoolorderHash);
         }
     }
@@ -99,6 +102,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageRequestOrder(
         IexecLibOrders_v5.RequestOrderOperation calldata _requestorderoperation
     ) external override {
+        PocoStorage storage $ = getPocoStorage();
         address owner = _requestorderoperation.order.requester;
         require(
             owner == _msgSender() ||
@@ -112,10 +116,10 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
 
         bytes32 requestorderHash = _toTypedDataHash(_requestorderoperation.order.hash());
         if (_requestorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
-            m_presigned[requestorderHash] = owner;
+            $.m_presigned[requestorderHash] = owner;
             emit SignedRequestOrder(requestorderHash);
         } else if (_requestorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.CLOSE) {
-            m_consumed[requestorderHash] = _requestorderoperation.order.volume;
+            $.m_consumed[requestorderHash] = _requestorderoperation.order.volume;
             emit ClosedRequestOrder(requestorderHash);
         }
     }
