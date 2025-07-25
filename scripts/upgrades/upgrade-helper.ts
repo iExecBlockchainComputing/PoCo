@@ -1,20 +1,34 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { Interface } from 'ethers';
+import { Interface, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
-import { ERC1538Query, ERC1538Query__factory, ERC1538Update__factory } from '../../typechain';
+import { FacetCutAction } from 'hardhat-deploy/dist/types';
+import { DiamondCutFacet__factory, DiamondLoupeFacet__factory } from '../../typechain';
 
 function encodeModuleProxyUpdate(ModuleInterface: Interface, moduleAddress: string) {
-    let moduleFunctions = '';
+    // Get function selectors from the interface
+    const functionSelectors: string[] = [];
     ModuleInterface.forEachFunction((functionFragment) => {
         const func = functionFragment.format();
         console.log(`- ${func}`);
-        moduleFunctions += func + ';';
+        const selector = ModuleInterface.getFunction(functionFragment.name)?.selector;
+        if (selector) {
+            functionSelectors.push(selector);
+        }
     });
-    const moduleProxyUpdateData = ERC1538Update__factory.createInterface().encodeFunctionData(
-        'updateContract',
-        [moduleAddress, moduleFunctions, ''],
+
+    // Create FacetCut for adding the module
+    const facetCut = {
+        facetAddress: moduleAddress,
+        action: FacetCutAction.Add,
+        functionSelectors: functionSelectors,
+    };
+
+    // Encode diamondCut call
+    const moduleProxyUpdateData = DiamondCutFacet__factory.createInterface().encodeFunctionData(
+        'diamondCut',
+        [[facetCut], ZeroAddress, '0x'],
     );
     return moduleProxyUpdateData;
 }
@@ -29,17 +43,29 @@ async function printBlockTime() {
     }
 }
 
-// TODO: update this function to use DiamondLoup
 async function printFunctions(diamondProxyAddress: string) {
-    const diamondQueryInstance: ERC1538Query = ERC1538Query__factory.connect(
+    const diamondLoupeInstance = DiamondLoupeFacet__factory.connect(
         diamondProxyAddress,
         ethers.provider,
     );
-    const functionCount = Number(await diamondQueryInstance.totalFunctions());
-    console.log(`DiamondProxy supports ${functionCount} functions:`);
-    for (let i = 0; i < functionCount; i++) {
-        const [method, , contract] = await diamondQueryInstance.functionByIndex(i);
-        console.log(`[${i}] ${contract} ${method}`);
+    const facets = await diamondLoupeInstance.facets();
+
+    let totalFunctions = 0;
+    facets.forEach((facet) => {
+        totalFunctions += facet.functionSelectors.length;
+    });
+
+    console.log(`DiamondProxy supports ${totalFunctions} functions:`);
+
+    let functionIndex = 0;
+    for (const facet of facets) {
+        for (const selector of facet.functionSelectors) {
+            // Try to decode the selector to a readable function signature
+            // Note: We can't easily get the full function signature from just the selector
+            // This is a limitation compared to ERC1538Query.functionByIndex
+            console.log(`[${functionIndex}] ${facet.facetAddress} ${selector}`);
+            functionIndex++;
+        }
     }
 }
 
