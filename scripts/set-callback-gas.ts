@@ -12,7 +12,7 @@ import { IexecAccessors__factory, IexecMaintenanceDelegate__factory } from '../t
     }
     console.log(`Setting callback-gas to ${requestedCallbackGas.toLocaleString()} ..`);
     const [owner] = await ethers.getSigners();
-    const diamondProxyAddress = (await deployments.get('DiamondProxy')).address;
+    const diamondProxyAddress = (await deployments.get('Diamond')).address;
     const viewCallbackGas = async () =>
         (await IexecAccessors__factory.connect(diamondProxyAddress, owner).callbackgas())
             .toNumber()
