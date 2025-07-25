@@ -4,7 +4,7 @@
 
 - Migrate proxy to Diamond pattern (ERC-2535):
   - Format all solidity files (#233)
-  - Rename ERC1538 architure to diamond Proxy architecture(#226, #229, #230)
+  - Rename ERC1538 architure to diamond Proxy architecture(#226, #229, #230, #234)
   - Remove ENS module (#225)
   - Add Diamond contract unit tests (#224)
   - Fix `fallback` and `receive` (#223)
