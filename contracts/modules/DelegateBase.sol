@@ -12,7 +12,6 @@ import "./interfaces/IOwnable.sol";
 // TODO rename this contract to `FacetBase`.
 
 abstract contract DelegateBase is Store {
-
     modifier onlyOwner() {
         require(_msgSender() == owner(), "Ownable: caller is not the owner");
         _;
@@ -22,8 +21,7 @@ abstract contract DelegateBase is Store {
         return IOwnable(address(this)).owner();
     }
 
-    function _msgSender() internal view returns (address ) {
+    function _msgSender() internal view returns (address) {
         return msg.sender;
     }
-
 }

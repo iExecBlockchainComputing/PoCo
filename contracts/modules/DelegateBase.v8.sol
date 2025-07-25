@@ -26,7 +26,7 @@ abstract contract DelegateBase is Store {
         return IERC5313(address(this)).owner();
     }
 
-    function _msgSender() internal view returns (address ) {
+    function _msgSender() internal view returns (address) {
         return msg.sender;
     }
 }
