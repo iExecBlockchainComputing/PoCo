@@ -9,7 +9,7 @@ import {IexecPocoBoostFacet} from "../../../modules/facets/IexecPocoBoostFacet.s
 /**
  * @notice This contract is dedicated to slither analysis.
  *
- * @dev This contract aggregates multiple delegate contracts into a single entry point
+ * @dev This contract aggregates multiple facet contracts into a single entry point
  *      to facilitate static analysis using Slither.
  */
 //slither-disable-start unused-state
