@@ -68,20 +68,20 @@ export default async function deploy() {
     const erc1538UpdateAddress = await factoryDeployer.deployContract(
         new ERC1538UpdateDelegate__factory(),
     );
-    // const transferOwnershipCall = await Ownable__factory.connect(
-    //     ZeroAddress, // any is fine
-    //     owner, // any is fine
-    // )
-    //     .transferOwnership.populateTransaction(owner.address)
-    //     .then((tx) => tx.data)
-    //     .catch(() => {
-    //         throw new Error('Failed to prepare transferOwnership data');
-    //     });
-    // const erc1538ProxyAddress = await factoryDeployer.deployContract(
-    //     new ERC1538Proxy__factory(),
-    //     [erc1538UpdateAddress],
-    //     transferOwnershipCall,
-    // );
+    const transferOwnershipCall = await Ownable__factory.connect(
+        ZeroAddress, // any is fine
+        owner, // any is fine
+    )
+        .transferOwnership.populateTransaction(owner.address)
+        .then((tx) => tx.data)
+        .catch(() => {
+            throw new Error('Failed to prepare transferOwnership data');
+        });
+    const erc1538ProxyAddress = await factoryDeployer.deployContract(
+        new ERC1538Proxy__factory(),
+        [erc1538UpdateAddress],
+        transferOwnershipCall,
+    );
     // const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
     // console.log(`IexecInstance found at address: ${await erc1538.getAddress()}`);
     // // Deploy library & modules
