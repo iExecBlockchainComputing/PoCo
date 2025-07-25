@@ -42,7 +42,7 @@ const someDomainSeparator = '0x0000000000000000000000000000000000000000000000000
 describe('IexecConfiguration', async () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
-    let iexecMaintenanceExtra: IexecConfigurationExtra;
+    let iexecConfigurationExtra: IexecConfigurationExtra;
     let [iexecAdmin, worker, anyone]: SignerWithAddress[] = [];
 
     beforeEach('Deploy', async () => {
@@ -55,7 +55,7 @@ describe('IexecConfiguration', async () => {
         ({ iexecAdmin, worker, anyone } = accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
-        iexecMaintenanceExtra = IexecConfigurationExtra__factory.connect(proxyAddress, anyone);
+        iexecConfigurationExtra = IexecConfigurationExtra__factory.connect(proxyAddress, anyone);
     }
 
     describe('Configure', () => {
@@ -176,7 +176,7 @@ describe('IexecConfiguration', async () => {
             const appRegistry = randomAddress();
             const datasetRegistry = randomAddress();
             const workerpoolRegistry = randomAddress();
-            await iexecMaintenanceExtra
+            await iexecConfigurationExtra
                 .connect(iexecAdmin)
                 .changeRegistries(appRegistry, datasetRegistry, workerpoolRegistry)
                 .then((tx) => tx.wait());
@@ -187,7 +187,7 @@ describe('IexecConfiguration', async () => {
 
         it('Should not change registries when sender is not the owner', async () => {
             await expect(
-                iexecMaintenanceExtra.changeRegistries(
+                iexecConfigurationExtra.changeRegistries(
                     randomAddress(),
                     randomAddress(),
                     randomAddress(),
