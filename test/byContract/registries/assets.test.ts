@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { BytesLike } from 'ethers';
-import { deployments, ethers } from 'hardhat';
+import { ethers } from 'hardhat';
 import {
     App,
     AppRegistry,
@@ -15,13 +15,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
-    ENSRegistry,
-    ENSRegistry__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
-    PublicResolver,
-    PublicResolver__factory,
-    ReverseRegistrar__factory,
     Workerpool,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
@@ -36,9 +31,6 @@ describe('Assets', () => {
     let iexecPoco: IexecInterfaceNative;
     let [appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
-    let ensRegistry: ENSRegistry;
-    let ensRegistryAddress: string;
-    let reverseResolver: PublicResolver;
     let appRegistry: AppRegistry;
     let datasetRegistry: DatasetRegistry;
     let workerpoolRegistry: WorkerpoolRegistry;
@@ -54,7 +46,6 @@ describe('Assets', () => {
 
     async function initFixture() {
         ({ appProvider, datasetProvider, scheduler, anyone } = await getIexecAccounts());
-        ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
 
@@ -67,15 +58,6 @@ describe('Assets', () => {
             await iexecPoco.workerpoolregistry(),
             anyone,
         );
-
-        ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
-        const reverseRootNameHash = ethers.namehash('addr.reverse');
-        const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
-        const reverseResolverAddress = await ReverseRegistrar__factory.connect(
-            reverseRegistrarAddress,
-            anyone,
-        ).defaultResolver();
-        reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
     }
 
     describe('App', () => {
@@ -121,27 +103,6 @@ describe('Assets', () => {
                 );
             });
         });
-
-        describe('setName', () => {
-            it('Should set name for the ENS reverse registration of the app', async () => {
-                const newENSName = 'myApp.eth';
-                await app
-                    .connect(appProvider)
-                    .setName(ensRegistryAddress, newENSName)
-                    .then((tx) => tx.wait());
-                const appAddress = await app.getAddress();
-                expect(await reverseResolver.name(computeNameHash(appAddress))).to.equal(
-                    newENSName,
-                );
-            });
-
-            it('Should not set name when send is not the owner', async () => {
-                const newENSName = 'unauthorized.eth';
-                await expect(app.setName(ensRegistryAddress, newENSName)).to.be.revertedWith(
-                    'caller is not the owner',
-                );
-            });
-        });
     });
 
     describe('Dataset', () => {
@@ -181,27 +142,6 @@ describe('Assets', () => {
                 );
             });
         });
-
-        describe('setName', () => {
-            it('Should set name for the ENS reverse registration of the dataset', async () => {
-                const newENSName = 'myDataset.eth';
-                await dataset
-                    .connect(datasetProvider)
-                    .setName(ensRegistryAddress, newENSName)
-                    .then((tx) => tx.wait());
-                const datasetAddress = await dataset.getAddress();
-                expect(await reverseResolver.name(computeNameHash(datasetAddress))).to.equal(
-                    newENSName,
-                );
-            });
-
-            it('Should not set name when send is not the owner', async () => {
-                const newENSName = 'unauthorized.eth';
-                await expect(dataset.setName(ensRegistryAddress, newENSName)).to.be.revertedWith(
-                    'caller is not the owner',
-                );
-            });
-        });
     });
 
     describe('Workerpool', () => {
@@ -234,27 +174,6 @@ describe('Assets', () => {
             it('Should not reinitialize created workerpool', async () => {
                 await expect(workerpool.initialize(...createWorkerpoolArgs)).to.be.revertedWith(
                     'already initialized',
-                );
-            });
-        });
-
-        describe('setName', () => {
-            it('Should set name for the ENS reverse registration of the workerpool', async () => {
-                const newENSName = 'myWorkerpool.eth';
-                await workerpool
-                    .connect(scheduler)
-                    .setName(ensRegistryAddress, newENSName)
-                    .then((tx) => tx.wait());
-                const workerpoolAddress = await workerpool.getAddress();
-                expect(await reverseResolver.name(computeNameHash(workerpoolAddress))).to.equal(
-                    newENSName,
-                );
-            });
-
-            it('Should not set name when send is not the owner', async () => {
-                const newENSName = 'unauthorized.eth';
-                await expect(workerpool.setName(ensRegistryAddress, newENSName)).to.be.revertedWith(
-                    'caller is not the owner',
                 );
             });
         });
@@ -295,7 +214,4 @@ describe('Assets', () => {
             });
         });
     });
-
-    const computeNameHash = (address: string) =>
-        ethers.namehash(`${address.substring(2)}.addr.reverse`);
 });

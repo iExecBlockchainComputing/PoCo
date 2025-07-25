@@ -19,7 +19,7 @@
     "test:native": "npm run clean && TEST__IS_NATIVE_CHAIN=true npx hardhat test test/byContract/IexecEscrow/IexecEscrowNative.test.ts",
     "coverage": "npx hardhat coverage",
     "verify": "npx hardhat verify",
-    "format": "npx prettier --write",
+    "format": "npx prettier --write ./contracts/**/*.sol",
     "uml": "npm run sol-to-uml && npm run puml-to-links && npm run storage-to-diagrams",
     "sol-to-uml": "npx zx scripts/tools/sol-to-uml.mjs",
     "puml-to-links": "npx zx scripts/tools/puml-to-links.mjs",
@@ -63,7 +63,6 @@
   },
   "devDependencies": {
     "@amxx/factory": "^1.0.0",
-    "@ensdomains/ens-contracts": "^0.0.3",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@openzeppelin/upgrades-core": "^1.37.1",
     "dotenv": "^16.5.0",

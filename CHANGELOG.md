@@ -3,9 +3,11 @@
 ## vNEXT
 
 - Migrate proxy to Diamond pattern (ERC-2535):
+  - Remove ENS module (#225)
   - Add Diamond contract unit tests (#224)
   - Fix `fallback` and `receive` (#223)
   - Migrate contracts (#222)
+
 - Add Github Action CI in order to publish NPM package
 
 ### Updated contracts
