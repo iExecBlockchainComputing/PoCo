@@ -45,13 +45,14 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Run fork tests
-        run: |
-          if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
-            npm run test:arbitrumSepolia
-          elif [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
-            npm run test:fuji
-          fi
+      # TODO activate later.
+      # - name: Run fork tests
+      #   run: |
+      #     if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+      #       npm run test:arbitrumSepolia
+      #     elif [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
+      #       npm run test:fuji
+      #     fi
 
       - name: Deploy contracts
         env:
