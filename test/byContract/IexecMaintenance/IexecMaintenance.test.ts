@@ -7,10 +7,10 @@ import { expect } from 'chai';
 import { ZeroHash } from 'ethers';
 import { ethers } from 'hardhat';
 import {
+    IexecConfigurationExtra,
+    IexecConfigurationExtra__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
-    IexecMaintenanceExtra,
-    IexecMaintenanceExtra__factory,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
@@ -42,7 +42,7 @@ const someDomainSeparator = '0x0000000000000000000000000000000000000000000000000
 describe('IexecConfiguration', async () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
-    let iexecMaintenanceExtra: IexecMaintenanceExtra;
+    let iexecMaintenanceExtra: IexecConfigurationExtra;
     let [iexecAdmin, worker, anyone]: SignerWithAddress[] = [];
 
     beforeEach('Deploy', async () => {
@@ -55,7 +55,7 @@ describe('IexecConfiguration', async () => {
         ({ iexecAdmin, worker, anyone } = accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
-        iexecMaintenanceExtra = IexecMaintenanceExtra__factory.connect(proxyAddress, anyone);
+        iexecMaintenanceExtra = IexecConfigurationExtra__factory.connect(proxyAddress, anyone);
     }
 
     describe('Configure', () => {

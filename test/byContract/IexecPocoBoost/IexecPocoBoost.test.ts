@@ -17,7 +17,7 @@ import {
     IexecAccessors,
     IexecAccessors__factory,
     IexecConfiguration,
-    IexecMaintenance__factory,
+    IexecConfiguration__factory,
     IexecOrderManagement__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
@@ -125,7 +125,7 @@ describe('IexecPocoBoost', function () {
         domain = iexecWrapper.getDomain();
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, anyone);
-        iexecMaintenanceAsAdmin = IexecMaintenance__factory.connect(
+        iexecMaintenanceAsAdmin = IexecConfiguration__factory.connect(
             proxyAddress,
             accounts.iexecAdmin,
         );

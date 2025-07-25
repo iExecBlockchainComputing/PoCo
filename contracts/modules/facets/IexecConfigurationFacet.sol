@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../FacetBase.sol";
 import "../interfaces/IexecConfiguration.sol";
 
-contract IexecMaintenanceFacet is IexecConfiguration, FacetBase {
+contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     using SafeMathExtended for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.EIP712Domain;
 

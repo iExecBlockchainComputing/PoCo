@@ -92,7 +92,7 @@ abstract contract Store {
     /**
      * @dev EIP-712 domain hash.
      */
-    // Modified in IexecMaintenanceFacet.updateDomainSeparator
+    // Modified in IexecConfigurationFacet.updateDomainSeparator
     //slither-disable-next-line constable-states
     bytes32 internal EIP712DOMAIN_SEPARATOR;
 
@@ -125,14 +125,14 @@ abstract contract Store {
     /**
      * @dev Address of a trusted TEE authority that manages enclave challenges.
      */
-    // Modified in IexecMaintenanceFacet.setTeeBroker
+    // Modified in IexecConfigurationFacet.setTeeBroker
     //slither-disable-next-line constable-states
     address internal m_teebroker;
 
     /**
      * @dev Max amount of gas to be used with callbacks.
      */
-    // Modified in IexecMaintenanceFacet.setCallbackGas
+    // Modified in IexecConfigurationFacet.setCallbackGas
     //slither-disable-next-line constable-states
     uint256 internal m_callbackgas;
 
@@ -142,7 +142,7 @@ abstract contract Store {
     IexecLibCore_v5.Category[] internal m_categories;
 
     // Backward compatibility
-    // Modified in IexecMaintenanceFacet.configure
+    // Modified in IexecConfigurationFacet.configure
     //slither-disable-next-line constable-states
     address internal m_v3_iexecHub; // IexecHubInterface
     mapping(address => bool) internal m_v3_scoreImported;

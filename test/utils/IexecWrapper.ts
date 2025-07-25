@@ -19,9 +19,9 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     IexecAccessors__factory,
+    IexecConfigurationFacet__factory,
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
-    IexecMaintenanceFacet__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
     IexecPocoBoostAccessors__factory,
@@ -176,7 +176,7 @@ export class IexecWrapper {
     }
 
     async setTeeBroker(brokerAddress: string) {
-        await IexecMaintenanceFacet__factory.connect(this.proxyAddress, this.accounts.iexecAdmin)
+        await IexecConfigurationFacet__factory.connect(this.proxyAddress, this.accounts.iexecAdmin)
             .setTeeBroker(brokerAddress)
             .then((tx) => tx.wait());
     }

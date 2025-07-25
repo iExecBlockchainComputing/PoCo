@@ -18,12 +18,12 @@ import {
     IexecAccessors__factory,
     IexecCategoryManagerFacet__factory,
     IexecCategoryManager__factory,
+    IexecConfigurationExtraFacet__factory,
+    IexecConfigurationFacet__factory,
     IexecERC20Facet__factory,
     IexecEscrowNativeFacet__factory,
     IexecEscrowTokenFacet__factory,
     IexecLibOrders_v5__factory,
-    IexecMaintenanceExtraFacet__factory,
-    IexecMaintenanceFacet__factory,
     IexecOrderManagementFacet__factory,
     IexecPoco1Facet__factory,
     IexecPoco2Facet__factory,
@@ -89,12 +89,12 @@ export default async function deploy() {
         new IexecCategoryManagerFacet__factory(),
         new IexecERC20Facet__factory(),
         isTokenMode ? new IexecEscrowTokenFacet__factory() : new IexecEscrowNativeFacet__factory(),
-        new IexecMaintenanceFacet__factory(iexecLibOrders),
+        new IexecConfigurationFacet__factory(iexecLibOrders),
         new IexecOrderManagementFacet__factory(iexecLibOrders),
         new IexecPoco1Facet__factory(iexecLibOrders),
         new IexecPoco2Facet__factory(),
         new IexecRelayFacet__factory(),
-        new IexecMaintenanceExtraFacet__factory(),
+        new IexecConfigurationExtraFacet__factory(),
         new IexecPocoAccessorsFacet__factory(iexecLibOrders),
         new IexecPocoBoostFacet__factory(iexecLibOrders),
         new IexecPocoBoostAccessorsFacet__factory(),
@@ -176,7 +176,7 @@ export default async function deploy() {
     const iexecInitialized = (await iexecAccessorsInstance.eip712domain_separator()) != ZeroHash;
     if (!iexecInitialized) {
         // TODO replace this with DiamondInit.init().
-        await IexecMaintenanceFacet__factory.connect(diamondProxyAddress, owner)
+        await IexecConfigurationFacet__factory.connect(diamondProxyAddress, owner)
             .configure(
                 rlcInstanceAddress,
                 'Staked RLC',
