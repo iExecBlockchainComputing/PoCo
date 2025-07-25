@@ -83,7 +83,7 @@ const v8Settings = {
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: '0.8.21', settings: v8Settings }, // PoCo Boost (and ENS contracts >=0.8.4)
+            { version: '0.8.21', settings: v8Settings }, // PoCo Boost
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],
@@ -259,11 +259,6 @@ const config: HardhatUserConfig = {
             '@mudgen/diamond-1/contracts/facets/OwnershipFacet.sol',
             '@mudgen/diamond-1/contracts/libraries/LibDiamond.sol',
             '@mudgen/diamond-1/contracts/upgradeInitializers/DiamondInit.sol',
-            // ENS
-            '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol',
-            '@ensdomains/ens-contracts/contracts/registry/FIFSRegistrar.sol',
-            '@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar.sol',
-            '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol',
             // Used as mock or fake in UTs
             '@openzeppelin/contracts-v5/interfaces/IERC1271.sol',
             // Used in deployment

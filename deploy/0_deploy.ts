@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
-import hre, { deployments, ethers } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
     AppRegistry__factory,
@@ -13,7 +13,6 @@ import {
     DiamondLoupeFacet,
     DiamondLoupeFacet__factory,
     Diamond__factory,
-    ENSIntegrationDelegate__factory,
     IexecAccessorsABILegacyDelegate__factory,
     IexecAccessorsDelegate__factory,
     IexecAccessors__factory,
@@ -32,16 +31,15 @@ import {
     IexecPocoBoostAccessorsDelegate__factory,
     IexecPocoBoostDelegate__factory,
     IexecRelayDelegate__factory,
-    LibDiamond__factory,
     OwnershipFacet__factory,
     RLC__factory,
     WorkerpoolRegistry__factory,
 } from '../typechain';
+import { DiamondArgsStruct } from '../typechain/@mudgen/diamond-1/contracts/Diamond';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
 import { getFunctionSelectors, linkContractToProxy } from '../utils/proxy-tools';
-import { DiamondArgsStruct } from '../typechain/@mudgen/diamond-1/contracts/Diamond';
 import { getLibDiamondConfigOrEmpty } from '../utils/tools';
 
 let factoryDeployer: FactoryDeployer;
@@ -98,7 +96,6 @@ export default async function deploy() {
         new IexecPoco1Delegate__factory(iexecLibOrders),
         new IexecPoco2Delegate__factory(),
         new IexecRelayDelegate__factory(),
-        new ENSIntegrationDelegate__factory(),
         new IexecMaintenanceExtraDelegate__factory(),
         new IexecPocoAccessorsDelegate__factory(iexecLibOrders),
         new IexecPocoBoostDelegate__factory(iexecLibOrders),

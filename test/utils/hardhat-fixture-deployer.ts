@@ -4,7 +4,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployments, ethers } from 'hardhat';
 import deploy from '../../deploy/0_deploy';
-import deployEns from '../../deploy/1_deploy-ens';
 import { RLC__factory } from '../../typechain';
 import config from '../../utils/config';
 import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixture-helpers';
@@ -15,7 +14,6 @@ import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixtur
  */
 async function deployAll() {
     await deploy();
-    await deployEns();
     return (await deployments.get('Diamond')).address;
 }
 
@@ -58,7 +56,6 @@ async function setUpLocalForkInTokenMode() {
         console.log('No existing ERC1538Proxy found, deploying new contracts');
         // Deploy all contracts
         await deploy();
-        await deployEns();
         const newProxyAddress = (await deployments.get('ERC1538Proxy')).address;
         console.log(`Deployed new ERC1538Proxy at ${newProxyAddress}`);
         return newProxyAddress;
