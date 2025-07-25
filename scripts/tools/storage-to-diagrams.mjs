@@ -6,8 +6,14 @@
 
 $.verbose = false // Disable bash commands logging.
 
-const projectRootDir = await $`dirname ${__dirname}`
-generateStorageDiagram('IexecPocoBoostFacet')
+// Get the project root directory (two levels up from scripts/tools/)
+const projectRootDir = path.resolve(path.dirname(path.dirname(__dirname)))
+console.log(`Project root directory: ${projectRootDir}`)
+
+// Change to project root directory
+process.chdir(projectRootDir)
+
+await generateStorageDiagram('IexecPocoBoostFacet')
 
 /**
  * Generate storage diagram of a given contract.
@@ -15,6 +21,5 @@ generateStorageDiagram('IexecPocoBoostFacet')
  */
 async function generateStorageDiagram(contractName) {
     console.log(`Generating storage diagram for contract : ${contractName}`);
-    await $`cd ${projectRootDir} &&
-        npx sol2uml storage -c ${contractName} -o docs/uml/storage-${contractName}.svg .`
+    await $`npx sol2uml storage -c ${contractName} -o docs/uml/storage-${contractName}.svg .`
 }

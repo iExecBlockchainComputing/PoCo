@@ -1,0 +1,82 @@
+@startuml facet-upgrade-workflow
+title "Diamond Facet Upgrade Workflow (ERC2535)"
+
+actor Admin as "Contract Admin"
+participant Diamond as "Diamond Proxy"
+participant DiamondCut as "DiamondCutFacet"
+participant NewFacet as "New Facet Implementation"
+participant OldFacet as "Old Facet Implementation"
+
+== Facet Upgrade Process ==
+
+Admin -> Diamond: diamondCut(facetCuts, init, initCalldata)
+activate Diamond
+
+Diamond -> DiamondCut: delegatecall diamondCut()
+activate DiamondCut
+
+alt Add New Facet
+    DiamondCut -> DiamondCut: addFunctions(newFacetAddress, selectors)
+    note right: Maps function selectors\nto new facet address
+    
+else Replace Existing Facet
+    DiamondCut -> DiamondCut: replaceFunctions(newFacetAddress, selectors)
+    note right: Updates selector mapping\nfrom old to new facet
+    
+else Remove Facet
+    DiamondCut -> DiamondCut: removeFunctions(facetAddress, selectors)
+    note right: Removes function selectors\nfrom diamond storage
+end
+
+DiamondCut -> DiamondCut: emit DiamondCut(facetCuts, init, initCalldata)
+
+alt Initialization Required
+    DiamondCut -> Diamond: init.delegatecall(initCalldata)
+    note right: Executes initialization\nlogic if provided
+end
+
+DiamondCut --> Diamond: success
+deactivate DiamondCut
+
+Diamond --> Admin: transaction success
+deactivate Diamond
+
+== Function Call Routing (Post-Upgrade) ==
+
+actor User
+User -> Diamond: someFunction()
+activate Diamond
+
+Diamond -> Diamond: _fallback()
+Diamond -> Diamond: lookup facet for msg.sig
+Diamond -> NewFacet: delegatecall someFunction()
+activate NewFacet
+
+NewFacet -> NewFacet: execute business logic
+NewFacet --> Diamond: return result
+deactivate NewFacet
+
+Diamond --> User: return result
+deactivate Diamond
+
+note over Diamond, NewFacet: All function calls now route\nto the upgraded facet implementation
+
+== Storage Considerations ==
+
+note over DiamondCut
+    **Storage Safety:**
+    - Facet upgrades preserve storage layout
+    - New facets can add storage variables
+    - Existing storage slots remain intact
+    - Diamond storage pattern prevents collisions
+end note
+
+note over Diamond
+    **Upgrade Benefits:**
+    - Gas efficient (only update changed facets)
+    - Unlimited contract size
+    - Modular functionality updates
+    - Preserves state and addresses
+end note
+
+@enduml

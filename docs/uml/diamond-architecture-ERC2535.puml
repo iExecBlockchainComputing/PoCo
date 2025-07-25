@@ -1,0 +1,157 @@
+@startuml diamond-architecture
+title "iExec PoCo Diamond Architecture (ERC2535)"
+
+package "Diamond Proxy Pattern" {
+    
+    ' Main Diamond Proxy Contract
+    class Diamond {
+        +fallback()
+        +receive()
+        -_fallback()
+        --
+        Routes calls to appropriate facets
+        using delegatecall
+    }
+    
+    package "Core Facets" {
+        class DiamondCutFacet {
+            +diamondCut()
+            --
+            Upgrade functionality
+            Add/Replace/Remove facets
+        }
+        
+        class DiamondLoupeFacet {
+            +facets()
+            +facetFunctionSelectors()
+            +facetAddresses()
+            +facetAddress()
+            --
+            Introspection capabilities
+        }
+        
+        class OwnershipFacet {
+            +owner()
+            +transferOwnership()
+            +renounceOwnership()
+            --
+            Ownership management
+        }
+    }
+    
+    package "Business Logic Facets" {
+        class IexecPoco1Facet {
+            +matchOrders()
+            +matchOrdersBoost()
+            +sponsorMatchOrders()
+            --
+            Order matching & validation
+        }
+        
+        class IexecPoco2Facet {
+            +initialize()
+            +claim()
+            +finalize()
+            +contribute()
+            +reveal()
+            --
+            Task execution & consensus
+        }
+        
+        class IexecEscrowTokenFacet {
+            +deposit()
+            +withdraw()
+            +recover()
+            --
+            ERC20 token escrow
+        }
+        
+        class IexecEscrowNativeFacet {
+            +deposit()
+            +withdraw()
+            +recover()
+            --
+            Native token escrow
+        }
+        
+        class IexecOrderManagementFacet {
+            +manageAppOrder()
+            +manageDatasetOrder()
+            +manageWorkerpoolOrder()
+            +manageRequestOrder()
+            --
+            Order lifecycle management
+        }
+        
+        class IexecAccessorsFacet {
+            +viewAccount()
+            +viewDeal()
+            +viewTask()
+            +viewCategory()
+            --
+            Read-only access functions
+        }
+        
+        class IexecRelayFacet {
+            +broadcastAppOrder()
+            +broadcastDatasetOrder()
+            +broadcastWorkerpoolOrder()
+            +broadcastRequestOrder()
+            --
+            Order broadcasting
+        }
+    }
+    
+    package "Storage" {
+        class DiamondStorage {
+            +mapping facetAddressAndSelectorPosition
+            +bytes4[] selectors
+            +mapping selectorToFacetAndPosition
+            --
+            ERC2535 storage pattern
+        }
+        
+        class IexecStorage {
+            +mapping m_accounts
+            +mapping m_deals
+            +mapping m_tasks
+            +mapping m_categories
+            --
+            Business logic storage
+        }
+    }
+}
+
+' Relationships
+Diamond --> DiamondCutFacet : "delegatecall"
+Diamond --> DiamondLoupeFacet : "delegatecall"
+Diamond --> OwnershipFacet : "delegatecall"
+Diamond --> IexecPoco1Facet : "delegatecall"
+Diamond --> IexecPoco2Facet : "delegatecall"
+Diamond --> IexecEscrowTokenFacet : "delegatecall"
+Diamond --> IexecEscrowNativeFacet : "delegatecall"
+Diamond --> IexecOrderManagementFacet : "delegatecall"
+Diamond --> IexecAccessorsFacet : "delegatecall"
+Diamond --> IexecRelayFacet : "delegatecall"
+
+DiamondCutFacet ..> DiamondStorage : "reads/writes"
+DiamondLoupeFacet ..> DiamondStorage : "reads"
+IexecPoco1Facet ..> IexecStorage : "reads/writes"
+IexecPoco2Facet ..> IexecStorage : "reads/writes"
+IexecEscrowTokenFacet ..> IexecStorage : "reads/writes"
+IexecEscrowNativeFacet ..> IexecStorage : "reads/writes"
+IexecOrderManagementFacet ..> IexecStorage : "reads/writes"
+IexecAccessorsFacet ..> IexecStorage : "reads"
+IexecRelayFacet ..> IexecStorage : "reads"
+
+note top of Diamond : "Single entry point\nRoutes function calls\nto appropriate facets"
+
+note right of DiamondCutFacet : "Standard EIP-2535\nUpgrade mechanism"
+
+note right of IexecPoco1Facet : "Core protocol logic\nfor order management"
+
+note right of IexecEscrowTokenFacet : "Conditional deployment\nbased on configuration"
+
+note bottom of DiamondStorage : "Isolated storage slots\nPrevents storage collisions"
+
+@enduml

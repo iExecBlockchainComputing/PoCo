@@ -6,12 +6,18 @@
 
 $.verbose = false // Disable bash commands logging.
 
-const projectRootDir = await $`dirname ${__dirname}`
+// Get the project root directory (two levels up from scripts/tools/)
+const projectRootDir = path.resolve(path.dirname(path.dirname(__dirname)))
+console.log(`Project root directory: ${projectRootDir}`)
+
+// Change to project root directory
+process.chdir(projectRootDir)
 
 await generateClassDiagramOfDirectory('libs')
 await generateClassDiagramOfDirectory('modules')
 await generateClassDiagramOfDirectory('registries')
 
+// Core Business Logic Facets
 await generateClassDiagramOfContracts(
     [
         'IexecPoco1Facet',
@@ -20,20 +26,24 @@ await generateClassDiagramOfContracts(
     'IexecPocoFacets',
 )
 
+// Escrow Facets
 await generateClassDiagramOfContracts(
     [
         'IexecEscrowNativeFacet',
         'IexecEscrowTokenFacet',
-        'IexecEscrowTokenSwapFacet',
-        'IexecEscrow',
+        'IexecEscrowTokenSwapFacet'
     ],
     'IexecEscrows',
 )
 
+// Boost and Special Features
 await generateClassDiagramOfContracts(
     ['IexecPocoBoostFacet'],
     'IexecPocoBoostFacet',
 )
+
+
+// Diamond Architecture Overview (custom facets only)
 
 /**
  * Generate UML class diagrams for contracts in a given directory.
@@ -42,8 +52,7 @@ await generateClassDiagramOfContracts(
 async function generateClassDiagramOfDirectory(directory) {
     console.log(`Generating class diagram for directory : ${directory}`);
     const diagramName = directory.replace('/', '-');
-    await $`cd ${projectRootDir}/ &&
-        npx sol2uml class contracts/${directory}/ -o docs/uml/class-uml-dir-${diagramName}.svg`
+    await $`npx sol2uml class contracts/${directory}/ -o docs/uml/class-uml-dir-${diagramName}.svg`
 }
 
 /**
@@ -56,6 +65,5 @@ async function generateClassDiagramOfContracts(contractsList, diagramName) {
     const baseContracts = contractsList.join(','); // => c1,c2,c3
     // -b, --baseContractNames <name1,name2>
     // only output contracts connected to these comma separated base contract names
-    await $`cd ${projectRootDir}/ &&
-        npx sol2uml class contracts/ -b ${baseContracts} -o docs/uml/class-uml-${diagramName}.svg`
+    await $`npx sol2uml class contracts/ -b ${baseContracts} -o docs/uml/class-uml-${diagramName}.svg`
 }

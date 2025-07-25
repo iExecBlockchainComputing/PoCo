@@ -17,7 +17,13 @@
 
 $.verbose = false // Disable bash commands logging.
 
-const projectRootDir = await $`dirname ${__dirname}`
+// Get the project root directory (two levels up from scripts/tools/)
+const projectRootDir = path.resolve(path.dirname(path.dirname(__dirname)))
+console.log(`Project root directory: ${projectRootDir}`)
+
+// Change to project root directory
+process.chdir(projectRootDir)
+
 // Search for markdown files and update puml links.
-const output = await $`npx puml-for-markdown -x ${projectRootDir}/docs/`
+const output = await $`npx puml-for-markdown -x docs/`
 console.log(output.toString());

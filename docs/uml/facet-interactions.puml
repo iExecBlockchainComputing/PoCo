@@ -1,0 +1,124 @@
+@startuml facet-interactions
+title "Diamond Facet Interaction Patterns"
+
+package "Diamond Proxy System" {
+    actor User as "User/DApp"
+    
+    ' Main Diamond Proxy
+    component Diamond {
+        [fallback()]
+        [receive()]
+    }
+    
+    ' Core Diamond Facets
+    package "Core Facets" {
+        [DiamondCutFacet] as DCF
+        [DiamondLoupeFacet] as DLF
+        [OwnershipFacet] as OF
+    }
+    
+    ' Business Logic Facets
+    package "Business Logic" {
+        [IexecPoco1Facet] as P1F
+        [IexecPoco2Facet] as P2F
+        [IexecEscrowFacet] as EF
+        [IexecOrderMgmtFacet] as OMF
+        [IexecAccessorsFacet] as AF
+        [IexecRelayFacet] as RF
+    }
+    
+    ' Storage Layer
+    package "Storage" {
+        database "Diamond Storage" as DS {
+            [Function Selectors]
+            [Facet Addresses]
+            [Supported Interfaces]
+        }
+        
+        database "Business Storage" as BS {
+            [Accounts]
+            [Deals]
+            [Tasks]
+            [Categories]
+        }
+    }
+    
+    ' External Contracts
+    component "RLC Token" as RLC
+    component "Registries" as REG
+}
+
+' User Interactions
+User --> Diamond : "Function calls"
+
+' Diamond Routing
+Diamond --> DCF : "diamondCut()"
+Diamond --> DLF : "facets(), facetAddress()"
+Diamond --> OF : "owner(), transferOwnership()"
+Diamond --> P1F : "matchOrders()"
+Diamond --> P2F : "initialize(), claim(), finalize()"
+Diamond --> EF : "deposit(), withdraw()"
+Diamond --> OMF : "manageOrders()"
+Diamond --> AF : "viewAccount(), viewDeal()"
+Diamond --> RF : "broadcastOrder()"
+
+' Storage Access
+DCF ..> DS : "modify"
+DLF ..> DS : "read"
+P1F ..> BS : "read/write"
+P2F ..> BS : "read/write"
+EF ..> BS : "read/write"
+OMF ..> BS : "read/write"
+AF ..> BS : "read"
+RF ..> BS : "read"
+
+' External Interactions
+EF --> RLC : "transferFrom(), transfer()"
+P1F --> REG : "verify resources"
+P2F --> REG : "verify resources"
+
+' Interaction Flow Examples
+note right of P1F
+    **Order Matching Flow:**
+    1. Validate order signatures
+    2. Check resource registries
+    3. Create deal in storage
+    4. Transfer escrow funds
+    5. Emit events
+end note
+
+note right of P2F
+    **Task Execution Flow:**
+    1. Initialize task from deal
+    2. Accept contributions
+    3. Manage consensus
+    4. Finalize with results
+    5. Distribute rewards
+end note
+
+note right of DCF
+    **Upgrade Flow:**
+    1. Validate new facets
+    2. Update storage mappings
+    3. Execute initialization
+    4. Emit upgrade events
+end note
+
+' Color coding
+User #lightblue
+Diamond #lightgreen
+DCF #orange
+DLF #orange
+OF #orange
+P1F #lightcoral
+P2F #lightcoral
+EF #lightcoral
+OMF #lightcoral
+AF #lightcoral
+RF #lightcoral
+DS #lightyellow
+BS #lightyellow
+RLC #lightgray
+REG #lightgray
+
+@enduml

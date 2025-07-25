@@ -45,7 +45,7 @@ All contract audit files can be found in [audit/](./audit/) folder.
 
 ## Configure a deployment
 
-Starting from version 5, the PoCo uses a modular design based on [ERC1538](https://github.com/ethereum/EIPs/issues/1538). The migration scripts and tests will use different modules and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated sidechains (Native token based RLC).
+Starting from version 5, the PoCo uses a modular design based on [ERC2535 Diamond Standard](https://eips.ethereum.org/EIPS/eip-2535). The Diamond proxy pattern allows for upgradeable smart contracts with unlimited functionality by using multiple implementation contracts called "facets". The migration scripts and tests will use different facets and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated sidechains (Native token based RLC).
 
 The configuration file is located in `./config/config.json`.
 

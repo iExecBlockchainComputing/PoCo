@@ -1,0 +1,128 @@
+@startuml erc1538-vs-erc2535-comparison
+title "ERC1538 vs ERC2535 Architecture Comparison"
+
+!define OLDCOLOR #FFE4E1
+!define NEWCOLOR #E1F5FE
+
+package "ERC1538 Architecture (Legacy)" OLDCOLOR {
+    component "ERC1538 Proxy" as OldProxy {
+        [updateContract()]
+        [implementationContract()]
+    }
+    
+    package "Implementation Contracts" OLDCOLOR {
+        [IexecPoco1Delegate] as OldP1
+        [IexecPoco2Delegate] as OldP2
+        [IexecEscrowDelegate] as OldE
+        [IexecAccessorsDelegate] as OldA
+    }
+    
+    database "Shared Storage" as OldStorage OLDCOLOR {
+        [All contract state]
+        [Risk of collisions]
+    }
+    
+    OldProxy --> OldP1 : "delegatecall"
+    OldProxy --> OldP2 : "delegatecall"
+    OldProxy --> OldE : "delegatecall"
+    OldProxy --> OldA : "delegatecall"
+    
+    OldP1 ..> OldStorage
+    OldP2 ..> OldStorage
+    OldE ..> OldStorage
+    OldA ..> OldStorage
+    
+    note right of OldProxy
+        **Limitations:**
+        • 24KB contract size limit
+        • Monolithic upgrades
+        • Draft standard only
+        • Limited tooling support
+    end note
+}
+
+package "ERC2535 Architecture (Current)" NEWCOLOR {
+    component "Diamond Proxy" as NewProxy {
+        [fallback()]
+        [receive()]
+        [_fallback()]
+    }
+    
+    package "Standard Facets" NEWCOLOR {
+        [DiamondCutFacet] as NewDC
+        [DiamondLoupeFacet] as NewDL
+        [OwnershipFacet] as NewO
+    }
+    
+    package "Business Facets" NEWCOLOR {
+        [IexecPoco1Facet] as NewP1
+        [IexecPoco2Facet] as NewP2
+        [IexecEscrowTokenFacet] as NewET
+        [IexecEscrowNativeFacet] as NewEN
+        [IexecOrderMgmtFacet] as NewOM
+        [IexecAccessorsFacet] as NewA
+        [IexecRelayFacet] as NewR
+    }
+    
+    database "Diamond Storage" as NewDStor NEWCOLOR {
+        [Function selectors]
+        [Facet addresses]
+        [Interfaces]
+    }
+    
+    database "Business Storage" as NewBStor NEWCOLOR {
+        [Isolated storage slots]
+        [Collision-safe]
+        [Modular access]
+    }
+    
+    NewProxy --> NewDC : "delegatecall"
+    NewProxy --> NewDL : "delegatecall"
+    NewProxy --> NewO : "delegatecall"
+    NewProxy --> NewP1 : "delegatecall"
+    NewProxy --> NewP2 : "delegatecall"
+    NewProxy --> NewET : "delegatecall"
+    NewProxy --> NewEN : "delegatecall"
+    NewProxy --> NewOM : "delegatecall"
+    NewProxy --> NewA : "delegatecall"
+    NewProxy --> NewR : "delegatecall"
+    
+    NewDC ..> NewDStor
+    NewDL ..> NewDStor
+    NewP1 ..> NewBStor
+    NewP2 ..> NewBStor
+    NewET ..> NewBStor
+    NewEN ..> NewBStor
+    NewOM ..> NewBStor
+    NewA ..> NewBStor
+    NewR ..> NewBStor
+    
+    note right of NewProxy
+        **Advantages:**
+        • Unlimited contract size
+        • Modular upgrades
+        • Final EIP standard
+        • Rich ecosystem
+    end note
+}
+
+' Migration Arrow
+OldProxy .right.> NewProxy : "**MIGRATION**\nPreserves interfaces\nMaintains state"
+
+' Comparison Table
+note bottom
+    **Feature Comparison:**
+    
+    | Feature | ERC1538 | ERC2535 |
+    |---------|---------|---------|
+    | Standard Status | Draft | Final EIP |
+    | Contract Size | 24KB limit | Unlimited |
+    | Upgrade Granularity | Full contract | Individual facets |
+    | Gas Efficiency | High for small changes | Optimized for all changes |
+    | Tooling Support | Limited | Extensive |
+    | Storage Safety | Manual management | Built-in patterns |
+    | Introspection | Basic | Comprehensive |
+    | Community | Small | Large & active |
+end note
+
+@enduml
