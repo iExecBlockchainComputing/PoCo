@@ -202,7 +202,7 @@ const config: HardhatUserConfig = {
             ? process.env.EXPLORER_API_KEY
             : {
                   avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
-                  arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
+                  arbitrumSepolia: process.env.EXPLORER_API_KEY || '',
                   bellecour: 'nothing', // a non-empty string is needed by the plugin.
               },
         customChains: [
