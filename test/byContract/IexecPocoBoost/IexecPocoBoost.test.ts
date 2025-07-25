@@ -16,7 +16,7 @@ import {
     IOracleConsumer__factory,
     IexecAccessors,
     IexecAccessors__factory,
-    IexecMaintenance,
+    IexecConfiguration,
     IexecMaintenance__factory,
     IexecOrderManagement__factory,
     IexecPoco2__factory,
@@ -73,7 +73,7 @@ const randomEOAAddress = ethers.Wallet.createRandom().address;
 
 let proxyAddress: string;
 let iexecPocoBoostInstance: IexecPocoBoostFacet;
-let iexecMaintenanceAsAdmin: IexecMaintenance;
+let iexecMaintenanceAsAdmin: IexecConfiguration;
 let iexecAccessor: IexecAccessors;
 let oracleConsumerInstance: TestClient;
 let gasWasterClientInstance: GasWasterClient;

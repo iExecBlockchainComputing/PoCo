@@ -4,12 +4,11 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { TypedDataEncoder, ZeroHash } from 'ethers';
+import { ZeroHash } from 'ethers';
 import { ethers } from 'hardhat';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
-    IexecLibOrders_v5,
     IexecMaintenanceExtra,
     IexecMaintenanceExtra__factory,
 } from '../../../typechain';
@@ -40,7 +39,7 @@ const configureArgs = Object.values(configureParams) as [
 ];
 const someDomainSeparator = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-describe('IexecMaintenance', async () => {
+describe('IexecConfiguration', async () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
     let iexecMaintenanceExtra: IexecMaintenanceExtra;
