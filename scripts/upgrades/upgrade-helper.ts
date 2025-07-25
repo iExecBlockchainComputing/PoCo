@@ -1,22 +1,15 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { Interface, ZeroAddress } from 'ethers';
+import { ContractFactory, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import { DiamondCutFacet__factory, DiamondLoupeFacet__factory } from '../../typechain';
+import { getFunctionSelectors } from '../../utils/proxy-tools';
 
-function encodeModuleProxyUpdate(ModuleInterface: Interface, moduleAddress: string) {
-    // Get function selectors from the interface
-    const functionSelectors: string[] = [];
-    ModuleInterface.forEachFunction((functionFragment) => {
-        const func = functionFragment.format();
-        console.log(`- ${func}`);
-        const selector = ModuleInterface.getFunction(functionFragment.name)?.selector;
-        if (selector) {
-            functionSelectors.push(selector);
-        }
-    });
+function encodeModuleProxyUpdate(contractFactory: ContractFactory, moduleAddress: string) {
+    // Get function selectors from the contract factory
+    const functionSelectors = getFunctionSelectors(contractFactory);
 
     // Create FacetCut for adding the module
     const facetCut = {
