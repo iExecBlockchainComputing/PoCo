@@ -61,12 +61,13 @@ jobs:
             npm run test:fuji
           fi
 
-      - name: Deploy contracts
-        run: |
-          DEPLOYER_PRIVATE_KEY=${{ secrets.DEPLOYER_PRIVATE_KEY }} \
-          RPC_URL=${{ secrets.RPC_URL }} \
-          EXPLORER_API_KEY=${{ secrets.EXPLORER_API_KEY }} \
-            npm run deploy -- --network ${{ inputs.network }}
+      - name: Deploy and verify contracts
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+          EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
+          IS_VERIFICATION_API_V2: ${{ vars.IS_VERIFICATION_API_V2 }}
+        run: npm run deploy -- --network ${{ inputs.network }}
 
       - name: Update config.json with ERC1538Proxy address
         if: inputs.network != 'hardhat'
