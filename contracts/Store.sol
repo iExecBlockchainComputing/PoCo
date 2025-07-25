@@ -25,51 +25,50 @@ import "./registries/IRegistry.sol";
 
 // TODO replace with diamond AppStorage using namespaced storage.
 // TODO check storage padding.
-abstract contract Store
-{
-	// Registries
-	IRegistry internal m_appregistry;
-	IRegistry internal m_datasetregistry;
-	IRegistry internal m_workerpoolregistry;
+abstract contract Store {
+    // Registries
+    IRegistry internal m_appregistry;
+    IRegistry internal m_datasetregistry;
+    IRegistry internal m_workerpoolregistry;
 
-	// Escrow
-	IERC20 internal m_baseToken;
-	string    internal m_name;
-	string    internal m_symbol;
-	uint8     internal m_decimals;
-	uint256   internal m_totalSupply;
-	mapping (address =>                     uint256 ) internal m_balances;
-	mapping (address =>                     uint256 ) internal m_frozens;
-	mapping (address => mapping (address => uint256)) internal m_allowances;
+    // Escrow
+    IERC20 internal m_baseToken;
+    string internal m_name;
+    string internal m_symbol;
+    uint8 internal m_decimals;
+    uint256 internal m_totalSupply;
+    mapping(address => uint256) internal m_balances;
+    mapping(address => uint256) internal m_frozens;
+    mapping(address => mapping(address => uint256)) internal m_allowances;
 
-	// Poco - Constants
-	uint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;
-	uint256 internal constant REVEAL_DEADLINE_RATIO       = 2;
-	uint256 internal constant FINAL_DEADLINE_RATIO        = 10;
-	uint256 internal constant WORKERPOOL_STAKE_RATIO      = 30;
-	uint256 internal constant KITTY_RATIO                 = 10;
-	uint256 internal constant KITTY_MIN                   = 1000000000; // ADJUSTEMENT VARIABLE
-	address internal constant KITTY_ADDRESS               = 0x99c2268479b93fDe36232351229815DF80837e23; // address(uint256(keccak256(bytes('iExecKitty'))) - 1);
-	uint256 internal constant GROUPMEMBER_PURPOSE         = 4;
-	bytes32 internal          EIP712DOMAIN_SEPARATOR;
+    // Poco - Constants
+    uint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;
+    uint256 internal constant REVEAL_DEADLINE_RATIO = 2;
+    uint256 internal constant FINAL_DEADLINE_RATIO = 10;
+    uint256 internal constant WORKERPOOL_STAKE_RATIO = 30;
+    uint256 internal constant KITTY_RATIO = 10;
+    uint256 internal constant KITTY_MIN = 1000000000; // ADJUSTEMENT VARIABLE
+    address internal constant KITTY_ADDRESS = 0x99c2268479b93fDe36232351229815DF80837e23; // address(uint256(keccak256(bytes('iExecKitty'))) - 1);
+    uint256 internal constant GROUPMEMBER_PURPOSE = 4;
+    bytes32 internal EIP712DOMAIN_SEPARATOR;
 
-	// Poco - Storage
-	mapping(bytes32 =>                    address                      ) internal m_presigned;     // per order
-	mapping(bytes32 =>                    uint256                      ) internal m_consumed;      // per order
-	mapping(bytes32 =>                    IexecLibCore_v5.Deal         ) internal m_deals;         // per deal
-	mapping(bytes32 =>                    IexecLibCore_v5.Task         ) internal m_tasks;         // per task
-	mapping(bytes32 =>                    IexecLibCore_v5.Consensus    ) internal m_consensus;     // per task
-	mapping(bytes32 => mapping(address => IexecLibCore_v5.Contribution)) internal m_contributions; // per task-worker
-	mapping(address =>                    uint256                      ) internal m_workerScores;  // per worker
+    // Poco - Storage
+    mapping(bytes32 => address) internal m_presigned; // per order
+    mapping(bytes32 => uint256) internal m_consumed; // per order
+    mapping(bytes32 => IexecLibCore_v5.Deal) internal m_deals; // per deal
+    mapping(bytes32 => IexecLibCore_v5.Task) internal m_tasks; // per task
+    mapping(bytes32 => IexecLibCore_v5.Consensus) internal m_consensus; // per task
+    mapping(bytes32 => mapping(address => IexecLibCore_v5.Contribution)) internal m_contributions; // per task-worker
+    mapping(address => uint256) internal m_workerScores; // per worker
 
-	// Poco - Settings
-	address internal m_teebroker;
-	uint256 internal m_callbackgas;
+    // Poco - Settings
+    address internal m_teebroker;
+    uint256 internal m_callbackgas;
 
-	// Categories
-	IexecLibCore_v5.Category[] internal m_categories;
+    // Categories
+    IexecLibCore_v5.Category[] internal m_categories;
 
-	// Backward compatibility
-	IexecHubInterface internal m_v3_iexecHub;
-	mapping(address => bool) internal m_v3_scoreImported;
+    // Backward compatibility
+    IexecHubInterface internal m_v3_iexecHub;
+    mapping(address => bool) internal m_v3_scoreImported;
 }
