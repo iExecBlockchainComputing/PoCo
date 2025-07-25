@@ -29,7 +29,7 @@ async function printBlockTime() {
     }
 }
 
-TODO update this function to use DiamonLoup
+// TODO: update this function to use DiamonLoup
 async function printFunctions(diamondProxyAddress: string) {
     const diamondQueryInstance: ERC1538Query = ERC1538Query__factory.connect(
         diamondProxyAddress,
