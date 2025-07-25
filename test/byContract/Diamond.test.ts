@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
@@ -6,14 +6,9 @@ import { getStorageAt } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
-import {
-    Diamond__factory,
-    DiamondLoupeFacet__factory,
-    IDiamond,
-    LibDiamond__factory,
-} from '../../typechain';
-import { DiamondArgsStruct } from '../../typechain/contracts/Diamond';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
+import { Diamond__factory, DiamondLoupeFacet__factory, IDiamond } from '../../typechain';
+import { DiamondArgsStruct } from '../../typechain/contracts/Diamond';
 import { getFunctionSelectors } from '../../utils/proxy-tools';
 import { getLibDiamondConfigOrEmpty } from '../../utils/tools';
 
