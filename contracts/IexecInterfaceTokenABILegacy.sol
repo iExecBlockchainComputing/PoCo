@@ -11,7 +11,7 @@ import "./modules/interfaces/IexecCategoryManager.sol";
 import "./modules/interfaces/IexecERC20.sol";
 import "./modules/interfaces/IexecEscrowToken.sol";
 import "./modules/interfaces/IexecEscrowTokenSwap.sol";
-import "./modules/interfaces/IexecMaintenance.sol";
+import "./modules/interfaces/IexecConfiguration.sol";
 import "./modules/interfaces/IexecOrderManagement.sol";
 import "./modules/interfaces/IexecPoco1.sol";
 import "./modules/interfaces/IexecPoco2.sol";
@@ -26,7 +26,7 @@ interface IexecInterfaceTokenABILegacy is
     IexecERC20,
     IexecEscrowToken,
     IexecEscrowTokenSwap,
-    IexecMaintenance,
+    IexecConfiguration,
     IexecOrderManagement,
     IexecPoco1,
     IexecPoco2,

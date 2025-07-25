@@ -4,6 +4,6 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-interface IexecMaintenanceExtra {
+interface IexecConfigurationExtra {
     function changeRegistries(address, address, address) external;
 }

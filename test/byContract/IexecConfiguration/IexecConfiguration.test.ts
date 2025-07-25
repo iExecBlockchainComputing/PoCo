@@ -4,14 +4,13 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, setStorageAt } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { TypedDataEncoder, ZeroHash } from 'ethers';
+import { ZeroHash } from 'ethers';
 import { ethers } from 'hardhat';
 import {
+    IexecConfigurationExtra,
+    IexecConfigurationExtra__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
-    IexecLibOrders_v5,
-    IexecMaintenanceExtra,
-    IexecMaintenanceExtra__factory,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
@@ -40,10 +39,10 @@ const configureArgs = Object.values(configureParams) as [
 ];
 const someDomainSeparator = '0x0000000000000000000000000000000000000000000000000000000000000001';
 
-describe('IexecMaintenance', async () => {
+describe('IexecConfiguration', async () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceNative[] = [];
-    let iexecMaintenanceExtra: IexecMaintenanceExtra;
+    let iexecConfigurationExtra: IexecConfigurationExtra;
     let [iexecAdmin, worker, anyone]: SignerWithAddress[] = [];
 
     beforeEach('Deploy', async () => {
@@ -56,7 +55,7 @@ describe('IexecMaintenance', async () => {
         ({ iexecAdmin, worker, anyone } = accounts);
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
-        iexecMaintenanceExtra = IexecMaintenanceExtra__factory.connect(proxyAddress, anyone);
+        iexecConfigurationExtra = IexecConfigurationExtra__factory.connect(proxyAddress, anyone);
     }
 
     describe('Configure', () => {
@@ -177,7 +176,7 @@ describe('IexecMaintenance', async () => {
             const appRegistry = randomAddress();
             const datasetRegistry = randomAddress();
             const workerpoolRegistry = randomAddress();
-            await iexecMaintenanceExtra
+            await iexecConfigurationExtra
                 .connect(iexecAdmin)
                 .changeRegistries(appRegistry, datasetRegistry, workerpoolRegistry)
                 .then((tx) => tx.wait());
@@ -188,7 +187,7 @@ describe('IexecMaintenance', async () => {
 
         it('Should not change registries when sender is not the owner', async () => {
             await expect(
-                iexecMaintenanceExtra.changeRegistries(
+                iexecConfigurationExtra.changeRegistries(
                     randomAddress(),
                     randomAddress(),
                     randomAddress(),

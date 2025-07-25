@@ -6,7 +6,7 @@ pragma experimental ABIEncoderV2;
 
 import "../../libs/IexecLibOrders_v5.sol";
 
-interface IexecMaintenance {
+interface IexecConfiguration {
     function configure(
         address,
         string calldata,

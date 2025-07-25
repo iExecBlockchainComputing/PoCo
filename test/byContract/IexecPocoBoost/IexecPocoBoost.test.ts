@@ -16,8 +16,8 @@ import {
     IOracleConsumer__factory,
     IexecAccessors,
     IexecAccessors__factory,
-    IexecMaintenance,
-    IexecMaintenance__factory,
+    IexecConfiguration,
+    IexecConfiguration__factory,
     IexecOrderManagement__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
@@ -73,7 +73,7 @@ const randomEOAAddress = ethers.Wallet.createRandom().address;
 
 let proxyAddress: string;
 let iexecPocoBoostInstance: IexecPocoBoostFacet;
-let iexecMaintenanceAsAdmin: IexecMaintenance;
+let iexecConfigurationAsAdmin: IexecConfiguration;
 let iexecAccessor: IexecAccessors;
 let oracleConsumerInstance: TestClient;
 let gasWasterClientInstance: GasWasterClient;
@@ -125,7 +125,7 @@ describe('IexecPocoBoost', function () {
         domain = iexecWrapper.getDomain();
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, anyone);
-        iexecMaintenanceAsAdmin = IexecMaintenance__factory.connect(
+        iexecConfigurationAsAdmin = IexecConfiguration__factory.connect(
             proxyAddress,
             accounts.iexecAdmin,
         );
@@ -1539,7 +1539,7 @@ describe('IexecPocoBoost', function () {
                 requester: requester.address,
                 tag: teeDealTag,
             });
-            await iexecMaintenanceAsAdmin.setTeeBroker(sms.address).then((tx) => tx.wait());
+            await iexecConfigurationAsAdmin.setTeeBroker(sms.address).then((tx) => tx.wait());
 
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester, taskIndex);
@@ -1908,7 +1908,7 @@ describe('IexecPocoBoost', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            await iexecMaintenanceAsAdmin.setTeeBroker(sms.address).then((tx) => tx.wait());
+            await iexecConfigurationAsAdmin.setTeeBroker(sms.address).then((tx) => tx.wait());
 
             await signOrders(domain, orders, ordersActors);
             await iexecPocoBoostInstance
