@@ -198,13 +198,12 @@ const config: HardhatUserConfig = {
         },
     },
     etherscan: {
-        apiKey: process.env.IS_VERIFICATION_API_V2
-            ? process.env.EXPLORER_API_KEY
-            : {
-                  avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
-                  arbitrumSepolia: process.env.EXPLORER_API_KEY || '',
-                  bellecour: 'nothing', // a non-empty string is needed by the plugin.
-              },
+        // TODO migrate to Etherscan V2 API and use process.env.EXPLORER_API_KEY
+        apiKey: {
+            avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
+            arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
+            bellecour: 'nothing', // a non-empty string is needed by the plugin.
+        },
         customChains: [
             {
                 network: 'viviani',
