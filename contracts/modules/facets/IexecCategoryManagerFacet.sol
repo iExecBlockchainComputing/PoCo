@@ -19,20 +19,23 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../DelegateBase.sol";
-import "../interfaces/IexecMaintenanceExtra.sol";
+import "../FacetBase.sol";
+import "../interfaces/IexecCategoryManager.sol";
 
+contract IexecCategoryManagerFacet is IexecCategoryManager, FacetBase {
+    /**
+     * Methods
+     */
+    function createCategory(
+        string calldata name,
+        string calldata description,
+        uint256 workClockTimeRef
+    ) external override onlyOwner returns (uint256) {
+        m_categories.push(IexecLibCore_v5.Category(name, description, workClockTimeRef));
 
-contract IexecMaintenanceExtraDelegate is IexecMaintenanceExtra, DelegateBase
-{
-	function changeRegistries(
-		address _appregistryAddress,
-		address _datasetregistryAddress,
-		address _workerpoolregistryAddress)
-	external override onlyOwner()
-	{
-		m_appregistry        = IRegistry(_appregistryAddress);
-		m_datasetregistry    = IRegistry(_datasetregistryAddress);
-		m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
-	}
+        uint256 catid = m_categories.length - 1;
+
+        emit CreateCategory(catid, name, description, workClockTimeRef);
+        return catid;
+    }
 }

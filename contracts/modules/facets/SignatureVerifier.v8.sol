@@ -7,9 +7,9 @@ import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
 import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
 import {IERC734} from "../../external/interfaces/IERC734.sol";
-import {DelegateBase} from "../DelegateBase.v8.sol";
+import {FacetBase} from "../FacetBase.v8.sol";
 
-contract SignatureVerifier is DelegateBase {
+contract SignatureVerifier is FacetBase {
     using ECDSA for bytes32;
 
     /**
