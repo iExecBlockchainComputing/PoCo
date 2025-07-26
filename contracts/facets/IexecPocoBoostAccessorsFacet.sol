@@ -8,12 +8,12 @@ import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecPocoBoostAccessors} from "../interfaces/IexecPocoBoostAccessors.sol";
 
 /**
- * @title Getters contract for PoCo Boost module.
+ * @title Getters contract for PoCo Boost facet.
  * @notice Access to PoCo Boost tasks must be done with PoCo Classic `IexecAccessors`.
  */
 contract IexecPocoBoostAccessorsFacet is IexecPocoBoostAccessors, FacetBase {
     /**
-     * Get a deal created by PoCo Boost module.
+     * Get a deal created by PoCo Boost facet.
      * @param id The ID of the deal.
      */
     function viewDealBoost(

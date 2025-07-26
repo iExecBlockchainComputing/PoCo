@@ -12,7 +12,7 @@ import {Store} from "../Store.v8.sol";
 
 /**
  * @title Base contract of all Facet contracts.
- * @dev Every module must inherit from this contract.
+ * @dev Every facet must inherit from this contract.
  */
 abstract contract FacetBase is Store {
     modifier onlyOwner() {

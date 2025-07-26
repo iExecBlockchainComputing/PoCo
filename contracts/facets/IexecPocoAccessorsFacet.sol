@@ -11,7 +11,7 @@ import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 /**
- * @title Getters contract for PoCo module.
+ * @title Getters contract for PoCo facets.
  */
 contract IexecPocoAccessorsFacet is
     IexecPocoAccessors,
@@ -25,7 +25,7 @@ contract IexecPocoAccessorsFacet is
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
     /**
-     * Get a deal created by PoCo module.
+     * Get a deal created by PoCo classic facet.
      * @param id The ID of the deal.
      */
     function viewDeal(bytes32 id) external view returns (IexecLibCore_v5.Deal memory deal) {
