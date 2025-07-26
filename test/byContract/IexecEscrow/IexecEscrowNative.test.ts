@@ -10,6 +10,7 @@ import { ethers } from 'hardhat';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import config from '../../../utils/config';
 import { getIexecAccounts } from '../../../utils/poco-tools';
+import { getPocoStorageSlotLocation } from '../../../utils/proxy-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import { setZeroAddressBalance } from '../../utils/utils';
 
@@ -291,7 +292,7 @@ if (config.isNativeChain()) {
                 const expectedDelta = 5n;
                 await setStorageAt(
                     proxyAddress,
-                    '0x07', // Slot index of `m_totalSupply` in Store
+                    getPocoStorageSlotLocation(7n), // 7 is the slot index of `m_totalSupply` in Store
                     ethers.toBeHex(initTotalSupply - expectedDelta),
                 );
                 expect(await iexecPoco.totalSupply()).to.equal(

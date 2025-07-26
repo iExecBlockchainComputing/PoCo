@@ -110,9 +110,7 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
         returns (IexecLibCore_v5.ContributionStatusEnum, bytes32, bytes32, address)
     {
         PocoStorage storage $ = getPocoStorage();
-        IexecLibCore_v5.Contribution memory contribution = $.m_contributions[
-            _taskid
-        ][_worker];
+        IexecLibCore_v5.Contribution memory contribution = $.m_contributions[_taskid][_worker];
         return (
             contribution.status,
             contribution.resultHash,

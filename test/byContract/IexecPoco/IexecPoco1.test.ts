@@ -942,7 +942,7 @@ describe('IexecPoco1', () => {
             // const appOrderConsumedSlotIndex = ethers.keccak256(
             //     ethers.concat([
             //         appOrderHash, // key in the mapping.
-            //         '0x12', // m_consumed mapping index.
+            //         getPocoStorageSlotLocation(12n), // 12 is the slot index of `m_consumed` in Store.
             //     ])
             // );
             // // Set order as fully consumed.
