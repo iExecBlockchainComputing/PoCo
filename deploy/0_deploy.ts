@@ -181,7 +181,7 @@ export default async function deploy() {
                 rlcInstanceAddress,
                 'Staked RLC',
                 'SRLC',
-                9, // TODO: generic ?
+                9,
                 appRegistryAddress,
                 datasetRegistryAddress,
                 workerpoolRegistryAddress,

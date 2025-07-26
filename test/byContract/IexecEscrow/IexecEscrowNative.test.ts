@@ -76,7 +76,6 @@ if (config.isNativeChain()) {
             });
         });
 
-        // TODO 'Should deposit with zero value'
         describe('Deposit', () => {
             it('Should deposit native tokens', async () => {
                 expect(await iexecPocoAsAccountA.deposit.staticCall(...depositArgs)).to.be.true;
@@ -104,6 +103,16 @@ if (config.isNativeChain()) {
                 await expect(tx)
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(AddressZero, accountA.address, depositAmount);
+            });
+
+            it('Should deposit amount zero', async () => {
+                expect(await iexecPocoAsAccountA.deposit.staticCall({ value: 0 })).to.be.true;
+                const tx = iexecPocoAsAccountA.deposit({ value: 0 });
+                await expect(tx).to.changeEtherBalances([accountA, iexecPoco], [0, 0]);
+                await expect(tx).to.changeTokenBalances(iexecPoco, [accountA], [0]);
+                await expect(tx)
+                    .to.emit(iexecPoco, 'Transfer')
+                    .withArgs(AddressZero, accountA.address, 0);
             });
 
             it('Should not deposit native tokens when caller is address 0', async () => {
@@ -215,7 +224,6 @@ if (config.isNativeChain()) {
             });
         });
 
-        // TODO 'Should withdraw with zero value'
         describe('Withdraw', () => {
             it('Should withdraw native tokens', async () => {
                 await iexecPocoAsAccountA.deposit(...depositArgs);
@@ -230,6 +238,19 @@ if (config.isNativeChain()) {
                 await expect(tx)
                     .to.emit(iexecPoco, 'Transfer')
                     .withArgs(accountA.address, AddressZero, withdrawAmount);
+            });
+
+            it('Should withdraw amount zero', async () => {
+                await iexecPocoAsAccountA.deposit(...depositArgs);
+                expect(await iexecPocoAsAccountA.withdraw.staticCall(0)).to.be.true;
+                const tx = iexecPocoAsAccountA.withdraw(0);
+                await expect(tx).to.changeEtherBalances([accountA, iexecPoco], [0, 0]);
+                await expect(tx).to.changeTokenBalances(iexecPoco, [accountA], [0]);
+                await expect(tx)
+                    .to.emit(iexecPoco, 'Transfer')
+                    .withArgs(accountA.address, AddressZero, 0);
+                // User balance haven't changed.
+                expect(await iexecPoco.balanceOf(accountA.address)).to.equal(depositAmount);
             });
 
             it('Should not withdraw native tokens with empty balance', async () => {

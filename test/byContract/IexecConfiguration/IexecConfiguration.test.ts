@@ -114,12 +114,12 @@ describe('IexecConfiguration', async () => {
     });
 
     describe('Import score', () => {
-        it('[TODO] Should import score', async () => {
-            // Not tested
-        });
+        it.skip('[TODO] Should import score', async () => {});
+
         it('Should not import score when no v3_iexecHub configured', async () => {
             await expect(iexecPoco.importScore(worker.address)).to.be.revertedWithoutReason();
         });
+
         it('Should not import score when already imported', async () => {
             const workerScoreImportedSlot = ethers.stripZerosLeft(
                 ethers.keccak256(

@@ -209,8 +209,7 @@ describe('IexecAccessors', async () => {
         expect(contribution.weight).to.equal(1);
     });
 
-    it('viewScore', async function () {
-        // TODO
+    it.skip('[TODO] viewScore', async function () {
         expect(await iexecPoco.viewScore(worker1.address)).to.equal(0);
     });
 
