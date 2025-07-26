@@ -6,8 +6,8 @@ pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
 import "../FacetBase.sol";
-import "../interfaces/IexecERC20.sol";
-import "../interfaces/IexecTokenSpender.sol";
+import "../../interfaces/IexecERC20.sol";
+import "../../interfaces/IexecTokenSpender.sol";
 
 contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
     function transfer(address recipient, uint256 amount) external override returns (bool) {

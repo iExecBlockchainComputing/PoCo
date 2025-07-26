@@ -10,7 +10,7 @@ import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "../FacetBase.v8.sol";
-import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
+import {IexecPoco1} from "../../interfaces/IexecPoco1.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";

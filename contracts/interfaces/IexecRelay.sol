@@ -4,7 +4,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../../libs/IexecLibOrders_v5.sol";
+import "../libs/IexecLibOrders_v5.sol";
 
 interface IexecRelay {
     event BroadcastAppOrder(IexecLibOrders_v5.AppOrder apporder);

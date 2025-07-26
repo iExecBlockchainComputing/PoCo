@@ -4,18 +4,18 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./modules/interfaces/IOwnable.sol";
-import "./modules/interfaces/IexecAccessors.sol";
-import "./modules/interfaces/IexecCategoryManager.sol";
-import "./modules/interfaces/IexecERC20.sol";
-import "./modules/interfaces/IexecEscrowToken.sol";
-import "./modules/interfaces/IexecEscrowTokenSwap.sol";
-import "./modules/interfaces/IexecConfiguration.sol";
-import "./modules/interfaces/IexecOrderManagement.sol";
-import "./modules/interfaces/IexecPoco1.sol";
-import "./modules/interfaces/IexecPoco2.sol";
-import "./modules/interfaces/IexecRelay.sol";
-import "./modules/interfaces/IexecTokenSpender.sol";
+import "./IOwnable.sol";
+import "./IexecAccessors.sol";
+import "./IexecCategoryManager.sol";
+import "./IexecERC20.sol";
+import "./IexecEscrowToken.sol";
+import "./IexecEscrowTokenSwap.sol";
+import "./IexecConfiguration.sol";
+import "./IexecOrderManagement.sol";
+import "./IexecPoco1.sol";
+import "./IexecPoco2.sol";
+import "./IexecRelay.sol";
+import "./IexecTokenSpender.sol";
 
 interface IexecInterfaceToken is
     IOwnable,

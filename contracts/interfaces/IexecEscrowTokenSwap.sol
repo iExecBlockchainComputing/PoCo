@@ -5,7 +5,7 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
-import "../../libs/IexecLibOrders_v5.sol";
+import "../libs/IexecLibOrders_v5.sol";
 
 interface IexecEscrowTokenSwap {
     receive() external payable;

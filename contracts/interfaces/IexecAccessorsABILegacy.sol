@@ -4,7 +4,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "../../libs/IexecLibCore_v5.sol";
+import "../libs/IexecLibCore_v5.sol";
 
 interface IexecAccessorsABILegacy {
     function viewAccountABILegacy(address _user) external view returns (uint256, uint256);

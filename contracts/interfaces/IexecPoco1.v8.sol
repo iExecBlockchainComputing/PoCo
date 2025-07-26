@@ -1,17 +1,12 @@
-// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "../../libs/IexecLibOrders_v5.sol";
+import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 interface IexecPoco1 {
-    event Reward(address owner, uint256 amount, bytes32 ref);
-    event Seize(address owner, uint256 amount, bytes32 ref);
-    event Lock(address owner, uint256 amount);
-    event Unlock(address owner, uint256 amount);
-
+    event SchedulerNotice(address indexed workerpool, bytes32 dealid);
     event OrdersMatched(
         bytes32 dealid,
         bytes32 appHash,
@@ -20,7 +15,6 @@ interface IexecPoco1 {
         bytes32 requestHash,
         uint256 volume
     );
-    event SchedulerNotice(address indexed workerpool, bytes32 dealid);
     event DealSponsored(bytes32 dealId, address sponsor);
 
     function verifySignature(address, bytes32, bytes calldata) external view returns (bool);

@@ -5,8 +5,8 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "@iexec/solidity/contracts/ERC1154/IERC1154.sol";
-import "../../libs/IexecLibCore_v5.sol";
-import "../../registries/IRegistry.sol";
+import "../libs/IexecLibCore_v5.sol";
+import "../registries/IRegistry.sol";
 
 interface IexecAccessors is IOracle {
     function name() external view returns (string memory);
