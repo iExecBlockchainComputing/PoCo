@@ -11,10 +11,12 @@ import {IexecLibCore_v5} from "./libs/IexecLibCore_v5.sol";
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
  *                                                                          *
- * If you want add new variables for expanded features, add them at the     *
- * end, or (better?) create a Store_v2 that inherits from this Store.       *
+ * If you want to add new variables, add them to the end of the             *
+ * struct `PocoStorage`.                                                    *
+ * Read more about:                                                         *
+ *  - Diamond proxy storage https://eips.ethereum.org/EIPS/eip-2535         *
+ *  - Namespaced storage https://eips.ethereum.org/EIPS/eip-7201            *
  *                                                                          *
- * If in doubt, read about Diamond proxy storage.                           *
  ****************************************************************************/
 
 abstract contract Store {
@@ -90,9 +92,8 @@ abstract contract Store {
         // Modified in IexecConfigurationFacet.configure
         address m_v3_iexecHub; // IexecHubInterface
         mapping(address => bool) m_v3_scoreImported;
-        /**
-         * @dev A mapping to store PoCo Boost deals.
-         */
+        // /!\ New storage variables not present in v6 store.
+        // A mapping to store PoCo Boost deals.
         mapping(bytes32 => IexecLibCore_v5.DealBoost) m_dealsBoost;
     }
 

@@ -17,10 +17,12 @@ import "./registries/IRegistry.sol";
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
  *                                                                          *
- * If you want add new variables for expanded features, add them at the     *
- * end, or (better?) create a Store_v2 that inherits from this Store.       *
+ * If you want to add new variables, add them to the end of the             *
+ * struct `PocoStorage`.                                                    *
+ * Read more about:                                                         *
+ *  - Diamond proxy storage https://eips.ethereum.org/EIPS/eip-2535         *
+ *  - Namespaced storage https://eips.ethereum.org/EIPS/eip-7201            *
  *                                                                          *
- * If in doubt, read about Diamond proxy storage.                           *
  ****************************************************************************/
 
 abstract contract Store {
