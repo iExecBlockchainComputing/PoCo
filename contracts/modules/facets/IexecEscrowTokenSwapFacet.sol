@@ -6,7 +6,7 @@ pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
 import "./SignatureVerifier.sol";
-import "../FacetBase.sol";
+import "./FacetBase.sol";
 import "../../interfaces/IexecEscrowTokenSwap.sol";
 import "../../interfaces/IexecPoco1.sol";
 

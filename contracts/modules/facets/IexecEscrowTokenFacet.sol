@@ -5,7 +5,7 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
-import "../FacetBase.sol";
+import "./FacetBase.sol";
 import "../../interfaces/IexecEscrowToken.sol";
 import "../../interfaces/IexecTokenSpender.sol";
 

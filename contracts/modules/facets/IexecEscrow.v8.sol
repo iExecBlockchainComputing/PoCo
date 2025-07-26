@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import {FacetBase} from "../FacetBase.v8.sol";
+import {FacetBase} from "./FacetBase.v8.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.

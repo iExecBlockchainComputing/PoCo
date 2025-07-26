@@ -5,7 +5,7 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
-import "../FacetBase.sol";
+import "./FacetBase.sol";
 import "../../interfaces/IexecEscrowNative.sol";
 
 contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core {

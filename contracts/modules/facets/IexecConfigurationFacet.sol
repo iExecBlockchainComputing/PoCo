@@ -6,7 +6,7 @@ pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import "../FacetBase.sol";
+import "./FacetBase.sol";
 import "../../interfaces/IexecConfiguration.sol";
 
 contract IexecConfigurationFacet is IexecConfiguration, FacetBase {

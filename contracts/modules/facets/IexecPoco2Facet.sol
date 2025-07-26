@@ -7,7 +7,7 @@ import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
-import {FacetBase} from "../FacetBase.v8.sol";
+import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecPoco2} from "../../interfaces/IexecPoco2.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
