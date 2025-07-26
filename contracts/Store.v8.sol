@@ -64,9 +64,7 @@ abstract contract Store {
         mapping(address => mapping(address => uint256)) m_allowances;
         // EIP-712 domain hash.
         // Modified in IexecConfigurationFacet.updateDomainSeparator
-        bytes32 EIP712DOMAIN_SEPARATOR; // TODO rename
-        // Poco - Storage
-
+        bytes32 m_eip712DomainSeparator;
         // Mapping an order hash to its owner. Since a smart contract cannot sign orders
         // with a private key, it adds an entry to this mapping to provide presigned orders.
         mapping(bytes32 => address) m_presigned;

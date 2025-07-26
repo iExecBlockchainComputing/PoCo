@@ -7,8 +7,7 @@ import "../Store.sol";
 import "../interfaces/IOwnable.sol";
 
 // Functions that were declared in ERC1538Store are re-declared here.
-// TODO clean this (use LibDiamond)
-//      - All calls to `owner()` should use `LibDiamond.contractOwner()`.
+// TODO use LibDiamond.contractOwner() when migrating all contracts to v8.
 
 /**
  * @title Base contract of all Facet contracts.

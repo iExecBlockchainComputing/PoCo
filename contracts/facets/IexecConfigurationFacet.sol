@@ -25,8 +25,8 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
         address _v3_iexecHubAddress
     ) external override onlyOwner {
         PocoStorage storage $ = getPocoStorage();
-        require($.EIP712DOMAIN_SEPARATOR == bytes32(0), "already-configured");
-        $.EIP712DOMAIN_SEPARATOR = _domain().hash();
+        require($.m_eip712DomainSeparator == bytes32(0), "already-configured");
+        $.m_eip712DomainSeparator = _domain().hash();
 
         $.m_baseToken = IERC20(_token);
         $.m_name = _name;
@@ -45,8 +45,8 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
 
     function updateDomainSeparator() external override {
         PocoStorage storage $ = getPocoStorage();
-        require($.EIP712DOMAIN_SEPARATOR != bytes32(0), "not-configured");
-        $.EIP712DOMAIN_SEPARATOR = _domain().hash();
+        require($.m_eip712DomainSeparator != bytes32(0), "not-configured");
+        $.m_eip712DomainSeparator = _domain().hash();
     }
 
     function importScore(address _worker) external override {

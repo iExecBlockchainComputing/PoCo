@@ -170,6 +170,6 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
 
     function eip712domain_separator() external view override returns (bytes32) {
         PocoStorage storage $ = getPocoStorage();
-        return $.EIP712DOMAIN_SEPARATOR;
+        return $.m_eip712DomainSeparator;
     }
 }
