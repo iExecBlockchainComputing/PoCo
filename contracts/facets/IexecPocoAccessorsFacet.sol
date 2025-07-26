@@ -4,9 +4,9 @@
 pragma solidity ^0.8.0;
 
 import {FacetBase} from "./FacetBase.v8.sol";
-import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
-import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
-import {IexecPocoAccessors} from "../../interfaces/IexecPocoAccessors.sol";
+import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
+import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
+import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 

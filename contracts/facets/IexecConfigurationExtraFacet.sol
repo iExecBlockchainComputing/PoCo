@@ -5,7 +5,7 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./FacetBase.sol";
-import "../../interfaces/IexecConfigurationExtra.sol";
+import "../interfaces/IexecConfigurationExtra.sol";
 
 contract IexecConfigurationExtraFacet is IexecConfigurationExtra, FacetBase {
     function changeRegistries(

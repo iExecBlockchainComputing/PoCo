@@ -9,12 +9,12 @@ import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/Me
 import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 import {SafeCast} from "@openzeppelin/contracts-v5/utils/math/SafeCast.sol";
 
-import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
-import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
-import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
-import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
+import {IOracleConsumer} from "../external/interfaces/IOracleConsumer.sol";
+import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
+import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
+import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
-import {IexecPocoBoost} from "../../interfaces/IexecPocoBoost.sol";
+import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";

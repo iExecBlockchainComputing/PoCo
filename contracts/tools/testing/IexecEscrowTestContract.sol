@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecEscrow} from "../../modules/facets/IexecEscrow.v8.sol";
+import {IexecEscrow} from "../../facets/IexecEscrow.v8.sol";
 
 /**
  * @notice a wrapper contract to make internal functions of

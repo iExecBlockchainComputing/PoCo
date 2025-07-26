@@ -6,7 +6,7 @@ pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
 import "./FacetBase.sol";
-import "../../interfaces/IexecEscrowNative.sol";
+import "../interfaces/IexecEscrowNative.sol";
 
 contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core {
     using SafeMathExtended for uint256;

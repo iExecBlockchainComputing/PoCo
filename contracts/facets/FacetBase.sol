@@ -3,8 +3,8 @@
 
 pragma solidity ^0.6.0;
 
-import "../../Store.sol";
-import "../../interfaces/IOwnable.sol";
+import "../Store.sol";
+import "../interfaces/IOwnable.sol";
 
 // Functions that were declared in ERC1538Store are re-declared here.
 // TODO clean this (use LibDiamond)

@@ -6,8 +6,8 @@ pragma experimental ABIEncoderV2;
 
 import "./IexecERC20Core.sol";
 import "./FacetBase.sol";
-import "../../interfaces/IexecEscrowToken.sol";
-import "../../interfaces/IexecTokenSpender.sol";
+import "../interfaces/IexecEscrowToken.sol";
+import "../interfaces/IexecTokenSpender.sol";
 
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
     using SafeMathExtended for uint256;
