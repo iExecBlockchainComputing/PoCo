@@ -406,13 +406,18 @@ contract IexecPocoBoostFacet is
             "PocoBoost: Invalid contribution authorization signature"
         );
         address target = deal.callback;
-        bytes32 resultDigest = keccak256(target == address(0) ? results : resultsCallback);
         // Check enclave signature
         require(
             enclaveChallenge == address(0) ||
                 _verifySignatureOfEthSignedMessage(
                     enclaveChallenge,
-                    abi.encodePacked(msg.sender, taskId, resultDigest),
+                    abi.encodePacked(
+                        msg.sender,
+                        taskId,
+                        // Result digest
+                        /// @dev extracting it in a variable causes "Stack too deep" error.
+                        keccak256(target == address(0) ? results : resultsCallback)
+                    ),
                     enclaveSign
                 ),
             "PocoBoost: Invalid enclave signature"
@@ -469,10 +474,10 @@ contract IexecPocoBoostFacet is
         if (target != address(0)) {
             require(resultsCallback.length > 0, "PocoBoost: Callback requires data");
             /*
-             * The caller must be able to complete the task even if the external
-             * call reverts.
+             * The caller (worker) must be able to complete the task even if the external
+             * call reverts, hence we don't check the success of the call.
+             * See Halborn audit report for details.
              */
-            // See Halborn audit report for details
             //slither-disable-next-line low-level-calls
             (bool success, ) = target.call{gas: $.m_callbackgas}(
                 abi.encodeCall(IOracleConsumer.receiveResult, (taskId, resultsCallback))

@@ -82,8 +82,8 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
             bytes memory
         )
     {
-        PocoStorage storage $ = getPocoStorage();
-        IexecLibCore_v5.Task memory task = $.m_tasks[_taskid];
+        /// @dev Using $.m_tasks causes "Stack too deep" error.
+        IexecLibCore_v5.Task memory task = getPocoStorage().m_tasks[_taskid];
         return (
             task.status,
             task.dealid,
