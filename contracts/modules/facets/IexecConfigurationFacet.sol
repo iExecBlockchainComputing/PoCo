@@ -59,11 +59,13 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     }
 
     function setTeeBroker(address _teebroker) external override onlyOwner {
-        getPocoStorage().m_teebroker = _teebroker;
+        PocoStorage storage $ = getPocoStorage();
+        $.m_teebroker = _teebroker;
     }
 
     function setCallbackGas(uint256 _callbackgas) external override onlyOwner {
-        getPocoStorage().m_callbackgas = _callbackgas;
+        PocoStorage storage $ = getPocoStorage();
+        $.m_callbackgas = _callbackgas;
     }
 
     function _chainId() internal pure returns (uint256 id) {

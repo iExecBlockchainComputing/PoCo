@@ -9,31 +9,38 @@ import "../interfaces/IexecAccessors.sol";
 
 contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     function name() external view override returns (string memory) {
-        return getPocoStorage().m_name;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_name;
     }
 
     function symbol() external view override returns (string memory) {
-        return getPocoStorage().m_symbol;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_symbol;
     }
 
     function decimals() external view override returns (uint8) {
-        return getPocoStorage().m_decimals;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_decimals;
     }
 
     function totalSupply() external view override returns (uint256) {
-        return getPocoStorage().m_totalSupply;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_totalSupply;
     }
 
     function balanceOf(address account) external view override returns (uint256) {
-        return getPocoStorage().m_balances[account];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_balances[account];
     }
 
     function frozenOf(address account) external view override returns (uint256) {
-        return getPocoStorage().m_frozens[account];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_frozens[account];
     }
 
     function allowance(address account, address spender) external view override returns (uint256) {
-        return getPocoStorage().m_allowances[account][spender];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_allowances[account][spender];
     }
 
     function viewAccount(
@@ -44,42 +51,50 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     }
 
     function token() external view override returns (address) {
-        return address(getPocoStorage().m_baseToken);
+        PocoStorage storage $ = getPocoStorage();
+        return address($.m_baseToken);
     }
 
     function viewDeal(
         bytes32 _id
     ) external view override returns (IexecLibCore_v5.Deal memory deal) {
-        return getPocoStorage().m_deals[_id];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_deals[_id];
     }
 
     function viewConsumed(bytes32 _id) external view override returns (uint256 consumed) {
-        return getPocoStorage().m_consumed[_id];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_consumed[_id];
     }
 
     function viewPresigned(bytes32 _id) external view override returns (address signer) {
-        return getPocoStorage().m_presigned[_id];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_presigned[_id];
     }
 
     function viewTask(
         bytes32 _taskid
     ) external view override returns (IexecLibCore_v5.Task memory) {
-        return getPocoStorage().m_tasks[_taskid];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_tasks[_taskid];
     }
 
     function viewContribution(
         bytes32 _taskid,
         address _worker
     ) external view override returns (IexecLibCore_v5.Contribution memory) {
-        return getPocoStorage().m_contributions[_taskid][_worker];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_contributions[_taskid][_worker];
     }
 
     function viewScore(address _worker) external view override returns (uint256) {
-        return getPocoStorage().m_workerScores[_worker];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_workerScores[_worker];
     }
 
     function resultFor(bytes32 id) external view override returns (bytes memory) {
-        IexecLibCore_v5.Task storage task = getPocoStorage().m_tasks[id];
+        PocoStorage storage $ = getPocoStorage();
+        IexecLibCore_v5.Task storage task = $.m_tasks[id];
         require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, "task-pending");
         return task.resultsCallback; // Expansion - result separation
     }
@@ -87,31 +102,38 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     function viewCategory(
         uint256 _catid
     ) external view override returns (IexecLibCore_v5.Category memory category) {
-        return getPocoStorage().m_categories[_catid];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_categories[_catid];
     }
 
     function countCategory() external view override returns (uint256 count) {
-        return getPocoStorage().m_categories.length;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_categories.length;
     }
 
     function appregistry() external view override returns (IRegistry) {
-        return getPocoStorage().m_appregistry;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_appregistry;
     }
 
     function datasetregistry() external view override returns (IRegistry) {
-        return getPocoStorage().m_datasetregistry;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_datasetregistry;
     }
 
     function workerpoolregistry() external view override returns (IRegistry) {
-        return getPocoStorage().m_workerpoolregistry;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_workerpoolregistry;
     }
 
     function teebroker() external view override returns (address) {
-        return getPocoStorage().m_teebroker;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_teebroker;
     }
 
     function callbackgas() external view override returns (uint256) {
-        return getPocoStorage().m_callbackgas;
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_callbackgas;
     }
 
     function contribution_deadline_ratio() external view override returns (uint256) {
@@ -147,6 +169,7 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     }
 
     function eip712domain_separator() external view override returns (bytes32) {
-        return getPocoStorage().EIP712DOMAIN_SEPARATOR;
+        PocoStorage storage $ = getPocoStorage();
+        return $.EIP712DOMAIN_SEPARATOR;
     }
 }
