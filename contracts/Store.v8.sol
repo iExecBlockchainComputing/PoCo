@@ -44,67 +44,52 @@ abstract contract Store {
         IRegistry m_appregistry;
         IRegistry m_datasetregistry;
         IRegistry m_workerpoolregistry;
-
         // Escrow
         IERC20 m_baseToken;
         string m_name;
         string m_symbol;
         uint8 m_decimals;
         uint256 m_totalSupply;
-
         // In order to use the protocol, users have to deposit RLC
         // and allow PoCo smart contracts to manage them. This state
         // variable keeps track of users balances.
         mapping(address => uint256) m_balances;
-
         // When a deal is created, the protocol temporarily locks an amount
         // of RLC tokens from the balances of both the requester and the workerpool owners.
         // This is to guarantee the payment of different actors later. Frozen funds
         // are released when the computation is completed and the result is pushed.
         mapping(address => uint256) m_frozens;
-
         mapping(address => mapping(address => uint256)) m_allowances;
-
         // EIP-712 domain hash.
         // Modified in IexecConfigurationFacet.updateDomainSeparator
         bytes32 EIP712DOMAIN_SEPARATOR; // TODO rename
-
         // Poco - Storage
 
         // Mapping an order hash to its owner. Since a smart contract cannot sign orders
         // with a private key, it adds an entry to this mapping to provide presigned orders.
         mapping(bytes32 => address) m_presigned;
-
         // Each order has a volume (>=1). This tracks how much is consumed from
         // the volume of each order. Mapping an order hash to its consumed amount.
         mapping(bytes32 => uint256) m_consumed;
-
         // a mapping to store PoCo classic deals.
         mapping(bytes32 => IexecLibCore_v5.Deal) m_deals;
-
         mapping(bytes32 => IexecLibCore_v5.Task) m_tasks; // per task
         mapping(bytes32 => IexecLibCore_v5.Consensus) m_consensus; // per task
         mapping(bytes32 => mapping(address => IexecLibCore_v5.Contribution)) m_contributions; // per task-worker
         mapping(address => uint256) m_workerScores; // per worker
-
         // Poco - Settings
-
         // Address of a trusted TEE authority that manages enclave challenges.
         // Modified in IexecConfigurationFacet.setTeeBroker
         address m_teebroker;
-
         // Max amount of gas to be used with callbacks.
         // Modified in IexecConfigurationFacet.setCallbackGas
         uint256 m_callbackgas;
-
         // List of defined computation categories.
         IexecLibCore_v5.Category[] m_categories;
-
         // Backward compatibility
         // Modified in IexecConfigurationFacet.configure
         address m_v3_iexecHub; // IexecHubInterface
         mapping(address => bool) m_v3_scoreImported;
-
         /**
          * @dev A mapping to store PoCo Boost deals.
          */

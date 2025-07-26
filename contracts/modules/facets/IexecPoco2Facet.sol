@@ -112,7 +112,9 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
     ) external override {
         PocoStorage storage $ = getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
-        IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][_msgSender()];
+        IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][
+            _msgSender()
+        ];
         IexecLibCore_v5.Deal memory deal = $.m_deals[task.dealid];
 
         require(task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE);
@@ -188,7 +190,9 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
     ) external override {
         PocoStorage storage $ = getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
-        IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][_msgSender()];
+        IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][
+            _msgSender()
+        ];
         IexecLibCore_v5.Deal memory deal = $.m_deals[task.dealid];
 
         require(task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE);
@@ -257,7 +261,9 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
     function reveal(bytes32 _taskid, bytes32 _resultDigest) external override {
         PocoStorage storage $ = getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
-        IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][_msgSender()];
+        IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][
+            _msgSender()
+        ];
         require(task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
         require(task.revealDeadline > block.timestamp);
         require(contribution.status == IexecLibCore_v5.ContributionStatusEnum.CONTRIBUTED);

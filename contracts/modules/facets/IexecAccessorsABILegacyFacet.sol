@@ -105,7 +105,9 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
         override
         returns (IexecLibCore_v5.ContributionStatusEnum, bytes32, bytes32, address)
     {
-        IexecLibCore_v5.Contribution memory contribution = getPocoStorage().m_contributions[_taskid][_worker];
+        IexecLibCore_v5.Contribution memory contribution = getPocoStorage().m_contributions[
+            _taskid
+        ][_worker];
         return (
             contribution.status,
             contribution.resultHash,
