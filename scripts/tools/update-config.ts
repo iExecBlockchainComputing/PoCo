@@ -1,28 +1,25 @@
 import * as fs from 'fs';
 import { deployments, ethers } from 'hardhat';
 import * as path from 'path';
-import config from '../../utils/config';
-
-// Get the absolute path to the config file
-const configPath = path.resolve('config/config.json');
+import localConfig from '../../utils/config';
 
 async function main(): Promise<void> {
+    // Get the absolute path to the config file
+    const configPath = path.resolve('config/config.json');
     // Get network info from ethers
     const network = await ethers.provider.getNetwork();
     const networkName = network.name;
     const chainId = network.chainId.toString();
 
     console.log(`Working with network: ${networkName} (Chain ID: ${chainId})`);
-    const deployment = await deployments.get('DiamondProxy');
+    const deployment = await deployments.get('Diamond');
     const contractAddress = deployment.address;
 
     if (!contractAddress || contractAddress === 'null') {
-        console.error(`Failed to extract a valid DiamondProxy address from deployment file`);
+        console.error(`Failed to extract a valid Diamond proxy address from Hardhat deployment`);
         process.exit(1);
     }
-
-    console.log(`Found DiamondProxy address: ${contractAddress}`);
-    const localConfig = config;
+    console.log(`Diamond proxy address to save: ${contractAddress}`);
 
     // Ensure the chain structure exists
     if (!localConfig.chains) {
@@ -31,7 +28,7 @@ async function main(): Promise<void> {
 
     if (!localConfig.chains[chainId]) {
         localConfig.chains[chainId] = {
-            _comment: `Chain ${chainId} (${networkName})`,
+            _comment: `Chain ${networkName} (${chainId})`,
             asset: 'Token', // Default value, update as needed
             v3: {
                 Hub: null,
