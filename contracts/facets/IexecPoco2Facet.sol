@@ -28,7 +28,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         IexecLibCore_v5.Deal storage deal = $.m_deals[_dealid];
 
         uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
-        uint256 poolstake = (deal.workerpool.price * LibPocoStorage.WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
         // Seize the payer of the task
         seize(deal.sponsor, taskPrice, _taskid);
@@ -45,14 +45,11 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         // pool reward performed by consensus manager
 
         // Retrieve part of the kitty
-        uint256 kitty = $.m_frozens[LibPocoStorage.KITTY_ADDRESS];
+        uint256 kitty = $.m_frozens[KITTY_ADDRESS];
         if (kitty > 0) {
-            // Get a fraction of the kitty where LibPocoStorage.KITTY_MIN <= fraction <= kitty
-            kitty = Math.min(
-                Math.max((kitty * LibPocoStorage.KITTY_RATIO) / 100, LibPocoStorage.KITTY_MIN),
-                kitty
-            );
-            seize(LibPocoStorage.KITTY_ADDRESS, kitty, _taskid);
+            // Get a fraction of the kitty where KITTY_MIN <= fraction <= kitty
+            kitty = Math.min(Math.max((kitty * KITTY_RATIO) / 100, KITTY_MIN), kitty);
+            seize(KITTY_ADDRESS, kitty, _taskid);
             reward(deal.workerpool.owner, kitty, _taskid);
         }
     }
@@ -62,7 +59,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         IexecLibCore_v5.Deal memory deal = $.m_deals[_dealid];
 
         uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
-        uint256 poolstake = (deal.workerpool.price * LibPocoStorage.WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
         unlock(deal.sponsor, taskPrice); // Refund the payer of the task
         seize(deal.workerpool.owner, poolstake, _taskid);
@@ -72,9 +69,9 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
          * where functions would together uselessly transfer value from main PoCo
          * proxy to kitty, then would transfer value back from kitty to main PoCo proxy.
          */
-        $.m_frozens[LibPocoStorage.KITTY_ADDRESS] += poolstake; // → Kitty / Burn
-        emit Reward(LibPocoStorage.KITTY_ADDRESS, poolstake, _taskid);
-        emit Lock(LibPocoStorage.KITTY_ADDRESS, poolstake);
+        $.m_frozens[KITTY_ADDRESS] += poolstake; // → Kitty / Burn
+        emit Reward(KITTY_ADDRESS, poolstake, _taskid);
+        emit Lock(KITTY_ADDRESS, poolstake);
     }
 
     /***************************************************************************
@@ -95,11 +92,8 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         task.dealid = _dealid;
         task.idx = idx;
         task.timeref = $.m_categories[deal.category].workClockTimeRef;
-        task.contributionDeadline =
-            deal.startTime +
-            task.timeref *
-            LibPocoStorage.CONTRIBUTION_DEADLINE_RATIO;
-        task.finalDeadline = deal.startTime + task.timeref * LibPocoStorage.FINAL_DEADLINE_RATIO;
+        task.contributionDeadline = deal.startTime + task.timeref * CONTRIBUTION_DEADLINE_RATIO;
+        task.finalDeadline = deal.startTime + task.timeref * FINAL_DEADLINE_RATIO;
 
         // setup denominator
         $.m_consensus[taskid].total = 1;
@@ -246,7 +240,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
 
         task.status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
         task.consensusValue = contribution.resultHash;
-        task.revealDeadline = block.timestamp + task.timeref * LibPocoStorage.REVEAL_DEADLINE_RATIO;
+        task.revealDeadline = block.timestamp + task.timeref * REVEAL_DEADLINE_RATIO;
         task.revealCounter = 1;
         task.winnerCounter = 1;
         task.resultDigest = _resultDigest;
@@ -413,10 +407,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
             // _msgSender() is a contributor: no need to check
             task.status = IexecLibCore_v5.TaskStatusEnum.REVEALING;
             task.consensusValue = _consensus;
-            task.revealDeadline =
-                block.timestamp +
-                task.timeref *
-                LibPocoStorage.REVEAL_DEADLINE_RATIO;
+            task.revealDeadline = block.timestamp + task.timeref * REVEAL_DEADLINE_RATIO;
             task.revealCounter = 0;
             task.winnerCounter = winnerCounter;
 

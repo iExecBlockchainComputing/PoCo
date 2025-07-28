@@ -138,35 +138,35 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     }
 
     function contribution_deadline_ratio() external view override returns (uint256) {
-        return LibPocoStorage.CONTRIBUTION_DEADLINE_RATIO;
+        return CONTRIBUTION_DEADLINE_RATIO;
     }
 
     function reveal_deadline_ratio() external view override returns (uint256) {
-        return LibPocoStorage.REVEAL_DEADLINE_RATIO;
+        return REVEAL_DEADLINE_RATIO;
     }
 
     function final_deadline_ratio() external view override returns (uint256) {
-        return LibPocoStorage.FINAL_DEADLINE_RATIO;
+        return FINAL_DEADLINE_RATIO;
     }
 
     function workerpool_stake_ratio() external view override returns (uint256) {
-        return LibPocoStorage.WORKERPOOL_STAKE_RATIO;
+        return WORKERPOOL_STAKE_RATIO;
     }
 
     function kitty_ratio() external view override returns (uint256) {
-        return LibPocoStorage.KITTY_RATIO;
+        return KITTY_RATIO;
     }
 
     function kitty_min() external view override returns (uint256) {
-        return LibPocoStorage.KITTY_MIN;
+        return KITTY_MIN;
     }
 
     function kitty_address() external view override returns (address) {
-        return LibPocoStorage.KITTY_ADDRESS;
+        return KITTY_ADDRESS;
     }
 
     function groupmember_purpose() external view override returns (uint256) {
-        return LibPocoStorage.GROUPMEMBER_PURPOSE;
+        return GROUPMEMBER_PURPOSE;
     }
 
     function eip712domain_separator() external view override returns (bytes32) {

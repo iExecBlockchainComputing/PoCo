@@ -142,7 +142,7 @@ contract SignatureVerifier is FacetBase {
             try
                 IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
                         bytes32(uint256(uint160(account))),
-                        LibPocoStorage.GROUPMEMBER_PURPOSE
+                        GROUPMEMBER_PURPOSE
                     )
             returns (bool success) {
                 return success;
