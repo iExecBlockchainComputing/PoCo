@@ -4,6 +4,7 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import "./FacetBase.sol";
 
 contract IexecERC20Core is FacetBase {
@@ -15,7 +16,7 @@ contract IexecERC20Core is FacetBase {
     function _transferUnchecked(address sender, address recipient, uint256 amount) internal {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_balances[sender] = $.m_balances[sender].sub(amount);
         $.m_balances[recipient] = $.m_balances[recipient].add(amount);
         emit Transfer(sender, recipient, amount);
@@ -27,7 +28,7 @@ contract IexecERC20Core is FacetBase {
 
     function _mint(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: mint to the zero address");
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_totalSupply = $.m_totalSupply.add(amount);
         $.m_balances[account] = $.m_balances[account].add(amount);
         emit Transfer(address(0), account, amount);
@@ -35,7 +36,7 @@ contract IexecERC20Core is FacetBase {
 
     function _burn(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: burn from the zero address");
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_totalSupply = $.m_totalSupply.sub(amount);
         $.m_balances[account] = $.m_balances[account].sub(amount);
         emit Transfer(account, address(0), amount);
@@ -44,7 +45,7 @@ contract IexecERC20Core is FacetBase {
     function _approve(address owner, address spender, uint256 amount) internal {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }

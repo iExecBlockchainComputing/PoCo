@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./FacetBase.sol";
 import "../interfaces/IexecConfiguration.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     using SafeMathExtended for uint256;
@@ -24,10 +25,9 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
         address _workerpoolregistryAddress,
         address _v3_iexecHubAddress
     ) external override onlyOwner {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require($.m_eip712DomainSeparator == bytes32(0), "already-configured");
         $.m_eip712DomainSeparator = _domain().hash();
-
         $.m_baseToken = IERC20(_token);
         $.m_name = _name;
         $.m_symbol = _symbol;
@@ -44,13 +44,13 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     }
 
     function updateDomainSeparator() external override {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require($.m_eip712DomainSeparator != bytes32(0), "not-configured");
         $.m_eip712DomainSeparator = _domain().hash();
     }
 
     function importScore(address _worker) external override {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require(!$.m_v3_scoreImported[_worker], "score-already-imported");
         $.m_workerScores[_worker] = $.m_workerScores[_worker].max(
             $.m_v3_iexecHub.viewScore(_worker)
@@ -59,12 +59,12 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     }
 
     function setTeeBroker(address _teebroker) external override onlyOwner {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_teebroker = _teebroker;
     }
 
     function setCallbackGas(uint256 _callbackgas) external override onlyOwner {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_callbackgas = _callbackgas;
     }
 

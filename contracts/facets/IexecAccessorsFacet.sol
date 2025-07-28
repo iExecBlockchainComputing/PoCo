@@ -6,76 +6,77 @@ pragma experimental ABIEncoderV2;
 
 import "./FacetBase.sol";
 import "../interfaces/IexecAccessors.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     function name() external view override returns (string memory) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_name;
     }
 
     function symbol() external view override returns (string memory) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_symbol;
     }
 
     function decimals() external view override returns (uint8) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_decimals;
     }
 
     function totalSupply() external view override returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_totalSupply;
     }
 
     function balanceOf(address account) external view override returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_balances[account];
     }
 
     function frozenOf(address account) external view override returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_frozens[account];
     }
 
     function allowance(address account, address spender) external view override returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_allowances[account][spender];
     }
 
     function viewAccount(
         address account
     ) external view override returns (IexecLibCore_v5.Account memory) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return IexecLibCore_v5.Account($.m_balances[account], $.m_frozens[account]);
     }
 
     function token() external view override returns (address) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return address($.m_baseToken);
     }
 
     function viewDeal(
         bytes32 _id
     ) external view override returns (IexecLibCore_v5.Deal memory deal) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_deals[_id];
     }
 
     function viewConsumed(bytes32 _id) external view override returns (uint256 consumed) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_consumed[_id];
     }
 
     function viewPresigned(bytes32 _id) external view override returns (address signer) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_presigned[_id];
     }
 
     function viewTask(
         bytes32 _taskid
     ) external view override returns (IexecLibCore_v5.Task memory) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_tasks[_taskid];
     }
 
@@ -83,17 +84,17 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
         bytes32 _taskid,
         address _worker
     ) external view override returns (IexecLibCore_v5.Contribution memory) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_contributions[_taskid][_worker];
     }
 
     function viewScore(address _worker) external view override returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_workerScores[_worker];
     }
 
     function resultFor(bytes32 id) external view override returns (bytes memory) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[id];
         require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, "task-pending");
         return task.resultsCallback; // Expansion - result separation
@@ -102,37 +103,37 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     function viewCategory(
         uint256 _catid
     ) external view override returns (IexecLibCore_v5.Category memory category) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_categories[_catid];
     }
 
     function countCategory() external view override returns (uint256 count) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_categories.length;
     }
 
     function appregistry() external view override returns (IRegistry) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_appregistry;
     }
 
     function datasetregistry() external view override returns (IRegistry) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_datasetregistry;
     }
 
     function workerpoolregistry() external view override returns (IRegistry) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_workerpoolregistry;
     }
 
     function teebroker() external view override returns (address) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_teebroker;
     }
 
     function callbackgas() external view override returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_callbackgas;
     }
 
@@ -169,7 +170,7 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     }
 
     function eip712domain_separator() external view override returns (bytes32) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_eip712DomainSeparator;
     }
 }
