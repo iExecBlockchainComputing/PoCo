@@ -25,7 +25,7 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
         address _workerpoolregistryAddress,
         address _v3_iexecHubAddress
     ) external override onlyOwner {
-        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         require($.m_eip712DomainSeparator == bytes32(0), "already-configured");
         $.m_eip712DomainSeparator = _domain().hash();
         $.m_baseToken = IERC20(_token);
@@ -44,13 +44,13 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     }
 
     function updateDomainSeparator() external override {
-        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         require($.m_eip712DomainSeparator != bytes32(0), "not-configured");
         $.m_eip712DomainSeparator = _domain().hash();
     }
 
     function importScore(address _worker) external override {
-        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         require(!$.m_v3_scoreImported[_worker], "score-already-imported");
         $.m_workerScores[_worker] = $.m_workerScores[_worker].max(
             $.m_v3_iexecHub.viewScore(_worker)
@@ -59,12 +59,12 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     }
 
     function setTeeBroker(address _teebroker) external override onlyOwner {
-        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         $.m_teebroker = _teebroker;
     }
 
     function setCallbackGas(uint256 _callbackgas) external override onlyOwner {
-        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         $.m_callbackgas = _callbackgas;
     }
 

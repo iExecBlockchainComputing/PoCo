@@ -19,11 +19,11 @@ abstract contract FacetBase {
         _;
     }
 
-    function owner() public view virtual returns (address) {
+    function owner() public view returns (address) {
         return IOwnable(address(this)).owner();
     }
 
-    function _msgSender() internal view virtual returns (address) {
+    function _msgSender() internal view returns (address) {
         return msg.sender;
     }
 

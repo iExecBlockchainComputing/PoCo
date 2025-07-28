@@ -19,12 +19,12 @@ abstract contract FacetBase {
         _;
     }
 
-    function owner() public view virtual returns (address) {
+    function owner() public view returns (address) {
         // Make an external call to delegatecall the OwnershipFacet.
         return IERC5313(address(this)).owner();
     }
 
-    function _msgSender() internal view virtual returns (address) {
+    function _msgSender() internal view returns (address) {
         return msg.sender;
     }
 
