@@ -350,7 +350,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         ).to.be.revertedWithoutReason(); // require#2
     });
 
-    it('Should not contributeAndFinalize when someone else has already contributed', async () => {
+    it.skip('[TODO] Should not contributeAndFinalize when someone else has already contributed', async () => {
         // TODO require#3
     });
 
