@@ -25,7 +25,6 @@ async function main(): Promise<void> {
     if (!localConfig.chains) {
         localConfig.chains = {};
     }
-
     if (!localConfig.chains[chainId]) {
         localConfig.chains[chainId] = {
             _comment: `Chain ${networkName} (${chainId})`,
@@ -39,21 +38,29 @@ async function main(): Promise<void> {
             v5: {},
         };
     }
-
     if (!localConfig.chains[chainId].v5) {
         localConfig.chains[chainId].v5 = {};
     }
-
-    const contractKey = 'DiamondProxy';
-    const previousValue = localConfig.chains[chainId].v5[contractKey] || 'null';
-    localConfig.chains[chainId].v5[contractKey] = contractAddress;
-
+    // Save the Diamond proxy address.
+    const diamondProxyName = 'DiamondProxy';
+    const previousDiamondAddress = localConfig.chains[chainId].v5[diamondProxyName] || 'null';
+    localConfig.chains[chainId].v5[diamondProxyName] = contractAddress;
+    console.log(
+        `Updated ${chainId}.v5.${diamondProxyName} from ${previousDiamondAddress} to ${contractAddress}`,
+    );
+    // Save `IexecLibOrders_v5` address if it exists
+    const iexecLibOrdersName = 'IexecLibOrders_v5';
+    const iexecLibOrdersDeployment = await deployments.get(iexecLibOrdersName);
+    if (iexecLibOrdersDeployment && iexecLibOrdersDeployment.address) {
+        const previousLibAddress = localConfig.chains[chainId].v5[iexecLibOrdersName] || 'null';
+        localConfig.chains[chainId].v5[iexecLibOrdersName] = iexecLibOrdersDeployment.address;
+        console.log(
+            `Updated ${chainId}.v5.${iexecLibOrdersName} from ${previousLibAddress} to ${iexecLibOrdersDeployment.address}`,
+        );
+    }
     // Write the updated config back to file
     fs.writeFileSync(configPath, JSON.stringify(localConfig, null, 2));
-
-    console.log(`Updated ${chainId}.v5.${contractKey}:`);
-    console.log(`Previous: ${previousValue}`);
-    console.log(`New: ${contractAddress}`);
+    console.log(`Configuration updated successfully in ${configPath}`);
 }
 
 // Execute the main function and handle any errors
