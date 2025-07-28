@@ -5,6 +5,10 @@ pragma solidity ^0.6.0;
 
 import "../RegistryEntry.sol";
 
+/**
+ * @dev Referenced in the SDK with the current path `contracts/registries/apps/AppRegistry.sol`.
+ * Changing the name or the path would cause a breaking change in the SDK.
+ */
 contract App is RegistryEntry {
     /**
      * Members

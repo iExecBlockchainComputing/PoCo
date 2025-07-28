@@ -25,7 +25,7 @@ import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { bigintToAddress } from '../../../utils/tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-const randomAddress = () => ethers.Wallet.createRandom().address;
+import { randomAddress } from '../../utils/utils';
 
 describe('Registries', () => {
     let proxyAddress: string;
@@ -470,6 +470,23 @@ describe('Registries', () => {
             await expect(
                 workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs),
             ).to.be.revertedWith('Create2: Failed on deploy');
+        });
+    });
+
+    describe('Common', () => {
+        it('Should revert when setName is called for reverse registration', async () => {
+            const randomEnsContract = randomAddress();
+            const randomEnsName = 'random.eth';
+            const txs = [
+                appRegistryAsAdmin.setName(randomEnsContract, randomEnsName),
+                datasetRegistryAsAdmin.setName(randomEnsContract, randomEnsName),
+                workerpoolRegistryAsAdmin.setName(randomEnsContract, randomEnsName),
+            ];
+            await Promise.all(
+                txs.map((tx) =>
+                    expect(tx).to.be.revertedWith('Operation not supported on this chain'),
+                ),
+            );
         });
     });
 });
