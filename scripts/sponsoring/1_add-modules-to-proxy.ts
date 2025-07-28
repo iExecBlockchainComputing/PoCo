@@ -32,6 +32,9 @@ export async function addModulesToProxy() {
     if (!deploymentOptions.DiamondProxy) {
         throw new Error('DiamondProxy is required');
     }
+    if (!deploymentOptions.IexecLibOrders_v5) {
+        throw new Error('IexecLibOrders_v5 is required');
+    }
     const diamondProxyAddress = deploymentOptions.DiamondProxy;
     const iexecOrderManagementAddress = (await hre.deployments.get('IexecOrderManagementFacet'))
         .address;
@@ -46,20 +49,26 @@ export async function addModulesToProxy() {
         diamondProxyAddress,
         ethers.provider,
     ).owner();
+
+    const iexecLibOrders = {
+        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
+            deploymentOptions.IexecLibOrders_v5,
+    };
+
     const iexecOrderManagementProxyUpdate = encodeModuleProxyUpdate(
-        IexecOrderManagementFacet__factory.createInterface(),
+        new IexecOrderManagementFacet__factory(iexecLibOrders),
         iexecOrderManagementAddress,
     );
     const iexecPoco1ProxyUpdate = encodeModuleProxyUpdate(
-        IexecPoco1Facet__factory.createInterface(),
+        new IexecPoco1Facet__factory(iexecLibOrders),
         iexecPoco1FacetAddress,
     );
     const iexecPoco2ProxyUpdate = encodeModuleProxyUpdate(
-        IexecPoco2Facet__factory.createInterface(),
+        new IexecPoco2Facet__factory(),
         iexecPoco2FacetAddress,
     );
     const iexecPocoAccessorsProxyUpdate = encodeModuleProxyUpdate(
-        IexecPocoAccessorsFacet__factory.createInterface(),
+        new IexecPocoAccessorsFacet__factory(iexecLibOrders),
         iexecPocoAccessorsFacetAddress,
     );
     // The salt must be the same for a given schedule & execute operation set

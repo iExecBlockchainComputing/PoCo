@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
-import hre, { ethers } from 'hardhat';
+import hre from 'hardhat';
 import {
     IexecAccessors,
     IexecAccessors__factory,
@@ -37,6 +37,7 @@ import {
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
+import { randomAddress } from './utils/utils';
 
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0n;
@@ -129,7 +130,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
 
     describe('MatchOrders', function () {
         it('Should match orders (TEE)', async function () {
-            const callbackAddress = ethers.Wallet.createRandom().address;
+            const callbackAddress = randomAddress();
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
@@ -288,7 +289,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
         });
 
         it('Should sponsor match orders (TEE)', async function () {
-            const callbackAddress = ethers.Wallet.createRandom().address;
+            const callbackAddress = randomAddress();
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,

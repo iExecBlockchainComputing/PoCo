@@ -32,6 +32,28 @@ abstract contract Registry is IRegistry, ERC721, Ownable {
         previous = IRegistry(_previous);
     }
 
+    function setBaseURI(string calldata _baseURI) external onlyOwner {
+        _setBaseURI(_baseURI);
+    }
+
+    /* Interface */
+    function isRegistered(address _entry) external view override returns (bool) {
+        return
+            _exists(uint256(_entry)) ||
+            (address(previous) != address(0) && previous.isRegistered(_entry));
+    }
+
+    /**
+     * Sets the reverse registration name for a registry contract.
+     * @dev This functionality is supported only on the Bellecour chain.
+     * On other chains, this function will revert to maintain retrocompatibility
+     * in the SDK.
+     */
+    // TODO remove this function when Bellecour is deprecated.
+    function setName(address /* _ens */, string calldata /* _name */) external view onlyOwner {
+        revert("Operation not supported on this chain");
+    }
+
     /* Factory */
     function _mintCreate(address _owner, bytes memory _args) internal returns (uint256) {
         // Create entry (proxy)
@@ -49,16 +71,5 @@ abstract contract Registry is IRegistry, ERC721, Ownable {
             proxyCodeHash
         );
         return uint256(entry);
-    }
-
-    function setBaseURI(string calldata _baseURI) external onlyOwner {
-        _setBaseURI(_baseURI);
-    }
-
-    /* Interface */
-    function isRegistered(address _entry) external view override returns (bool) {
-        return
-            _exists(uint256(_entry)) ||
-            (address(previous) != address(0) && previous.isRegistered(_entry));
     }
 }

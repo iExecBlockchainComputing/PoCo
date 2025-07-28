@@ -6,6 +6,11 @@ pragma experimental ABIEncoderV2;
 
 import "../libs/IexecLibCore_v5.sol";
 
+/**
+ * TODO: Remove this interface in the future.
+ * Currently Used in the middleware:
+ * https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/src/main/java/com/iexec/commons/poco/chain/IexecHubAbstractService.java#L265
+ */
 interface IexecAccessorsABILegacy {
     function viewAccountABILegacy(address _user) external view returns (uint256, uint256);
 

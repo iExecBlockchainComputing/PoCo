@@ -1,13 +1,5 @@
 on:
-  push:
-    branches:
-      - feature/*
-      - bugfix/*
-      - develop
-      - release/*
-      - hotfix/*
-      - main
-      - v5
+  pull_request:
 
 jobs:
   # Note: changing the name of the job disables Slither checks with the error:
@@ -48,7 +40,7 @@ jobs:
       - name: Run static analysis with Slither
         uses: crytic/slither-action@v0.4.0
         with:
-          target: "contracts/tools/testing/slither/"
+          target: 'contracts/tools/testing/slither/'
           solc-version: '0.8.21'
           slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
           fail-on: none # TODO set this to high or other

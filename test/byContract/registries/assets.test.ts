@@ -25,6 +25,34 @@ import {
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { randomAddress } from '../../utils/utils';
+
+const createAppParams = {
+    name: 'My app',
+    type: 'DOCKER',
+    multiaddr: MULTIADDR_BYTES,
+    checksum: ethers.id('My app checksum'),
+    mreclave: '0x1234',
+};
+const createAppArgs = Object.values(createAppParams) as [
+    string,
+    string,
+    BytesLike,
+    BytesLike,
+    BytesLike,
+];
+
+const createDatasetParams = {
+    name: 'My dataset',
+    multiaddr: MULTIADDR_BYTES,
+    checksum: ethers.id('My dataset checksum'),
+};
+const createDatasetArgs = Object.values(createDatasetParams) as [string, BytesLike, BytesLike];
+
+const createWorkerpoolParams = {
+    description: 'Workerpool description',
+};
+const createWorkerpoolArgs = Object.values(createWorkerpoolParams) as [string];
 
 describe('Assets', () => {
     let proxyAddress: string;
@@ -58,34 +86,12 @@ describe('Assets', () => {
             await iexecPoco.workerpoolregistry(),
             anyone,
         );
+        await deployApp();
+        await deployDataset();
+        await deployWorkerpool();
     }
 
     describe('App', () => {
-        const createAppParams = {
-            name: 'My app',
-            type: 'DOCKER',
-            multiaddr: MULTIADDR_BYTES,
-            checksum: ethers.id('My app checksum'),
-            mreclave: '0x1234',
-        };
-        const createAppArgs = Object.values(createAppParams) as [
-            string,
-            string,
-            BytesLike,
-            BytesLike,
-            BytesLike,
-        ];
-        beforeEach(async () => {
-            const appAddress = await appRegistry.createApp.staticCall(
-                appProvider.address,
-                ...createAppArgs,
-            );
-            await appRegistry
-                .createApp(appProvider.address, ...createAppArgs)
-                .then((tx) => tx.wait());
-            app = App__factory.connect(appAddress, anyone);
-        });
-
         describe('creation and initialization', () => {
             it('Should read initialized app details', async () => {
                 expect(await app.registry()).to.equal(await appRegistry.getAddress());
@@ -106,27 +112,6 @@ describe('Assets', () => {
     });
 
     describe('Dataset', () => {
-        const createDatasetParams = {
-            name: 'My dataset',
-            multiaddr: MULTIADDR_BYTES,
-            checksum: ethers.id('My dataset checksum'),
-        };
-        const createDatasetArgs = Object.values(createDatasetParams) as [
-            string,
-            BytesLike,
-            BytesLike,
-        ];
-        beforeEach(async () => {
-            const datasetAddress = await datasetRegistry.createDataset.staticCall(
-                datasetProvider.address,
-                ...createDatasetArgs,
-            );
-            await datasetRegistry
-                .createDataset(datasetProvider.address, ...createDatasetArgs)
-                .then((tx) => tx.wait());
-            dataset = Dataset__factory.connect(datasetAddress, anyone);
-        });
-
         describe('creation and initialization', () => {
             it('Should read initialized dataset details', async () => {
                 expect(await dataset.registry()).to.equal(await datasetRegistry.getAddress());
@@ -145,21 +130,6 @@ describe('Assets', () => {
     });
 
     describe('Workerpool', () => {
-        const createWorkerpoolParams = {
-            description: 'Workerpool description',
-        };
-        const createWorkerpoolArgs = Object.values(createWorkerpoolParams) as [string];
-        beforeEach(async () => {
-            const workerpoolAddress = await workerpoolRegistry.createWorkerpool.staticCall(
-                scheduler.address,
-                ...createWorkerpoolArgs,
-            );
-            await workerpoolRegistry
-                .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
-                .then((tx) => tx.wait());
-            workerpool = Workerpool__factory.connect(workerpoolAddress, anyone);
-        });
-
         describe('creation and initialization', () => {
             it('Should read initialized workerpool details', async () => {
                 expect(await workerpool.registry()).to.equal(await workerpoolRegistry.getAddress());
@@ -214,4 +184,52 @@ describe('Assets', () => {
             });
         });
     });
+
+    describe('Common', () => {
+        it('Should revert when setName is called for reverse registration', async () => {
+            const randomEnsContract = randomAddress();
+            const randomEnsName = 'random.eth';
+            const txs = [
+                app.connect(appProvider).setName(randomEnsContract, randomEnsName),
+                dataset.connect(datasetProvider).setName(randomEnsContract, randomEnsName),
+                workerpool.connect(scheduler).setName(randomEnsContract, randomEnsName),
+            ];
+            await Promise.all(
+                txs.map((tx) =>
+                    expect(tx).to.be.revertedWith('Operation not supported on this chain'),
+                ),
+            );
+        });
+    });
+
+    async function deployApp() {
+        const appAddress = await appRegistry.createApp.staticCall(
+            appProvider.address,
+            ...createAppArgs,
+        );
+        await appRegistry.createApp(appProvider.address, ...createAppArgs).then((tx) => tx.wait());
+        app = App__factory.connect(appAddress, anyone);
+    }
+
+    async function deployDataset() {
+        const datasetAddress = await datasetRegistry.createDataset.staticCall(
+            datasetProvider.address,
+            ...createDatasetArgs,
+        );
+        await datasetRegistry
+            .createDataset(datasetProvider.address, ...createDatasetArgs)
+            .then((tx) => tx.wait());
+        dataset = Dataset__factory.connect(datasetAddress, anyone);
+    }
+
+    async function deployWorkerpool() {
+        const workerpoolAddress = await workerpoolRegistry.createWorkerpool.staticCall(
+            scheduler.address,
+            ...createWorkerpoolArgs,
+        );
+        await workerpoolRegistry
+            .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
+            .then((tx) => tx.wait());
+        workerpool = Workerpool__factory.connect(workerpoolAddress, anyone);
+    }
 });
