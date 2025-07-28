@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecPocoBoostAccessorsFacet} from "../../../modules/facets/IexecPocoBoostAccessorsFacet.sol";
-import {IexecPocoBoostFacet} from "../../../modules/facets/IexecPocoBoostFacet.sol";
+import {IexecPocoBoostAccessorsFacet} from "../../../facets/IexecPocoBoostAccessorsFacet.sol";
+import {IexecPocoBoostFacet} from "../../../facets/IexecPocoBoostFacet.sol";
 
 /**
  * @notice This contract is dedicated to slither analysis.

@@ -76,14 +76,14 @@ export default async function deploy() {
     );
     const diamond = DiamondCutFacet__factory.connect(diamondProxyAddress, owner);
     console.log(`IexecInstance found at address: ${await diamond.getAddress()}`);
-    // Deploy library & modules
+    // Deploy library & facets
     const iexecLibOrdersAddress = await factoryDeployer.deployContract(
         new IexecLibOrders_v5__factory(),
     );
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
-    const modules = [
+    const facets = [
         new IexecAccessorsFacet__factory(),
         new IexecAccessorsABILegacyFacet__factory(),
         new IexecCategoryManagerFacet__factory(),
@@ -99,17 +99,17 @@ export default async function deploy() {
         new IexecPocoBoostFacet__factory(iexecLibOrders),
         new IexecPocoBoostAccessorsFacet__factory(),
     ];
-    for (const module of modules) {
-        const address = await factoryDeployer.deployContract(module);
-        await linkContractToProxy(diamond, address, module);
+    for (const facet of facets) {
+        const address = await factoryDeployer.deployContract(facet);
+        await linkContractToProxy(diamond, address, facet);
     }
     // Verify linking on Diamond Proxy
     const diamondLoupeFacetInstance: DiamondLoupeFacet = DiamondLoupeFacet__factory.connect(
         diamondProxyAddress,
         owner,
     );
-    const facets = await diamondLoupeFacetInstance.facets();
-    const functionCount = facets
+    const diamondFacets = await diamondLoupeFacetInstance.facets();
+    const functionCount = diamondFacets
         .map((facet) => facet.functionSelectors.length)
         .reduce((acc, curr) => acc + curr, 0);
     console.log(`The deployed Diamond Proxy now supports ${functionCount} functions:`);
