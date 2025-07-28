@@ -71,18 +71,12 @@ const v8Settings = {
             },
         },
     },
-    /**
-     * @dev The 0.8.20 compiler switches the default target EVM version to Shanghai.
-     * At this time, the iExec Bellecour blockchain does not support new OPCODES
-     * brought by the Shanghai fork, hence the target must be lowered.
-     */
-    evmVersion: bellecourBaseConfig.hardfork,
 };
 
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: '0.8.21', settings: v8Settings }, // PoCo Boost (and ENS contracts >=0.8.4)
+            { version: '0.8.21', settings: v8Settings }, // PoCo Boost
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],
@@ -252,14 +246,12 @@ const config: HardhatUserConfig = {
     dependencyCompiler: {
         paths: [
             'rlc-faucet-contract/contracts/RLC.sol',
-            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Update.sol',
-            '@iexec/solidity/contracts/ERC1538/ERC1538Modules/ERC1538Query.sol',
-            '@iexec/solidity/contracts/ERC1538/ERC1538Proxy/ERC1538Proxy.sol',
-            // ENS
-            '@ensdomains/ens-contracts/contracts/registry/ENSRegistry.sol',
-            '@ensdomains/ens-contracts/contracts/registry/FIFSRegistrar.sol',
-            '@ensdomains/ens-contracts/contracts/registry/ReverseRegistrar.sol',
-            '@ensdomains/ens-contracts/contracts/resolvers/PublicResolver.sol',
+            // ERC-2535 Diamond
+            '@mudgen/diamond-1/contracts/facets/DiamondCutFacet.sol',
+            '@mudgen/diamond-1/contracts/facets/DiamondLoupeFacet.sol',
+            '@mudgen/diamond-1/contracts/facets/OwnershipFacet.sol',
+            '@mudgen/diamond-1/contracts/libraries/LibDiamond.sol',
+            '@mudgen/diamond-1/contracts/upgradeInitializers/DiamondInit.sol',
             // Used as mock or fake in UTs
             '@openzeppelin/contracts-v5/interfaces/IERC1271.sol',
             // Used in deployment
@@ -273,17 +265,13 @@ const config: HardhatUserConfig = {
         templates: 'docs/solidity/templates',
         exclude: [
             'external',
-            'modules/delegates/IexecAccessorsABILegacyDelegate.sol', // not relevant
-            'modules/delegates/IexecEscrowTokenSwapDelegate.sol', // not relevant
-            'modules/delegates/SignatureVerifier.sol', // contains only internal/private
-            'modules/delegates/SignatureVerifier.v8.sol',
-            'modules/interfaces', // interesting for events but too much doc duplication if enabled
+            'facets/IexecAccessorsABILegacyFacet.sol', // not relevant
+            'facets/IexecEscrowTokenSwapFacet.sol', // not relevant
+            'facets/SignatureVerifier.sol', // contains only internal/private
+            'facets/SignatureVerifier.v8.sol',
+            'interfaces', // interesting for events but too much doc duplication if enabled
             'registries', // ignore them for now
             'tools',
-            'IexecInterfaceNativeABILegacy.sol', // ignore interfaces
-            'IexecInterfaceTokenABILegacy.sol',
-            'IexecInterfaceNative.sol',
-            'IexecInterfaceToken.sol',
             'Store.sol', // almost empty
             'Store.v8.sol',
         ],

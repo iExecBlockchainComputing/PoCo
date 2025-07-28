@@ -24,6 +24,3 @@
 
 * Nominal TEE
 [![Nominal TEE](https://tinyurl.com/2zubyfvw)](https://tinyurl.com/2zubyfvw)<!--![Nominal TEE](./uml/workflow-ODB-2c-match2finalize-nominal-tee.puml)-->
-
-# ENS
-Registered ENS names on Bellecour or Mainnet are documented in [./ENS-Addresses.md](./ENS-Addresses.md)

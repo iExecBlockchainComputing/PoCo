@@ -4,7 +4,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployments, ethers } from 'hardhat';
 import deploy from '../../deploy/0_deploy';
-import deployEns from '../../deploy/1_deploy-ens';
 import { RLC__factory } from '../../typechain';
 import config from '../../utils/config';
 import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixture-helpers';
@@ -15,8 +14,7 @@ import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixtur
  */
 async function deployAll() {
     await deploy();
-    await deployEns();
-    return (await deployments.get('ERC1538Proxy')).address;
+    return (await deployments.get('Diamond')).address;
 }
 
 /**
@@ -25,9 +23,9 @@ async function deployAll() {
  */
 async function setUpLocalForkInNativeMode() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const proxyAddress = config.getChainConfig(chainId).v5.ERC1538Proxy;
+    const proxyAddress = config.getChainConfig(chainId).v5.DiamondProxy;
     if (!proxyAddress) {
-        throw new Error('ERC1538Proxy is required');
+        throw new Error('DiamondProxy is required');
     }
     await fundAccounts(proxyAddress, proxyAddress, true);
     await transferAllOwnerships(config.getChainConfig(chainId));
@@ -50,17 +48,16 @@ async function setUpLocalForkInTokenMode() {
     }
     await transferAllOwnerships(chainConfig);
 
-    const proxyAddress = chainConfig.v5.ERC1538Proxy;
+    const proxyAddress = chainConfig.v5.DiamondProxy;
     if (proxyAddress) {
-        console.log(`Using existing ERC1538Proxy at ${proxyAddress}`);
+        console.log(`Using existing DiamondProxy at ${proxyAddress}`);
         return proxyAddress;
     } else {
-        console.log('No existing ERC1538Proxy found, deploying new contracts');
+        console.log('No existing DiamondProxy found, deploying new contracts');
         // Deploy all contracts
         await deploy();
-        await deployEns();
-        const newProxyAddress = (await deployments.get('ERC1538Proxy')).address;
-        console.log(`Deployed new ERC1538Proxy at ${newProxyAddress}`);
+        const newProxyAddress = (await deployments.get('Diamond')).address;
+        console.log(`Deployed new DiamondProxy at ${newProxyAddress}`);
         return newProxyAddress;
     }
 }

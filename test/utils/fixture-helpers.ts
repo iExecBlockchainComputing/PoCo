@@ -50,9 +50,9 @@ export async function fundAccounts(
  * Transfers ownership of all contracts
  */
 export async function transferAllOwnerships(chainConfig: any) {
-    if (chainConfig.v5.ERC1538Proxy) {
+    if (chainConfig.v5.DiamondProxy) {
         // Transfer proxy ownership from Timelock or current owner to a known EOA.
-        await transferProxyOwnership(chainConfig.v5.ERC1538Proxy);
+        await transferProxyOwnership(chainConfig.v5.DiamondProxy);
     }
     const registries = [
         { name: 'AppRegistry', address: (await deployments.get('AppRegistry')).address },

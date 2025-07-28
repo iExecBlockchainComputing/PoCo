@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { BytesLike } from 'ethers';
-import { deployments, ethers } from 'hardhat';
+import { ethers } from 'hardhat';
 import {
     App,
     AppRegistry,
@@ -15,13 +15,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
-    ENSRegistry,
-    ENSRegistry__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
-    PublicResolver,
-    PublicResolver__factory,
-    ReverseRegistrar__factory,
     Workerpool,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
@@ -30,15 +25,40 @@ import {
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { randomAddress } from '../../utils/utils';
+
+const createAppParams = {
+    name: 'My app',
+    type: 'DOCKER',
+    multiaddr: MULTIADDR_BYTES,
+    checksum: ethers.id('My app checksum'),
+    mreclave: '0x1234',
+};
+const createAppArgs = Object.values(createAppParams) as [
+    string,
+    string,
+    BytesLike,
+    BytesLike,
+    BytesLike,
+];
+
+const createDatasetParams = {
+    name: 'My dataset',
+    multiaddr: MULTIADDR_BYTES,
+    checksum: ethers.id('My dataset checksum'),
+};
+const createDatasetArgs = Object.values(createDatasetParams) as [string, BytesLike, BytesLike];
+
+const createWorkerpoolParams = {
+    description: 'Workerpool description',
+};
+const createWorkerpoolArgs = Object.values(createWorkerpoolParams) as [string];
 
 describe('Assets', () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
     let [appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
-    let ensRegistry: ENSRegistry;
-    let ensRegistryAddress: string;
-    let reverseResolver: PublicResolver;
     let appRegistry: AppRegistry;
     let datasetRegistry: DatasetRegistry;
     let workerpoolRegistry: WorkerpoolRegistry;
@@ -54,7 +74,6 @@ describe('Assets', () => {
 
     async function initFixture() {
         ({ appProvider, datasetProvider, scheduler, anyone } = await getIexecAccounts());
-        ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
 
@@ -67,43 +86,12 @@ describe('Assets', () => {
             await iexecPoco.workerpoolregistry(),
             anyone,
         );
-
-        ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
-        const reverseRootNameHash = ethers.namehash('addr.reverse');
-        const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
-        const reverseResolverAddress = await ReverseRegistrar__factory.connect(
-            reverseRegistrarAddress,
-            anyone,
-        ).defaultResolver();
-        reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
+        await deployApp();
+        await deployDataset();
+        await deployWorkerpool();
     }
 
     describe('App', () => {
-        const createAppParams = {
-            name: 'My app',
-            type: 'DOCKER',
-            multiaddr: MULTIADDR_BYTES,
-            checksum: ethers.id('My app checksum'),
-            mreclave: '0x1234',
-        };
-        const createAppArgs = Object.values(createAppParams) as [
-            string,
-            string,
-            BytesLike,
-            BytesLike,
-            BytesLike,
-        ];
-        beforeEach(async () => {
-            const appAddress = await appRegistry.createApp.staticCall(
-                appProvider.address,
-                ...createAppArgs,
-            );
-            await appRegistry
-                .createApp(appProvider.address, ...createAppArgs)
-                .then((tx) => tx.wait());
-            app = App__factory.connect(appAddress, anyone);
-        });
-
         describe('creation and initialization', () => {
             it('Should read initialized app details', async () => {
                 expect(await app.registry()).to.equal(await appRegistry.getAddress());
@@ -121,51 +109,9 @@ describe('Assets', () => {
                 );
             });
         });
-
-        describe('setName', () => {
-            it('Should set name for the ENS reverse registration of the app', async () => {
-                const newENSName = 'myApp.eth';
-                await app
-                    .connect(appProvider)
-                    .setName(ensRegistryAddress, newENSName)
-                    .then((tx) => tx.wait());
-                const appAddress = await app.getAddress();
-                expect(await reverseResolver.name(computeNameHash(appAddress))).to.equal(
-                    newENSName,
-                );
-            });
-
-            it('Should not set name when send is not the owner', async () => {
-                const newENSName = 'unauthorized.eth';
-                await expect(app.setName(ensRegistryAddress, newENSName)).to.be.revertedWith(
-                    'caller is not the owner',
-                );
-            });
-        });
     });
 
     describe('Dataset', () => {
-        const createDatasetParams = {
-            name: 'My dataset',
-            multiaddr: MULTIADDR_BYTES,
-            checksum: ethers.id('My dataset checksum'),
-        };
-        const createDatasetArgs = Object.values(createDatasetParams) as [
-            string,
-            BytesLike,
-            BytesLike,
-        ];
-        beforeEach(async () => {
-            const datasetAddress = await datasetRegistry.createDataset.staticCall(
-                datasetProvider.address,
-                ...createDatasetArgs,
-            );
-            await datasetRegistry
-                .createDataset(datasetProvider.address, ...createDatasetArgs)
-                .then((tx) => tx.wait());
-            dataset = Dataset__factory.connect(datasetAddress, anyone);
-        });
-
         describe('creation and initialization', () => {
             it('Should read initialized dataset details', async () => {
                 expect(await dataset.registry()).to.equal(await datasetRegistry.getAddress());
@@ -181,45 +127,9 @@ describe('Assets', () => {
                 );
             });
         });
-
-        describe('setName', () => {
-            it('Should set name for the ENS reverse registration of the dataset', async () => {
-                const newENSName = 'myDataset.eth';
-                await dataset
-                    .connect(datasetProvider)
-                    .setName(ensRegistryAddress, newENSName)
-                    .then((tx) => tx.wait());
-                const datasetAddress = await dataset.getAddress();
-                expect(await reverseResolver.name(computeNameHash(datasetAddress))).to.equal(
-                    newENSName,
-                );
-            });
-
-            it('Should not set name when send is not the owner', async () => {
-                const newENSName = 'unauthorized.eth';
-                await expect(dataset.setName(ensRegistryAddress, newENSName)).to.be.revertedWith(
-                    'caller is not the owner',
-                );
-            });
-        });
     });
 
     describe('Workerpool', () => {
-        const createWorkerpoolParams = {
-            description: 'Workerpool description',
-        };
-        const createWorkerpoolArgs = Object.values(createWorkerpoolParams) as [string];
-        beforeEach(async () => {
-            const workerpoolAddress = await workerpoolRegistry.createWorkerpool.staticCall(
-                scheduler.address,
-                ...createWorkerpoolArgs,
-            );
-            await workerpoolRegistry
-                .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
-                .then((tx) => tx.wait());
-            workerpool = Workerpool__factory.connect(workerpoolAddress, anyone);
-        });
-
         describe('creation and initialization', () => {
             it('Should read initialized workerpool details', async () => {
                 expect(await workerpool.registry()).to.equal(await workerpoolRegistry.getAddress());
@@ -234,27 +144,6 @@ describe('Assets', () => {
             it('Should not reinitialize created workerpool', async () => {
                 await expect(workerpool.initialize(...createWorkerpoolArgs)).to.be.revertedWith(
                     'already initialized',
-                );
-            });
-        });
-
-        describe('setName', () => {
-            it('Should set name for the ENS reverse registration of the workerpool', async () => {
-                const newENSName = 'myWorkerpool.eth';
-                await workerpool
-                    .connect(scheduler)
-                    .setName(ensRegistryAddress, newENSName)
-                    .then((tx) => tx.wait());
-                const workerpoolAddress = await workerpool.getAddress();
-                expect(await reverseResolver.name(computeNameHash(workerpoolAddress))).to.equal(
-                    newENSName,
-                );
-            });
-
-            it('Should not set name when send is not the owner', async () => {
-                const newENSName = 'unauthorized.eth';
-                await expect(workerpool.setName(ensRegistryAddress, newENSName)).to.be.revertedWith(
-                    'caller is not the owner',
                 );
             });
         });
@@ -296,6 +185,51 @@ describe('Assets', () => {
         });
     });
 
-    const computeNameHash = (address: string) =>
-        ethers.namehash(`${address.substring(2)}.addr.reverse`);
+    describe('Common', () => {
+        it('Should revert when setName is called for reverse registration', async () => {
+            const randomEnsContract = randomAddress();
+            const randomEnsName = 'random.eth';
+            const txs = [
+                app.connect(appProvider).setName(randomEnsContract, randomEnsName),
+                dataset.connect(datasetProvider).setName(randomEnsContract, randomEnsName),
+                workerpool.connect(scheduler).setName(randomEnsContract, randomEnsName),
+            ];
+            await Promise.all(
+                txs.map((tx) =>
+                    expect(tx).to.be.revertedWith('Operation not supported on this chain'),
+                ),
+            );
+        });
+    });
+
+    async function deployApp() {
+        const appAddress = await appRegistry.createApp.staticCall(
+            appProvider.address,
+            ...createAppArgs,
+        );
+        await appRegistry.createApp(appProvider.address, ...createAppArgs).then((tx) => tx.wait());
+        app = App__factory.connect(appAddress, anyone);
+    }
+
+    async function deployDataset() {
+        const datasetAddress = await datasetRegistry.createDataset.staticCall(
+            datasetProvider.address,
+            ...createDatasetArgs,
+        );
+        await datasetRegistry
+            .createDataset(datasetProvider.address, ...createDatasetArgs)
+            .then((tx) => tx.wait());
+        dataset = Dataset__factory.connect(datasetAddress, anyone);
+    }
+
+    async function deployWorkerpool() {
+        const workerpoolAddress = await workerpoolRegistry.createWorkerpool.staticCall(
+            scheduler.address,
+            ...createWorkerpoolArgs,
+        );
+        await workerpoolRegistry
+            .createWorkerpool(scheduler.address, ...createWorkerpoolArgs)
+            .then((tx) => tx.wait());
+        workerpool = Workerpool__factory.connect(workerpoolAddress, anyone);
+    }
 });

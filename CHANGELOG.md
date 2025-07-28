@@ -2,6 +2,19 @@
 
 ## vNEXT
 
+- Migrate proxy to Diamond pattern (ERC-2535):
+  - Restore compatibility with iExec SDK. (#240)
+  - Target latest EVM version (#239)
+  - Adapt contracts file tree (#238)
+  - Use namespaced storage (#236, #237)
+  - Fix script folder (#235)
+  - Format all solidity files (#233)
+  - Rename ERC1538 architure to diamond Proxy architecture(#226, #229, #230, #234)
+  - Remove ENS module (#225)
+  - Add Diamond contract unit tests (#224)
+  - Fix `fallback` and `receive` (#223)
+  - Migrate contracts (#222)
+
 - Add Github Action CI in order to publish NPM package
 
 ### Updated contracts
@@ -9,12 +22,13 @@
 - [x] `IexecPoco2Delegate.sol`
 
 ### Features
+<!-- TODO update this with v5.5.1 release notes -->
 - Add gitub action workflow for deployment (#218)
 - Fix new testnets chain name (#217)
 - Deploy on new testnet chains using CreateX factory (#216)
 - Add CreateX factory for new chain deployment (#215)
 - Support Arbitrum & Avalanche Fuji testnets (#215)
-- Housekeeping (#207, )
+- Housekeeping (#208)
 - Add Halborn "Poco v5.5 & Voucher v1.0" audit report (#205)
 - Refactor Factory deployer (#206)
 - Enable native tests on CI (#204)

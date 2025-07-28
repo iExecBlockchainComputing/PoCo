@@ -14,25 +14,25 @@ await generateClassDiagramOfDirectory('registries')
 
 await generateClassDiagramOfContracts(
     [
-        'IexecPoco1Delegate',
-        'IexecPoco2Delegate'
+        'IexecPoco1Facet',
+        'IexecPoco2Facet'
     ],
-    'IexecPocoDelegates',
+    'IexecPocoFacets',
 )
 
 await generateClassDiagramOfContracts(
     [
-        'IexecEscrowNativeDelegate',
-        'IexecEscrowTokenDelegate',
-        'IexecEscrowTokenSwapDelegate',
+        'IexecEscrowNativeFacet',
+        'IexecEscrowTokenFacet',
+        'IexecEscrowTokenSwapFacet',
         'IexecEscrow',
     ],
     'IexecEscrows',
 )
 
 await generateClassDiagramOfContracts(
-    ['IexecPocoBoostDelegate'],
-    'IexecPocoBoostDelegate',
+    ['IexecPocoBoostFacet'],
+    'IexecPocoBoostFacet',
 )
 
 /**
