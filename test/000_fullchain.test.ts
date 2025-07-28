@@ -16,6 +16,7 @@ import {
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
+import { randomAddress } from './utils/utils';
 
 //  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
 //  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |              Type                           |
@@ -34,7 +35,7 @@ const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
-const callbackAddress = ethers.Wallet.createRandom().address;
+const callbackAddress = randomAddress();
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
