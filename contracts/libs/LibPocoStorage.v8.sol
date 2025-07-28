@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 
 import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
 import {IERC721Enumerable} from "@openzeppelin/contracts-v5/interfaces/IERC721Enumerable.sol";
+import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
 import {IexecLibCore_v5} from "./IexecLibCore_v5.sol";
 
 /****************************************************************************
@@ -94,10 +95,6 @@ library LibPocoStorage {
         mapping(bytes32 /* dealId */ => IexecLibCore_v5.DealBoost) m_dealsBoost;
     }
 
-    /**
-     * @dev Returns the storage pointer for PocoStorage.
-     * @return $ The storage pointer to PocoStorage struct.
-     */
     function getPocoStorage() internal pure returns (PocoStorage storage $) {
         assembly ("memory-safe") {
             $.slot := POCO_STORAGE_LOCATION
@@ -105,7 +102,7 @@ library LibPocoStorage {
     }
 }
 
-// Registry interface used in storage.
+// Use in registries.
 interface IRegistry is IERC721Enumerable {
     function isRegistered(address _entry) external view returns (bool);
 }

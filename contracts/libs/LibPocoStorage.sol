@@ -8,8 +8,11 @@ import "@iexec/solidity/contracts/Libs/SafeMathExtended.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./IexecLibCore_v5.sol";
-import "../registries/IRegistry.sol";
-
+import "./IexecLibOrders_v5.sol";
+import "./../registries/apps/App.sol";
+import "./../registries/datasets/Dataset.sol";
+import "./../registries/workerpools/Workerpool.sol";
+import "./../registries/IRegistry.sol";
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
  *                                                                          *
@@ -43,7 +46,6 @@ library LibPocoStorage {
         0x5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00;
 
     /// @custom:storage-location erc7201:iexec.poco.storage.PocoStorage
-
     struct PocoStorage {
         // Registries
         IRegistry m_appregistry;
