@@ -248,7 +248,7 @@ async function getOrDeployRlc(
             .then((contract) => contract.waitForDeployment())
             .then((contract) => contract.getAddress());
         console.log(`New RLC token deployed at: ${rlcAddress}`);
-        await Ownable__factory.connect(rlcAddress, deployer)
+        await RLC__factory.connect(rlcAddress, deployer)
             .transferOwnership(ownerAddress)
             .then((tx) => tx.wait());
         console.log(`Ownership of RLC token transferred to: ${ownerAddress}`);
