@@ -276,7 +276,7 @@ export async function signOrder(
     order: Record<string, any>,
     signer: SignerWithAddress,
 ): Promise<void> {
-    return signStruct(getTypeOf(order), order, domain, signer);
+    signStruct(getTypeOf(order), order, domain, signer);
 }
 
 /**
@@ -288,12 +288,7 @@ export async function signOrderOperation(
     orderOperation: OrderOperation,
     signer: SignerWithAddress,
 ): Promise<void> {
-    return signStruct(
-        getTypeOf(orderOperation.order) + 'Operation',
-        orderOperation,
-        domain,
-        signer,
-    );
+    signStruct(getTypeOf(orderOperation.order) + 'Operation', orderOperation, domain, signer);
 }
 
 /**
