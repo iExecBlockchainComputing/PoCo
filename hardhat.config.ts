@@ -161,6 +161,7 @@ const config: HardhatUserConfig = {
             accounts: [
                 process.env.DEPLOYER_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
+                process.env.ADMIN_PRIVATE_KEY as any,
             ],
             ...fujiBaseConfig,
         },
@@ -172,6 +173,7 @@ const config: HardhatUserConfig = {
             accounts: [
                 process.env.DEPLOYER_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
+                process.env.ADMIN_PRIVATE_KEY as any,
             ],
             ...arbitrumSepoliaBaseConfig,
         },
@@ -181,6 +183,7 @@ const config: HardhatUserConfig = {
             accounts: [
                 process.env.DEPLOYER_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
+                process.env.ADMIN_PRIVATE_KEY as any,
             ],
             ...bellecourBaseConfig,
             verify: {

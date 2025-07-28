@@ -9,15 +9,15 @@ import { GenericFactory, GenericFactory__factory, ICreateX, ICreateX__factory } 
 import config from '../utils/config';
 import { getBaseNameFromContractFactory } from './deploy-tools';
 export class FactoryDeployer {
-    owner: SignerWithAddress;
+    deployer: SignerWithAddress;
     salt: string;
     factoryAddress?: string;
     factoryType: string;
     factory?: ICreateX | GenericFactory;
 
-    constructor(owner: SignerWithAddress, chainId: bigint) {
+    constructor(deployer: SignerWithAddress, chainId: bigint) {
         const deploymentOptions = config.getChainConfigOrDefault(chainId);
-        this.owner = owner;
+        this.deployer = deployer;
         this.salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
         this.factoryAddress = process.env.FACTORY_ADDRESS || deploymentOptions.v5.factory;
         this.factoryType =
@@ -165,7 +165,7 @@ export class FactoryDeployer {
         if (!this.factoryAddress) {
             throw new Error('Factory address not set for GenericFactory');
         }
-        this.factory = GenericFactory__factory.connect(this.factoryAddress, this.owner);
+        this.factory = GenericFactory__factory.connect(this.factoryAddress, this.deployer);
         if ((await ethers.provider.getCode(this.factoryAddress)) !== '0x') {
             console.log(`→ GenericFactory is available on this network at ${this.factoryAddress}`);
             return;
@@ -185,7 +185,7 @@ export class FactoryDeployer {
                 const cost = (factorySignedTx.gasPrice! * factorySignedTx.gasLimit!).toString();
                 const tx = factorySignedTxJson;
 
-                await this.owner
+                await this.deployer
                     .sendTransaction({
                         to: deployer,
                         value: cost,
@@ -202,13 +202,13 @@ export class FactoryDeployer {
                     `→ CreateX successfully deployed at address: ${createdContractAddress}`,
                 );
                 this.factoryAddress = createdContractAddress;
-                this.factory = ICreateX__factory.connect(this.factoryAddress, this.owner);
+                this.factory = ICreateX__factory.connect(this.factoryAddress, this.deployer);
             } catch (e) {
                 console.log(e);
                 throw new Error('→ Error deploying CreateX');
             }
         } else {
-            this.factory = ICreateX__factory.connect(this.factoryAddress, this.owner);
+            this.factory = ICreateX__factory.connect(this.factoryAddress, this.deployer);
             if ((await ethers.provider.getCode(this.factoryAddress)) !== '0x') {
                 console.log(`→ CreateX is available on this network at ${this.factoryAddress}`);
                 return;
