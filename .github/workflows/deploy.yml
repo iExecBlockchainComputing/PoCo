@@ -1,6 +1,9 @@
 name: Deploy PoCo Contracts
 
 on:
+  push:
+    branches:
+      - feature/arbitrum-sepolia-deployment
   workflow_dispatch:
     inputs:
       network:
