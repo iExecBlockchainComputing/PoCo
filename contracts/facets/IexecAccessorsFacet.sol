@@ -138,37 +138,36 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     }
 
     function contribution_deadline_ratio() external view override returns (uint256) {
-        return LibPocoStorage.getContributionDeadlineRatio();
+        return LibPocoStorage.CONTRIBUTION_DEADLINE_RATIO;
     }
 
     function reveal_deadline_ratio() external view override returns (uint256) {
-        return LibPocoStorage.getRevealDeadlineRatio();
+        return LibPocoStorage.REVEAL_DEADLINE_RATIO;
     }
 
     function final_deadline_ratio() external view override returns (uint256) {
-        return LibPocoStorage.getFinalDeadlineRatio();
+        return LibPocoStorage.FINAL_DEADLINE_RATIO;
     }
 
     function workerpool_stake_ratio() external view override returns (uint256) {
-        return LibPocoStorage.getWorkerpoolStakeRatio();
+        return LibPocoStorage.WORKERPOOL_STAKE_RATIO;
     }
 
     function kitty_ratio() external view override returns (uint256) {
-        return LibPocoStorage.getKittyRatio();
+        return LibPocoStorage.KITTY_RATIO;
     }
 
     function kitty_min() external view override returns (uint256) {
-        return LibPocoStorage.getKittyMin();
+        return LibPocoStorage.KITTY_MIN;
     }
 
     function kitty_address() external view override returns (address) {
-        return LibPocoStorage.getKittyAddress();
+        return LibPocoStorage.KITTY_ADDRESS;
     }
 
     function groupmember_purpose() external view override returns (uint256) {
-        return LibPocoStorage.getGroupmemberPurpose();
+        return LibPocoStorage.GROUPMEMBER_PURPOSE;
     }
-
     function eip712domain_separator() external view override returns (bytes32) {
         LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         return $.m_eip712DomainSeparator;

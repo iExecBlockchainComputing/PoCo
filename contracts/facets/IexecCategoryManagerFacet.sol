@@ -17,9 +17,10 @@ contract IexecCategoryManagerFacet is IexecCategoryManager, FacetBase {
         string calldata description,
         uint256 workClockTimeRef
     ) external override onlyOwner returns (uint256) {
-        LibPocoStorage.addCategory(IexecLibCore_v5.Category(name, description, workClockTimeRef));
+        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        $.m_categories.push(IexecLibCore_v5.Category(name, description, workClockTimeRef));
 
-        uint256 catid = LibPocoStorage.categories().length - 1;
+        uint256 catid = $.m_categories.length - 1;
 
         emit CreateCategory(catid, name, description, workClockTimeRef);
         return catid;

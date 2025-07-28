@@ -42,14 +42,15 @@ contract IexecPocoCommonFacet is FacetBase {
         uint256 requestOrderVolume,
         bytes32 requestOrderTypedDataHash
     ) internal view returns (uint256) {
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         return
-            (appOrderVolume - LibPocoStorage.consumed(appOrderTypedDataHash))
+            (appOrderVolume - $.m_consumed[appOrderTypedDataHash])
                 .min(
                     hasDataset
-                        ? datasetOrderVolume - LibPocoStorage.consumed(datasetOrderTypedDataHash)
+                        ? datasetOrderVolume - $.m_consumed[datasetOrderTypedDataHash]
                         : type(uint256).max
                 )
-                .min(workerpoolOrderVolume - LibPocoStorage.consumed(workerpoolOrderTypedDataHash))
-                .min(requestOrderVolume - LibPocoStorage.consumed(requestOrderTypedDataHash));
+                .min(workerpoolOrderVolume - $.m_consumed[workerpoolOrderTypedDataHash])
+                .min(requestOrderVolume - $.m_consumed[requestOrderTypedDataHash]);
     }
 }

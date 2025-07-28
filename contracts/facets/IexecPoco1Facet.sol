@@ -365,7 +365,7 @@ contract IexecPoco1Facet is
         //slither-disable-next-line divide-before-multiply
         lock(
             deal.workerpool.owner,
-            ((deal.workerpool.price * LibPocoStorage.getWorkerpoolStakeRatio()) / 100) * volume // ORDER IS IMPORTANT HERE!
+            ((deal.workerpool.price * LibPocoStorage.WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
         );
 
         /**

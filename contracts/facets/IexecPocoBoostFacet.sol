@@ -296,7 +296,7 @@ contract IexecPocoBoostFacet is
         deal.botFirst = requestOrderConsumed.toUint16();
         deal.deadline = (block.timestamp +
             $.m_categories[category].workClockTimeRef *
-            LibPocoStorage.getContributionDeadlineRatio()).toUint40();
+            LibPocoStorage.CONTRIBUTION_DEADLINE_RATIO).toUint40();
         deal.botSize = volume.toUint16();
         /**
          * Store right part of tag for later use.
@@ -338,7 +338,7 @@ contract IexecPocoBoostFacet is
         //slither-disable-next-line divide-before-multiply
         lock(
             workerpoolOwner,
-            ((workerpoolPrice * LibPocoStorage.getWorkerpoolStakeRatio()) / 100) * volume
+            ((workerpoolPrice * LibPocoStorage.WORKERPOOL_STAKE_RATIO) / 100) * volume
         );
         // Notify workerpool.
         emit SchedulerNoticeBoost(
@@ -454,17 +454,17 @@ contract IexecPocoBoostFacet is
         }
 
         // Unlock scheduler stake
-        unlock(workerpoolOwner, (workerPoolPrice * LibPocoStorage.getWorkerpoolStakeRatio()) / 100);
+        unlock(workerpoolOwner, (workerPoolPrice * LibPocoStorage.WORKERPOOL_STAKE_RATIO) / 100);
         // Reward scheduler
-        uint256 kitty = $.m_frozens[LibPocoStorage.getKittyAddress()];
+        uint256 kitty = $.m_frozens[LibPocoStorage.KITTY_ADDRESS];
         if (kitty > 0) {
             kitty = LibPocoStorage
-            .getKittyMin() // 1. retrieve bare minimum from kitty
+            .KITTY_MIN // 1. retrieve bare minimum from kitty
             .max( // 2. or eventually a fraction of kitty if bigger
-                // @dev As long as `LibPocoStorage.getKittyRatio() = 10`, we can introduce this small
-                kitty / LibPocoStorage.getKittyRatio() // optimization for `kitty * LibPocoStorage.getKittyRatio() / 100`
+                // @dev As long as `LibPocoStorage.KITTY_RATIO = 10`, we can introduce this small
+                kitty / LibPocoStorage.KITTY_RATIO // optimization for `kitty * LibPocoStorage.KITTY_RATIO / 100`
             ).min(kitty); // 3. but no more than available
-            seize(LibPocoStorage.getKittyAddress(), kitty, taskId);
+            seize(LibPocoStorage.KITTY_ADDRESS, kitty, taskId);
         }
         reward(
             workerpoolOwner,
@@ -512,17 +512,17 @@ contract IexecPocoBoostFacet is
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
         // Calculate workerpool price and task stake.
         uint96 workerPoolPrice = deal.workerpoolPrice;
-        uint256 workerpoolTaskStake = (workerPoolPrice * LibPocoStorage.getWorkerpoolStakeRatio()) /
+        uint256 workerpoolTaskStake = (workerPoolPrice * LibPocoStorage.WORKERPOOL_STAKE_RATIO) /
             100;
         // Refund the payer of the task by unlocking the locked funds.
         unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        $.m_frozens[LibPocoStorage.getKittyAddress()] += workerpoolTaskStake;
+        $.m_frozens[LibPocoStorage.KITTY_ADDRESS] += workerpoolTaskStake;
         // Emit events to publish state changes.
-        emit Reward(LibPocoStorage.getKittyAddress(), workerpoolTaskStake, taskId);
-        emit Lock(LibPocoStorage.getKittyAddress(), workerpoolTaskStake);
+        emit Reward(LibPocoStorage.KITTY_ADDRESS, workerpoolTaskStake, taskId);
+        emit Lock(LibPocoStorage.KITTY_ADDRESS, workerpoolTaskStake);
         emit TaskClaimed(taskId);
     }
 

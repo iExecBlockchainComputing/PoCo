@@ -25,17 +25,18 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
         address _workerpoolregistryAddress,
         address _v3_iexecHubAddress
     ) external override onlyOwner {
-        require(LibPocoStorage.domainSeparator() == bytes32(0), "already-configured");
-        LibPocoStorage.setDomainSeparator(_domain().hash());
-        LibPocoStorage.setBaseToken(IERC20(_token));
-        LibPocoStorage.setName(_name);
-        LibPocoStorage.setSymbol(_symbol);
-        LibPocoStorage.setDecimals(_decimal);
-        LibPocoStorage.setAppRegistry(IRegistry(_appregistryAddress));
-        LibPocoStorage.setDatasetRegistry(IRegistry(_datasetregistryAddress));
-        LibPocoStorage.setWorkerpoolRegistry(IRegistry(_workerpoolregistryAddress));
-        LibPocoStorage.setV3IexecHub(IexecHubInterface(_v3_iexecHubAddress));
-        LibPocoStorage.setCallbackGas(100000);
+        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        require($.m_eip712DomainSeparator == bytes32(0), "already-configured");
+        $.m_eip712DomainSeparator = _domain().hash();
+        $.m_baseToken = IERC20(_token);
+        $.m_name = _name;
+        $.m_symbol = _symbol;
+        $.m_decimals = _decimal;
+        $.m_appregistry = IRegistry(_appregistryAddress);
+        $.m_datasetregistry = IRegistry(_datasetregistryAddress);
+        $.m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
+        $.m_v3_iexecHub = IexecHubInterface(_v3_iexecHubAddress);
+        $.m_callbackgas = 100000;
     }
 
     function domain() external view override returns (IexecLibOrders_v5.EIP712Domain memory) {
@@ -43,26 +44,28 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     }
 
     function updateDomainSeparator() external override {
-        require(LibPocoStorage.domainSeparator() != bytes32(0), "not-configured");
-        LibPocoStorage.setDomainSeparator(_domain().hash());
+        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        require($.m_eip712DomainSeparator != bytes32(0), "not-configured");
+        $.m_eip712DomainSeparator = _domain().hash();
     }
 
     function importScore(address _worker) external override {
-        require(!LibPocoStorage.v3ScoreImported(_worker), "score-already-imported");
-        uint256 currentScore = LibPocoStorage.workerScores(_worker);
-        uint256 newScore = currentScore.max(
-            IexecHubInterface(LibPocoStorage.v3IexecHub()).viewScore(_worker)
+        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        require(!$.m_v3_scoreImported[_worker], "score-already-imported");
+        $.m_workerScores[_worker] = $.m_workerScores[_worker].max(
+            $.m_v3_iexecHub.viewScore(_worker)
         );
-        LibPocoStorage.setWorkerScore(_worker, newScore);
-        LibPocoStorage.setV3ScoreImported(_worker, true);
+        $.m_v3_scoreImported[_worker] = true;
     }
 
     function setTeeBroker(address _teebroker) external override onlyOwner {
-        LibPocoStorage.setTeeBroker(_teebroker);
+        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        $.m_teebroker = _teebroker;
     }
 
     function setCallbackGas(uint256 _callbackgas) external override onlyOwner {
-        LibPocoStorage.setCallbackGas(_callbackgas);
+        LibPocoStorage.PocoStorage storage $ = getPocoStorage();
+        $.m_callbackgas = _callbackgas;
     }
 
     function _chainId() internal pure returns (uint256 id) {
