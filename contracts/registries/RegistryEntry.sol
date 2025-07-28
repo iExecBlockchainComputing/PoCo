@@ -21,11 +21,6 @@ abstract contract RegistryEntry {
         return registry.ownerOf(uint256(address(this)));
     }
 
-    function _initialize(address _registry) internal {
-        require(address(registry) == address(0), "already initialized");
-        registry = IRegistry(_registry);
-    }
-
     /**
      * Sets the reverse registration name for a registry entry contract.
      * @dev This functionality is supported only on the Bellecour chain.
@@ -34,5 +29,10 @@ abstract contract RegistryEntry {
      */
     function setName(address /* _ens */, string calldata /* _name */) external view onlyOwner() {
         revert("Operation not supported on this chain");
+    }
+
+    function _initialize(address _registry) internal {
+        require(address(registry) == address(0), "already initialized");
+        registry = IRegistry(_registry);
     }
 }

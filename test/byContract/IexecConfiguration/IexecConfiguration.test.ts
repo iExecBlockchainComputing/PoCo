@@ -15,9 +15,8 @@ import {
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { getPocoStorageSlotLocation } from '../../../utils/proxy-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { hashDomain } from '../../utils/utils';
+import { hashDomain, randomAddress } from '../../utils/utils';
 
-const randomAddress = () => ethers.Wallet.createRandom().address;
 const configureParams = {
     token: randomAddress(),
     name: 'some name',
