@@ -5,10 +5,10 @@ import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { BytesLike, ZeroHash } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import {
-    IexecOrderManagementDelegate__factory,
-    IexecPoco1Delegate__factory,
-    IexecPoco2Delegate__factory,
-    IexecPocoAccessorsDelegate__factory,
+    IexecOrderManagementFacet__factory,
+    IexecPoco1Facet__factory,
+    IexecPoco2Facet__factory,
+    IexecPocoAccessorsFacet__factory,
     Ownable__factory,
     TimelockController__factory,
 } from '../../typechain';
@@ -29,39 +29,47 @@ export async function addModulesToProxy() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;
     console.log('Link functions to proxy:');
-    if (!deploymentOptions.ERC1538Proxy) {
-        throw new Error('ERC1538Proxy is required');
+    if (!deploymentOptions.DiamondProxy) {
+        throw new Error('DiamondProxy is required');
     }
-    const erc1538ProxyAddress = deploymentOptions.ERC1538Proxy;
-    const iexecOrderManagementAddress = (await hre.deployments.get('IexecOrderManagementDelegate'))
+    if (!deploymentOptions.IexecLibOrders_v5) {
+        throw new Error('IexecLibOrders_v5 is required');
+    }
+    const diamondProxyAddress = deploymentOptions.DiamondProxy;
+    const iexecOrderManagementAddress = (await hre.deployments.get('IexecOrderManagementFacet'))
         .address;
-    const iexecPoco1DelegateAddress = (await hre.deployments.get('IexecPoco1Delegate')).address;
-    const iexecPoco2DelegateAddress = (await hre.deployments.get('IexecPoco2Delegate')).address;
-    const iexecPocoAccessorsDelegateAddress = (
-        await hre.deployments.get('IexecPocoAccessorsDelegate')
-    ).address;
-    await printFunctions(erc1538ProxyAddress);
+    const iexecPoco1FacetAddress = (await hre.deployments.get('IexecPoco1Facet')).address;
+    const iexecPoco2FacetAddress = (await hre.deployments.get('IexecPoco2Facet')).address;
+    const iexecPocoAccessorsFacetAddress = (await hre.deployments.get('IexecPocoAccessorsFacet'))
+        .address;
+    await printFunctions(diamondProxyAddress);
 
     console.log('Functions about to be added to proxy:');
     const timelockAddress = await Ownable__factory.connect(
-        erc1538ProxyAddress,
+        diamondProxyAddress,
         ethers.provider,
     ).owner();
+
+    const iexecLibOrders = {
+        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
+            deploymentOptions.IexecLibOrders_v5,
+    };
+
     const iexecOrderManagementProxyUpdate = encodeModuleProxyUpdate(
-        IexecOrderManagementDelegate__factory.createInterface(),
+        new IexecOrderManagementFacet__factory(iexecLibOrders),
         iexecOrderManagementAddress,
     );
     const iexecPoco1ProxyUpdate = encodeModuleProxyUpdate(
-        IexecPoco1Delegate__factory.createInterface(),
-        iexecPoco1DelegateAddress,
+        new IexecPoco1Facet__factory(iexecLibOrders),
+        iexecPoco1FacetAddress,
     );
     const iexecPoco2ProxyUpdate = encodeModuleProxyUpdate(
-        IexecPoco2Delegate__factory.createInterface(),
-        iexecPoco2DelegateAddress,
+        new IexecPoco2Facet__factory(),
+        iexecPoco2FacetAddress,
     );
     const iexecPocoAccessorsProxyUpdate = encodeModuleProxyUpdate(
-        IexecPocoAccessorsDelegate__factory.createInterface(),
-        iexecPocoAccessorsDelegateAddress,
+        new IexecPocoAccessorsFacet__factory(iexecLibOrders),
+        iexecPocoAccessorsFacetAddress,
     );
     // The salt must be the same for a given schedule & execute operation set
     // Please increment salt in case of operation ID collision
@@ -73,7 +81,7 @@ export async function addModulesToProxy() {
         iexecPocoAccessorsProxyUpdate,
     ];
     const updateProxyArgs = [
-        Array(updates.length).fill(erc1538ProxyAddress),
+        Array(updates.length).fill(diamondProxyAddress),
         Array(updates.length).fill(0),
         updates,
         ZeroHash,
@@ -104,7 +112,7 @@ export async function addModulesToProxy() {
     console.log('Time traveling..');
     await executeUpgrade();
 
-    return erc1538ProxyAddress;
+    return diamondProxyAddress;
 
     async function scheduleUpgrade() {
         await timelockInstance
@@ -118,7 +126,7 @@ export async function addModulesToProxy() {
 
     async function executeUpgrade() {
         await printBlockTime();
-        await printFunctions(erc1538ProxyAddress);
+        await printFunctions(diamondProxyAddress);
         console.log('Executing proxy update..');
         await timelockInstance
             .connect(timelockAdminSigner)
@@ -127,6 +135,6 @@ export async function addModulesToProxy() {
                 console.log(x);
                 return x.wait();
             });
-        await printFunctions(erc1538ProxyAddress);
+        await printFunctions(diamondProxyAddress);
     }
 }

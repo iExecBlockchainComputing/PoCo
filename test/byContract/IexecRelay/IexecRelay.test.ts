@@ -11,6 +11,7 @@ import {
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { randomAddress } from '../../utils/utils';
 
 const appPrice = 1;
 const datasetPrice = 2;
@@ -35,9 +36,7 @@ describe('IexecRelay', async () => {
     async function initFixture() {
         const accounts = await getIexecAccounts();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, accounts.anyone);
-        [app, dataset, workerpool, requester, beneficiary] = Array(5).fill(
-            ethers.Wallet.createRandom().address,
-        );
+        [app, dataset, workerpool, requester, beneficiary] = Array(5).fill(randomAddress());
         sign = await ethers.Wallet.createRandom().signMessage('sign');
     }
 
@@ -108,7 +107,7 @@ describe('IexecRelay', async () => {
             category,
             trust,
             beneficiary,
-            callback: ethers.Wallet.createRandom().address,
+            callback: randomAddress(),
             params: 'params',
             salt,
             sign,

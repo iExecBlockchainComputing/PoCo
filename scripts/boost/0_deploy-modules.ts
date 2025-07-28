@@ -4,8 +4,8 @@
 import { deployments, ethers } from 'hardhat';
 import {
     GenericFactory__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    IexecPocoBoostDelegate__factory,
+    IexecPocoBoostAccessorsFacet__factory,
+    IexecPocoBoostFacet__factory,
 } from '../../typechain';
 import config from '../../utils/config';
 import { mineBlockIfOnLocalFork } from '../../utils/mine';
@@ -23,15 +23,15 @@ const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.
     const salt = deploymentOptions.salt;
     const modules = [
         {
-            name: 'IexecPocoBoostDelegate',
-            bytecode: IexecPocoBoostDelegate__factory.linkBytecode({
+            name: 'IexecPocoBoostFacet',
+            bytecode: IexecPocoBoostFacet__factory.linkBytecode({
                 ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
                     deploymentOptions.IexecLibOrders_v5,
             }),
         },
         {
-            name: 'IexecPocoBoostAccessorsDelegate',
-            bytecode: IexecPocoBoostAccessorsDelegate__factory.bytecode,
+            name: 'IexecPocoBoostAccessorsFacet',
+            bytecode: IexecPocoBoostAccessorsFacet__factory.bytecode,
         },
     ];
     const genericFactoryInstance = GenericFactory__factory.connect(genericFactoryAddress, owner);

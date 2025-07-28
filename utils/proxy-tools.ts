@@ -1,57 +1,89 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { ERC1538Update } from '../typechain';
+import { ContractFactory, ZeroAddress } from 'ethers';
+import { ethers } from 'hardhat';
+import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
+import { DiamondCutFacet, DiamondLoupeFacet__factory } from '../typechain';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 
-interface AbiParameter {
-    type: string;
-    components?: AbiParameter[];
+const POCO_STORAGE_LOCATION = '0x5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00';
+
+/**
+ * Get the slot location of a storage variable in the `PocoStorage` struct.
+ * @param offset The offset to add to the base location.
+ * @returns The storage slot location as a hexadecimal string.
+ */
+export function getPocoStorageSlotLocation(offset: bigint): string {
+    return ethers.toBeHex(BigInt(POCO_STORAGE_LOCATION) + offset);
 }
 
 /**
- * Link a contract to an ERC1538 proxy.
- * @param proxy contract to ERC1538 proxy.
+ * Link a contract to a Diamond proxy.
+ * @param proxy contract to Diamond proxy.
  * @param contractAddress The contract address to link to the proxy.
  * @param contractFactory The contract factory to link to the proxy.
  */
 export async function linkContractToProxy(
-    proxy: ERC1538Update,
+    proxy: DiamondCutFacet,
     contractAddress: string,
-    contractFactory: any,
+    contractFactory: ContractFactory,
 ) {
-    const contractName = getBaseNameFromContractFactory(contractFactory);
+    // Fetch existing selectors from the proxy.
+    const existingSelectors = await DiamondLoupeFacet__factory.connect(
+        await proxy.getAddress(),
+        ethers.provider,
+    )
+        .facets()
+        .then((facets) => facets.flatMap((facet) => facet.functionSelectors));
+    // Get the contract selectors from its ABI.
+    const contractSelectors = getFunctionSelectors(contractFactory);
+    // Exclude existing selectors to avoid the error `CannotAddFunctionToDiamondThatAlreadyExists`.
+    // This appears for `owner()` function.
+    const selectors = contractSelectors.filter((selector) => !existingSelectors.includes(selector));
+    const facetCut: FacetCut = {
+        facetAddress: contractAddress,
+        action: FacetCutAction.Add,
+        functionSelectors: selectors,
+    };
     await proxy
-        .updateContract(
-            contractAddress,
-            // TODO: Use contractFactory.interface.functions when moving to ethers@v6
-            // https://github.com/ethers-io/ethers.js/issues/1069
-            getFunctionSignatures(contractFactory.constructor.abi),
-            'Linking ' + contractName,
-        )
+        .diamondCut([facetCut], ZeroAddress, '0x')
         .then((tx) => tx.wait())
-        .catch(() => {
-            throw new Error(`Failed to link ${contractName}`);
+        .catch((err) => {
+            const contractName = getBaseNameFromContractFactory(contractFactory);
+            console.log(`Failed to link ${contractName} to proxy:`);
+            throw err;
         });
 }
 
-function getSerializedObject(entry: AbiParameter): string {
-    return entry.type === 'tuple'
-        ? `(${entry.components?.map(getSerializedObject).join(',') ?? ''})`
-        : entry.type;
+/**
+ * Gets formatted function signatures from a contract's ABI.
+ * @param contractFactory - The deployed contract instance
+ * @returns Array of function signatures
+ */
+export function getFunctionSignatures(contractFactory: ContractFactory): string[] {
+    return contractFactory.interface.fragments // Get all fragments from the contract's ABI
+        .filter((f) => f.type === 'function' || f.type === 'fallback') // function + fallback + receive
+        .map((f) => f.format()); // Format them to get clean function signatures
 }
 
-function getFunctionSignatures(abi: any[]): string {
-    return [
-        ...abi.filter((entry) => entry.type === 'receive').map(() => 'receive;'),
-        ...abi.filter((entry) => entry.type === 'fallback').map(() => 'fallback;'),
-        ...abi
-            .filter((entry) => entry.type === 'function')
-            .map(
-                (entry) =>
-                    `${entry.name}(${entry.inputs?.map(getSerializedObject).join(',') ?? ''});`,
-            ),
-    ]
-        .filter(Boolean)
-        .join('');
+/**
+ * Gets function selectors from a contract's ABI.
+ * @param contract - The deployed contract instance
+ * @returns Array of function selectors with utility methods
+ */
+export function getFunctionSelectors(contractFactory: ContractFactory): string[] {
+    return (
+        getFunctionSignatures(contractFactory) // Get all function signatures from the contract's ABI
+            // Get the 4-byte function selectors
+            .map((functionName) => {
+                if (functionName === 'receive() payable') {
+                    return '0x00000000'; // Receive function selector
+                }
+                if (functionName === 'fallback() payable') {
+                    return '0xffffffff'; // Fallback function selector
+                }
+                return contractFactory.interface.getFunction(functionName)!.selector;
+            })
+    );
 }
