@@ -43,8 +43,9 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         address recipient,
         uint256 amount
     ) external override returns (bool) {
+        PocoStorage storage $ = getPocoStorage();
         _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), m_allowances[sender][_msgSender()].sub(amount));
+        _approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()].sub(amount));
         return true;
     }
 
@@ -52,7 +53,8 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         address spender,
         uint256 addedValue
     ) external override returns (bool) {
-        _approve(_msgSender(), spender, m_allowances[_msgSender()][spender].add(addedValue));
+        PocoStorage storage $ = getPocoStorage();
+        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender].add(addedValue));
         return true;
     }
 
@@ -60,7 +62,8 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         address spender,
         uint256 subtractedValue
     ) external override returns (bool) {
-        _approve(_msgSender(), spender, m_allowances[_msgSender()][spender].sub(subtractedValue));
+        PocoStorage storage $ = getPocoStorage();
+        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender].sub(subtractedValue));
         return true;
     }
 }

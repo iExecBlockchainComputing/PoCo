@@ -60,7 +60,8 @@ contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core 
     }
 
     function recover() external override onlyOwner returns (uint256) {
-        uint256 delta = address(this).balance.div(nRLCtoWei).sub(m_totalSupply);
+        PocoStorage storage $ = getPocoStorage();
+        uint256 delta = address(this).balance.div(nRLCtoWei).sub($.m_totalSupply);
         _mint(owner(), delta);
         return delta;
     }

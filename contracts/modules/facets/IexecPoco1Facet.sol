@@ -145,6 +145,7 @@ contract IexecPoco1Facet is
         IexecLibOrders_v5.RequestOrder calldata _requestorder,
         address _sponsor
     ) private returns (bytes32) {
+        PocoStorage storage $ = getPocoStorage();
         /**
          * Check orders compatibility
          */
@@ -152,7 +153,7 @@ contract IexecPoco1Facet is
         // computation environment & allowed enough funds
         bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
         require(_requestorder.category == _workerpoolorder.category, "iExecV5-matchOrders-0x00");
-        require(_requestorder.category < m_categories.length, "iExecV5-matchOrders-0x01");
+        require(_requestorder.category < $.m_categories.length, "iExecV5-matchOrders-0x01");
         require(_requestorder.trust <= _workerpoolorder.trust, "iExecV5-matchOrders-0x02");
         require(_requestorder.appmaxprice >= _apporder.appprice, "iExecV5-matchOrders-0x03");
         require(
@@ -239,7 +240,7 @@ contract IexecPoco1Facet is
         ids.apporderHash = _toTypedDataHash(_apporder.hash());
         ids.appOwner = IERC5313(_apporder.app).owner();
 
-        require(m_appregistry.isRegistered(_apporder.app), "iExecV5-matchOrders-0x20");
+        require($.m_appregistry.isRegistered(_apporder.app), "iExecV5-matchOrders-0x20");
         require(
             _verifySignatureOrPresignature(ids.appOwner, ids.apporderHash, _apporder.sign),
             "iExecV5-matchOrders-0x21"
@@ -252,7 +253,7 @@ contract IexecPoco1Facet is
             ids.datasetOwner = IERC5313(_datasetorder.dataset).owner();
 
             require(
-                m_datasetregistry.isRegistered(_datasetorder.dataset),
+                $.m_datasetregistry.isRegistered(_datasetorder.dataset),
                 "iExecV5-matchOrders-0x30"
             );
             require(
@@ -270,7 +271,7 @@ contract IexecPoco1Facet is
         ids.workerpoolOwner = IERC5313(_workerpoolorder.workerpool).owner();
 
         require(
-            m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),
+            $.m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),
             "iExecV5-matchOrders-0x40"
         );
         require(
@@ -315,11 +316,11 @@ contract IexecPoco1Facet is
         bytes32 dealid = keccak256(
             abi.encodePacked(
                 ids.requestorderHash, // requestHash
-                m_consumed[ids.requestorderHash] // idx of first subtask
+                $.m_consumed[ids.requestorderHash] // idx of first subtask
             )
         );
 
-        IexecLibCore_v5.Deal storage deal = m_deals[dealid];
+        IexecLibCore_v5.Deal storage deal = $.m_deals[dealid];
         deal.app.pointer = _apporder.app;
         deal.app.owner = ids.appOwner;
         deal.app.price = _apporder.appprice;
@@ -337,7 +338,7 @@ contract IexecPoco1Facet is
         deal.callback = _requestorder.callback;
         deal.params = _requestorder.params;
         deal.startTime = block.timestamp;
-        deal.botFirst = m_consumed[ids.requestorderHash];
+        deal.botFirst = $.m_consumed[ids.requestorderHash];
         deal.botSize = volume;
         deal.workerStake =
             (_workerpoolorder.workerpoolprice *
@@ -350,12 +351,12 @@ contract IexecPoco1Facet is
         /**
          * Update consumed
          */
-        m_consumed[ids.apporderHash] = m_consumed[ids.apporderHash] + volume;
-        m_consumed[ids.datasetorderHash] =
-            m_consumed[ids.datasetorderHash] +
+        $.m_consumed[ids.apporderHash] = $.m_consumed[ids.apporderHash] + volume;
+        $.m_consumed[ids.datasetorderHash] =
+            $.m_consumed[ids.datasetorderHash] +
             (ids.hasDataset ? volume : 0);
-        m_consumed[ids.workerpoolorderHash] = m_consumed[ids.workerpoolorderHash] + volume;
-        m_consumed[ids.requestorderHash] = m_consumed[ids.requestorderHash] + volume;
+        $.m_consumed[ids.workerpoolorderHash] = $.m_consumed[ids.workerpoolorderHash] + volume;
+        $.m_consumed[ids.requestorderHash] = $.m_consumed[ids.requestorderHash] + volume;
 
         /**
          * Lock

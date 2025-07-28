@@ -36,15 +36,17 @@ contract IexecEscrowTokenSwapFacet is
      *                         Uniswap path - Internal                         *
      ***************************************************************************/
     function _eth2token() internal view returns (address[] memory) {
+        PocoStorage storage $ = getPocoStorage();
         address[] memory path = new address[](2);
         path[0] = router.WETH();
-        path[1] = address(m_baseToken);
+        path[1] = address($.m_baseToken);
         return path;
     }
 
     function _token2eth() internal view returns (address[] memory) {
+        PocoStorage storage $ = getPocoStorage();
         address[] memory path = new address[](2);
-        path[0] = address(m_baseToken);
+        path[0] = address($.m_baseToken);
         path[1] = router.WETH();
         return path;
     }
@@ -139,7 +141,8 @@ contract IexecEscrowTokenSwapFacet is
     }
 
     function _withdraw(address target, uint256 amount, uint256 minimum) internal {
-        m_baseToken.approve(address(router), amount);
+        PocoStorage storage $ = getPocoStorage();
+        $.m_baseToken.approve(address(router), amount);
         uint256[] memory amounts = router.swapExactTokensForETH(
             amount,
             minimum,
@@ -159,29 +162,30 @@ contract IexecEscrowTokenSwapFacet is
         IexecLibOrders_v5.WorkerpoolOrder memory _workerpoolorder,
         IexecLibOrders_v5.RequestOrder memory _requestorder
     ) public payable override returns (bytes32) {
+        PocoStorage storage $ = getPocoStorage();
         uint256 volume;
         volume = _apporder.volume.sub(
-            m_consumed[keccak256(_toEthTypedStruct(_apporder.hash(), EIP712DOMAIN_SEPARATOR))]
+            $.m_consumed[keccak256(_toEthTypedStruct(_apporder.hash(), $.EIP712DOMAIN_SEPARATOR))]
         );
         if (_datasetorder.dataset != address(0))
             volume = volume.min(
                 _datasetorder.volume.sub(
-                    m_consumed[
-                        keccak256(_toEthTypedStruct(_datasetorder.hash(), EIP712DOMAIN_SEPARATOR))
+                    $.m_consumed[
+                        keccak256(_toEthTypedStruct(_datasetorder.hash(), $.EIP712DOMAIN_SEPARATOR))
                     ]
                 )
             );
         volume = volume.min(
             _workerpoolorder.volume.sub(
-                m_consumed[
-                    keccak256(_toEthTypedStruct(_workerpoolorder.hash(), EIP712DOMAIN_SEPARATOR))
+                $.m_consumed[
+                    keccak256(_toEthTypedStruct(_workerpoolorder.hash(), $.EIP712DOMAIN_SEPARATOR))
                 ]
             )
         );
         volume = volume.min(
             _requestorder.volume.sub(
-                m_consumed[
-                    keccak256(_toEthTypedStruct(_requestorder.hash(), EIP712DOMAIN_SEPARATOR))
+                $.m_consumed[
+                    keccak256(_toEthTypedStruct(_requestorder.hash(), $.EIP712DOMAIN_SEPARATOR))
                 ]
             )
         );

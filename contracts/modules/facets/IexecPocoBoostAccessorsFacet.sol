@@ -19,6 +19,7 @@ contract IexecPocoBoostAccessorsFacet is IexecPocoBoostAccessors, FacetBase {
     function viewDealBoost(
         bytes32 id
     ) external view returns (IexecLibCore_v5.DealBoost memory deal) {
-        return m_dealsBoost[id];
+        PocoStorage storage $ = getPocoStorage();
+        return $.m_dealsBoost[id];
     }
 }

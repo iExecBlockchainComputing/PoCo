@@ -60,7 +60,8 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
     }
 
     function recover() external override onlyOwner returns (uint256) {
-        uint256 delta = m_baseToken.balanceOf(address(this)).sub(m_totalSupply);
+        PocoStorage storage $ = getPocoStorage();
+        uint256 delta = $.m_baseToken.balanceOf(address(this)).sub($.m_totalSupply);
         _mint(owner(), delta);
         return delta;
     }
@@ -72,17 +73,20 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         address token,
         bytes calldata
     ) external override returns (bool) {
-        require(token == address(m_baseToken), "wrong-token");
+        PocoStorage storage $ = getPocoStorage();
+        require(token == address($.m_baseToken), "wrong-token");
         _deposit(sender, amount);
         _mint(sender, amount);
         return true;
     }
 
     function _deposit(address from, uint256 amount) internal {
-        require(m_baseToken.transferFrom(from, address(this), amount), "failled-transferFrom");
+        PocoStorage storage $ = getPocoStorage();
+        require($.m_baseToken.transferFrom(from, address(this), amount), "failled-transferFrom");
     }
 
     function _withdraw(address to, uint256 amount) internal {
-        m_baseToken.transfer(to, amount);
+        PocoStorage storage $ = getPocoStorage();
+        $.m_baseToken.transfer(to, amount);
     }
 }

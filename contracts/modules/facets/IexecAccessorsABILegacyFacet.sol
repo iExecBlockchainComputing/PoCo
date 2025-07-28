@@ -16,7 +16,8 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
         override
         returns (address, address, uint256, address, address, uint256, address, address, uint256)
     {
-        IexecLibCore_v5.Deal memory deal = m_deals[_id];
+        PocoStorage storage $ = getPocoStorage();
+        IexecLibCore_v5.Deal memory deal = $.m_deals[_id];
         return (
             deal.app.pointer,
             deal.app.owner,
@@ -33,14 +34,16 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
     function viewDealABILegacy_pt2(
         bytes32 _id
     ) external view override returns (uint256, bytes32, address, address, address, string memory) {
-        IexecLibCore_v5.Deal memory deal = m_deals[_id];
+        PocoStorage storage $ = getPocoStorage();
+        IexecLibCore_v5.Deal memory deal = $.m_deals[_id];
         return (deal.trust, deal.tag, deal.requester, deal.beneficiary, deal.callback, deal.params);
     }
 
     function viewConfigABILegacy(
         bytes32 _id
     ) external view override returns (uint256, uint256, uint256, uint256, uint256, uint256) {
-        IexecLibCore_v5.Deal memory deal = m_deals[_id];
+        PocoStorage storage $ = getPocoStorage();
+        IexecLibCore_v5.Deal memory deal = $.m_deals[_id];
         return (
             deal.category,
             deal.startTime,
@@ -54,7 +57,8 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
     function viewAccountABILegacy(
         address account
     ) external view override returns (uint256, uint256) {
-        return (m_balances[account], m_frozens[account]);
+        PocoStorage storage $ = getPocoStorage();
+        return ($.m_balances[account], $.m_frozens[account]);
     }
 
     function viewTaskABILegacy(
@@ -78,7 +82,8 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
             bytes memory
         )
     {
-        IexecLibCore_v5.Task memory task = m_tasks[_taskid];
+        PocoStorage storage $ = getPocoStorage();
+        IexecLibCore_v5.Task memory task = $.m_tasks[_taskid];
         return (
             task.status,
             task.dealid,
@@ -104,7 +109,10 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
         override
         returns (IexecLibCore_v5.ContributionStatusEnum, bytes32, bytes32, address)
     {
-        IexecLibCore_v5.Contribution memory contribution = m_contributions[_taskid][_worker];
+        PocoStorage storage $ = getPocoStorage();
+        IexecLibCore_v5.Contribution memory contribution = $.m_contributions[
+            _taskid
+        ][_worker];
         return (
             contribution.status,
             contribution.resultHash,
@@ -116,7 +124,8 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
     function viewCategoryABILegacy(
         uint256 _catid
     ) external view override returns (string memory, string memory, uint256) {
-        IexecLibCore_v5.Category memory category = m_categories[_catid];
+        PocoStorage storage $ = getPocoStorage();
+        IexecLibCore_v5.Category memory category = $.m_categories[_catid];
         return (category.name, category.description, category.workClockTimeRef);
     }
 }

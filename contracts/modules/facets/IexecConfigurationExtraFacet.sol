@@ -13,8 +13,9 @@ contract IexecConfigurationExtraFacet is IexecConfigurationExtra, FacetBase {
         address _datasetregistryAddress,
         address _workerpoolregistryAddress
     ) external override onlyOwner {
-        m_appregistry = IRegistry(_appregistryAddress);
-        m_datasetregistry = IRegistry(_datasetregistryAddress);
-        m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
+        PocoStorage storage $ = getPocoStorage();
+        $.m_appregistry = IRegistry(_appregistryAddress);
+        $.m_datasetregistry = IRegistry(_datasetregistryAddress);
+        $.m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
     }
 }

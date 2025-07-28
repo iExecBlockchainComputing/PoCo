@@ -95,7 +95,8 @@ contract SignatureVerifier is FacetBase {
     }
 
     function _checkPresignature(address _identity, bytes32 _hash) internal view returns (bool) {
-        return _identity != address(0) && _identity == m_presigned[_hash];
+        PocoStorage storage $ = getPocoStorage();
+        return _identity != address(0) && _identity == $.m_presigned[_hash];
     }
 
     function _checkSignature(

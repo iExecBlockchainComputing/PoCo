@@ -124,6 +124,7 @@ contract IexecPocoBoostFacet is
         IexecLibOrders_v5.RequestOrder calldata requestOrder,
         address sponsor
     ) private returns (bytes32) {
+        PocoStorage storage $ = getPocoStorage();
         // Check orders compatibility
 
         // Ensure the trust level is within the acceptable range.
@@ -136,7 +137,7 @@ contract IexecPocoBoostFacet is
         // Check if the requested category is matched.
         require(category == workerpoolOrder.category, "PocoBoost: Category mismatch");
         // Check if the requested category is valid.
-        require(category < m_categories.length, "PocoBoost: Unknown category");
+        require(category < $.m_categories.length, "PocoBoost: Unknown category");
         uint256 appPrice = appOrder.appprice;
         // Check if the app, dataset, and workerpool prices are within requester price limits.
         require(requestOrder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
@@ -203,7 +204,7 @@ contract IexecPocoBoostFacet is
             "PocoBoost: Requester restricted by workerpool order"
         );
         // Check ownership, registration, and signatures for app and dataset.
-        require(m_appregistry.isRegistered(app), "PocoBoost: App not registered");
+        require($.m_appregistry.isRegistered(app), "PocoBoost: App not registered");
         address appOwner = IERC5313(app).owner();
         bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
         require(
@@ -214,7 +215,7 @@ contract IexecPocoBoostFacet is
         address datasetOwner;
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
-            require(m_datasetregistry.isRegistered(dataset), "PocoBoost: Dataset not registered");
+            require($.m_datasetregistry.isRegistered(dataset), "PocoBoost: Dataset not registered");
             datasetOwner = IERC5313(dataset).owner();
             datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
             require(
@@ -228,7 +229,7 @@ contract IexecPocoBoostFacet is
         }
         // Check ownership, registration, and signatures for workerpool.
         require(
-            m_workerpoolregistry.isRegistered(workerpool),
+            $.m_workerpoolregistry.isRegistered(workerpool),
             "PocoBoost: Workerpool not registered"
         );
         address workerpoolOwner = IERC5313(workerpool).owner();
@@ -247,9 +248,9 @@ contract IexecPocoBoostFacet is
             "PocoBoost: Invalid request order signature"
         );
 
-        uint256 requestOrderConsumed = m_consumed[requestOrderTypedDataHash];
-        uint256 appOrderConsumed = m_consumed[appOrderTypedDataHash];
-        uint256 workerpoolOrderConsumed = m_consumed[workerpoolOrderTypedDataHash];
+        uint256 requestOrderConsumed = $.m_consumed[requestOrderTypedDataHash];
+        uint256 appOrderConsumed = $.m_consumed[appOrderTypedDataHash];
+        uint256 workerpoolOrderConsumed = $.m_consumed[workerpoolOrderTypedDataHash];
         // @dev No dataset variable since dataset is optional
 
         // Compute the unique deal identifier.
@@ -283,7 +284,7 @@ contract IexecPocoBoostFacet is
         require(volume > 0, "PocoBoost: One or more orders consumed");
         // Store deal (all). Write all parts of the same storage slot together
         // for gas optimization purposes.
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
+        IexecLibCore_v5.DealBoost storage deal = $.m_dealsBoost[dealId];
         deal.appOwner = appOwner;
         deal.appPrice = appPrice.toUint96();
         deal.workerpoolOwner = workerpoolOwner;
@@ -293,7 +294,7 @@ contract IexecPocoBoostFacet is
         deal.requester = requester;
         deal.botFirst = requestOrderConsumed.toUint16();
         deal.deadline = (block.timestamp +
-            m_categories[category].workClockTimeRef *
+            $.m_categories[category].workClockTimeRef *
             CONTRIBUTION_DEADLINE_RATIO).toUint40();
         deal.botSize = volume.toUint16();
         /**
@@ -317,7 +318,7 @@ contract IexecPocoBoostFacet is
             deal.datasetOwner = datasetOwner;
             deal.datasetPrice = datasetPrice.toUint96();
             // Update consumed (dataset)
-            m_consumed[datasetOrderTypedDataHash] += volume;
+            $.m_consumed[datasetOrderTypedDataHash] += volume;
         }
         deal.sponsor = sponsor;
         /**
@@ -325,9 +326,9 @@ contract IexecPocoBoostFacet is
          * @dev Update all consumed after external call on workerpool contract
          * to prevent reentrancy.
          */
-        m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // @dev cheaper than `+= volume` here
-        m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
-        m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
+        $.m_consumed[appOrderTypedDataHash] = appOrderConsumed + volume; // @dev cheaper than `+= volume` here
+        $.m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
+        $.m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
         // Lock deal price from sponsor balance.
         lock(sponsor, (appPrice + datasetPrice + workerpoolPrice) * volume);
         // Lock deal stake from scheduler balance.
@@ -379,10 +380,11 @@ contract IexecPocoBoostFacet is
         address enclaveChallenge,
         bytes calldata enclaveSign
     ) external {
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
+        PocoStorage storage $ = getPocoStorage();
+        IexecLibCore_v5.DealBoost storage deal = $.m_dealsBoost[dealId];
         // Compute the unique task identifier based on deal id and task index.
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
-        IexecLibCore_v5.Task storage task = m_tasks[taskId];
+        IexecLibCore_v5.Task storage task = $.m_tasks[taskId];
         // Ensure that the task exists and is in the correct state
         requireTaskExistsAndUnset(task.status, index, deal.botSize);
         require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
@@ -395,8 +397,8 @@ contract IexecPocoBoostFacet is
         // Check scheduler or TEE broker signature
         require(
             _verifySignatureOfEthSignedMessage(
-                enclaveChallenge != address(0) && m_teebroker != address(0)
-                    ? m_teebroker
+                enclaveChallenge != address(0) && $.m_teebroker != address(0)
+                    ? $.m_teebroker
                     : workerpoolOwner,
                 abi.encodePacked(msg.sender, taskId, enclaveChallenge),
                 authorizationSign
@@ -445,7 +447,7 @@ contract IexecPocoBoostFacet is
         // Unlock scheduler stake
         unlock(workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
         // Reward scheduler
-        uint256 kitty = m_frozens[KITTY_ADDRESS];
+        uint256 kitty = $.m_frozens[KITTY_ADDRESS];
         if (kitty > 0) {
             kitty = KITTY_MIN // 1. retrieve bare minimum from kitty
             .max( // 2. or eventually a fraction of kitty if bigger
@@ -472,12 +474,12 @@ contract IexecPocoBoostFacet is
              */
             // See Halborn audit report for details
             //slither-disable-next-line low-level-calls
-            (bool success, ) = target.call{gas: m_callbackgas}(
+            (bool success, ) = target.call{gas: $.m_callbackgas}(
                 abi.encodeCall(IOracleConsumer.receiveResult, (taskId, resultsCallback))
             );
             //slither-disable-next-line redundant-statements
             success; // silent unused variable warning
-            require(gasleft() > m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
+            require(gasleft() > $.m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
         }
     }
 
@@ -487,10 +489,11 @@ contract IexecPocoBoostFacet is
      * @param index The index of the task.
      */
     function claimBoost(bytes32 dealId, uint256 index) external {
+        PocoStorage storage $ = getPocoStorage();
         // Retrieve deal and task information from storage.
-        IexecLibCore_v5.DealBoost storage deal = m_dealsBoost[dealId];
+        IexecLibCore_v5.DealBoost storage deal = $.m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
-        IexecLibCore_v5.Task storage task = m_tasks[taskId];
+        IexecLibCore_v5.Task storage task = $.m_tasks[taskId];
         // Ensure that the task exists and has the unset status.
         requireTaskExistsAndUnset(task.status, index, deal.botSize);
         // Check if the current time has reached or passed the deadline of the deal.
@@ -505,7 +508,7 @@ contract IexecPocoBoostFacet is
         // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
+        $.m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
         // Emit events to publish state changes.
         emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
