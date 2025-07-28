@@ -165,27 +165,27 @@ contract IexecEscrowTokenSwapFacet is
         PocoStorage storage $ = getPocoStorage();
         uint256 volume;
         volume = _apporder.volume.sub(
-            $.m_consumed[keccak256(_toEthTypedStruct(_apporder.hash(), $.EIP712DOMAIN_SEPARATOR))]
+            $.m_consumed[keccak256(_toEthTypedStruct(_apporder.hash(), $.m_eip712DomainSeparator))]
         );
         if (_datasetorder.dataset != address(0))
             volume = volume.min(
                 _datasetorder.volume.sub(
                     $.m_consumed[
-                        keccak256(_toEthTypedStruct(_datasetorder.hash(), $.EIP712DOMAIN_SEPARATOR))
+                        keccak256(_toEthTypedStruct(_datasetorder.hash(), $.m_eip712DomainSeparator))
                     ]
                 )
             );
         volume = volume.min(
             _workerpoolorder.volume.sub(
                 $.m_consumed[
-                    keccak256(_toEthTypedStruct(_workerpoolorder.hash(), $.EIP712DOMAIN_SEPARATOR))
+                    keccak256(_toEthTypedStruct(_workerpoolorder.hash(), $.m_eip712DomainSeparator))
                 ]
             )
         );
         volume = volume.min(
             _requestorder.volume.sub(
                 $.m_consumed[
-                    keccak256(_toEthTypedStruct(_requestorder.hash(), $.EIP712DOMAIN_SEPARATOR))
+                    keccak256(_toEthTypedStruct(_requestorder.hash(), $.m_eip712DomainSeparator))
                 ]
             )
         );

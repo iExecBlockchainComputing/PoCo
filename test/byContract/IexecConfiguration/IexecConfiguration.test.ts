@@ -205,7 +205,7 @@ describe('IexecConfiguration', async () => {
     async function setDomainSeparatorInStorage(domainSeparator: string) {
         await setStorageAt(
             proxyAddress,
-            getPocoStorageSlotLocation(11n), // 11 is the slot index of EIP712DOMAIN_SEPARATOR in Store
+            getPocoStorageSlotLocation(11n), // 11 is the slot index of m_eip712DomainSeparator in Store
             domainSeparator,
         );
         // Double check the update of the domain separator happened

@@ -18,7 +18,7 @@ contract SignatureVerifier is FacetBase {
      */
     function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
         PocoStorage storage $ = getPocoStorage();
-        return MessageHashUtils.toTypedDataHash($.EIP712DOMAIN_SEPARATOR, structHash);
+        return MessageHashUtils.toTypedDataHash($.m_eip712DomainSeparator, structHash);
     }
 
     /**
