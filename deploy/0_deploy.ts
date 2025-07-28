@@ -44,12 +44,16 @@ import { getLibDiamondConfigOrEmpty } from '../utils/tools';
 
 let factoryDeployer: FactoryDeployer;
 
+// TODO: refactor this file to differentiate hardhat deployment from
+// other chains deployment.
 export default async function deploy() {
     console.log('Deploying PoCo..');
     const network = await ethers.provider.getNetwork();
     const chainId = network.chainId;
     const [deployer] = await ethers.getSigners();
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
+    // TODO: remove the fallback on deployer address to avoid deployement
+    // misconfiguration.
     const ownerAddress = deploymentOptions.owner || deployer.address;
     factoryDeployer = new FactoryDeployer(deployer, chainId);
     // Deploy RLC
