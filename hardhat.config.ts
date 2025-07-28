@@ -71,7 +71,6 @@ const v8Settings = {
             },
         },
     },
-    evmVersion: 'shanghai',
 };
 
 const config: HardhatUserConfig = {
