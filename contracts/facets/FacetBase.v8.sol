@@ -27,15 +27,4 @@ abstract contract FacetBase {
     function _msgSender() internal view returns (address) {
         return msg.sender;
     }
-
-    // === Storage Access Helper Functions ===
-    // These provide backward compatibility for facets that were using Store directly
-
-    /**
-     * @dev Get the PocoStorage struct for direct access when needed.
-     * @return The storage pointer to PocoStorage struct.
-     */
-    function _getPocoStorage() internal pure returns (LibPocoStorage.PocoStorage storage) {
-        return LibPocoStorage.getPocoStorage();
-    }
 }
