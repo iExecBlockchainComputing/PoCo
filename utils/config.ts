@@ -40,6 +40,7 @@ type ChainConfig = {
     asset: string;
     token?: string | null; // The token deployed should be compatible with Approve and call
     richman?: string | null; // The richman account is needed if the token is already deployed
+    owner?: string | null;
     uniswap?: boolean;
     etoken?: string;
     v3: {

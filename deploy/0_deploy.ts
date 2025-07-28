@@ -44,37 +44,42 @@ import { getLibDiamondConfigOrEmpty } from '../utils/tools';
 
 let factoryDeployer: FactoryDeployer;
 
+// TODO: refactor this file to differentiate hardhat deployment from
+// other chains deployment.
 export default async function deploy() {
     console.log('Deploying PoCo..');
     const network = await ethers.provider.getNetwork();
     const chainId = network.chainId;
-    const [owner] = await ethers.getSigners();
+    const [deployer] = await ethers.getSigners();
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
-    factoryDeployer = new FactoryDeployer(owner, chainId);
+    // TODO: remove the fallback on deployer address to avoid deployement
+    // misconfiguration.
+    const ownerAddress = deploymentOptions.owner || deployer.address;
+    factoryDeployer = new FactoryDeployer(deployer, chainId);
     // Deploy RLC
     const isTokenMode = !config.isNativeChain(deploymentOptions);
     let rlcInstanceAddress = isTokenMode
-        ? await getOrDeployRlc(deploymentOptions.token!, owner) // token
+        ? await getOrDeployRlc(deploymentOptions.token!, deployer, ownerAddress) // token
         : ZeroAddress; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
-    /**
-     * Deploy proxy and facets.
-     */
-    // TODO put inside init() function.
-    const transferOwnershipCall = await Ownable__factory.connect(
+    // Prepare transferOwnership call to the deployer.
+    // Ownership transfer should be done in the same deployment transaction
+    // otherwise it is not possible to transfer ownership before hand if the
+    // factory is set as the owner.
+    const transferOwnershipToDeployerCall = await Ownable__factory.connect(
         ZeroAddress, // any is fine
-        owner, // any is fine
+        ethers.provider,
     )
-        .transferOwnership.populateTransaction(owner.address)
+        .transferOwnership.populateTransaction(deployer.address)
         .then((tx) => tx.data)
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const diamondProxyAddress = await deployDiamondProxyWithDefaultFacets(
-        owner,
-        // transferOwnershipCall, //TODO
-    );
-    const diamond = DiamondCutFacet__factory.connect(diamondProxyAddress, owner);
+    /**
+     * Deploy proxy and facets.
+     */
+    const diamondProxyAddress = await deployDiamondProxyWithDefaultFacets(deployer);
+    const diamond = DiamondCutFacet__factory.connect(diamondProxyAddress, deployer);
     console.log(`IexecInstance found at address: ${await diamond.getAddress()}`);
     // Deploy library & facets
     const iexecLibOrdersAddress = await factoryDeployer.deployContract(
@@ -106,7 +111,7 @@ export default async function deploy() {
     // Verify linking on Diamond Proxy
     const diamondLoupeFacetInstance: DiamondLoupeFacet = DiamondLoupeFacet__factory.connect(
         diamondProxyAddress,
-        owner,
+        deployer,
     );
     const diamondFacets = await diamondLoupeFacetInstance.facets();
     const functionCount = diamondFacets
@@ -124,24 +129,27 @@ export default async function deploy() {
     const appRegistryAddress = await factoryDeployer.deployContract(
         new AppRegistry__factory(),
         [],
-        transferOwnershipCall,
+        transferOwnershipToDeployerCall,
     );
     const datasetRegistryAddress = await factoryDeployer.deployContract(
         new DatasetRegistry__factory(),
         [],
-        transferOwnershipCall,
+        transferOwnershipToDeployerCall,
     );
     const workerpoolRegistryAddress = await factoryDeployer.deployContract(
         new WorkerpoolRegistry__factory(),
         [],
-        transferOwnershipCall,
+        transferOwnershipToDeployerCall,
     );
 
-    const appRegistryInstance = AppRegistry__factory.connect(appRegistryAddress, owner);
-    const datasetRegistryInstance = DatasetRegistry__factory.connect(datasetRegistryAddress, owner);
+    const appRegistryInstance = AppRegistry__factory.connect(appRegistryAddress, deployer);
+    const datasetRegistryInstance = DatasetRegistry__factory.connect(
+        datasetRegistryAddress,
+        deployer,
+    );
     const workerpoolRegistryInstance = WorkerpoolRegistry__factory.connect(
         workerpoolRegistryAddress,
-        owner,
+        deployer,
     );
     // Base URI configuration from config.json
     const baseURIApp = config.registriesBaseUri.app;
@@ -172,11 +180,11 @@ export default async function deploy() {
     }
 
     // Set main configuration
-    const iexecAccessorsInstance = IexecAccessors__factory.connect(diamondProxyAddress, owner);
+    const iexecAccessorsInstance = IexecAccessors__factory.connect(diamondProxyAddress, deployer);
     const iexecInitialized = (await iexecAccessorsInstance.eip712domain_separator()) != ZeroHash;
     if (!iexecInitialized) {
         // TODO replace this with DiamondInit.init().
-        await IexecConfigurationFacet__factory.connect(diamondProxyAddress, owner)
+        await IexecConfigurationFacet__factory.connect(diamondProxyAddress, deployer)
             .configure(
                 rlcInstanceAddress,
                 'Staked RLC',
@@ -193,7 +201,7 @@ export default async function deploy() {
     const catCountBefore = await iexecAccessorsInstance.countCategory();
     for (let i = Number(catCountBefore); i < config.categories.length; i++) {
         const category = config.categories[i];
-        await IexecCategoryManager__factory.connect(diamondProxyAddress, owner)
+        await IexecCategoryManager__factory.connect(diamondProxyAddress, deployer)
             .createCategory(
                 category.name,
                 JSON.stringify(category.description),
@@ -206,7 +214,15 @@ export default async function deploy() {
     for (let i = 0; i < Number(catCountAfter); i++) {
         console.log(`Category ${i}: ${await iexecAccessorsInstance.viewCategory(i)}`);
     }
-
+    // Transfer ownership of all contracts to the configured owner.
+    await transferOwnershipToFinalOwner(
+        diamondProxyAddress,
+        appRegistryAddress,
+        datasetRegistryAddress,
+        workerpoolRegistryAddress,
+        deployer,
+        ownerAddress,
+    );
     if (network.name !== 'hardhat' && network.name !== 'localhost') {
         console.log('Waiting for block explorer to index the contracts...');
         await new Promise((resolve) => setTimeout(resolve, 60000));
@@ -214,8 +230,12 @@ export default async function deploy() {
     }
 }
 
-async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
-    const rlcFactory = new RLC__factory().connect(owner);
+async function getOrDeployRlc(
+    token: string,
+    deployer: SignerWithAddress,
+    ownerAddress: string,
+): Promise<string> {
+    const rlcFactory = new RLC__factory().connect(deployer);
     let rlcAddress: string;
 
     if (token) {
@@ -228,6 +248,10 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
             .then((contract) => contract.waitForDeployment())
             .then((contract) => contract.getAddress());
         console.log(`New RLC token deployed at: ${rlcAddress}`);
+        await Ownable__factory.connect(rlcAddress, deployer)
+            .transferOwnership(ownerAddress)
+            .then((tx) => tx.wait());
+        console.log(`Ownership of RLC token transferred to: ${deployer.address}`);
     }
 
     await deployments.save('RLC', {
@@ -243,13 +267,10 @@ async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
  * Deploys and initializes a Diamond proxy contract with default facets.
  * @returns The address of the deployed Diamond proxy contract.
  */
-async function deployDiamondProxyWithDefaultFacets(
-    owner: SignerWithAddress,
-    // transferOwnershipCall: string, // TODO
-): Promise<string> {
+async function deployDiamondProxyWithDefaultFacets(deployer: SignerWithAddress): Promise<string> {
     const initAddress = await factoryDeployer.deployContract(new DiamondInit__factory());
     const initCalldata = DiamondInit__factory.createInterface().encodeFunctionData('init');
-    const libDiamondConfig = await getLibDiamondConfigOrEmpty(owner);
+    const libDiamondConfig = await getLibDiamondConfigOrEmpty(deployer);
     // Deploy required proxy facets.
     const facetFactories = [
         new DiamondCutFacet__factory(libDiamondConfig),
@@ -268,13 +289,36 @@ async function deployDiamondProxyWithDefaultFacets(
     }
     // Set diamond constructor arguments
     const diamondArgs: DiamondArgsStruct = {
-        owner: owner.address,
+        owner: deployer.address,
         init: initAddress,
         initCalldata: initCalldata,
     };
-    return await factoryDeployer.deployContract(
-        new Diamond__factory(libDiamondConfig),
-        [facetCuts, diamondArgs],
-        // transferOwnershipCall, // TODO
-    );
+    return await factoryDeployer.deployContract(new Diamond__factory(libDiamondConfig), [
+        facetCuts,
+        diamondArgs,
+    ]);
+}
+
+/**
+ * Prepares the transferOwnership calls for all provided contracts.
+ */
+async function transferOwnershipToFinalOwner(
+    diamondAddress: string,
+    appRegistryAddress: string,
+    datasetRegistryAddress: string,
+    workerpoolRegistryAddress: string,
+    currentOwner: SignerWithAddress,
+    ownerAddress: string,
+) {
+    for (const contract of [
+        { name: 'Diamond', address: diamondAddress },
+        { name: 'AppRegistry', address: appRegistryAddress },
+        { name: 'DatasetRegistry', address: datasetRegistryAddress },
+        { name: 'WorkerpoolRegistry', address: workerpoolRegistryAddress },
+    ]) {
+        await Ownable__factory.connect(contract.address, currentOwner)
+            .transferOwnership(ownerAddress)
+            .then((tx) => tx.wait());
+        console.log(`Owner of ${contract.name}: ${ownerAddress}`);
+    }
 }
