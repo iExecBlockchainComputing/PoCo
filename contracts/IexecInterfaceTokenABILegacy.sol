@@ -18,6 +18,11 @@ import "./interfaces/IexecPoco2.sol";
 import "./interfaces/IexecRelay.sol";
 import "./interfaces/IexecTokenSpender.sol";
 
+/**
+ * TODO: Remove this interface in the future.
+ * Currently Used in the middleware:
+ * https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
+ */
 interface IexecInterfaceTokenABILegacy is
     IOwnable,
     IexecAccessors,
