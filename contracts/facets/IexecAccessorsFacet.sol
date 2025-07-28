@@ -168,6 +168,7 @@ contract IexecAccessorsFacet is IexecAccessors, FacetBase {
     function groupmember_purpose() external view override returns (uint256) {
         return LibPocoStorage.GROUPMEMBER_PURPOSE;
     }
+
     function eip712domain_separator() external view override returns (bytes32) {
         LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         return $.m_eip712DomainSeparator;
