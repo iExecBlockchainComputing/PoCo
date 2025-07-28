@@ -17,6 +17,9 @@ import "./interfaces/IexecPoco2.sol";
 import "./interfaces/IexecRelay.sol";
 import "./interfaces/IexecTokenSpender.sol";
 
+/**
+ * TODO: Remove this interface in the future when IexecInterfaceTokenABILegacy is removed.
+ */
 interface IexecInterfaceNativeABILegacy is
     IOwnable,
     IexecAccessors,
