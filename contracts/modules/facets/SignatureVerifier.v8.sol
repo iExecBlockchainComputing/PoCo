@@ -8,6 +8,7 @@ import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
 import {IERC734} from "../../external/interfaces/IERC734.sol";
 import {FacetBase} from "../FacetBase.v8.sol";
+import {LibPocoStorage} from "../../libs/LibPocoStorage.v8.sol";
 
 contract SignatureVerifier is FacetBase {
     using ECDSA for bytes32;
@@ -17,8 +18,7 @@ contract SignatureVerifier is FacetBase {
      * @param structHash The original structure hash.
      */
     function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
-        PocoStorage storage $ = getPocoStorage();
-        return MessageHashUtils.toTypedDataHash($.EIP712DOMAIN_SEPARATOR, structHash);
+        return MessageHashUtils.toTypedDataHash(LibPocoStorage.domainSeparator(), structHash);
     }
 
     /**
@@ -90,8 +90,7 @@ contract SignatureVerifier is FacetBase {
         address account,
         bytes32 messageHash
     ) internal view returns (bool) {
-        PocoStorage storage $ = getPocoStorage();
-        return account != address(0) && account == $.m_presigned[messageHash];
+        return account != address(0) && account == LibPocoStorage.presigned(messageHash);
     }
 
     /**
@@ -141,7 +140,7 @@ contract SignatureVerifier is FacetBase {
             try
                 IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
                         bytes32(uint256(uint160(account))),
-                        GROUPMEMBER_PURPOSE
+                        LibPocoStorage.GROUPMEMBER_PURPOSE
                     )
             returns (bool success) {
                 return success;

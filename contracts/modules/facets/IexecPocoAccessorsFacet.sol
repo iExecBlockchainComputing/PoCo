@@ -4,6 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {FacetBase} from "../FacetBase.v8.sol";
+import {LibPocoStorage} from "../../libs/LibPocoStorage.v8.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
@@ -29,8 +30,7 @@ contract IexecPocoAccessorsFacet is
      * @param id The ID of the deal.
      */
     function viewDeal(bytes32 id) external view returns (IexecLibCore_v5.Deal memory deal) {
-        PocoStorage storage $ = getPocoStorage();
-        return $.m_deals[id];
+        return LibPocoStorage.deals(id);
     }
 
     /**
@@ -38,8 +38,7 @@ contract IexecPocoAccessorsFacet is
      * @param id id of the task
      */
     function viewTask(bytes32 id) external view returns (IexecLibCore_v5.Task memory) {
-        PocoStorage storage $ = getPocoStorage();
-        return $.m_tasks[id];
+        return LibPocoStorage.tasks(id);
     }
 
     /**

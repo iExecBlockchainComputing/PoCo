@@ -7,6 +7,7 @@ import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {FacetBase} from "../FacetBase.v8.sol";
+import {LibPocoStorage} from "../../libs/LibPocoStorage.v8.sol";
 
 contract IexecPocoCommonFacet is FacetBase {
     using Math for uint256;
@@ -42,15 +43,14 @@ contract IexecPocoCommonFacet is FacetBase {
         uint256 requestOrderVolume,
         bytes32 requestOrderTypedDataHash
     ) internal view returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
         return
-            (appOrderVolume - $.m_consumed[appOrderTypedDataHash])
+            (appOrderVolume - LibPocoStorage.consumed(appOrderTypedDataHash))
                 .min(
                     hasDataset
-                        ? datasetOrderVolume - $.m_consumed[datasetOrderTypedDataHash]
+                        ? datasetOrderVolume - LibPocoStorage.consumed(datasetOrderTypedDataHash)
                         : type(uint256).max
                 )
-                .min(workerpoolOrderVolume - $.m_consumed[workerpoolOrderTypedDataHash])
-                .min(requestOrderVolume - $.m_consumed[requestOrderTypedDataHash]);
+                .min(workerpoolOrderVolume - LibPocoStorage.consumed(workerpoolOrderTypedDataHash))
+                .min(requestOrderVolume - LibPocoStorage.consumed(requestOrderTypedDataHash));
     }
 }

@@ -8,13 +8,14 @@ import {IOracleConsumer} from "../../external/interfaces/IOracleConsumer.sol";
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 import {FacetBase} from "../FacetBase.v8.sol";
+import {LibPocoStorage} from "../../libs/LibPocoStorage.v8.sol";
 import {IexecPoco2} from "../interfaces/IexecPoco2.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifier {
     modifier onlyScheduler(bytes32 _taskId) {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         require(_msgSender() == $.m_deals[$.m_tasks[_taskId].dealid].workerpool.owner);
         _;
     }
@@ -23,11 +24,12 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
      *                    Escrow overhead for contribution                     *
      ***************************************************************************/
     function successWork(bytes32 _dealid, bytes32 _taskid) internal {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Deal storage deal = $.m_deals[_dealid];
 
         uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
-        uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 poolstake = (deal.workerpool.price * LibPocoStorage.getWorkerpoolStakeRatio()) /
+            100;
 
         // Seize the payer of the task
         seize(deal.sponsor, taskPrice, _taskid);
@@ -44,21 +46,28 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         // pool reward performed by consensus manager
 
         // Retrieve part of the kitty
-        uint256 kitty = $.m_frozens[KITTY_ADDRESS];
+        uint256 kitty = $.m_frozens[LibPocoStorage.getKittyAddress()];
         if (kitty > 0) {
-            // Get a fraction of the kitty where KITTY_MIN <= fraction <= kitty
-            kitty = Math.min(Math.max((kitty * KITTY_RATIO) / 100, KITTY_MIN), kitty);
-            seize(KITTY_ADDRESS, kitty, _taskid);
+            // Get a fraction of the kitty where LibPocoStorage.getKittyMin() <= fraction <= kitty
+            kitty = Math.min(
+                Math.max(
+                    (kitty * LibPocoStorage.getKittyRatio()) / 100,
+                    LibPocoStorage.getKittyMin()
+                ),
+                kitty
+            );
+            seize(LibPocoStorage.getKittyAddress(), kitty, _taskid);
             reward(deal.workerpool.owner, kitty, _taskid);
         }
     }
 
     function failedWork(bytes32 _dealid, bytes32 _taskid) internal {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Deal memory deal = $.m_deals[_dealid];
 
         uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
-        uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 poolstake = (deal.workerpool.price * LibPocoStorage.getWorkerpoolStakeRatio()) /
+            100;
 
         unlock(deal.sponsor, taskPrice); // Refund the payer of the task
         seize(deal.workerpool.owner, poolstake, _taskid);
@@ -68,16 +77,16 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
          * where functions would together uselessly transfer value from main PoCo
          * proxy to kitty, then would transfer value back from kitty to main PoCo proxy.
          */
-        $.m_frozens[KITTY_ADDRESS] += poolstake; // → Kitty / Burn
-        emit Reward(KITTY_ADDRESS, poolstake, _taskid);
-        emit Lock(KITTY_ADDRESS, poolstake);
+        $.m_frozens[LibPocoStorage.getKittyAddress()] += poolstake; // → Kitty / Burn
+        emit Reward(LibPocoStorage.getKittyAddress(), poolstake, _taskid);
+        emit Lock(LibPocoStorage.getKittyAddress(), poolstake);
     }
 
     /***************************************************************************
      *                            Consensus methods                            *
      ***************************************************************************/
     function initialize(bytes32 _dealid, uint256 idx) public override returns (bytes32) {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Deal memory deal = $.m_deals[_dealid];
 
         require(idx >= deal.botFirst);
@@ -91,8 +100,11 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         task.dealid = _dealid;
         task.idx = idx;
         task.timeref = $.m_categories[deal.category].workClockTimeRef;
-        task.contributionDeadline = deal.startTime + task.timeref * CONTRIBUTION_DEADLINE_RATIO;
-        task.finalDeadline = deal.startTime + task.timeref * FINAL_DEADLINE_RATIO;
+        task.contributionDeadline =
+            deal.startTime +
+            task.timeref *
+            LibPocoStorage.getContributionDeadlineRatio();
+        task.finalDeadline = deal.startTime + task.timeref * LibPocoStorage.getFinalDeadlineRatio();
 
         // setup denominator
         $.m_consensus[taskid].total = 1;
@@ -110,7 +122,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         bytes calldata _enclaveSign,
         bytes calldata _authorizationSign
     ) external override {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
         IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][
             _msgSender()
@@ -188,7 +200,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         bytes calldata _enclaveSign,
         bytes calldata _authorizationSign
     ) external override {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
         IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][
             _msgSender()
@@ -239,7 +251,10 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
 
         task.status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
         task.consensusValue = contribution.resultHash;
-        task.revealDeadline = block.timestamp + task.timeref * REVEAL_DEADLINE_RATIO;
+        task.revealDeadline =
+            block.timestamp +
+            task.timeref *
+            LibPocoStorage.getRevealDeadlineRatio();
         task.revealCounter = 1;
         task.winnerCounter = 1;
         task.resultDigest = _resultDigest;
@@ -259,7 +274,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
     }
 
     function reveal(bytes32 _taskid, bytes32 _resultDigest) external override {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
         IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][
             _msgSender()
@@ -282,7 +297,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
     }
 
     function reopen(bytes32 _taskid) external override onlyScheduler(_taskid) {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
         require(task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
         require(task.finalDeadline > block.timestamp);
@@ -314,7 +329,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         bytes calldata _results,
         bytes calldata _resultsCallback // Expansion - result separation
     ) external override onlyScheduler(_taskid) {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
         IexecLibCore_v5.Deal memory deal = $.m_deals[task.dealid];
 
@@ -349,7 +364,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
     }
 
     function claim(bytes32 _taskid) public override {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
         require(
             task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE ||
@@ -379,7 +394,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
      * Consensus detection
      */
     function checkConsensus(bytes32 _taskid, bytes32 _consensus) internal {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
         IexecLibCore_v5.Consensus storage consensus = $.m_consensus[_taskid];
 
@@ -406,7 +421,10 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
             // _msgSender() is a contributor: no need to check
             task.status = IexecLibCore_v5.TaskStatusEnum.REVEALING;
             task.consensusValue = _consensus;
-            task.revealDeadline = block.timestamp + task.timeref * REVEAL_DEADLINE_RATIO;
+            task.revealDeadline =
+                block.timestamp +
+                task.timeref *
+                LibPocoStorage.getRevealDeadlineRatio();
             task.revealCounter = 0;
             task.winnerCounter = winnerCounter;
 
@@ -418,7 +436,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
      * Reward distribution
      */
     function distributeRewards(bytes32 _taskid) internal {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Task memory task = $.m_tasks[_taskid];
         IexecLibCore_v5.Deal memory deal = $.m_deals[task.dealid];
 
@@ -497,7 +515,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
      * Reward distribution for contributeAndFinalize
      */
     function distributeRewardsFast(bytes32 _taskid) internal {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.Task memory task = $.m_tasks[_taskid];
         IexecLibCore_v5.Deal memory deal = $.m_deals[task.dealid];
 
@@ -514,7 +532,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
      * Callback for smartcontracts using EIP1154
      */
     function executeCallback(bytes32 _taskid, bytes memory _resultsCallback) internal {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         address target = $.m_deals[$.m_tasks[_taskid].dealid].callback;
         if (target != address(0)) {
             // Solidity 0.6.0 reverts if target is not a smartcontracts

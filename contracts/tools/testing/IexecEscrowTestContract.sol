@@ -4,6 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {IexecEscrow} from "../../modules/facets/IexecEscrow.v8.sol";
+import {LibPocoStorage} from "../../libs/LibPocoStorage.v8.sol";
 
 /**
  * @notice a wrapper contract to make internal functions of
@@ -29,7 +30,7 @@ contract IexecEscrowTestContract is IexecEscrow {
     // Helper functions used in unit tests.
 
     function setBalance(address account, uint256 value) external {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         $.m_balances[account] = value;
     }
 
@@ -37,12 +38,12 @@ contract IexecEscrowTestContract is IexecEscrow {
     // when it is migrated to solidity v8.
 
     function balanceOf(address account) external view returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         return $.m_balances[account];
     }
 
     function frozenOf(address account) external view returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         return $.m_frozens[account];
     }
 }

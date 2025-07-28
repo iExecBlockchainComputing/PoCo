@@ -18,6 +18,7 @@ import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
+import {LibPocoStorage} from "../../libs/LibPocoStorage.v8.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
@@ -124,7 +125,7 @@ contract IexecPocoBoostFacet is
         IexecLibOrders_v5.RequestOrder calldata requestOrder,
         address sponsor
     ) private returns (bytes32) {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         // Check orders compatibility
 
         // Ensure the trust level is within the acceptable range.
@@ -295,7 +296,7 @@ contract IexecPocoBoostFacet is
         deal.botFirst = requestOrderConsumed.toUint16();
         deal.deadline = (block.timestamp +
             $.m_categories[category].workClockTimeRef *
-            CONTRIBUTION_DEADLINE_RATIO).toUint40();
+            LibPocoStorage.getContributionDeadlineRatio()).toUint40();
         deal.botSize = volume.toUint16();
         /**
          * Store right part of tag for later use.
@@ -335,7 +336,10 @@ contract IexecPocoBoostFacet is
         // Order is important here. First get percentage by task then
         // multiply by volume.
         //slither-disable-next-line divide-before-multiply
-        lock(workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
+        lock(
+            workerpoolOwner,
+            ((workerpoolPrice * LibPocoStorage.getWorkerpoolStakeRatio()) / 100) * volume
+        );
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             workerpool,
@@ -380,7 +384,7 @@ contract IexecPocoBoostFacet is
         address enclaveChallenge,
         bytes calldata enclaveSign
     ) external {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         IexecLibCore_v5.DealBoost storage deal = $.m_dealsBoost[dealId];
         // Compute the unique task identifier based on deal id and task index.
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
@@ -450,16 +454,17 @@ contract IexecPocoBoostFacet is
         }
 
         // Unlock scheduler stake
-        unlock(workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
+        unlock(workerpoolOwner, (workerPoolPrice * LibPocoStorage.getWorkerpoolStakeRatio()) / 100);
         // Reward scheduler
-        uint256 kitty = $.m_frozens[KITTY_ADDRESS];
+        uint256 kitty = $.m_frozens[LibPocoStorage.getKittyAddress()];
         if (kitty > 0) {
-            kitty = KITTY_MIN // 1. retrieve bare minimum from kitty
+            kitty = LibPocoStorage
+            .getKittyMin() // 1. retrieve bare minimum from kitty
             .max( // 2. or eventually a fraction of kitty if bigger
-                // @dev As long as `KITTY_RATIO = 10`, we can introduce this small
-                kitty / KITTY_RATIO // optimization for `kitty * KITTY_RATIO / 100`
+                // @dev As long as `LibPocoStorage.getKittyRatio() = 10`, we can introduce this small
+                kitty / LibPocoStorage.getKittyRatio() // optimization for `kitty * LibPocoStorage.getKittyRatio() / 100`
             ).min(kitty); // 3. but no more than available
-            seize(KITTY_ADDRESS, kitty, taskId);
+            seize(LibPocoStorage.getKittyAddress(), kitty, taskId);
         }
         reward(
             workerpoolOwner,
@@ -494,7 +499,7 @@ contract IexecPocoBoostFacet is
      * @param index The index of the task.
      */
     function claimBoost(bytes32 dealId, uint256 index) external {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         // Retrieve deal and task information from storage.
         IexecLibCore_v5.DealBoost storage deal = $.m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
@@ -507,16 +512,17 @@ contract IexecPocoBoostFacet is
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
         // Calculate workerpool price and task stake.
         uint96 workerPoolPrice = deal.workerpoolPrice;
-        uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 workerpoolTaskStake = (workerPoolPrice * LibPocoStorage.getWorkerpoolStakeRatio()) /
+            100;
         // Refund the payer of the task by unlocking the locked funds.
         unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        $.m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
+        $.m_frozens[LibPocoStorage.getKittyAddress()] += workerpoolTaskStake;
         // Emit events to publish state changes.
-        emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
-        emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
+        emit Reward(LibPocoStorage.getKittyAddress(), workerpoolTaskStake, taskId);
+        emit Lock(LibPocoStorage.getKittyAddress(), workerpoolTaskStake);
         emit TaskClaimed(taskId);
     }
 

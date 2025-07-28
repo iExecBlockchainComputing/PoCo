@@ -8,6 +8,7 @@ import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 import {FacetBase} from "../FacetBase.v8.sol";
 import {IexecOrderManagement} from "../interfaces/IexecOrderManagement.v8.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
+import {LibPocoStorage} from "../../libs/LibPocoStorage.v8.sol";
 
 contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, SignatureVerifier {
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
@@ -25,7 +26,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageAppOrder(
         IexecLibOrders_v5.AppOrderOperation calldata _apporderoperation
     ) external override {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         address owner = IERC5313(_apporderoperation.order.app).owner();
         require(
             owner == _msgSender() ||
@@ -50,7 +51,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageDatasetOrder(
         IexecLibOrders_v5.DatasetOrderOperation calldata _datasetorderoperation
     ) external override {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         address owner = IERC5313(_datasetorderoperation.order.dataset).owner();
         require(
             owner == _msgSender() ||
@@ -75,7 +76,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageWorkerpoolOrder(
         IexecLibOrders_v5.WorkerpoolOrderOperation calldata _workerpoolorderoperation
     ) external override {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         address owner = IERC5313(_workerpoolorderoperation.order.workerpool).owner();
         require(
             owner == _msgSender() ||
@@ -102,7 +103,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageRequestOrder(
         IexecLibOrders_v5.RequestOrderOperation calldata _requestorderoperation
     ) external override {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         address owner = _requestorderoperation.order.requester;
         require(
             owner == _msgSender() ||

@@ -8,6 +8,7 @@ import "@iexec/solidity/contracts/ERC734/IERC734.sol";
 import "@iexec/solidity/contracts/ERC1271/IERC1271.sol";
 import "@iexec/solidity/contracts/ERC1654/IERC1654.sol";
 import "../FacetBase.sol";
+import {LibPocoStorage} from "../../libs/LibPocoStorage.sol";
 
 contract SignatureVerifier is FacetBase {
     /**
@@ -95,7 +96,7 @@ contract SignatureVerifier is FacetBase {
     }
 
     function _checkPresignature(address _identity, bytes32 _hash) internal view returns (bool) {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         return _identity != address(0) && _identity == $.m_presigned[_hash];
     }
 

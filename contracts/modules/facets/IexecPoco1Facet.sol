@@ -8,6 +8,7 @@ import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 
 import {IexecLibCore_v5} from "../../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
+import {LibPocoStorage} from "../../libs/LibPocoStorage.v8.sol";
 import {IWorkerpool} from "../../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "../FacetBase.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
@@ -145,7 +146,7 @@ contract IexecPoco1Facet is
         IexecLibOrders_v5.RequestOrder calldata _requestorder,
         address _sponsor
     ) private returns (bytes32) {
-        PocoStorage storage $ = getPocoStorage();
+        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
         /**
          * Check orders compatibility
          */
@@ -365,7 +366,7 @@ contract IexecPoco1Facet is
         //slither-disable-next-line divide-before-multiply
         lock(
             deal.workerpool.owner,
-            ((deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
+            ((deal.workerpool.price * LibPocoStorage.getWorkerpoolStakeRatio()) / 100) * volume // ORDER IS IMPORTANT HERE!
         );
 
         /**
