@@ -4,20 +4,25 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./modules/interfaces/IOwnable.sol";
-import "./modules/interfaces/IexecAccessors.sol";
-import "./modules/interfaces/IexecAccessorsABILegacy.sol";
-import "./modules/interfaces/IexecCategoryManager.sol";
-import "./modules/interfaces/IexecERC20.sol";
-import "./modules/interfaces/IexecEscrowToken.sol";
-import "./modules/interfaces/IexecEscrowTokenSwap.sol";
-import "./modules/interfaces/IexecConfiguration.sol";
-import "./modules/interfaces/IexecOrderManagement.sol";
-import "./modules/interfaces/IexecPoco1.sol";
-import "./modules/interfaces/IexecPoco2.sol";
-import "./modules/interfaces/IexecRelay.sol";
-import "./modules/interfaces/IexecTokenSpender.sol";
+import "./interfaces/IOwnable.sol";
+import "./interfaces/IexecAccessors.sol";
+import "./interfaces/IexecAccessorsABILegacy.sol";
+import "./interfaces/IexecCategoryManager.sol";
+import "./interfaces/IexecERC20.sol";
+import "./interfaces/IexecEscrowToken.sol";
+import "./interfaces/IexecEscrowTokenSwap.sol";
+import "./interfaces/IexecConfiguration.sol";
+import "./interfaces/IexecOrderManagement.sol";
+import "./interfaces/IexecPoco1.sol";
+import "./interfaces/IexecPoco2.sol";
+import "./interfaces/IexecRelay.sol";
+import "./interfaces/IexecTokenSpender.sol";
 
+/**
+ * TODO: Remove this interface in the future.
+ * Currently Used in the middleware:
+ * https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
+ */
 interface IexecInterfaceTokenABILegacy is
     IOwnable,
     IexecAccessors,

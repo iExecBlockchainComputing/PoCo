@@ -71,13 +71,6 @@ const v8Settings = {
             },
         },
     },
-    // TODO remove this to target the latest EVM version.
-    /**
-     * @dev The 0.8.20 compiler switches the default target EVM version to Shanghai.
-     * At this time, the iExec Bellecour blockchain does not support new OPCODES
-     * brought by the Shanghai fork, hence the target must be lowered.
-     */
-    evmVersion: bellecourBaseConfig.hardfork,
 };
 
 const config: HardhatUserConfig = {
@@ -272,17 +265,13 @@ const config: HardhatUserConfig = {
         templates: 'docs/solidity/templates',
         exclude: [
             'external',
-            'modules/facets/IexecAccessorsABILegacyFacet.sol', // not relevant
-            'modules/facets/IexecEscrowTokenSwapFacet.sol', // not relevant
-            'modules/facets/SignatureVerifier.sol', // contains only internal/private
-            'modules/facets/SignatureVerifier.v8.sol',
-            'modules/interfaces', // interesting for events but too much doc duplication if enabled
+            'facets/IexecAccessorsABILegacyFacet.sol', // not relevant
+            'facets/IexecEscrowTokenSwapFacet.sol', // not relevant
+            'facets/SignatureVerifier.sol', // contains only internal/private
+            'facets/SignatureVerifier.v8.sol',
+            'interfaces', // interesting for events but too much doc duplication if enabled
             'registries', // ignore them for now
             'tools',
-            'IexecInterfaceNativeABILegacy.sol', // ignore interfaces
-            'IexecInterfaceTokenABILegacy.sol',
-            'IexecInterfaceNative.sol',
-            'IexecInterfaceToken.sol',
             'Store.sol', // almost empty
             'Store.v8.sol',
         ],

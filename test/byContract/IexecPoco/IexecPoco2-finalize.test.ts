@@ -21,6 +21,7 @@ import {
     buildUtf8ResultAndDigest,
     getIexecAccounts,
 } from '../../../utils/poco-tools';
+import { getPocoStorageSlotLocation } from '../../../utils/proxy-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
@@ -879,7 +880,7 @@ describe('IexecPoco2#finalize', async () => {
                     ['address', 'uint256'],
                     [
                         worker,
-                        18, // Slot index of m_workerScores in Store
+                        getPocoStorageSlotLocation(18n), // 18 is the slot index of m_workerScores in Store
                     ],
                 ),
             ),
