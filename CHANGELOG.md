@@ -2,6 +2,7 @@
 
 ## vNEXT
 
+- Save IexecLibOrders_v5 in config file (#242)
 - Migrate proxy to Diamond pattern (ERC-2535):
   - Use lib as storage. (#243)
   - Restore compatibility with iExec SDK. (#240)
@@ -15,7 +16,6 @@
   - Add Diamond contract unit tests (#224)
   - Fix `fallback` and `receive` (#223)
   - Migrate contracts (#222)
-
 - Add Github Action CI in order to publish NPM package
 
 ### Updated contracts

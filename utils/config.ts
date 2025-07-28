@@ -56,7 +56,9 @@ type ChainConfig = {
         DatasetRegistry?: string;
         WorkerpoolRegistry?: string;
         ERC1538Proxy?: string; // Deprecated, use DiamondProxy instead TODO: to remove
+        // TODO: check if this is still needed or if hre.deployments.get('Diamond') is enough.
         DiamondProxy?: string;
+        // TODO: check if this is still needed or if hre.deployments.get('IexecLibOrders_v5') is enough.
         IexecLibOrders_v5?: string;
     };
 };
