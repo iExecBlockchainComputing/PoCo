@@ -7,7 +7,7 @@ pragma experimental ABIEncoderV2;
 import "./IexecERC20Core.sol";
 import "./FacetBase.sol";
 import "../interfaces/IexecEscrowNative.sol";
-import {LibPocoStorage} from "../libs/LibPocoStorage.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core {
     using SafeMathExtended for uint256;
@@ -61,7 +61,7 @@ contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core 
     }
 
     function recover() external override onlyOwner returns (uint256) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         uint256 delta = address(this).balance.div(nRLCtoWei).sub($.m_totalSupply);
         _mint(owner(), delta);
         return delta;

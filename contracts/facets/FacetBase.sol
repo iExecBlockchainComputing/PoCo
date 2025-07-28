@@ -3,7 +3,7 @@
 
 pragma solidity ^0.6.0;
 
-import "../libs/LibPocoStorage.sol";
+import "../libs/PocoStorageLib.sol";
 import "../interfaces/IOwnable.sol";
 
 // Functions that were declared in ERC1538Store are re-declared here.

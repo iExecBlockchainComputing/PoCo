@@ -24,7 +24,7 @@ import "./../registries/IRegistry.sol";
  *                                                                          *
  ****************************************************************************/
 
-library LibPocoStorage {
+library PocoStorageLib {
     // keccak256(abi.encode(uint256(keccak256("iexec.poco.storage.PocoStorage")) - 1)) & ~bytes32(uint256(0xff));
     bytes32 private constant POCO_STORAGE_LOCATION =
         0x5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00;

@@ -6,7 +6,7 @@ pragma experimental ABIEncoderV2;
 
 import "./FacetBase.sol";
 import "../interfaces/IexecAccessorsABILegacy.sol";
-import {LibPocoStorage} from "../libs/LibPocoStorage.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
     function viewDealABILegacy_pt1(
@@ -17,7 +17,7 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
         override
         returns (address, address, uint256, address, address, uint256, address, address, uint256)
     {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Deal memory deal = $.m_deals[_id];
         return (
             deal.app.pointer,
@@ -35,7 +35,7 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
     function viewDealABILegacy_pt2(
         bytes32 _id
     ) external view override returns (uint256, bytes32, address, address, address, string memory) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Deal memory deal = $.m_deals[_id];
         return (deal.trust, deal.tag, deal.requester, deal.beneficiary, deal.callback, deal.params);
     }
@@ -43,7 +43,7 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
     function viewConfigABILegacy(
         bytes32 _id
     ) external view override returns (uint256, uint256, uint256, uint256, uint256, uint256) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Deal memory deal = $.m_deals[_id];
         return (
             deal.category,
@@ -58,7 +58,7 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
     function viewAccountABILegacy(
         address account
     ) external view override returns (uint256, uint256) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return ($.m_balances[account], $.m_frozens[account]);
     }
 
@@ -84,7 +84,7 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
         )
     {
         /// @dev Using $.m_tasks causes "Stack too deep" error.
-        IexecLibCore_v5.Task memory task = LibPocoStorage.getPocoStorage().m_tasks[_taskid];
+        IexecLibCore_v5.Task memory task = PocoStorageLib.getPocoStorage().m_tasks[_taskid];
         return (
             task.status,
             task.dealid,
@@ -110,7 +110,7 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
         override
         returns (IexecLibCore_v5.ContributionStatusEnum, bytes32, bytes32, address)
     {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Contribution memory contribution = $.m_contributions[_taskid][_worker];
         return (
             contribution.status,
@@ -123,7 +123,7 @@ contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
     function viewCategoryABILegacy(
         uint256 _catid
     ) external view override returns (string memory, string memory, uint256) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Category memory category = $.m_categories[_catid];
         return (category.name, category.description, category.workClockTimeRef);
     }

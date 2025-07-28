@@ -18,7 +18,7 @@ import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
-import {LibPocoStorage} from "../libs/LibPocoStorage.v8.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
@@ -125,7 +125,7 @@ contract IexecPocoBoostFacet is
         IexecLibOrders_v5.RequestOrder calldata requestOrder,
         address sponsor
     ) private returns (bytes32) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         // Check orders compatibility
 
         // Ensure the trust level is within the acceptable range.
@@ -381,7 +381,7 @@ contract IexecPocoBoostFacet is
         address enclaveChallenge,
         bytes calldata enclaveSign
     ) external {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.DealBoost storage deal = $.m_dealsBoost[dealId];
         // Compute the unique task identifier based on deal id and task index.
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));
@@ -495,7 +495,7 @@ contract IexecPocoBoostFacet is
      * @param index The index of the task.
      */
     function claimBoost(bytes32 dealId, uint256 index) external {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         // Retrieve deal and task information from storage.
         IexecLibCore_v5.DealBoost storage deal = $.m_dealsBoost[dealId];
         bytes32 taskId = keccak256(abi.encodePacked(dealId, index));

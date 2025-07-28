@@ -8,7 +8,7 @@ import "./IexecERC20Core.sol";
 import "./FacetBase.sol";
 import "../interfaces/IexecEscrowToken.sol";
 import "../interfaces/IexecTokenSpender.sol";
-import {LibPocoStorage} from "../libs/LibPocoStorage.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
     using SafeMathExtended for uint256;
@@ -61,7 +61,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
     }
 
     function recover() external override onlyOwner returns (uint256) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         uint256 delta = $.m_baseToken.balanceOf(address(this)).sub($.m_totalSupply);
         _mint(owner(), delta);
         return delta;
@@ -74,7 +74,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         address token,
         bytes calldata
     ) external override returns (bool) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require(token == address($.m_baseToken), "wrong-token");
         _deposit(sender, amount);
         _mint(sender, amount);
@@ -82,12 +82,12 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
     }
 
     function _deposit(address from, uint256 amount) internal {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require($.m_baseToken.transferFrom(from, address(this), amount), "failled-transferFrom");
     }
 
     function _withdraw(address to, uint256 amount) internal {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_baseToken.transfer(to, amount);
     }
 }

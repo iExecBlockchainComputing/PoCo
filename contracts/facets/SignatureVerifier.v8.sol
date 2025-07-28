@@ -8,7 +8,7 @@ import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {IERC734} from "../external/interfaces/IERC734.sol";
-import {LibPocoStorage} from "../libs/LibPocoStorage.v8.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
 contract SignatureVerifier is FacetBase {
     using ECDSA for bytes32;
@@ -18,7 +18,7 @@ contract SignatureVerifier is FacetBase {
      * @param structHash The original structure hash.
      */
     function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return MessageHashUtils.toTypedDataHash($.m_eip712DomainSeparator, structHash);
     }
 
@@ -91,7 +91,7 @@ contract SignatureVerifier is FacetBase {
         address account,
         bytes32 messageHash
     ) internal view returns (bool) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return account != address(0) && account == $.m_presigned[messageHash];
     }
 

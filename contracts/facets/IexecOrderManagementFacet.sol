@@ -7,7 +7,7 @@ import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecOrderManagement} from "../interfaces/IexecOrderManagement.v8.sol";
-import {LibPocoStorage} from "../libs/LibPocoStorage.v8.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, SignatureVerifier {
@@ -26,7 +26,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageAppOrder(
         IexecLibOrders_v5.AppOrderOperation calldata _apporderoperation
     ) external override {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         address owner = IERC5313(_apporderoperation.order.app).owner();
         require(
             owner == _msgSender() ||
@@ -51,7 +51,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageDatasetOrder(
         IexecLibOrders_v5.DatasetOrderOperation calldata _datasetorderoperation
     ) external override {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         address owner = IERC5313(_datasetorderoperation.order.dataset).owner();
         require(
             owner == _msgSender() ||
@@ -76,7 +76,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageWorkerpoolOrder(
         IexecLibOrders_v5.WorkerpoolOrderOperation calldata _workerpoolorderoperation
     ) external override {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         address owner = IERC5313(_workerpoolorderoperation.order.workerpool).owner();
         require(
             owner == _msgSender() ||
@@ -103,7 +103,7 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     function manageRequestOrder(
         IexecLibOrders_v5.RequestOrderOperation calldata _requestorderoperation
     ) external override {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         address owner = _requestorderoperation.order.requester;
         require(
             owner == _msgSender() ||

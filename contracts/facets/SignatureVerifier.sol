@@ -7,7 +7,7 @@ pragma experimental ABIEncoderV2;
 import "@iexec/solidity/contracts/ERC734/IERC734.sol";
 import "@iexec/solidity/contracts/ERC1271/IERC1271.sol";
 import "@iexec/solidity/contracts/ERC1654/IERC1654.sol";
-import {LibPocoStorage} from "../libs/LibPocoStorage.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import "./FacetBase.sol";
 
 contract SignatureVerifier is FacetBase {
@@ -96,7 +96,7 @@ contract SignatureVerifier is FacetBase {
     }
 
     function _checkPresignature(address _identity, bytes32 _hash) internal view returns (bool) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return _identity != address(0) && _identity == $.m_presigned[_hash];
     }
 

@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
-import {LibPocoStorage} from "../libs/LibPocoStorage.v8.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 
@@ -42,7 +42,7 @@ contract IexecPocoCommonFacet is FacetBase {
         uint256 requestOrderVolume,
         bytes32 requestOrderTypedDataHash
     ) internal view returns (uint256) {
-        LibPocoStorage.PocoStorage storage $ = LibPocoStorage.getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return
             (appOrderVolume - $.m_consumed[appOrderTypedDataHash])
                 .min(
