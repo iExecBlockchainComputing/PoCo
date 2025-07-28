@@ -1,5 +1,10 @@
 on:
   pull_request:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.ref }}-ci
+  cancel-in-progress: true
 
 jobs:
   # Note: changing the name of the job disables Slither checks with the error:
