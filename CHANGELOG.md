@@ -3,6 +3,7 @@
 ## vNEXT
 
 - Migrate proxy to Diamond pattern (ERC-2535):
+  - Use lib as storage. (#243)
   - Restore compatibility with iExec SDK. (#240)
   - Target latest EVM version (#239)
   - Adapt contracts file tree (#238)
