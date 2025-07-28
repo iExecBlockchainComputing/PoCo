@@ -51,6 +51,8 @@ export default async function deploy() {
     const network = await ethers.provider.getNetwork();
     const chainId = network.chainId;
     const [deployer] = await ethers.getSigners();
+    console.log(`Deployer: ${deployer.address}`);
+    console.log(`Network: ${network.name} (${chainId})`);
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
     // TODO: remove the fallback on deployer address to avoid deployement
     // misconfiguration.
