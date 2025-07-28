@@ -55,28 +55,28 @@ abstract contract Store {
         // In order to use the protocol, users have to deposit RLC
         // and allow PoCo smart contracts to manage them. This state
         // variable keeps track of users balances.
-        mapping(address account => uint256 amount) m_balances;
+        mapping(address /* account */ => uint256 /* amount */) m_balances;
         // When a deal is created, the protocol temporarily locks an amount
         // of RLC tokens from the balances of both the requester and the workerpool owners.
         // This is to guarantee the payment of different actors later. Frozen funds
         // are released when the computation is completed and the result is pushed.
-        mapping(address account => uint256 amount) m_frozens;
-        mapping(address account => mapping(address spender => uint256 amount)) m_allowances;
+        mapping(address /* account */ => uint256 /* amount */) m_frozens;
+        mapping(address /* owner */ => mapping(address /* spender */ => uint256 /* amount */)) m_allowances;
         // EIP-712 domain hash.
         // Modified in IexecConfigurationFacet.updateDomainSeparator
         bytes32 m_eip712DomainSeparator;
         // Mapping an order hash to its owner. Since a smart contract cannot sign orders
         // with a private key, it adds an entry to this mapping to provide presigned orders.
-        mapping(bytes32 orderHash => address owner) m_presigned;
+        mapping(bytes32 /* orderHash */ => address /* owner */) m_presigned;
         // Each order has a volume (>=1). This tracks how much is consumed from
         // the volume of each order. Mapping an order hash to its consumed amount.
-        mapping(bytes32 orderHash => uint256 consumedAmount) m_consumed;
+        mapping(bytes32 /* orderHash */ => uint256 /* consumedAmount */) m_consumed;
         // a mapping to store PoCo classic deals.
-        mapping(bytes32 dealId => IexecLibCore_v5.Deal) m_deals;
-        mapping(bytes32 taskId => IexecLibCore_v5.Task) m_tasks;
-        mapping(bytes32 taskId => IexecLibCore_v5.Consensus) m_consensus;
-        mapping(bytes32 taskId => mapping(address worker => IexecLibCore_v5.Contribution)) m_contributions;
-        mapping(address worker => uint256 score) m_workerScores;
+        mapping(bytes32 /* dealId */ => IexecLibCore_v5.Deal) m_deals;
+        mapping(bytes32 /* taskId */ => IexecLibCore_v5.Task) m_tasks;
+        mapping(bytes32 /* taskId */ => IexecLibCore_v5.Consensus) m_consensus;
+        mapping(bytes32 /* taskId */ => mapping(address /* worker */ => IexecLibCore_v5.Contribution)) m_contributions;
+        mapping(address /* worker */ => uint256 /* score */) m_workerScores;
         // Poco - Settings
         // Address of a trusted TEE authority that manages enclave challenges.
         // Modified in IexecConfigurationFacet.setTeeBroker
@@ -89,10 +89,10 @@ abstract contract Store {
         // Backward compatibility
         // Modified in IexecConfigurationFacet.configure
         address m_v3_iexecHub; // IexecHubInterface
-        mapping(address worker => bool) m_v3_scoreImported;
+        mapping(address /* worker */ => bool) m_v3_scoreImported;
         // /!\ New storage variables not present in v6 store.
         // A mapping to store PoCo Boost deals.
-        mapping(bytes32 dealId => IexecLibCore_v5.DealBoost) m_dealsBoost;
+        mapping(bytes32 /* dealId */ => IexecLibCore_v5.DealBoost) m_dealsBoost;
     }
 
     function getPocoStorage() internal pure returns (PocoStorage storage $) {
