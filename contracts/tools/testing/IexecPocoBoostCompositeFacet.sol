@@ -3,9 +3,9 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecPocoAccessorsFacet} from "../../modules/facets/IexecPocoAccessorsFacet.sol";
-import {IexecPocoBoostAccessorsFacet} from "../../modules/facets/IexecPocoBoostAccessorsFacet.sol";
-import {IexecPocoBoostFacet} from "../../modules/facets/IexecPocoBoostFacet.sol";
+import {IexecPocoAccessorsFacet} from "../../facets/IexecPocoAccessorsFacet.sol";
+import {IexecPocoBoostAccessorsFacet} from "../../facets/IexecPocoBoostAccessorsFacet.sol";
+import {IexecPocoBoostFacet} from "../../facets/IexecPocoBoostFacet.sol";
 
 /**
  * @notice This contract is dedicated to unit testing.

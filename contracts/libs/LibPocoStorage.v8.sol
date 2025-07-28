@@ -57,7 +57,7 @@ library LibPocoStorage {
         mapping(address => mapping(address => uint256)) m_allowances;
         // EIP-712 domain hash.
         // Modified in IexecConfigurationFacet.updateDomainSeparator
-        bytes32 EIP712DOMAIN_SEPARATOR; // TODO rename
+        bytes32 m_eip712DomainSeparator; // TODO rename
         // Poco - Storage
 
         // Mapping an order hash to its owner. Since a smart contract cannot sign orders
@@ -232,7 +232,7 @@ library LibPocoStorage {
      * @return The domain separator hash.
      */
     function domainSeparator() internal view returns (bytes32) {
-        return getPocoStorage().EIP712DOMAIN_SEPARATOR;
+        return getPocoStorage().m_eip712DomainSeparator;
     }
 
     /**
@@ -460,7 +460,7 @@ library LibPocoStorage {
      * @param newDomainSeparator The new domain separator hash.
      */
     function setDomainSeparator(bytes32 newDomainSeparator) internal {
-        getPocoStorage().EIP712DOMAIN_SEPARATOR = newDomainSeparator;
+        getPocoStorage().m_eip712DomainSeparator = newDomainSeparator;
     }
 
     /**
