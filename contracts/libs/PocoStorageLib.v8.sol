@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
 import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
 import {IERC721Enumerable} from "@openzeppelin/contracts-v5/interfaces/IERC721Enumerable.sol";
 import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
-import {IexecLibCore_v5} from "./libs/IexecLibCore_v5.sol";
+import {IexecLibCore_v5} from "./IexecLibCore_v5.sol";
 
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
@@ -19,23 +19,7 @@ import {IexecLibCore_v5} from "./libs/IexecLibCore_v5.sol";
  *                                                                          *
  ****************************************************************************/
 
-abstract contract Store {
-    // Poco - Constants
-    uint256 public constant CONTRIBUTION_DEADLINE_RATIO = 7;
-    uint256 public constant REVEAL_DEADLINE_RATIO = 2;
-    uint256 public constant FINAL_DEADLINE_RATIO = 10;
-    uint256 public constant WORKERPOOL_STAKE_RATIO = 30;
-    uint256 public constant KITTY_RATIO = 10;
-    uint256 public constant KITTY_MIN = 1e9; // ADJUSTEMENT VARIABLE
-
-    // Seized funds of workerpools that do not honor their deals are sent
-    // out to this kitty address.
-    // It is determined with address(uint256(keccak256(bytes('iExecKitty'))) - 1).
-    address public constant KITTY_ADDRESS = 0x99c2268479b93fDe36232351229815DF80837e23;
-
-    // Used with ERC-734 Key Manager identity contract for authorization management.
-    uint256 public constant GROUPMEMBER_PURPOSE = 4;
-
+library PocoStorageLib {
     // keccak256(abi.encode(uint256(keccak256("iexec.poco.storage.PocoStorage")) - 1)) & ~bytes32(uint256(0xff));
     bytes32 private constant POCO_STORAGE_LOCATION =
         0x5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00;

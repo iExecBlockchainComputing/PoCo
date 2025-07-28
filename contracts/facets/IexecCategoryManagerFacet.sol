@@ -5,6 +5,7 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./FacetBase.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import "../interfaces/IexecCategoryManager.sol";
 
 contract IexecCategoryManagerFacet is IexecCategoryManager, FacetBase {
@@ -16,7 +17,7 @@ contract IexecCategoryManagerFacet is IexecCategoryManager, FacetBase {
         string calldata description,
         uint256 workClockTimeRef
     ) external override onlyOwner returns (uint256) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_categories.push(IexecLibCore_v5.Category(name, description, workClockTimeRef));
 
         uint256 catid = $.m_categories.length - 1;

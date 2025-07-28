@@ -6,6 +6,7 @@ pragma experimental ABIEncoderV2;
 
 import "./FacetBase.sol";
 import "../interfaces/IexecConfigurationExtra.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecConfigurationExtraFacet is IexecConfigurationExtra, FacetBase {
     function changeRegistries(
@@ -13,7 +14,7 @@ contract IexecConfigurationExtraFacet is IexecConfigurationExtra, FacetBase {
         address _datasetregistryAddress,
         address _workerpoolregistryAddress
     ) external override onlyOwner {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_appregistry = IRegistry(_appregistryAddress);
         $.m_datasetregistry = IRegistry(_datasetregistryAddress);
         $.m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);

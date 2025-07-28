@@ -8,6 +8,7 @@ import "./IexecERC20Core.sol";
 import "./FacetBase.sol";
 import "../interfaces/IexecERC20.sol";
 import "../interfaces/IexecTokenSpender.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
     function transfer(address recipient, uint256 amount) external override returns (bool) {
@@ -43,7 +44,7 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         address recipient,
         uint256 amount
     ) external override returns (bool) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         _transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()].sub(amount));
         return true;
@@ -53,7 +54,7 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         address spender,
         uint256 addedValue
     ) external override returns (bool) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender].add(addedValue));
         return true;
     }
@@ -62,7 +63,7 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         address spender,
         uint256 subtractedValue
     ) external override returns (bool) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender].sub(subtractedValue));
         return true;
     }

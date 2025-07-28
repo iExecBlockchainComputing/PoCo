@@ -5,11 +5,11 @@ pragma solidity ^0.8.0;
 
 import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
 import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
-
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
@@ -145,7 +145,7 @@ contract IexecPoco1Facet is
         IexecLibOrders_v5.RequestOrder calldata _requestorder,
         address _sponsor
     ) private returns (bytes32) {
-        PocoStorage storage $ = getPocoStorage();
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         /**
          * Check orders compatibility
          */

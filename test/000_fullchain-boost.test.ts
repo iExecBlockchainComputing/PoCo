@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
-import hre, { ethers } from 'hardhat';
+import hre from 'hardhat';
 import {
     IexecAccessors,
     IexecAccessors__factory,

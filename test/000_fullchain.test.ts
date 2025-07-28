@@ -4,7 +4,6 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import {

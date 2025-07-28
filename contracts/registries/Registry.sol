@@ -50,7 +50,7 @@ abstract contract Registry is IRegistry, ERC721, Ownable {
      * in the SDK.
      */
     // TODO remove this function when Bellecour is deprecated.
-    function setName(address /* _ens */, string calldata /* _name */) external view onlyOwner() {
+    function setName(address /* _ens */, string calldata /* _name */) external view onlyOwner {
         revert("Operation not supported on this chain");
     }
 
