@@ -51,6 +51,8 @@ export default async function deploy() {
     const network = await ethers.provider.getNetwork();
     const chainId = network.chainId;
     const [deployer] = await ethers.getSigners();
+    console.log(`Deployer: ${deployer.address}`);
+    console.log(`Network: ${network.name} (${chainId})`);
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
     // TODO: remove the fallback on deployer address to avoid deployement
     // misconfiguration.
@@ -248,10 +250,10 @@ async function getOrDeployRlc(
             .then((contract) => contract.waitForDeployment())
             .then((contract) => contract.getAddress());
         console.log(`New RLC token deployed at: ${rlcAddress}`);
-        await Ownable__factory.connect(rlcAddress, deployer)
+        await RLC__factory.connect(rlcAddress, deployer)
             .transferOwnership(ownerAddress)
             .then((tx) => tx.wait());
-        console.log(`Ownership of RLC token transferred to: ${deployer.address}`);
+        console.log(`Ownership of RLC token transferred to: ${ownerAddress}`);
     }
 
     await deployments.save('RLC', {
