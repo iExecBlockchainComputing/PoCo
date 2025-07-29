@@ -15,7 +15,7 @@ jobs:
     # secrets:
     #   npm-token: ${{ secrets.NPM_TOKEN }}
     runs-on: ubuntu-latest
-    environment: production
+    # environment: production
     permissions:
       contents: read
       packages: write
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          # scope: '@iexec'
+          scope: '@iexec'
 
       - name: Install dependencies
         run: npm ci
