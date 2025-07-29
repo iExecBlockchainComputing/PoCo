@@ -1,8 +1,12 @@
 name: Publish NPM Package
 
 on:
+  push:
+      tags:
+        - 'v*'
   release:
-    types: [published]
+    types:
+      - published
 
 jobs:
   publish:
