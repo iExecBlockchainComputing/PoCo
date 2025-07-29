@@ -4,9 +4,6 @@ on:
   push:
       tags:
         - 'v*'
-  release:
-    types:
-      - published
 
 jobs:
   # build-and-test:
@@ -14,6 +11,38 @@ jobs:
 
   publish:
     # needs: build-and-test
-    uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/publish-npm.yml@publish-npm-v1.5.0
-    secrets:
-      npm-token: ${{ secrets.NPM_TOKEN }}
+    # uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/publish-npm.yml@publish-npm-v1.5.0
+    # secrets:
+    #   npm-token: ${{ secrets.NPM_TOKEN }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Ensure npm-token
+        run: |
+          if [ -n "${{ secrets.NPM_TOKEN }}" ]; then
+            echo "`npm-token` secret is set"
+          else
+            echo "Missing `npm-token` secret (required unless `dry-run: true`)"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # scope: '@iexec'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build
+        run: npm run build
+
+      - name: Publish package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
