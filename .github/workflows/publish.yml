@@ -15,6 +15,7 @@ jobs:
     # secrets:
     #   npm-token: ${{ secrets.NPM_TOKEN }}
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: read
       packages: write
