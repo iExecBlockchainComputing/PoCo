@@ -1,0 +1,238 @@
+@startuml facet-ecosystem
+title "iExec PoCo Diamond Facet Ecosystem"
+
+package "Diamond Proxy (ERC2535)" {
+    
+    ' Diamond Proxy Core
+    component "Diamond" as Diamond {
+        interface "Fallback Router" as Router
+        Router : Routes function calls
+        Router : to appropriate facets
+    }
+    
+    ' Standard Diamond Facets
+    package "Core Diamond Facets" #LightBlue {
+        component "DiamondCutFacet" as DCF {
+            + diamondCut()
+            + supportsInterface()
+            --
+            Upgrade Management
+        }
+        
+        component "DiamondLoupeFacet" as DLF {
+            + facets()
+            + facetFunctionSelectors()
+            + facetAddresses()
+            + facetAddress()
+            --
+            Introspection
+        }
+        
+        component "OwnershipFacet" as OF {
+            + owner()
+            + transferOwnership()
+            + renounceOwnership()
+            --
+            Access Control
+        }
+    }
+    
+    ' Business Logic Facets
+    package "Protocol Facets" #LightGreen {
+        
+        package "Core Protocol" {
+            component "IexecPoco1Facet" as P1F {
+                + matchOrders()
+                + matchOrdersBoost()
+                + sponsorMatchOrders()
+                + broadcastOrder()
+                --
+                Order Processing
+            }
+            
+            component "IexecPoco2Facet" as P2F {
+                + initialize()
+                + contribute()
+                + reveal()
+                + claim()
+                + finalize()
+                --
+                Task Execution
+            }
+        }
+        
+        package "Escrow Management" {
+            component "IexecEscrowTokenFacet" as ETF {
+                + deposit()
+                + withdraw()
+                + recover()
+                + approve()
+                + transfer()
+                --
+                ERC20 Escrow
+            }
+            
+            component "IexecEscrowNativeFacet" as ENF {
+                + deposit()
+                + withdraw()
+                + recover()
+                + receive()
+                --
+                Native Token Escrow
+            }
+        }
+        
+        package "Management & Access" {
+            component "IexecOrderManagementFacet" as OMF {
+                + manageAppOrder()
+                + manageDatasetOrder()
+                + manageWorkerpoolOrder()
+                + manageRequestOrder()
+                --
+                Order Lifecycle
+            }
+            
+            component "IexecAccessorsFacet" as AF {
+                + viewAccount()
+                + viewDeal()
+                + viewTask()
+                + viewCategory()
+                + viewConfig()
+                --
+                Read-Only Access
+            }
+            
+            component "IexecRelayFacet" as RF {
+                + broadcastAppOrder()
+                + broadcastDatasetOrder()
+                + broadcastWorkerpoolOrder()
+                + broadcastRequestOrder()
+                --
+                Event Broadcasting
+            }
+        }
+        
+        package "Enhanced Features" {
+            component "IexecPocoBoostFacet" as BF {
+                + matchOrdersBoost()
+                + sponsorMatchOrdersBoost()
+                + initializeBoost()
+                + finalizeBoost()
+                --
+                Boost Protocol
+            }
+            
+            component "IexecConfigurationFacet" as CF {
+                + configure()
+                + setCallbackGas()
+                + setTeeBroker()
+                + createCategory()
+                --
+                Configuration
+            }
+        }
+    }
+    
+    ' Optional/Conditional Facets
+    package "Optional Facets" #LightYellow {
+        component "IexecEscrowTokenSwapFacet" as STF {
+            + depositEth()
+            + withdrawEth()
+            + swapETHForTokens()
+            --
+            Token Swapping
+            (Uniswap Integration)
+        }
+        
+        component "IexecERC20Facet" as ERC20F {
+            + transfer()
+            + approve()
+            + transferFrom()
+            + balanceOf()
+            --
+            ERC20 Interface
+            (Token Mode Only)
+        }
+    }
+}
+
+' Storage Layer
+package "Storage Architecture" #LightGray {
+    database "Diamond Storage" as DS {
+        Function Selectors
+        Facet Addresses
+        Supported Interfaces
+        Owner Address
+    }
+    
+    database "Protocol Storage" as PS {
+        Accounts & Balances
+        Deals & Tasks
+        Categories & Config
+        Order Management
+    }
+}
+
+' External Dependencies
+package "External Contracts" #LightCoral {
+    component "RLC Token" as RLC
+    component "App Registry" as AR
+    component "Dataset Registry" as DR
+    component "Workerpool Registry" as WR
+    component "Uniswap Router" as UR
+}
+
+' Relationships - Diamond to Facets
+Diamond --> DCF : delegatecall
+Diamond --> DLF : delegatecall  
+Diamond --> OF : delegatecall
+Diamond --> P1F : delegatecall
+Diamond --> P2F : delegatecall
+Diamond --> ETF : delegatecall
+Diamond --> ENF : delegatecall
+Diamond --> OMF : delegatecall
+Diamond --> AF : delegatecall
+Diamond --> RF : delegatecall
+Diamond --> BF : delegatecall
+Diamond --> CF : delegatecall
+Diamond --> STF : delegatecall
+Diamond --> ERC20F : delegatecall
+
+' Storage Access
+DCF ..> DS : modify
+DLF ..> DS : read
+P1F ..> PS : read/write
+P2F ..> PS : read/write
+ETF ..> PS : read/write
+ENF ..> PS : read/write
+OMF ..> PS : read/write
+AF ..> PS : read
+RF ..> PS : read
+BF ..> PS : read/write
+CF ..> PS : read/write
+
+' External Interactions  
+ETF --> RLC : transferFrom/transfer
+P1F --> AR : verify
+P1F --> DR : verify
+P1F --> WR : verify
+STF --> UR : swap
+
+' Deployment Modes
+note top of ETF : "Deployed in Token mode\n(ERC20 escrow)"
+note top of ENF : "Deployed in Native mode\n(ETH/native escrow)"
+note top of STF : "Optional: Uniswap integration\nfor ETH<->Token swapping"
+note top of ERC20F : "Token mode only:\nERC20 interface implementation"
+
+' Architecture Benefits
+note bottom of Diamond
+    **Diamond Benefits:**
+    • Unlimited contract size
+    • Modular upgrades (individual facets)
+    • Gas-efficient function routing
+    • Storage collision prevention
+    • Standard ERC2535 compliance
+    • Rich tooling ecosystem
+end note
+
+@enduml

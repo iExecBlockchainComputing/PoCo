@@ -25,8 +25,8 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 - [Nominal workflow sequence w/ TEE](./docs/README.md#nominaltee)
 - [Boost workflow sequence](./docs/README.md#boost)
 - UML classes related to:
-    - [IexecPocoDelegates](./docs/uml/class-uml-IexecPocoDelegates.svg)
-    - [IexecPocoBoostDelegate](./docs/uml/class-uml-IexecPocoBoostDelegate.svg)
+    - [IexecPocoFacets](./docs/uml/class-uml-IexecPocoFacets.svg)
+    - [IexecPocoBoostFacet](./docs/uml/class-uml-IexecPocoBoostFacet.svg)
     - [IexecEscrows](./docs/uml/class-uml-IexecEscrows.svg)
     - [iExec PoCo registries](./docs/uml/class-uml-dir-registries.svg)
     - [iExec PoCo libraries](./docs/uml/class-uml-dir-libs.svg)

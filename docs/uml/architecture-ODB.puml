@@ -75,10 +75,10 @@ WorkerpoolAdmin -down-> [iexec-scheduler]: manage
 [iexec-worker] -down-> [ResultRepository]: push result
 [iexec-scheduler] -right-> [ResultRepository]: check result uploaded
 
-note right of DiamondProxy : "ERC2535 Diamond Standard\nModular architecture with\nupgradeable facets"
-note right of [IexecPoco1Facet] : "Order matching & validation"
-note right of [IexecPoco2Facet] : "Task execution & consensus"
-note right of [IexecEscrowFacet] : "Token/Native escrow management"
-note right of [DiamondCutFacet] : "Upgrade functionality"
+note right of DiamondProxy : "ERC2535 Diamond Standard\nModular architecture with\nupgradeable facets\n\nAll external calls route through\nthe Diamond proxy to appropriate\nfacets via delegatecall"
+note right of [IexecPoco1Facet] : "Order matching & validation\n(accessed as IexecPoco1)"
+note right of [IexecPoco2Facet] : "Task execution & consensus\n(accessed as IexecPoco2)"
+note right of [IexecEscrowFacet] : "Token/Native escrow management\n(EscrowToken or EscrowNative)"
+note right of [DiamondCutFacet] : "Upgrade functionality\n(ERC2535 standard)"
 
 @enduml

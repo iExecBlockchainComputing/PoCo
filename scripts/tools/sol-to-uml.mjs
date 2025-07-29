@@ -14,7 +14,7 @@ console.log(`Project root directory: ${projectRootDir}`)
 process.chdir(projectRootDir)
 
 await generateClassDiagramOfDirectory('libs')
-await generateClassDiagramOfDirectory('modules')
+await generateClassDiagramOfDirectory('facets')
 await generateClassDiagramOfDirectory('registries')
 
 // Core Business Logic Facets
@@ -41,7 +41,6 @@ await generateClassDiagramOfContracts(
     ['IexecPocoBoostFacet'],
     'IexecPocoBoostFacet',
 )
-
 
 // Diamond Architecture Overview (custom facets only)
 
