@@ -9,13 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Note: changing the name of the job disables Slither checks with the error:
-  # Warning: Code scanning cannot determine the alerts introduced by this pull
-  # request, because 1 configuration present on refs/heads/develop was not found:
-  #
-  # Actions workflow (main.yml)
-  # ❓ .github/workflows/main.yml:coverage
-  coverage:
+  default:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
