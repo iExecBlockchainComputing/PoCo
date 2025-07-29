@@ -16,8 +16,8 @@ import {
     IexecPocoAccessors__factory,
     OwnableMock__factory,
 } from '../../../typechain';
-import { IexecPoco1 } from '../../../typechain/contracts/modules/interfaces/IexecPoco1.v8.sol/IexecPoco1';
-import { IexecPoco1__factory } from '../../../typechain/factories/contracts/modules/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
+import { IexecPoco1 } from '../../../typechain/contracts/interfaces/IexecPoco1.v8.sol/IexecPoco1';
+import { IexecPoco1__factory } from '../../../typechain/factories/contracts/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
 import {
     IexecOrders,
     OrdersActors,
@@ -942,7 +942,7 @@ describe('IexecPoco1', () => {
             // const appOrderConsumedSlotIndex = ethers.keccak256(
             //     ethers.concat([
             //         appOrderHash, // key in the mapping.
-            //         '0x12', // m_consumed mapping index.
+            //         getPocoStorageSlotLocation(12n), // 12 is the slot index of `m_consumed` in Store.
             //     ])
             // );
             // // Set order as fully consumed.

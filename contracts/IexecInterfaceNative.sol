@@ -4,18 +4,24 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./modules/interfaces/IOwnable.sol";
-import "./modules/interfaces/IexecAccessors.sol";
-import "./modules/interfaces/IexecCategoryManager.sol";
-import "./modules/interfaces/IexecERC20.sol";
-import "./modules/interfaces/IexecEscrowNative.sol";
-import "./modules/interfaces/IexecConfiguration.sol";
-import "./modules/interfaces/IexecOrderManagement.sol";
-import "./modules/interfaces/IexecPoco1.sol";
-import "./modules/interfaces/IexecPoco2.sol";
-import "./modules/interfaces/IexecRelay.sol";
-import "./modules/interfaces/IexecTokenSpender.sol";
+import "./interfaces/IOwnable.sol";
+import "./interfaces/IexecAccessors.sol";
+import "./interfaces/IexecCategoryManager.sol";
+import "./interfaces/IexecERC20.sol";
+import "./interfaces/IexecEscrowNative.sol";
+import "./interfaces/IexecConfiguration.sol";
+import "./interfaces/IexecOrderManagement.sol";
+import "./interfaces/IexecPoco1.sol";
+import "./interfaces/IexecPoco2.sol";
+import "./interfaces/IexecRelay.sol";
+import "./interfaces/IexecTokenSpender.sol";
 
+/**
+ * A global interface that aggregates all the interfaces needed to interact with
+ * the PoCo contracts in native mode.
+ * @dev Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
+ * Changing the name or the path would cause a breaking change in the SDK.
+ */
 interface IexecInterfaceNative is
     IOwnable,
     IexecAccessors,

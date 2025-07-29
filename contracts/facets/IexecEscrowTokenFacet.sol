@@ -1,0 +1,93 @@
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
+
+import "./IexecERC20Core.sol";
+import "./FacetBase.sol";
+import "../interfaces/IexecEscrowToken.sol";
+import "../interfaces/IexecTokenSpender.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+
+contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
+    using SafeMathExtended for uint256;
+
+    /***************************************************************************
+     *                         Escrow methods: public                          *
+     ***************************************************************************/
+    receive() external payable override {
+        revert("fallback-disabled");
+    }
+
+    fallback() external payable override {
+        revert("fallback-disabled");
+    }
+
+    function deposit(uint256 amount) external override returns (bool) {
+        _deposit(_msgSender(), amount);
+        _mint(_msgSender(), amount);
+        return true;
+    }
+
+    function depositFor(uint256 amount, address target) external override returns (bool) {
+        _deposit(_msgSender(), amount);
+        _mint(target, amount);
+        return true;
+    }
+
+    function depositForArray(
+        uint256[] calldata amounts,
+        address[] calldata targets
+    ) external override returns (bool) {
+        require(amounts.length == targets.length, "invalid-array-length");
+        for (uint i = 0; i < amounts.length; ++i) {
+            _deposit(_msgSender(), amounts[i]);
+            _mint(targets[i], amounts[i]);
+        }
+        return true;
+    }
+
+    function withdraw(uint256 amount) external override returns (bool) {
+        _burn(_msgSender(), amount);
+        _withdraw(_msgSender(), amount);
+        return true;
+    }
+
+    function withdrawTo(uint256 amount, address target) external override returns (bool) {
+        _burn(_msgSender(), amount);
+        _withdraw(target, amount);
+        return true;
+    }
+
+    function recover() external override onlyOwner returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        uint256 delta = $.m_baseToken.balanceOf(address(this)).sub($.m_totalSupply);
+        _mint(owner(), delta);
+        return delta;
+    }
+
+    // Token Spender (endpoint for approveAndCallback calls to the proxy)
+    function receiveApproval(
+        address sender,
+        uint256 amount,
+        address token,
+        bytes calldata
+    ) external override returns (bool) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        require(token == address($.m_baseToken), "wrong-token");
+        _deposit(sender, amount);
+        _mint(sender, amount);
+        return true;
+    }
+
+    function _deposit(address from, uint256 amount) internal {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        require($.m_baseToken.transferFrom(from, address(this), amount), "failled-transferFrom");
+    }
+
+    function _withdraw(address to, uint256 amount) internal {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        $.m_baseToken.transfer(to, amount);
+    }
+}

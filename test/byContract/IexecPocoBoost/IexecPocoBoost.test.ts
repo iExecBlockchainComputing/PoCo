@@ -58,6 +58,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { randomAddress } from '../../utils/utils';
 
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0n;
@@ -69,7 +70,7 @@ const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 const someSignature = '0xabcd'; // contract signatures could have arbitrary formats
-const randomEOAAddress = ethers.Wallet.createRandom().address;
+const randomEOAAddress = randomAddress();
 
 let proxyAddress: string;
 let iexecPocoBoostInstance: IexecPocoBoostFacet;
@@ -173,7 +174,7 @@ describe('IexecPocoBoost', function () {
                 beneficiary: beneficiary.address,
                 tag: teeDealTag,
                 prices: ordersPrices,
-                callback: ethers.Wallet.createRandom().address,
+                callback: randomAddress(),
             });
             const {
                 appOrder,
@@ -304,7 +305,7 @@ describe('IexecPocoBoost', function () {
                 beneficiary: beneficiary.address,
                 tag: teeDealTag,
                 prices: ordersPrices,
-                callback: ethers.Wallet.createRandom().address,
+                callback: randomAddress(),
             });
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             // Should match orders with low app order volume
@@ -1618,7 +1619,7 @@ describe('IexecPocoBoost', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
-                callback: ethers.Wallet.createRandom().address,
+                callback: randomAddress(),
             });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester, taskIndex);
@@ -1971,7 +1972,7 @@ describe('IexecPocoBoost', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
-                callback: ethers.Wallet.createRandom().address,
+                callback: randomAddress(),
             });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester, taskIndex);

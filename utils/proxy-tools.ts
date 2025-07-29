@@ -7,9 +7,15 @@ import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import { DiamondCutFacet, DiamondLoupeFacet__factory } from '../typechain';
 import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
 
-interface AbiParameter {
-    type: string;
-    components?: AbiParameter[];
+const POCO_STORAGE_LOCATION = '0x5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00';
+
+/**
+ * Get the slot location of a storage variable in the `PocoStorage` struct.
+ * @param offset The offset to add to the base location.
+ * @returns The storage slot location as a hexadecimal string.
+ */
+export function getPocoStorageSlotLocation(offset: bigint): string {
+    return ethers.toBeHex(BigInt(POCO_STORAGE_LOCATION) + offset);
 }
 
 /**

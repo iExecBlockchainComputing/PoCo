@@ -6,6 +6,10 @@ pragma solidity ^0.6.0;
 import "../Registry.sol";
 import "./Workerpool.sol";
 
+/**
+ * @dev Referenced in the SDK with the current path `contracts/registries/workerpools/WorkerpoolRegistry.sol`.
+ * Changing the name or the path would cause a breaking change in the SDK.
+ */
 contract WorkerpoolRegistry is Registry {
     /**
      * Constructor

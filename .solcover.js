@@ -21,7 +21,7 @@ module.exports = {
         'tools/testing/ERC1271Mock.sol',
         'tools/testing/TestClient.sol',
         'tools/testing/TestReceiver.sol',
-        'modules/facets/SignatureVerifier.sol',
+        'facets/SignatureVerifier.sol',
     ],
     istanbulFolder: BASE_FOLDER,
 };

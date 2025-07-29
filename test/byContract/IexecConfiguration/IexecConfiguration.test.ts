@@ -13,10 +13,10 @@ import {
     IexecInterfaceNative__factory,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
+import { getPocoStorageSlotLocation } from '../../../utils/proxy-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { hashDomain } from '../../utils/utils';
+import { hashDomain, randomAddress } from '../../utils/utils';
 
-const randomAddress = () => ethers.Wallet.createRandom().address;
 const configureParams = {
     token: randomAddress(),
     name: 'some name',
@@ -113,12 +113,12 @@ describe('IexecConfiguration', async () => {
     });
 
     describe('Import score', () => {
-        it('[TODO] Should import score', async () => {
-            // Not tested
-        });
+        it.skip('[TODO] Should import score', async () => {});
+
         it('Should not import score when no v3_iexecHub configured', async () => {
             await expect(iexecPoco.importScore(worker.address)).to.be.revertedWithoutReason();
         });
+
         it('Should not import score when already imported', async () => {
             const workerScoreImportedSlot = ethers.stripZerosLeft(
                 ethers.keccak256(
@@ -126,7 +126,8 @@ describe('IexecConfiguration', async () => {
                         ['address', 'uint256'],
                         [
                             worker.address,
-                            23, // Slot index of m_v3_scoreImported in Store
+                            // 23 is the slot index of m_v3_scoreImported in Store
+                            getPocoStorageSlotLocation(23n),
                         ],
                     ),
                 ),
@@ -203,7 +204,7 @@ describe('IexecConfiguration', async () => {
     async function setDomainSeparatorInStorage(domainSeparator: string) {
         await setStorageAt(
             proxyAddress,
-            '0x0b', // Slot index of EIP712DOMAIN_SEPARATOR in Store
+            getPocoStorageSlotLocation(11n), // 11 is the slot index of m_eip712DomainSeparator in Store
             domainSeparator,
         );
         // Double check the update of the domain separator happened

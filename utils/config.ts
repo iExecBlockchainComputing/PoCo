@@ -40,6 +40,7 @@ type ChainConfig = {
     asset: string;
     token?: string | null; // The token deployed should be compatible with Approve and call
     richman?: string | null; // The richman account is needed if the token is already deployed
+    owner?: string | null;
     uniswap?: boolean;
     etoken?: string;
     v3: {
@@ -56,7 +57,9 @@ type ChainConfig = {
         DatasetRegistry?: string;
         WorkerpoolRegistry?: string;
         ERC1538Proxy?: string; // Deprecated, use DiamondProxy instead TODO: to remove
+        // TODO: check if this is still needed or if hre.deployments.get('Diamond') is enough.
         DiamondProxy?: string;
+        // TODO: check if this is still needed or if hre.deployments.get('IexecLibOrders_v5') is enough.
         IexecLibOrders_v5?: string;
     };
 };

@@ -5,8 +5,8 @@ import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { BytesLike, ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
-    IexecPocoBoostAccessors__factory,
-    IexecPocoBoost__factory,
+    IexecPocoBoostAccessorsFacet__factory,
+    IexecPocoBoostFacet__factory,
     TimelockController__factory,
 } from '../../typechain';
 import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
@@ -24,6 +24,9 @@ import {
     if (!deploymentOptions.DiamondProxy) {
         throw new Error('DiamondProxy is required');
     }
+    if (!deploymentOptions.IexecLibOrders_v5) {
+        throw new Error('IexecLibOrders_v5 is required');
+    }
     const diamondProxyAddress = deploymentOptions.DiamondProxy;
     const iexecPocoBoostFacetAddress = (await deployments.get('IexecPocoBoostFacet')).address; // Bellecour: 0x8425229f979AB3b0dDDe00D475D762cA4d6a5eFc
     const iexecPocoBoostAccessorsFacetAddress = (
@@ -31,12 +34,18 @@ import {
     ).address; // Bellecour: 0x56185a2b0dc8b556BBfBAFB702BC971Ed75e868C
     const [account] = await ethers.getSigners();
     const timelockAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner(); // Bellecour: 0x4611B943AA1d656Fc669623b5DA08756A7e288E9
+
+    const iexecLibOrders = {
+        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
+            deploymentOptions.IexecLibOrders_v5,
+    };
+
     const iexecPocoBoostProxyUpdate = encodeModuleProxyUpdate(
-        IexecPocoBoost__factory.createInterface(),
+        new IexecPocoBoostFacet__factory(iexecLibOrders),
         iexecPocoBoostFacetAddress,
     );
     const iexecPocoBoostAccessorsProxyUpdate = encodeModuleProxyUpdate(
-        IexecPocoBoostAccessors__factory.createInterface(),
+        new IexecPocoBoostAccessorsFacet__factory(),
         iexecPocoBoostAccessorsFacetAddress,
     );
     // Salt but must be the same for schedule & execute

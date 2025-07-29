@@ -71,13 +71,6 @@ const v8Settings = {
             },
         },
     },
-    // TODO remove this to target the latest EVM version.
-    /**
-     * @dev The 0.8.20 compiler switches the default target EVM version to Shanghai.
-     * At this time, the iExec Bellecour blockchain does not support new OPCODES
-     * brought by the Shanghai fork, hence the target must be lowered.
-     */
-    evmVersion: bellecourBaseConfig.hardfork,
 };
 
 const config: HardhatUserConfig = {
@@ -160,52 +153,33 @@ const config: HardhatUserConfig = {
             // not manually set. Other approaches might be considered here.
             gasPrice: 8_000_000_000, // 8 Gwei
         },
-        // live networks
-        mainnet: {
-            chainId: 1,
-            url: process.env.MAINNET_NODE || '',
-            accounts: {
-                mnemonic: process.env.PROD_MNEMONIC || '',
-            },
-        },
-        goerli: {
-            chainId: 5,
-            url: process.env.GOERLI_NODE || '',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-        },
-        // Add Fuji as a network
         avalancheFujiTestnet: {
-            url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
+            url:
+                process.env.FUJI_RPC_URL || // Used in local development
+                process.env.RPC_URL || // Defined in Github Actions environments
+                'https://api.avax-test.network/ext/bc/C/rpc',
             accounts: [
-                process.env.PRIVATE_KEY ||
+                process.env.DEPLOYER_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...fujiBaseConfig,
         },
-        // Add Arbitrum Sepolia as a network
         arbitrumSepolia: {
-            url: process.env.ARBITRUM_SEPOLIA_RPC_URL || 'https://sepolia-rollup.arbitrum.io/rpc',
+            url:
+                process.env.ARBITRUM_SEPOLIA_RPC_URL || // Used in local development
+                process.env.RPC_URL || // Defined in Github Actions environments
+                'https://sepolia-rollup.arbitrum.io/rpc',
             accounts: [
-                process.env.PRIVATE_KEY ||
+                process.env.DEPLOYER_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...arbitrumSepoliaBaseConfig,
-        },
-        viviani: {
-            chainId: 133,
-            url: 'https://viviani.iex.ec',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-            ...bellecourBaseConfig,
         },
         bellecour: {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
             accounts: [
-                process.env.PRIVATE_KEY ||
+                process.env.DEPLOYER_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...bellecourBaseConfig,
@@ -218,11 +192,10 @@ const config: HardhatUserConfig = {
         },
     },
     etherscan: {
+        // TODO migrate to Etherscan V2 API and use process.env.EXPLORER_API_KEY
         apiKey: {
-            mainnet: process.env.ETHERSCAN_API_KEY || '',
             avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
             arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
-            viviani: 'nothing', // a non-empty string is needed by the plugin.
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
         },
         customChains: [
@@ -272,17 +245,13 @@ const config: HardhatUserConfig = {
         templates: 'docs/solidity/templates',
         exclude: [
             'external',
-            'modules/facets/IexecAccessorsABILegacyFacet.sol', // not relevant
-            'modules/facets/IexecEscrowTokenSwapFacet.sol', // not relevant
-            'modules/facets/SignatureVerifier.sol', // contains only internal/private
-            'modules/facets/SignatureVerifier.v8.sol',
-            'modules/interfaces', // interesting for events but too much doc duplication if enabled
+            'facets/IexecAccessorsABILegacyFacet.sol', // not relevant
+            'facets/IexecEscrowTokenSwapFacet.sol', // not relevant
+            'facets/SignatureVerifier.sol', // contains only internal/private
+            'facets/SignatureVerifier.v8.sol',
+            'interfaces', // interesting for events but too much doc duplication if enabled
             'registries', // ignore them for now
             'tools',
-            'IexecInterfaceNativeABILegacy.sol', // ignore interfaces
-            'IexecInterfaceTokenABILegacy.sol',
-            'IexecInterfaceNative.sol',
-            'IexecInterfaceToken.sol',
             'Store.sol', // almost empty
             'Store.v8.sol',
         ],
