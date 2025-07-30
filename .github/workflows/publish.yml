@@ -2,12 +2,12 @@ name: Publish NPM Package
 
 on:
   push:
-      # tags:
-      #   - 'v*'
+      tags:
+        - 'v*'
 
 jobs:
-  # build-and-test:
-    # uses: ./.github/workflows/main.yml
+  build-and-test:
+    uses: ./.github/workflows/main.yml
 
   publish:
     # needs: build-and-test
