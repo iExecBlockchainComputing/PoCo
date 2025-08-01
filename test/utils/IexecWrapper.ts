@@ -273,7 +273,11 @@ export class IexecWrapper {
             volume,
         );
         await this.depositInIexecAccount(this.accounts.scheduler, schedulerStakePerDeal);
-        const startTime = await setNextBlockTimestamp();
+        // For live networks, skip timestamp manipulation and use current time
+        const startTime =
+            hre.network.name === 'hardhat' || hre.network.name === 'localhost'
+                ? await setNextBlockTimestamp()
+                : BigInt(Math.floor(Date.now() / 1000));
         const iexecPocoAsDealPayer = IexecPoco1__factory.connect(this.proxyAddress, dealPayer);
         await (
             withSponsor
@@ -329,7 +333,8 @@ export class IexecWrapper {
      * @returns
      */
     async initializeTask(dealId: string, taskIndex: bigint) {
-        await IexecPoco2__factory.connect(this.proxyAddress, this.accounts.anyone)
+        // Use scheduler account instead of anyone account for better gas fund availability
+        await IexecPoco2__factory.connect(this.proxyAddress, this.accounts.scheduler)
             .initialize(dealId, taskIndex)
             .then((tx) => tx.wait());
         return getTaskId(dealId, taskIndex);

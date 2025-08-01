@@ -186,10 +186,15 @@ const config: HardhatUserConfig = {
                 process.env.ARBITRUM_SEPOLIA_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://sepolia-rollup.arbitrum.io/rpc',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY ||
-                    '0x0000000000000000000000000000000000000000000000000000000000000000',
-            ],
+            accounts: process.env.MNEMONIC
+                ? {
+                      mnemonic: process.env.MNEMONIC,
+                      count: 30, // Generate 10 accounts for testing
+                  }
+                : [
+                      process.env.DEPLOYER_PRIVATE_KEY ||
+                          '0x0000000000000000000000000000000000000000000000000000000000000000',
+                  ],
             ...arbitrumSepoliaBaseConfig,
         },
         bellecour: {
