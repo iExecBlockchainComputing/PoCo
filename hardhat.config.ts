@@ -46,6 +46,12 @@ const arbitrumSepoliaBaseConfig = {
     chainId: 421614,
 };
 
+// Arbitrum specific configuration
+const arbitrumBaseConfig = {
+    blockGasLimit: 30_000_000,
+    chainId: 42161,
+};
+
 const settings = {
     optimizer: {
         enabled: true,
@@ -164,6 +170,17 @@ const config: HardhatUserConfig = {
             ],
             ...fujiBaseConfig,
         },
+        arbitrum: {
+            url:
+                process.env.ARBITRUM_RPC_URL || // Used in local development
+                process.env.RPC_URL || // Defined in Github Actions environments
+                'https://arbitrum.gateway.tenderly.co',
+            accounts: [
+                process.env.DEPLOYER_PRIVATE_KEY ||
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+            ],
+            ...arbitrumBaseConfig,
+        },
         arbitrumSepolia: {
             url:
                 process.env.ARBITRUM_SEPOLIA_RPC_URL || // Used in local development
@@ -194,6 +211,7 @@ const config: HardhatUserConfig = {
     etherscan: {
         // TODO migrate to Etherscan V2 API and use process.env.EXPLORER_API_KEY
         apiKey: {
+            arbitrum: process.env.ARBISCAN_API_KEY || '',
             avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
             arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             bellecour: 'nothing', // a non-empty string is needed by the plugin.

@@ -90,21 +90,27 @@ export default async function deploy() {
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
+    const isArbitrumMainnet = (await ethers.provider.getNetwork()).chainId === 42161n;
     const facets = [
-        new IexecAccessorsFacet__factory(),
         new IexecAccessorsABILegacyFacet__factory(),
+        new IexecAccessorsFacet__factory(),
         new IexecCategoryManagerFacet__factory(),
+        new IexecConfigurationExtraFacet__factory(),
+        new IexecConfigurationFacet__factory(iexecLibOrders),
         new IexecERC20Facet__factory(),
         isTokenMode ? new IexecEscrowTokenFacet__factory() : new IexecEscrowNativeFacet__factory(),
-        new IexecConfigurationFacet__factory(iexecLibOrders),
+        // new IexecEscrowTokenSwapFacet__factory(), not deployed.
         new IexecOrderManagementFacet__factory(iexecLibOrders),
         new IexecPoco1Facet__factory(iexecLibOrders),
         new IexecPoco2Facet__factory(),
-        new IexecRelayFacet__factory(),
-        new IexecConfigurationExtraFacet__factory(),
         new IexecPocoAccessorsFacet__factory(iexecLibOrders),
-        new IexecPocoBoostFacet__factory(iexecLibOrders),
-        new IexecPocoBoostAccessorsFacet__factory(),
+        ...(!isArbitrumMainnet
+            ? [
+                  new IexecPocoBoostFacet__factory(iexecLibOrders), // not deployed on Arbitrum mainnet
+                  new IexecPocoBoostAccessorsFacet__factory(), // not deployed on Arbitrum mainnet
+              ]
+            : []),
+        new IexecRelayFacet__factory(),
     ];
     for (const facet of facets) {
         const address = await factoryDeployer.deployContract(facet);

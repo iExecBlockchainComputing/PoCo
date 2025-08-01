@@ -1,7 +1,7 @@
 # Changelog
 
 ## vNEXT
-
+- Support Arbitrum One (#248)
 - Save IexecLibOrders_v5 in config file (#242)
 - Migrate proxy to Diamond pattern (ERC-2535):
   - Use lib as storage. (#243)
