@@ -176,14 +176,8 @@ const config: HardhatUserConfig = {
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://arbitrum.gateway.tenderly.co',
             accounts: [
-                (() => {
-                    if (!process.env.DEPLOYER_PRIVATE_KEY) {
-                        throw new Error(
-                            'Missing DEPLOYER_PRIVATE_KEY environment variable for deployment.',
-                        );
-                    }
-                    return process.env.DEPLOYER_PRIVATE_KEY;
-                })(),
+                process.env.DEPLOYER_PRIVATE_KEY ||
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...arbitrumBaseConfig,
         },
