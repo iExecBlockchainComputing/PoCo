@@ -48,8 +48,7 @@ const arbitrumSepoliaBaseConfig = {
 
 // Arbitrum specific configuration
 const arbitrumBaseConfig = {
-    gasPrice: 100_000_000, // 0.1 Gwei default
-    blockGasLimit: 30_000_000, // Arbitrum has higher block gas limits
+    blockGasLimit: 30_000_000,
     chainId: 42161,
 };
 
