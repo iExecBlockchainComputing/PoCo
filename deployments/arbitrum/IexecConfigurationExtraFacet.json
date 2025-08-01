@@ -1,0 +1,147 @@
+{
+  "address": "0x7Ff117E7385Ac3E207AF1791fE7e66C7802aeCCd",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "CONTRIBUTION_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "FINAL_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "GROUPMEMBER_PURPOSE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "KITTY_ADDRESS",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "KITTY_MIN",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "KITTY_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REVEAL_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "WORKERPOOL_STAKE_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_appregistryAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_datasetregistryAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_workerpoolregistryAddress",
+          "type": "address"
+        }
+      ],
+      "name": "changeRegistries",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "numDeployments": 1,
+  "bytecode": "0x608060405234801561001057600080fd5b50610393806100206000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c80637b244832116100665780637b244832146100ee5780638da5cb5b146100f657806390fc26b1146100d65780639e986e811461010b578063e2e7a8c1146101135761009e565b80630e7c4033146100a35780634ec3b9e3146100b857806351152de1146100d65780635fde601d146100de57806368a9ef1c146100e6575b600080fd5b6100b66100b13660046102a9565b61011b565b005b6100c06101ad565b6040516100cd919061033c565b60405180910390f35b6100c06101b2565b6100c06101b7565b6100c06101bc565b6100c06101c1565b6100fe6101c6565b6040516100cd91906102f3565b6100fe61023e565b6100c0610256565b6101236101c6565b6001600160a01b031661013461025e565b6001600160a01b0316146101635760405162461bcd60e51b815260040161015a90610307565b60405180910390fd5b600061016d610262565b80546001600160a01b03199081166001600160a01b0396871617825560018201805482169587169590951790945560020180549093169190931617905550565b601e81565b600a81565b600281565b600481565b600781565b6000306001600160a01b0316638da5cb5b6040518163ffffffff1660e01b815260040160206040518083038186803b15801561020157600080fd5b505afa158015610215573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102399190610286565b905090565b7399c2268479b93fde36232351229815df80837e2381565b633b9aca0081565b3390565b7f5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b0090565b600060208284031215610297578081fd5b81516102a281610345565b9392505050565b6000806000606084860312156102bd578182fd5b83356102c881610345565b925060208401356102d881610345565b915060408401356102e881610345565b809150509250925092565b6001600160a01b0391909116815260200190565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b90815260200190565b6001600160a01b038116811461035a57600080fd5b5056fea26469706673582212201f6bb92caf533bc67f04949ef0406d7ebb13fc2c539aeec57b3a5b934c21700364736f6c634300060c0033"
+}

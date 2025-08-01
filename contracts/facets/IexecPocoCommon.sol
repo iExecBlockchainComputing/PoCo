@@ -8,7 +8,7 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 
-contract IexecPocoCommonFacet is FacetBase {
+contract IexecPocoCommon is FacetBase {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
