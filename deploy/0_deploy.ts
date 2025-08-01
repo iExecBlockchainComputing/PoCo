@@ -28,6 +28,8 @@ import {
     IexecPoco1Facet__factory,
     IexecPoco2Facet__factory,
     IexecPocoAccessorsFacet__factory,
+    IexecPocoBoostAccessorsFacet__factory,
+    IexecPocoBoostFacet__factory,
     IexecRelayFacet__factory,
     OwnershipFacet__factory,
     RLC__factory,
@@ -88,6 +90,7 @@ export default async function deploy() {
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
+    const isArbitrumMainnet = (await ethers.provider.getNetwork()).chainId === 42161n;
     const facets = [
         new IexecAccessorsABILegacyFacet__factory(),
         new IexecAccessorsFacet__factory(),
@@ -101,8 +104,12 @@ export default async function deploy() {
         new IexecPoco1Facet__factory(iexecLibOrders),
         new IexecPoco2Facet__factory(),
         new IexecPocoAccessorsFacet__factory(iexecLibOrders),
-        // new IexecPocoBoostFacet__factory(iexecLibOrders), // not deployed on Arbitrum mainnet
-        // new IexecPocoBoostAccessorsFacet__factory(), // not deployed on Arbitrum mainnet
+        ...(!isArbitrumMainnet
+            ? [
+                  new IexecPocoBoostFacet__factory(iexecLibOrders), // not deployed on Arbitrum mainnet
+                  new IexecPocoBoostAccessorsFacet__factory(), // not deployed on Arbitrum mainnet
+              ]
+            : []),
         new IexecRelayFacet__factory(),
     ];
     for (const facet of facets) {
