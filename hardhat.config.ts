@@ -211,7 +211,7 @@ const config: HardhatUserConfig = {
     etherscan: {
         // TODO migrate to Etherscan V2 API and use process.env.EXPLORER_API_KEY
         apiKey: {
-            arbitrum: process.env.ARBISCAN_API_KEY || '',
+            arbitrumOne: process.env.ARBISCAN_API_KEY || '', // This name is required by the plugin.
             avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
             arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
