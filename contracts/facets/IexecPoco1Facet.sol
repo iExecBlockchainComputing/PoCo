@@ -12,7 +12,7 @@ import {FacetBase} from "./FacetBase.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
-import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
+import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 struct Matching {
@@ -31,7 +31,7 @@ contract IexecPoco1Facet is
     FacetBase,
     IexecEscrow,
     SignatureVerifier,
-    IexecPocoCommonFacet
+    IexecPocoCommon
 {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;

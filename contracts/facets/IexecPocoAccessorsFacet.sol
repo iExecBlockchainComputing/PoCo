@@ -8,7 +8,7 @@ import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
-import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
+import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
 /**
@@ -18,7 +18,7 @@ contract IexecPocoAccessorsFacet is
     IexecPocoAccessors,
     FacetBase,
     SignatureVerifier,
-    IexecPocoCommonFacet
+    IexecPocoCommon
 {
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;

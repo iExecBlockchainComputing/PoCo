@@ -16,7 +16,7 @@ import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
-import {IexecPocoCommonFacet} from "./IexecPocoCommonFacet.sol";
+import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
@@ -29,7 +29,7 @@ contract IexecPocoBoostFacet is
     FacetBase,
     IexecEscrow,
     SignatureVerifier,
-    IexecPocoCommonFacet
+    IexecPocoCommon
 {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
