@@ -103,8 +103,8 @@ export default async function deploy() {
         new IexecRelayFacet__factory(),
         new IexecConfigurationExtraFacet__factory(),
         new IexecPocoAccessorsFacet__factory(iexecLibOrders),
-        new IexecPocoBoostFacet__factory(iexecLibOrders),
-        new IexecPocoBoostAccessorsFacet__factory(),
+        // new IexecPocoBoostFacet__factory(iexecLibOrders), // not deployed on Arbitrum mainnet
+        // new IexecPocoBoostAccessorsFacet__factory(), // not deployed on Arbitrum mainnet
     ];
     for (const facet of facets) {
         const address = await factoryDeployer.deployContract(facet);
