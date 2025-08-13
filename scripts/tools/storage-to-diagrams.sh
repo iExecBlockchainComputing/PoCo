@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Usage: bash scripts/tools/storage-diagrams.sh
+# Usage: bash scripts/tools/storage-to-diagrams.sh
 #
 # Generate storage diagrams for the PoCo protocol using sol2uml.
 # Check sol2uml documentation at https://github.com/naddison36/sol2uml#storage-usage.
