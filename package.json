@@ -19,6 +19,7 @@
     "test:native": "npm run clean && TEST__IS_NATIVE_CHAIN=true npx hardhat test test/byContract/IexecEscrow/IexecEscrowNative.test.ts",
     "coverage": "npx hardhat coverage",
     "verify": "npx hardhat verify",
+    "verify:all": "npx hardhat run scripts/verify.ts",
     "format": "npx prettier --write '**/*.{js,ts,sol,json,yml}'",
     "uml": "npm run sol-to-uml && npm run puml-to-links && npm run storage-to-diagrams",
     "sol-to-uml": "npx zx scripts/tools/sol-to-uml.mjs",
