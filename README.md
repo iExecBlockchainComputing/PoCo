@@ -27,12 +27,12 @@ This repository contains the smart contract implementation of iExec's PoCo proto
     - [Diamond storage](./docs/uml/storage-diagram-diamond.svg)
     - [PoCo storage](./docs/uml/storage-diagram-poco.svg)
 - UML classes related to:
-    - [IexecPocoDelegates](./docs/uml/class-uml-IexecPocoDelegates.svg)
-    - [IexecPocoBoostDelegate](./docs/uml/class-uml-IexecPocoBoostDelegate.svg)
+    - [IexecPoco1Facet & IexecPoco2Facet](./docs/uml/class-uml-IexecPocoFacets.svg)
+    - [IexecPocoBoostFacet](./docs/uml/class-uml-IexecPocoBoostFacet.svg)
     - [IexecEscrows](./docs/uml/class-uml-IexecEscrows.svg)
     - [iExec PoCo registries](./docs/uml/class-uml-dir-registries.svg)
     - [iExec PoCo libraries](./docs/uml/class-uml-dir-libs.svg)
-    - [iExec PoCo modules](./docs/uml/class-uml-dir-modules.svg)
+    - [iExec PoCo modules (facets)](./docs/uml/class-uml-dir-facets.svg)
 
 ## Documentation
 
@@ -47,7 +47,7 @@ All contract audit files can be found in [audit/](./audit/) folder.
 
 ## Configure a deployment
 
-Starting from version 5, the PoCo uses a modular design based on [ERC1538](https://github.com/ethereum/EIPs/issues/1538). The migration scripts and tests will use different modules and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated sidechains (Native token based RLC).
+Starting from version 5, the PoCo uses a modular design based on [ERC-2535](https://eips.ethereum.org/EIPS/eip-2535). The migration scripts and tests will use different modules (facets) and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated sidechains (Native token based RLC).
 
 The configuration file is located in `./config/config.json`.
 

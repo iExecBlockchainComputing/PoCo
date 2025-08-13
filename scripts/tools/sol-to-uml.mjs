@@ -6,10 +6,10 @@
 
 $.verbose = false // Disable bash commands logging.
 
-const projectRootDir = await $`dirname ${__dirname}`
+const projectRootDir = await $`pwd`
 
 await generateClassDiagramOfDirectory('libs')
-await generateClassDiagramOfDirectory('modules')
+await generateClassDiagramOfDirectory('facets')
 await generateClassDiagramOfDirectory('registries')
 
 await generateClassDiagramOfContracts(
