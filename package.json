@@ -23,7 +23,7 @@
     "uml": "npm run sol-to-uml && npm run puml-to-links && npm run storage-to-diagrams",
     "sol-to-uml": "npx zx scripts/tools/sol-to-uml.mjs",
     "puml-to-links": "npx zx scripts/tools/puml-to-links.mjs",
-    "storage-to-diagrams": "bash scripts/tools/storage-diagrams.sh",
+    "storage-to-diagrams": "bash scripts/tools/storage-to-diagrams.sh",
     "doc": "npx hardhat docgen"
   },
   "lint-staged": {
