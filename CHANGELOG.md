@@ -17,19 +17,30 @@
   - Add Diamond contract unit tests (#224)
   - Fix `fallback` and `receive` (#223)
   - Migrate contracts (#222)
-- Add Github Action CI in order to publish NPM package
+
+## v5.5.1 - Fresh development environment
+
+### What's new?
+
+- Add some small optimizations to `IexecPoco2Delegate` contract (#167, #168).
+- Add support for CreateX factory.
+- Migrate to Ethers v6.
+- Migrate all Javascript files to Typescript.
+- Purge Truffle.
+- Migrate CI from Jenkins to Github Actions.
 
 ### Updated contracts
 
 - [x] `IexecPoco2Delegate.sol`
 
-### Features
-<!-- TODO update this with v5.5.1 release notes -->
+### More details
+
+- Release v5.5.1 #220
 - Add gitub action workflow for deployment (#218)
-- Fix new testnets chain name (#217)
+- Rename Avalanche Fuji and Arbitrum Sepolia network configuration (#217)
 - Deploy on new testnet chains using CreateX factory (#216)
 - Add CreateX factory for new chain deployment (#215)
-- Support Arbitrum & Avalanche Fuji testnets (#215)
+- Add Github Action CI in order to publish NPM package (#214)
 - Housekeeping (#208)
 - Add Halborn "Poco v5.5 & Voucher v1.0" audit report (#205)
 - Refactor Factory deployer (#206)
@@ -80,7 +91,7 @@
     - kitty (#142, #144)
     - reopen (#135)
 
-## v5.5.0
+## v5.5.0 - Deal sponsoring
 
 ### What's new?
 
