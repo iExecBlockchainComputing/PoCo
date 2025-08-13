@@ -1,8 +1,8 @@
-## Task statuses 
+## Task statuses
 
 Flows:
 - Nominal
-- "Contribute and finalize"
+- ContributeAndFinalize
 - Boost
 
 ```mermaid
@@ -22,7 +22,7 @@ flowchart TB
 ```
 ## Contributions statuses
 
-- Nominal and "contribute and finalize" flows
+- Nominal and ContributeAndFinalize flows
 
 ```mermaid
 flowchart TB
