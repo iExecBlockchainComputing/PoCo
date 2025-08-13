@@ -37,6 +37,7 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 ## Documentation
 
 - [Solidity API documentation](./docs/solidity/index.md)
+<!-- TODO update with new documentation URL -->
 - [Full PoCo documentation](https://protocol.docs.iex.ec/key-concepts/proof-of-contribution)
 
 ## Audits
@@ -71,7 +72,7 @@ If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the
 ## Additional configuration & environment variables
 
 Environment variable can be used to alter the configuration of a deployment:
-- **SALT**: if set, the `SALT` envvar will overwrite the salt parameter from the config. This can be useful to distinguish different deployments without modifying the config.
+- **SALT**: if set, the `SALT` env var will overwrite the salt parameter from the config. This can be useful to distinguish different deployments without modifying the config.
 
 Additionally, the migration process will look for some smart contracts before deploying new instances. This is true of the application, dataset and workerpool registries. Thus, if different marketplaces are deployed to the same network, they will share these registries.
 
@@ -79,7 +80,7 @@ Additionally, the migration process will look for some smart contracts before de
 
 ## Build
 
-The PoCo smart contracts are in the `./contracts` folder. Json artifacts, containing the contracts bytecode and ABI can be found in the `./build` folder. In case you need to regenerate them, you can use the following command:
+The PoCo smart contracts are in the `contracts/` folder. Json artifacts, containing the contracts bytecode and ABI can be found in the `artifacts/` folder. In case you need to regenerate them, you can use the following command:
 ```
 npm install
 npm run build
@@ -116,7 +117,7 @@ The automatic testing command uses the Hardhat network by default to run the tes
     If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `hardhat.config.ts` configuration (network ports, accounts with mnemonic, ..) accordingly to the [Hardhat Configuration](https://hardhat.org/hardhat-runner/docs/config) documentation.
 3. Run tests
 ```
-npm run test
+npm run test -- --network <networkUrl>
 ```
 
 ## Deploy
@@ -125,7 +126,7 @@ The iExec PoCo contracts support automated deployment through both command-line 
 
 ### Command Line Deployment
 
-You can deploy the smart contracts according to the [deploy/0_deploy.ts](./deploy/0_deploy.ts) content. This will automatically save some addresses of the deployed artifacts to the `./deployments` folder.
+You can deploy the smart contracts according to the [deploy/0_deploy.ts](./deploy/0_deploy.ts) content. This will automatically save addresses of the deployed artifacts to `deployments/` folder.
 
 To deploy using the CLI:
 
@@ -134,7 +135,7 @@ To deploy using the CLI:
 3. Run the deployment using:
 
 ```
-npx hardhat deploy --network <your network name>
+npm run deploy -- --network <your network name>
 ```
 
 Example with custom salt:
@@ -144,12 +145,12 @@ SALT=0x0000000000000000000000000000000000000000000000000000000000000001 npx hard
 ```
 
 
-### Manual Verification
+### Verification
 
-To manually verify contracts:
+To verify contracts:
 
 ```
-npx hardhat run ./scripts/verify.ts --network <your network name>
+npm run verify:all -- --network <your network name> # e.g. arbitrum
 ```
 
 This script automatically reads all deployed contract addresses and their constructor arguments from the deployment artifacts and verifies them on the relevant block explorer.
@@ -169,19 +170,19 @@ To render all UML diagrams:
 npm run uml
 ```
 
-### Render only class diagrams
+To render only class diagrams:
 
 ```
 npm run sol-to-uml
 ```
 
-### Render only .puml files
+To render only .puml files:
 
 ```
 npm run puml-to-links
 ```
 
-### Render only storage diagrams
+To render only storage diagrams:
 
 ```
 npm run storage-to-diagrams
