@@ -6,33 +6,33 @@
 
 $.verbose = false // Disable bash commands logging.
 
-const projectRootDir = await $`dirname ${__dirname}`
+const projectRootDir = await $`pwd`
 
 await generateClassDiagramOfDirectory('libs')
-await generateClassDiagramOfDirectory('modules')
+await generateClassDiagramOfDirectory('facets')
 await generateClassDiagramOfDirectory('registries')
 
 await generateClassDiagramOfContracts(
     [
-        'IexecPoco1Delegate',
-        'IexecPoco2Delegate'
+        'IexecPoco1Facet',
+        'IexecPoco2Facet'
     ],
-    'IexecPocoDelegates',
+    'IexecPocoFacets',
 )
 
 await generateClassDiagramOfContracts(
     [
-        'IexecEscrowNativeDelegate',
-        'IexecEscrowTokenDelegate',
-        'IexecEscrowTokenSwapDelegate',
+        'IexecEscrowNativeFacet',
+        'IexecEscrowTokenFacet',
+        'IexecEscrowTokenSwapFacet',
         'IexecEscrow',
     ],
     'IexecEscrows',
 )
 
 await generateClassDiagramOfContracts(
-    ['IexecPocoBoostDelegate'],
-    'IexecPocoBoostDelegate',
+    ['IexecPocoBoostFacet'],
+    'IexecPocoBoostFacet',
 )
 
 /**

@@ -1,4 +1,5 @@
-// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
@@ -20,7 +21,6 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
  * a multisig or a DAO as the sole proposer.
  */
 contract TimelockController is AccessControl {
-
     bytes32 public constant TIMELOCK_ADMIN_ROLE = keccak256("TIMELOCK_ADMIN_ROLE");
     bytes32 public constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
@@ -32,12 +32,26 @@ contract TimelockController is AccessControl {
     /**
      * @dev Emitted when a call is scheduled as part of operation `id`.
      */
-    event CallScheduled(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data, bytes32 predecessor, uint256 delay);
+    event CallScheduled(
+        bytes32 indexed id,
+        uint256 indexed index,
+        address target,
+        uint256 value,
+        bytes data,
+        bytes32 predecessor,
+        uint256 delay
+    );
 
     /**
      * @dev Emitted when a call is performed as part of operation `id`.
      */
-    event CallExecuted(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data);
+    event CallExecuted(
+        bytes32 indexed id,
+        uint256 indexed index,
+        address target,
+        uint256 value,
+        bytes data
+    );
 
     /**
      * @dev Emitted when operation `id` is cancelled.
@@ -52,7 +66,12 @@ contract TimelockController is AccessControl {
     /**
      * @dev Initializes the contract with a given `minDelay`.
      */
-    constructor(uint256 minDelay, address[] memory administrators, address[] memory proposers, address[] memory executors) public {
+    constructor(
+        uint256 minDelay,
+        address[] memory administrators,
+        address[] memory proposers,
+        address[] memory executors
+    ) public {
         _setRoleAdmin(TIMELOCK_ADMIN_ROLE, TIMELOCK_ADMIN_ROLE);
         _setRoleAdmin(PROPOSER_ROLE, TIMELOCK_ADMIN_ROLE);
         _setRoleAdmin(EXECUTOR_ROLE, TIMELOCK_ADMIN_ROLE);
@@ -83,7 +102,10 @@ contract TimelockController is AccessControl {
      * this role for everyone.
      */
     modifier onlyRole(bytes32 role) {
-        require(hasRole(role, _msgSender()) || hasRole(role, address(0)), "TimelockController: sender requires permission");
+        require(
+            hasRole(role, _msgSender()) || hasRole(role, address(0)),
+            "TimelockController: sender requires permission"
+        );
         _;
     }
 
@@ -133,7 +155,13 @@ contract TimelockController is AccessControl {
      * @dev Returns the identifier of an operation containing a single
      * transaction.
      */
-    function hashOperation(address target, uint256 value, bytes calldata data, bytes32 predecessor, bytes32 salt) public pure returns (bytes32 hash) {
+    function hashOperation(
+        address target,
+        uint256 value,
+        bytes calldata data,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public pure returns (bytes32 hash) {
         return keccak256(abi.encode(target, value, data, predecessor, salt));
     }
 
@@ -141,7 +169,13 @@ contract TimelockController is AccessControl {
      * @dev Returns the identifier of an operation containing a batch of
      * transactions.
      */
-    function hashOperationBatch(address[] calldata targets, uint256[] calldata values, bytes[] calldata datas, bytes32 predecessor, bytes32 salt) public pure returns (bytes32 hash) {
+    function hashOperationBatch(
+        address[] calldata targets,
+        uint256[] calldata values,
+        bytes[] calldata datas,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public pure returns (bytes32 hash) {
         return keccak256(abi.encode(targets, values, datas, predecessor, salt));
     }
 
@@ -154,7 +188,14 @@ contract TimelockController is AccessControl {
      *
      * - the caller must have the 'proposer' role.
      */
-    function schedule(address target, uint256 value, bytes calldata data, bytes32 predecessor, bytes32 salt, uint256 delay) public virtual onlyRole(PROPOSER_ROLE) {
+    function schedule(
+        address target,
+        uint256 value,
+        bytes calldata data,
+        bytes32 predecessor,
+        bytes32 salt,
+        uint256 delay
+    ) public virtual onlyRole(PROPOSER_ROLE) {
         bytes32 id = hashOperation(target, value, data, predecessor, salt);
         _schedule(id, delay);
         emit CallScheduled(id, 0, target, value, data, predecessor, delay);
@@ -169,7 +210,14 @@ contract TimelockController is AccessControl {
      *
      * - the caller must have the 'proposer' role.
      */
-    function scheduleBatch(address[] calldata targets, uint256[] calldata values, bytes[] calldata datas, bytes32 predecessor, bytes32 salt, uint256 delay) public virtual onlyRole(PROPOSER_ROLE) {
+    function scheduleBatch(
+        address[] calldata targets,
+        uint256[] calldata values,
+        bytes[] calldata datas,
+        bytes32 predecessor,
+        bytes32 salt,
+        uint256 delay
+    ) public virtual onlyRole(PROPOSER_ROLE) {
         require(targets.length == values.length, "TimelockController: length mismatch");
         require(targets.length == datas.length, "TimelockController: length mismatch");
 
@@ -213,7 +261,13 @@ contract TimelockController is AccessControl {
      *
      * - the caller must have the 'executor' role.
      */
-    function execute(address target, uint256 value, bytes calldata data, bytes32 predecessor, bytes32 salt) public payable virtual onlyRole(EXECUTOR_ROLE) {
+    function execute(
+        address target,
+        uint256 value,
+        bytes calldata data,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public payable virtual onlyRole(EXECUTOR_ROLE) {
         bytes32 id = hashOperation(target, value, data, predecessor, salt);
         _beforeCall(predecessor);
         _call(id, 0, target, value, data);
@@ -229,7 +283,13 @@ contract TimelockController is AccessControl {
      *
      * - the caller must have the 'executor' role.
      */
-    function executeBatch(address[] calldata targets, uint256[] calldata values, bytes[] calldata datas, bytes32 predecessor, bytes32 salt) public payable virtual onlyRole(EXECUTOR_ROLE) {
+    function executeBatch(
+        address[] calldata targets,
+        uint256[] calldata values,
+        bytes[] calldata datas,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public payable virtual onlyRole(EXECUTOR_ROLE) {
         require(targets.length == values.length, "TimelockController: length mismatch");
         require(targets.length == datas.length, "TimelockController: length mismatch");
 
@@ -245,7 +305,10 @@ contract TimelockController is AccessControl {
      * @dev Checks before execution of an operation's calls.
      */
     function _beforeCall(bytes32 predecessor) private view {
-        require(predecessor == bytes32(0) || isOperationDone(predecessor), "TimelockController: missing dependency");
+        require(
+            predecessor == bytes32(0) || isOperationDone(predecessor),
+            "TimelockController: missing dependency"
+        );
     }
 
     /**
@@ -261,9 +324,15 @@ contract TimelockController is AccessControl {
      *
      * Emits a {CallExecuted} event.
      */
-    function _call(bytes32 id, uint256 index, address target, uint256 value, bytes calldata data) private {
+    function _call(
+        bytes32 id,
+        uint256 index,
+        address target,
+        uint256 value,
+        bytes calldata data
+    ) private {
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success,) = target.call{value: value}(data);
+        (bool success, ) = target.call{value: value}(data);
         require(success, "TimelockController: underlying transaction reverted");
 
         emit CallExecuted(id, index, target, value, data);

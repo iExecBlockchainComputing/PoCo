@@ -1,0 +1,639 @@
+{
+  "address": "0x6C56FFFd001939d03779929702B2722C904a34da",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "CONTRIBUTION_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "FINAL_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "GROUPMEMBER_PURPOSE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "KITTY_ADDRESS",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "KITTY_MIN",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "KITTY_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REVEAL_DEADLINE_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "WORKERPOOL_STAKE_RATIO",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.AppOrder",
+          "name": "appOrder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpoolrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.DatasetOrder",
+          "name": "datasetOrder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "apprestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "datasetrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "requesterrestrict",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.WorkerpoolOrder",
+          "name": "workerpoolOrder",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "app",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "dataset",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "workerpool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerpoolmaxprice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "salt",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "sign",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibOrders_v5.RequestOrder",
+          "name": "requestOrder",
+          "type": "tuple"
+        }
+      ],
+      "name": "computeDealVolume",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewDeal",
+      "outputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "pointer",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct IexecLibCore_v5.Resource",
+              "name": "app",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "pointer",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct IexecLibCore_v5.Resource",
+              "name": "dataset",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "pointer",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct IexecLibCore_v5.Resource",
+              "name": "workerpool",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "trust",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "tag",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "requester",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "callback",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "params",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "botFirst",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "botSize",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "workerStake",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "schedulerRewardRatio",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "sponsor",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IexecLibCore_v5.Deal",
+          "name": "deal",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "viewTask",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "enum IexecLibCore_v5.TaskStatusEnum",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "dealid",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "idx",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timeref",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "contributionDeadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "revealDeadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "finalDeadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "consensusValue",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "revealCounter",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "winnerCounter",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address[]",
+              "name": "contributors",
+              "type": "address[]"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "resultDigest",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "results",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "resultsTimestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "resultsCallback",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IexecLibCore_v5.Task",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "numDeployments": 1,
+  "bytecode": "0x60806040523461001a576040516119bd61002082396119bd90f35b600080fdfe6080604052600436101561001257600080fd5b60003560e01c80634ec3b9e3146100cd57806351152de1146100af5780635fde601d146100c857806366517ca6146100c357806368a9ef1c146100be5780637b244832146100b95780638da5cb5b146100b457806390fc26b1146100af5780639e986e81146100aa578063adccf0d5146100a5578063b74861b2146100a05763e2e7a8c1036100dd5761074f565b610713565b610583565b610326565b61014b565b6102e7565b6102a7565b61027a565b610249565b610178565b61010a565b60009103126100dd57565b600080fd5b6100ef6100ef6100ef9290565b90565b6100ef601e6100e2565b6100ef6100f2565b9052565b565b346100dd5761011a3660046100d2565b6101356101256100fc565b6040519182918290815260200190565b0390f35b6100ef600a6100e2565b6100ef610139565b346100dd5761015b3660046100d2565b610135610125610143565b6100ef60026100e2565b6100ef610166565b346100dd576101883660046100d2565b610135610125610170565b90816101209103126100dd5790565b90816101609103126100dd5790565b90816102009103126100dd5790565b906080828203126100dd57813567ffffffffffffffff81116100dd57816101e8918401610193565b92602083013567ffffffffffffffff81116100dd5782610209918501610193565b92604081013567ffffffffffffffff81116100dd578361022a9183016101a2565b92606082013567ffffffffffffffff81116100dd576100ef92016101b1565b346100dd5761013561012561025f3660046101c0565b92919091611639565b6100ef60046100e2565b6100ef610268565b346100dd5761028a3660046100d2565b610135610125610272565b6100ef60076100e2565b6100ef610295565b346100dd576102b73660046100d2565b61013561012561029f565b6001600160a01b031690565b610104906102c2565b60208101929161010891906102ce565b346100dd576102f73660046100d2565b610135610302610803565b604051918291826102d7565b7399c2268479b93fde36232351229815df80837e2390565b346100dd576103363660046100d2565b61013561030261030e565b805b036100dd57565b9050359061010882610341565b906020828203126100dd576100ef9161034a565b634e487b7160e01b600052602160045260246000fd5b6005111561038b57565b61036b565b9061010882610381565b6100ef90610390565b6101049061039a565b906103b9816020936102ce565b0190565b906103dd6103d66103cc845190565b8084529260200190565b9260200190565b9060005b8181106103ee5750505090565b90919261040861040160019286516103ac565b9460200190565b9291016103e1565b60005b8381106104235750506000910152565b8181015183820152602001610413565b61045461045d6020936103b993610448815190565b80835293849260200190565b95869101610410565b601f01601f191690565b6100ef916101c061054f61052a6101e0840161048b600087015160008701906103a3565b61049a60208701516020870152565b6104a960408701516040870152565b6104b860608701516060870152565b6104c760808701516080870152565b6104d660a087015160a0870152565b6104e560c087015160c0870152565b6104f460e087015160e0870152565b610505610100870151610100870152565b610516610120870151610120870152565b6101408601518582036101408701526103bd565b61053b610160860151610160860152565b610180850151848203610180860152610433565b926105616101a08201516101a0850152565b0151906101c0818403910152610433565b60208082526100ef92910190610467565b346100dd5761013561059e610599366004610357565b610f38565b60405191829182610572565b90604080610108936105c4600082015160008601906102ce565b6105d6602082015160208601906102ce565b0151910152565b906100ef906102a06101e06106a26102c08401610602600088015160008701906105aa565b610614602088015160608701906105aa565b610626604088015160c08701906105aa565b6106366060880151610120870152565b6106466080880151610140870152565b61065660a0880151610160870152565b61066960c08801516101808701906102ce565b61067c60e08801516101a08701906102ce565b6106906101008801516101c08701906102ce565b61012087015185820384870152610433565b946106b4610140820151610200860152565b6106c5610160820151610220860152565b6106d6610180820151610240860152565b6106e76101a0820151610260860152565b6106f86101c0820151610280860152565b01519101906102ce565b60208082526100ef929101906105dd565b346100dd5761013561072e610729366004610357565b610c56565b60405191829182610702565b6100ef633b9aca006100e2565b6100ef61073a565b346100dd5761075f3660046100d2565b610135610125610747565b6100ef906102c2906001600160a01b031682565b6100ef9061076a565b6100ef9061077e565b634e487b7160e01b600052604160045260246000fd5b90601f01601f1916810190811067ffffffffffffffff8211176107c857604052565b610790565b610343816102c2565b90505190610108826107cd565b906020828203126100dd576100ef916107d6565b6040513d6000823e3d90fd5b610834602061081c61081761081730610787565b610787565b638da5cb5b9061082b60405190565b93849260e01b90565b825260049082905afa9081156108775760009161084f575090565b6100ef915060203d8111610870575b61086881836107a6565b8101906107e3565b503d61085e565b6107f7565b9061010861088960405190565b92836107a6565b6100ef61020061087c565b6100ef606061087c565b6108ad61089b565b600080825260208201819052604082015290565b6100ef6108a5565b6108d1610890565b906108da6108c1565b8252602082016108e86108c1565b81526020016108f56108c1565b815260200160008152602001600081526020016000815260200160008152602001600081526020016000815260200160608152602001600081526020016000815260200160008152602001600081526020016000815260200160009052565b6100ef6108c9565b90610966906100ef565b600052602052604060002090565b6100ef906102c2565b6100ef9054610974565b90610104906102c2565b6100ef9081565b6100ef9054610991565b906101086109e460026109b361089b565b946109c66109c08261097d565b87610987565b6109de6109d56001830161097d565b60208801610987565b01610998565b6040840152565b634e487b7160e01b600052602260045260246000fd5b9060016002830492168015610a21575b6020831014610a1c57565b6109eb565b91607f1691610a11565b80546000939291610a48610a3e83610a01565b8085529360200190565b9160018116908115610a9a5750600114610a6157505050565b610a749192939450600052602060002090565b916000925b818410610a865750500190565b805484840152602090930192600101610a79565b92949550505060ff1916825215156020020190565b906100ef91610a2b565b90610108610ad392610aca60405190565b93848092610aaf565b03836107a6565b90610108610c436015610aeb610890565b94610afc610af8826109a2565b8752565b610b12610b0b600383016109a2565b6020880152565b610b28610b21600683016109a2565b6040880152565b610b3e610b3760098301610998565b6060880152565b610b54610b4d600a8301610998565b6080880152565b610b6a610b63600b8301610998565b60a0880152565b610b82610b79600c830161097d565b60c08801610987565b610b9a610b91600d830161097d565b60e08801610987565b610bb3610ba9600e830161097d565b6101008801610987565b610bca610bc2600f8301610ab9565b610120880152565b610be1610bd960108301610998565b610140880152565b610bf8610bf060118301610998565b610160880152565b610c0f610c0760128301610998565b610180880152565b610c26610c1e60138301610998565b6101a0880152565b610c3d610c3560148301610998565b6101c0880152565b0161097d565b6101e08401610987565b6100ef90610ada565b610c7e6100ef91610c65610954565b50600e6000805160206119688339815191525b0161095c565b610c4d565b6100ef6101e061087c565b610c96610c83565b9060008252602082016000815260200160008152602001600081526020016000815260200160008152602001600081526020016000815260200160008152602001600081526020016060815260200160008152602001606081526020016000815260200160609052565b6100ef610c8e565b60ff1690565b6100ef9054610d08565b9061010490610390565b90610d3d610d316103cc845490565b92600052602060002090565b9060005b818110610d4e5750505090565b909192610d6f610d68600192610d638761097d565b6103ac565b9460010190565b929101610d41565b906100ef91610d22565b90610108610ad392610d9260405190565b93848092610d77565b80546000939291610dae610a3e83610a01565b9160018116908115610a9a5750600114610dc757505050565b610dda9192939450600052602060002090565b916000925b818410610dec5750500190565b805484840152602090930192600101610ddf565b906100ef91610d9b565b90610108610ad392610e1b60405190565b93848092610e00565b90610108610f27600e610e35610c83565b94610e48610e4282610d0e565b87610d18565b610e57610b0b60018301610998565b610e66610b2160028301610998565b610e75610b3760038301610998565b610e84610b4d60048301610998565b610e93610b6360058301610998565b610ea9610ea260068301610998565b60c0880152565b610ebf610eb860078301610998565b60e0880152565b610ed6610ece60088301610998565b610100880152565b610ee5610bc260098301610998565b610ef4610bd9600a8301610d81565b610f03610bf0600b8301610998565b610f12610c07600c8301610e0a565b610f21610c1e600d8301610998565b01610e0a565b6101c0840152565b6100ef90610e24565b610f5e6100ef91610f47610d00565b50600f600080516020611968833981519152610c78565b610f2f565b356100ef81610341565b90503590610108826107cd565b67ffffffffffffffff81116107c857602090601f01601f19160190565b90826000939282370152565b90929192610fb8610fb382610f7a565b61087c565b938185526020850190828401116100dd5761010892610f97565b9080601f830112156100dd578160206100ef93359101610fa3565b919091610120818403126100dd5761100661012061087c565b9260006110138284610f6d565b9085015260206110258282850161034a565b9085015260406110378282850161034a565b9085015260606110498282850161034a565b90850152608061105b82828501610f6d565b9085015260a061106d82828501610f6d565b9085015260c061107f82828501610f6d565b9085015260e06110918282850161034a565b9085015261010082013567ffffffffffffffff81116100dd576110b49201610fd2565b610100830152565b6100ef903690610fed565b9050519061010882610341565b906020828203126100dd576100ef916110c7565b6100ef91610100610120820192611107600082015160008501906102ce565b61111660208201516020850152565b61112560408201516040850152565b61113460608201516060850152565b611146608082015160808501906102ce565b61115860a082015160a08501906102ce565b61116a60c082015160c08501906102ce565b61117960e082015160e0850152565b015190610100818403910152610433565b60208082526100ef929101906110e8565b356100ef816107cd565b6102c26100ef6100ef9290565b6100ef906111a5565b919091610160818403126100dd576111d461016061087c565b9260006111e18284610f6d565b9085015260206111f38282850161034a565b9085015260406112058282850161034a565b9085015260606112178282850161034a565b9085015260806112298282850161034a565b9085015260a061123b8282850161034a565b9085015260c061124d82828501610f6d565b9085015260e061125f82828501610f6d565b9085015261010061127282828501610f6d565b908501526101206112858282850161034a565b9085015261014082013567ffffffffffffffff81116100dd576112a89201610fd2565b610140830152565b6100ef9036906111bb565b6100ef916101406101608201926112da600082015160008501906102ce565b6112e960208201516020850152565b6112f860408201516040850152565b61130760608201516060850152565b61131660808201516080850152565b61132560a082015160a0850152565b61133760c082015160c08501906102ce565b61134960e082015160e08501906102ce565b61135d6101008201516101008501906102ce565b61136e610120820151610120850152565b015190610140818403910152610433565b60208082526100ef929101906112bb565b919091610200818403126100dd576113a961020061087c565b9260006113b68284610f6d565b9085015260206113c88282850161034a565b9085015260406113da82828501610f6d565b9085015260606113ec8282850161034a565b9085015260806113fe82828501610f6d565b9085015260a06114108282850161034a565b9085015260c061142282828501610f6d565b9085015260e06114348282850161034a565b908501526101006114478282850161034a565b9085015261012061145a8282850161034a565b9085015261014061146d8282850161034a565b9085015261016061148082828501610f6d565b9085015261018061149382828501610f6d565b908501526101a082013567ffffffffffffffff81116100dd57816114b8918401610fd2565b6101a08501526101c06114cd8282850161034a565b908501526101e082013567ffffffffffffffff81116100dd576114f09201610fd2565b6101e0830152565b6100ef903690611390565b6100ef916101e06116056102008301611524600086015160008601906102ce565b61153360208601516020860152565b611545604086015160408601906102ce565b61155460608601516060860152565b611566608086015160808601906102ce565b61157560a086015160a0860152565b61158760c086015160c08601906102ce565b61159660e086015160e0860152565b6115a7610100860151610100860152565b6115b8610120860151610120860152565b6115c9610140860151610140860152565b6115dd6101608601516101608601906102ce565b6115f16101808601516101808601906102ce565b6101a08501518482036101a0860152610433565b926116176101c08201516101c0850152565b0151906101e0818403910152610433565b60208082526100ef92910190611503565b9092909161165261164c60408501610f63565b936110bc565b90731ecf986a719271846a04f095c426d90d564e484291602061168a637c0d54d361169561167f60405190565b948593849360e01b90565b83526004830161118a565b0381865af48015610877576116b2916000916117ec575b5061192d565b946116bc8161119b565b6116d76116d16116cc60006111b2565b6102c2565b916102c2565b1415906116ef6116e960408301610f63565b916110bc565b602061168a6311b2eee261170561167f60405190565b0381885af4801561087757611721916000916117ec575061192d565b9161173761173160408601610f63565b946112b0565b97602061175963fed985fe61176461174e60405190565b9c8d93849360e01b90565b83526004830161137f565b0381895af48015610877576117866020916117c69b60009161181a575061192d565b9661179c61179660e08b01610f63565b996114f8565b906117bb638ac03f336117ae60405190565b9d8e948593849360e01b90565b835260048301611628565b03915af4988915610877576100ef996117e6916000916117ec575061192d565b97611859565b61180d915060203d8111611813575b61180581836107a6565b8101906110d4565b386116ac565b503d6117fb565b61180d9150833d81116118135761180581836107a6565b634e487b7160e01b600052601160045260246000fd5b9190820391821161185457565b611831565b93979195969497611868600090565b506000805160206119688339815191529788957f5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b0d936118a7908561095c565b6118b090610998565b6118b991611847565b976000146100ef9a6118f96118f46119056118ff9c6118f99b6118f49b61190c996118ff98611913576118f46118f9916118ff94508d61095c565b610998565b90611847565b9061191b565b948761095c565b965061095c565b505050600019905b9080821015611928575090565b919050565b6100ef9061194a600b6000805160206119688339815191526109de565b6042916040519161190160f01b835260028301526022820152209056fe5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00a2646970667358221220bfc2e75dd7a5f1fdcc36208ffa1251cd69fbff7ad0db5356249e67444674368464736f6c63430008150033"
+}

@@ -5,7 +5,6 @@ import { duration } from '@nomicfoundation/hardhat-network-helpers/dist/src/help
 import { ethers } from 'hardhat';
 import { TimelockController__factory } from '../typechain';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
-import config from '../utils/config';
 
 /**
  * Deploy TimelockController contract using the generic factory.
@@ -15,10 +14,7 @@ export const deploy = async () => {
     console.log('Deploying TimelockController..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const [owner] = await ethers.getSigners();
-    const salt = process.env.SALT || config.getChainConfigOrDefault(chainId).v5.salt;
-
-    // Initialize factory deployer
-    const factoryDeployer = new FactoryDeployer(owner, salt);
+    const factoryDeployer = new FactoryDeployer(owner, chainId);
 
     // Deploy TimelockController
     const ONE_WEEK_IN_SECONDS = duration.days(7);
@@ -38,7 +34,7 @@ export const deploy = async () => {
     ];
     const constructorArgs = [ONE_WEEK_IN_SECONDS, ADMINISTRATORS, PROPOSERS, EXECUTORS];
     const timelockFactory = new TimelockController__factory(owner);
-    await factoryDeployer.deployWithFactory(timelockFactory, constructorArgs);
+    await factoryDeployer.deployContract(timelockFactory, constructorArgs);
 };
 
 if (require.main === module) {

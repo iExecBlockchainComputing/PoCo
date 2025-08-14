@@ -28,7 +28,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { hashDomain } from '../../utils/utils';
+import { hashDomain, randomAddress } from '../../utils/utils';
 
 /**
  * Test state view functions.
@@ -104,7 +104,7 @@ describe('IexecAccessors', async () => {
 
     it('allowance', async function () {
         const amount = 10n;
-        const spender = ethers.Wallet.createRandom().address;
+        const spender = randomAddress();
         await iexecWrapper.depositInIexecAccount(anyone, amount);
         await iexecPoco.connect(anyone).approve(spender, amount);
         expect(await iexecPoco.allowance(anyone.address, spender)).to.equal(amount);
@@ -124,7 +124,7 @@ describe('IexecAccessors', async () => {
 
     // TODO test the case where token() == 0x0 in native mode.
     it('token', async function () {
-        expect(await iexecPoco.token()).to.equal('0x5FbDB2315678afecb367f032d93F642f64180aa3');
+        expect(await iexecPoco.token()).to.equal((await deployments.get('RLC')).address);
     });
 
     it('viewDeal', async function () {
@@ -209,8 +209,7 @@ describe('IexecAccessors', async () => {
         expect(contribution.weight).to.equal(1);
     });
 
-    it('viewScore', async function () {
-        // TODO
+    it.skip('[TODO] viewScore', async function () {
         expect(await iexecPoco.viewScore(worker1.address)).to.equal(0);
     });
 

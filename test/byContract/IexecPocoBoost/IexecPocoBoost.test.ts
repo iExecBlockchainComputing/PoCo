@@ -16,14 +16,14 @@ import {
     IOracleConsumer__factory,
     IexecAccessors,
     IexecAccessors__factory,
-    IexecMaintenance,
-    IexecMaintenance__factory,
+    IexecConfiguration,
+    IexecConfiguration__factory,
     IexecOrderManagement__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    IexecPocoBoostDelegate,
-    IexecPocoBoostDelegate__factory,
+    IexecPocoBoostAccessorsFacet__factory,
+    IexecPocoBoostFacet,
+    IexecPocoBoostFacet__factory,
     OwnableMock__factory,
     TestClient,
     TestClient__factory,
@@ -58,6 +58,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { randomAddress } from '../../utils/utils';
 
 const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0n;
@@ -69,11 +70,11 @@ const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 const someSignature = '0xabcd'; // contract signatures could have arbitrary formats
-const randomEOAAddress = ethers.Wallet.createRandom().address;
+const randomEOAAddress = randomAddress();
 
 let proxyAddress: string;
-let iexecPocoBoostInstance: IexecPocoBoostDelegate;
-let iexecMaintenanceAsAdmin: IexecMaintenance;
+let iexecPocoBoostInstance: IexecPocoBoostFacet;
+let iexecConfigurationAsAdmin: IexecConfiguration;
 let iexecAccessor: IexecAccessors;
 let oracleConsumerInstance: TestClient;
 let gasWasterClientInstance: GasWasterClient;
@@ -124,8 +125,8 @@ describe('IexecPocoBoost', function () {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         domain = iexecWrapper.getDomain();
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPocoBoostInstance = IexecPocoBoostDelegate__factory.connect(proxyAddress, anyone);
-        iexecMaintenanceAsAdmin = IexecMaintenance__factory.connect(
+        iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, anyone);
+        iexecConfigurationAsAdmin = IexecConfiguration__factory.connect(
             proxyAddress,
             accounts.iexecAdmin,
         );
@@ -173,7 +174,7 @@ describe('IexecPocoBoost', function () {
                 beneficiary: beneficiary.address,
                 tag: teeDealTag,
                 prices: ordersPrices,
-                callback: ethers.Wallet.createRandom().address,
+                callback: randomAddress(),
             });
             const {
                 appOrder,
@@ -304,7 +305,7 @@ describe('IexecPocoBoost', function () {
                 beneficiary: beneficiary.address,
                 tag: teeDealTag,
                 prices: ordersPrices,
-                callback: ethers.Wallet.createRandom().address,
+                callback: randomAddress(),
             });
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             // Should match orders with low app order volume
@@ -1539,7 +1540,7 @@ describe('IexecPocoBoost', function () {
                 requester: requester.address,
                 tag: teeDealTag,
             });
-            await iexecMaintenanceAsAdmin.setTeeBroker(sms.address).then((tx) => tx.wait());
+            await iexecConfigurationAsAdmin.setTeeBroker(sms.address).then((tx) => tx.wait());
 
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester, taskIndex);
@@ -1618,7 +1619,7 @@ describe('IexecPocoBoost', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
-                callback: ethers.Wallet.createRandom().address,
+                callback: randomAddress(),
             });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester, taskIndex);
@@ -1908,7 +1909,7 @@ describe('IexecPocoBoost', function () {
                 assets: ordersAssets,
                 requester: requester.address,
             });
-            await iexecMaintenanceAsAdmin.setTeeBroker(sms.address).then((tx) => tx.wait());
+            await iexecConfigurationAsAdmin.setTeeBroker(sms.address).then((tx) => tx.wait());
 
             await signOrders(domain, orders, ordersActors);
             await iexecPocoBoostInstance
@@ -1971,7 +1972,7 @@ describe('IexecPocoBoost', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 tag: teeDealTag,
-                callback: ethers.Wallet.createRandom().address,
+                callback: randomAddress(),
             });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester, taskIndex);
@@ -2442,7 +2443,7 @@ async function expectFrozen(account: string, expectedFrozenValue: bigint) {
 }
 
 async function viewDealBoost(dealId: string) {
-    return await IexecPocoBoostAccessorsDelegate__factory.connect(
+    return await IexecPocoBoostAccessorsFacet__factory.connect(
         proxyAddress,
         ethers.provider,
     ).viewDealBoost(dealId);

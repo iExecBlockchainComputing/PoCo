@@ -26,3 +26,7 @@ export async function setZeroAddressBalance() {
         ethers.toBeHex(ethers.parseEther(amount.toString())),
     ]);
 }
+
+export function randomAddress() {
+    return ethers.Wallet.createRandom().address;
+}

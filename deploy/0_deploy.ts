@@ -3,150 +3,161 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
-import { ethers } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
+import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
-    ENSIntegrationDelegate__factory,
-    ERC1538Proxy__factory,
-    ERC1538Query,
-    ERC1538QueryDelegate__factory,
-    ERC1538Query__factory,
-    ERC1538Update,
-    ERC1538UpdateDelegate__factory,
-    ERC1538Update__factory,
-    IexecAccessorsABILegacyDelegate__factory,
-    IexecAccessorsDelegate__factory,
+    DiamondCutFacet__factory,
+    DiamondInit__factory,
+    DiamondLoupeFacet,
+    DiamondLoupeFacet__factory,
+    Diamond__factory,
+    IexecAccessorsABILegacyFacet__factory,
+    IexecAccessorsFacet__factory,
     IexecAccessors__factory,
-    IexecCategoryManagerDelegate__factory,
+    IexecCategoryManagerFacet__factory,
     IexecCategoryManager__factory,
-    IexecERC20Delegate__factory,
-    IexecEscrowNativeDelegate__factory,
-    IexecEscrowTokenDelegate__factory,
+    IexecConfigurationExtraFacet__factory,
+    IexecConfigurationFacet__factory,
+    IexecERC20Facet__factory,
+    IexecEscrowNativeFacet__factory,
+    IexecEscrowTokenFacet__factory,
     IexecLibOrders_v5__factory,
-    IexecMaintenanceDelegate__factory,
-    IexecMaintenanceExtraDelegate__factory,
-    IexecOrderManagementDelegate__factory,
-    IexecPoco1Delegate__factory,
-    IexecPoco2Delegate__factory,
-    IexecPocoAccessorsDelegate__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
-    IexecPocoBoostDelegate__factory,
-    IexecRelayDelegate__factory,
+    IexecOrderManagementFacet__factory,
+    IexecPoco1Facet__factory,
+    IexecPoco2Facet__factory,
+    IexecPocoAccessorsFacet__factory,
+    IexecPocoBoostAccessorsFacet__factory,
+    IexecPocoBoostFacet__factory,
+    IexecRelayFacet__factory,
+    OwnershipFacet__factory,
     RLC__factory,
     WorkerpoolRegistry__factory,
 } from '../typechain';
+import { DiamondArgsStruct } from '../typechain/contracts/Diamond';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
-import config from '../utils/config';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
-import { linkContractToProxy } from '../utils/proxy-tools';
+import config from '../utils/config';
+import { getFunctionSelectors, linkContractToProxy } from '../utils/proxy-tools';
+import { getLibDiamondConfigOrEmpty } from '../utils/tools';
 
-/**
- * @dev Deploying contracts with `npx hardhat deploy` task brought by
- * `hardhat-deploy` plugin.
- * Previous deployments made with `npx hardhat run scripts/deploy.ts` used to
- * hang at the end of deployments (terminal did not return at the end).
- *
- * Note:
- * The`hardhat-deploy` plugin is currently being under used compared to all
- * features available in it.
- */
+let factoryDeployer: FactoryDeployer;
+
+// TODO: refactor this file to differentiate hardhat deployment from
+// other chains deployment.
 export default async function deploy() {
     console.log('Deploying PoCo..');
-    const chainId = (await ethers.provider.getNetwork()).chainId;
-    const [owner] = await ethers.getSigners();
+    const network = await ethers.provider.getNetwork();
+    const chainId = network.chainId;
+    const [deployer] = await ethers.getSigners();
+    console.log(`Deployer: ${deployer.address}`);
+    console.log(`Network: ${network.name} (${chainId})`);
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
-    const salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
-    const factoryDeployer = new FactoryDeployer(owner, salt);
+    // TODO: remove the fallback on deployer address to avoid deployement
+    // misconfiguration.
+    const ownerAddress = deploymentOptions.owner || deployer.address;
+    factoryDeployer = new FactoryDeployer(deployer, chainId);
     // Deploy RLC
     const isTokenMode = !config.isNativeChain(deploymentOptions);
     let rlcInstanceAddress = isTokenMode
-        ? await getOrDeployRlc(deploymentOptions.token!, owner) // token
+        ? await getOrDeployRlc(deploymentOptions.token!, deployer, ownerAddress) // token
         : ZeroAddress; // native
     console.log(`RLC: ${rlcInstanceAddress}`);
-    // Deploy ERC1538 proxy contracts
-    const erc1538UpdateAddress = await factoryDeployer.deployWithFactory(
-        new ERC1538UpdateDelegate__factory(),
-    );
-    const transferOwnershipCall = await Ownable__factory.connect(
+    // Prepare transferOwnership call to the deployer.
+    // Ownership transfer should be done in the same deployment transaction
+    // otherwise it is not possible to transfer ownership before hand if the
+    // factory is set as the owner.
+    const transferOwnershipToDeployerCall = await Ownable__factory.connect(
         ZeroAddress, // any is fine
-        owner, // any is fine
+        ethers.provider,
     )
-        .transferOwnership.populateTransaction(owner.address)
+        .transferOwnership.populateTransaction(deployer.address)
         .then((tx) => tx.data)
         .catch(() => {
             throw new Error('Failed to prepare transferOwnership data');
         });
-    const erc1538ProxyAddress = await factoryDeployer.deployWithFactory(
-        new ERC1538Proxy__factory(),
-        [erc1538UpdateAddress],
-        transferOwnershipCall,
-    );
-    const erc1538: ERC1538Update = ERC1538Update__factory.connect(erc1538ProxyAddress, owner);
-    console.log(`IexecInstance found at address: ${await erc1538.getAddress()}`);
-    // Deploy library & modules
-    const iexecLibOrdersAddress = await factoryDeployer.deployWithFactory(
+    /**
+     * Deploy proxy and facets.
+     */
+    const diamondProxyAddress = await deployDiamondProxyWithDefaultFacets(deployer);
+    const diamond = DiamondCutFacet__factory.connect(diamondProxyAddress, deployer);
+    console.log(`IexecInstance found at address: ${await diamond.getAddress()}`);
+    // Deploy library & facets
+    const iexecLibOrdersAddress = await factoryDeployer.deployContract(
         new IexecLibOrders_v5__factory(),
     );
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
-    const modules = [
-        new ERC1538QueryDelegate__factory(),
-        new IexecAccessorsDelegate__factory(),
-        new IexecAccessorsABILegacyDelegate__factory(),
-        new IexecCategoryManagerDelegate__factory(),
-        new IexecERC20Delegate__factory(),
-        isTokenMode
-            ? new IexecEscrowTokenDelegate__factory()
-            : new IexecEscrowNativeDelegate__factory(),
-        new IexecMaintenanceDelegate__factory(iexecLibOrders),
-        new IexecOrderManagementDelegate__factory(iexecLibOrders),
-        new IexecPoco1Delegate__factory(iexecLibOrders),
-        new IexecPoco2Delegate__factory(),
-        new IexecRelayDelegate__factory(),
-        new ENSIntegrationDelegate__factory(),
-        new IexecMaintenanceExtraDelegate__factory(),
-        new IexecPocoAccessorsDelegate__factory(iexecLibOrders),
-        new IexecPocoBoostDelegate__factory(iexecLibOrders),
-        new IexecPocoBoostAccessorsDelegate__factory(),
+    const isArbitrumMainnet = (await ethers.provider.getNetwork()).chainId === 42161n;
+    const facets = [
+        new IexecAccessorsABILegacyFacet__factory(),
+        new IexecAccessorsFacet__factory(),
+        new IexecCategoryManagerFacet__factory(),
+        new IexecConfigurationExtraFacet__factory(),
+        new IexecConfigurationFacet__factory(iexecLibOrders),
+        new IexecERC20Facet__factory(),
+        isTokenMode ? new IexecEscrowTokenFacet__factory() : new IexecEscrowNativeFacet__factory(),
+        // new IexecEscrowTokenSwapFacet__factory(), not deployed.
+        new IexecOrderManagementFacet__factory(iexecLibOrders),
+        new IexecPoco1Facet__factory(iexecLibOrders),
+        new IexecPoco2Facet__factory(),
+        new IexecPocoAccessorsFacet__factory(iexecLibOrders),
+        ...(!isArbitrumMainnet
+            ? [
+                  new IexecPocoBoostFacet__factory(iexecLibOrders), // not deployed on Arbitrum mainnet
+                  new IexecPocoBoostAccessorsFacet__factory(), // not deployed on Arbitrum mainnet
+              ]
+            : []),
+        new IexecRelayFacet__factory(),
     ];
-    for (const module of modules) {
-        const address = await factoryDeployer.deployWithFactory(module);
-        await linkContractToProxy(erc1538, address, module);
+    for (const facet of facets) {
+        const address = await factoryDeployer.deployContract(facet);
+        await linkContractToProxy(diamond, address, facet);
     }
-    // Verify linking on ERC1538Proxy
-    const erc1538QueryInstance: ERC1538Query = ERC1538Query__factory.connect(
-        erc1538ProxyAddress,
-        owner,
+    // Verify linking on Diamond Proxy
+    const diamondLoupeFacetInstance: DiamondLoupeFacet = DiamondLoupeFacet__factory.connect(
+        diamondProxyAddress,
+        deployer,
     );
-    const functionCount = await erc1538QueryInstance.totalFunctions();
-    console.log(`The deployed ERC1538Proxy now supports ${functionCount} functions:`);
-    for (let i = 0; i < Number(functionCount); i++) {
-        const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
-        console.log(`[${i}] ${contract} ${method}`);
-    }
-    const appRegistryAddress = await factoryDeployer.deployWithFactory(
+    const diamondFacets = await diamondLoupeFacetInstance.facets();
+    const functionCount = diamondFacets
+        .map((facet) => facet.functionSelectors.length)
+        .reduce((acc, curr) => acc + curr, 0);
+    console.log(`The deployed Diamond Proxy now supports ${functionCount} functions:`);
+    // TODO
+    // for (let i = 0; i < Number(functionCount); i++) {
+    //     const [method, , contract] = await diamondLoupeFacetInstance.functionByIndex(i);
+    //     console.log(`[${i}] ${contract} ${method}`);
+    // }
+    /**
+     * Deploy registries and link them to the proxy.
+     */
+    const appRegistryAddress = await factoryDeployer.deployContract(
         new AppRegistry__factory(),
         [],
-        transferOwnershipCall,
+        transferOwnershipToDeployerCall,
     );
-    const datasetRegistryAddress = await factoryDeployer.deployWithFactory(
+    const datasetRegistryAddress = await factoryDeployer.deployContract(
         new DatasetRegistry__factory(),
         [],
-        transferOwnershipCall,
+        transferOwnershipToDeployerCall,
     );
-    const workerpoolRegistryAddress = await factoryDeployer.deployWithFactory(
+    const workerpoolRegistryAddress = await factoryDeployer.deployContract(
         new WorkerpoolRegistry__factory(),
         [],
-        transferOwnershipCall,
+        transferOwnershipToDeployerCall,
     );
 
-    const appRegistryInstance = AppRegistry__factory.connect(appRegistryAddress, owner);
-    const datasetRegistryInstance = DatasetRegistry__factory.connect(datasetRegistryAddress, owner);
+    const appRegistryInstance = AppRegistry__factory.connect(appRegistryAddress, deployer);
+    const datasetRegistryInstance = DatasetRegistry__factory.connect(
+        datasetRegistryAddress,
+        deployer,
+    );
     const workerpoolRegistryInstance = WorkerpoolRegistry__factory.connect(
         workerpoolRegistryAddress,
-        owner,
+        deployer,
     );
     // Base URI configuration from config.json
     const baseURIApp = config.registriesBaseUri.app;
@@ -177,15 +188,16 @@ export default async function deploy() {
     }
 
     // Set main configuration
-    const iexecAccessorsInstance = IexecAccessors__factory.connect(erc1538ProxyAddress, owner);
+    const iexecAccessorsInstance = IexecAccessors__factory.connect(diamondProxyAddress, deployer);
     const iexecInitialized = (await iexecAccessorsInstance.eip712domain_separator()) != ZeroHash;
     if (!iexecInitialized) {
-        await IexecMaintenanceDelegate__factory.connect(erc1538ProxyAddress, owner)
+        // TODO replace this with DiamondInit.init().
+        await IexecConfigurationFacet__factory.connect(diamondProxyAddress, deployer)
             .configure(
                 rlcInstanceAddress,
                 'Staked RLC',
                 'SRLC',
-                9, // TODO: generic ?
+                9,
                 appRegistryAddress,
                 datasetRegistryAddress,
                 workerpoolRegistryAddress,
@@ -197,7 +209,7 @@ export default async function deploy() {
     const catCountBefore = await iexecAccessorsInstance.countCategory();
     for (let i = Number(catCountBefore); i < config.categories.length; i++) {
         const category = config.categories[i];
-        await IexecCategoryManager__factory.connect(erc1538ProxyAddress, owner)
+        await IexecCategoryManager__factory.connect(diamondProxyAddress, deployer)
             .createCategory(
                 category.name,
                 JSON.stringify(category.description),
@@ -210,14 +222,111 @@ export default async function deploy() {
     for (let i = 0; i < Number(catCountAfter); i++) {
         console.log(`Category ${i}: ${await iexecAccessorsInstance.viewCategory(i)}`);
     }
+    // Transfer ownership of all contracts to the configured owner.
+    await transferOwnershipToFinalOwner(
+        diamondProxyAddress,
+        appRegistryAddress,
+        datasetRegistryAddress,
+        workerpoolRegistryAddress,
+        deployer,
+        ownerAddress,
+    );
+    if (network.name !== 'hardhat' && network.name !== 'localhost') {
+        console.log('Waiting for block explorer to index the contracts...');
+        await new Promise((resolve) => setTimeout(resolve, 60000));
+        await import('../scripts/verify').then((module) => module.default());
+    }
 }
 
-async function getOrDeployRlc(token: string, owner: SignerWithAddress) {
-    return token // token
-        ? token
-        : await new RLC__factory()
-              .connect(owner)
-              .deploy()
-              .then((contract) => contract.waitForDeployment())
-              .then((contract) => contract.getAddress());
+async function getOrDeployRlc(
+    token: string,
+    deployer: SignerWithAddress,
+    ownerAddress: string,
+): Promise<string> {
+    const rlcFactory = new RLC__factory().connect(deployer);
+    let rlcAddress: string;
+
+    if (token) {
+        console.log(`Using existing RLC token at: ${token}`);
+        rlcAddress = token;
+    } else {
+        console.log('Deploying new RLC token...');
+        rlcAddress = await rlcFactory
+            .deploy()
+            .then((contract) => contract.waitForDeployment())
+            .then((contract) => contract.getAddress());
+        console.log(`New RLC token deployed at: ${rlcAddress}`);
+        await RLC__factory.connect(rlcAddress, deployer)
+            .transferOwnership(ownerAddress)
+            .then((tx) => tx.wait());
+        console.log(`Ownership of RLC token transferred to: ${ownerAddress}`);
+    }
+
+    await deployments.save('RLC', {
+        abi: (rlcFactory as any).constructor.abi,
+        address: rlcAddress,
+        bytecode: (await rlcFactory.getDeployTransaction()).data,
+        deployedBytecode: await ethers.provider.getCode(rlcAddress),
+    });
+    return rlcAddress;
+}
+
+/**
+ * Deploys and initializes a Diamond proxy contract with default facets.
+ * @returns The address of the deployed Diamond proxy contract.
+ */
+async function deployDiamondProxyWithDefaultFacets(deployer: SignerWithAddress): Promise<string> {
+    const initAddress = await factoryDeployer.deployContract(new DiamondInit__factory());
+    const initCalldata = DiamondInit__factory.createInterface().encodeFunctionData('init');
+    const libDiamondConfig = await getLibDiamondConfigOrEmpty(deployer);
+    // Deploy required proxy facets.
+    const facetFactories = [
+        new DiamondCutFacet__factory(libDiamondConfig),
+        new DiamondLoupeFacet__factory(),
+        new OwnershipFacet__factory(libDiamondConfig),
+    ];
+    const facetCuts: FacetCut[] = [];
+    for (let i = 0; i < facetFactories.length; i++) {
+        const facetFactory = facetFactories[i];
+        const facetAddress = await factoryDeployer.deployContract(facetFactory);
+        facetCuts.push({
+            facetAddress: facetAddress,
+            action: FacetCutAction.Add,
+            functionSelectors: getFunctionSelectors(facetFactory),
+        });
+    }
+    // Set diamond constructor arguments
+    const diamondArgs: DiamondArgsStruct = {
+        owner: deployer.address,
+        init: initAddress,
+        initCalldata: initCalldata,
+    };
+    return await factoryDeployer.deployContract(new Diamond__factory(libDiamondConfig), [
+        facetCuts,
+        diamondArgs,
+    ]);
+}
+
+/**
+ * Prepares the transferOwnership calls for all provided contracts.
+ */
+async function transferOwnershipToFinalOwner(
+    diamondAddress: string,
+    appRegistryAddress: string,
+    datasetRegistryAddress: string,
+    workerpoolRegistryAddress: string,
+    currentOwner: SignerWithAddress,
+    ownerAddress: string,
+) {
+    for (const contract of [
+        { name: 'Diamond', address: diamondAddress },
+        { name: 'AppRegistry', address: appRegistryAddress },
+        { name: 'DatasetRegistry', address: datasetRegistryAddress },
+        { name: 'WorkerpoolRegistry', address: workerpoolRegistryAddress },
+    ]) {
+        await Ownable__factory.connect(contract.address, currentOwner)
+            .transferOwnership(ownerAddress)
+            .then((tx) => tx.wait());
+        console.log(`Owner of ${contract.name}: ${ownerAddress}`);
+    }
 }

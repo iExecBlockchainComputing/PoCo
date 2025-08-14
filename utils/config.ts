@@ -1,5 +1,5 @@
-import { Category } from './poco-tools';
 import json from '../config/config.json';
+import { Category } from './poco-tools';
 
 const config = json as Config;
 
@@ -38,7 +38,9 @@ type Config = {
 type ChainConfig = {
     _comment: string;
     asset: string;
-    token?: string | null;
+    token?: string | null; // The token deployed should be compatible with Approve and call
+    richman?: string | null; // The richman account is needed if the token is already deployed
+    owner?: string | null;
     uniswap?: boolean;
     etoken?: string;
     v3: {
@@ -48,12 +50,16 @@ type ChainConfig = {
         WorkerpoolRegistry: string | null;
     };
     v5: {
-        usefactory: boolean;
-        salt: string;
+        factory?: string;
+        factoryType?: string;
+        salt?: string;
         AppRegistry?: string;
         DatasetRegistry?: string;
         WorkerpoolRegistry?: string;
-        ERC1538Proxy?: string;
+        ERC1538Proxy?: string; // Deprecated, use DiamondProxy instead TODO: to remove
+        // TODO: check if this is still needed or if hre.deployments.get('Diamond') is enough.
+        DiamondProxy?: string;
+        // TODO: check if this is still needed or if hre.deployments.get('IexecLibOrders_v5') is enough.
         IexecLibOrders_v5?: string;
     };
 };

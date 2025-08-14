@@ -4,10 +4,10 @@
 import { deployments, ethers } from 'hardhat';
 import {
     GenericFactory__factory,
-    IexecOrderManagementDelegate__factory,
-    IexecPoco1Delegate__factory,
-    IexecPoco2Delegate__factory,
-    IexecPocoAccessorsDelegate__factory,
+    IexecOrderManagementFacet__factory,
+    IexecPoco1Facet__factory,
+    IexecPoco2Facet__factory,
+    IexecPocoAccessorsFacet__factory,
 } from '../../typechain';
 import config from '../../utils/config';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
@@ -34,20 +34,20 @@ export async function deployModules() {
     };
     const modules = [
         {
-            name: 'IexecOrderManagementDelegate',
-            contract: new IexecOrderManagementDelegate__factory(libraries),
+            name: 'IexecOrderManagementFacet',
+            contract: new IexecOrderManagementFacet__factory(libraries),
         },
         {
-            name: 'IexecPoco1Delegate',
-            contract: new IexecPoco1Delegate__factory(libraries),
+            name: 'IexecPoco1Facet',
+            contract: new IexecPoco1Facet__factory(libraries),
         },
         {
-            name: 'IexecPoco2Delegate',
-            contract: new IexecPoco2Delegate__factory(),
+            name: 'IexecPoco2Facet',
+            contract: new IexecPoco2Facet__factory(),
         },
         {
-            name: 'IexecPocoAccessorsDelegate',
-            contract: new IexecPocoAccessorsDelegate__factory(libraries),
+            name: 'IexecPocoAccessorsFacet',
+            contract: new IexecPocoAccessorsFacet__factory(libraries),
         },
     ];
     const genericFactoryInstance = GenericFactory__factory.connect(genericFactoryAddress, deployer);

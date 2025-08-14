@@ -1,0 +1,78 @@
+name: Deploy PoCo Contracts
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Network'
+        required: true
+        type: choice
+        options:
+          - hardhat
+          - arbitrumSepolia
+          - arbitrum
+          - avalancheFujiTestnet
+          - bellecour
+        default: 'hardhat'
+
+jobs:
+  # Build and test before deploying.
+  build-and-test:
+    uses: ./.github/workflows/main.yml
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for saving deployment
+    environment: ${{ inputs.network }} # Use the selected environment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # Cache dependencies
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # TODO activate later.
+      # - name: Run fork tests
+      #   run: |
+      #     if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+      #       npm run test:arbitrumSepolia
+      #     elif [ "${{ inputs.network }}" == "avalancheFujiTestnet" ]; then
+      #       npm run test:fuji
+      #     fi
+
+      - name: Deploy contracts
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+          ARBISCAN_API_KEY: ${{ secrets.ARBISCAN_API_KEY }}
+          # TODO: Use Etherscan V2 API
+          # EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
+          # IS_VERIFICATION_API_V2: ${{ vars.IS_VERIFICATION_API_V2 }}
+        run: npm run deploy -- --network ${{ inputs.network }}
+
+      - name: Update config.json with Diamond address
+        if: inputs.network != 'hardhat'
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }} # Fixes hardhat issue.
+        run: npx hardhat run scripts/tools/update-config.ts --network ${{ inputs.network }}
+
+      - name: Save deployment artifacts and updated config
+        if: inputs.network != 'hardhat'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: Save deployment artifacts for ${{ inputs.network }} (run_id: ${{ github.run_id }})'
+          file_pattern: 'deployments/${{ inputs.network }}/* config/config.json'
+          commit_user_name: 'GitHub Actions Bot'
+          commit_user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_author: 'GitHub Actions Bot <github-actions[bot]@users.noreply.github.com>'

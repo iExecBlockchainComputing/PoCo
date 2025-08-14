@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { BytesLike, ZeroAddress } from 'ethers';
-import hre, { deployments, ethers } from 'hardhat';
+import hre, { ethers } from 'hardhat';
 import {
     AppRegistry,
     AppRegistry__factory,
@@ -13,14 +13,9 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
-    ENSRegistry,
-    ENSRegistry__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     InitializableUpgradeabilityProxy__factory,
-    PublicResolver,
-    PublicResolver__factory,
-    ReverseRegistrar__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
     Workerpool__factory,
@@ -30,15 +25,13 @@ import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { bigintToAddress } from '../../../utils/tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-const randomAddress = () => ethers.Wallet.createRandom().address;
+import { randomAddress } from '../../utils/utils';
 
 describe('Registries', () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceNative;
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
-    let ensRegistry: ENSRegistry;
-    let ensRegistryAddress: string;
     let [appRegistry, appRegistryAsAdmin]: AppRegistry[] = [];
     let appRegistryAddress: string;
     let [datasetRegistry, datasetRegistryAsAdmin]: DatasetRegistry[] = [];
@@ -54,8 +47,6 @@ describe('Registries', () => {
     async function initFixture() {
         ({ iexecAdmin, appProvider, datasetProvider, scheduler, anyone } =
             await getIexecAccounts());
-        ensRegistryAddress = (await deployments.get('ENSRegistry')).address;
-        ensRegistry = ENSRegistry__factory.connect(ensRegistryAddress, anyone);
 
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
 
@@ -125,72 +116,6 @@ describe('Registries', () => {
             await expect(
                 workerpoolRegistryAsAdmin.initialize(ZeroAddress),
             ).to.be.revertedWithoutReason();
-        });
-    });
-
-    describe('setName', () => {
-        let reverseResolver: PublicResolver;
-        let [appRegistryNameHash, datasetRegistryNameHash, workerpoolRegistryNameHash]: string[] =
-            [];
-
-        beforeEach(async () => {
-            const reverseRootNameHash = ethers.namehash('addr.reverse');
-            const reverseRegistrarAddress = await ensRegistry.owner(reverseRootNameHash);
-            const reverseResolverAddress = await ReverseRegistrar__factory.connect(
-                reverseRegistrarAddress,
-                anyone,
-            ).defaultResolver();
-            reverseResolver = PublicResolver__factory.connect(reverseResolverAddress, anyone);
-            appRegistryNameHash = computeNameHash(appRegistryAddress);
-            datasetRegistryNameHash = computeNameHash(datasetRegistryAddress);
-            workerpoolRegistryNameHash = computeNameHash(workerpoolRegistryAddress);
-        });
-
-        it('Should retrieve the ENS name for registries', async () => {
-            expect(await reverseResolver.name(appRegistryNameHash)).to.equal('apps.v5.iexec.eth');
-            expect(await reverseResolver.name(datasetRegistryNameHash)).to.equal(
-                'datasets.v5.iexec.eth',
-            );
-            expect(await reverseResolver.name(workerpoolRegistryNameHash)).to.equal(
-                'workerpools.v5.iexec.eth',
-            );
-        });
-
-        it('Should set name for the ENS reverse registration of registries', async () => {
-            const appRegistryEnsName = 'myAppRegistry.eth';
-            const datasetRegistryEnsName = 'myDatasetRegistry.eth';
-            const workerpoolRegistryEnsName = 'myWorkerpoolRegistry.eth';
-
-            await appRegistryAsAdmin
-                .setName(ensRegistryAddress, appRegistryEnsName)
-                .then((tx) => tx.wait());
-            expect(await reverseResolver.name(appRegistryNameHash)).to.equal(appRegistryEnsName);
-
-            await datasetRegistryAsAdmin
-                .setName(ensRegistryAddress, datasetRegistryEnsName)
-                .then((tx) => tx.wait());
-            expect(await reverseResolver.name(datasetRegistryNameHash)).to.equal(
-                datasetRegistryEnsName,
-            );
-
-            await workerpoolRegistryAsAdmin
-                .setName(ensRegistryAddress, workerpoolRegistryEnsName)
-                .then((tx) => tx.wait());
-            expect(await reverseResolver.name(workerpoolRegistryNameHash)).to.equal(
-                workerpoolRegistryEnsName,
-            );
-        });
-
-        it('Should not set name when user is not the owner', async () => {
-            await expect(
-                appRegistry.setName(ensRegistryAddress, 'new.app.registry.eth'),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
-            await expect(
-                datasetRegistry.setName(ensRegistryAddress, 'new.dataset.registry.eth'),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
-            await expect(
-                workerpoolRegistry.setName(ensRegistryAddress, 'new.workerpool.registry.eth'),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
         });
     });
 
@@ -548,6 +473,20 @@ describe('Registries', () => {
         });
     });
 
-    const computeNameHash = (address: string) =>
-        ethers.namehash(`${address.substring(2)}.addr.reverse`);
+    describe('Common', () => {
+        it('Should revert when setName is called for reverse registration', async () => {
+            const randomEnsContract = randomAddress();
+            const randomEnsName = 'random.eth';
+            const txs = [
+                appRegistryAsAdmin.setName(randomEnsContract, randomEnsName),
+                datasetRegistryAsAdmin.setName(randomEnsContract, randomEnsName),
+                workerpoolRegistryAsAdmin.setName(randomEnsContract, randomEnsName),
+            ];
+            await Promise.all(
+                txs.map((tx) =>
+                    expect(tx).to.be.revertedWith('Operation not supported on this chain'),
+                ),
+            );
+        });
+    });
 });

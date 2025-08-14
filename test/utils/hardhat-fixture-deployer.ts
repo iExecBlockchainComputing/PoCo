@@ -1,62 +1,77 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployments, ethers } from 'hardhat';
 import deploy from '../../deploy/0_deploy';
-import deployEns from '../../deploy/1_deploy-ens';
-import { IexecInterfaceNative__factory } from '../../typechain';
+import { RLC__factory } from '../../typechain';
 import config from '../../utils/config';
-import { getIexecAccounts } from '../../utils/poco-tools';
+import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixture-helpers';
 
+/**
+ * Deploys all contracts from scratch
+ * @returns proxy address
+ */
 async function deployAll() {
     await deploy();
-    await deployEns();
-    return (await deployments.get('ERC1538Proxy')).address;
+    return (await deployments.get('Diamond')).address;
 }
 
-async function setUpLocalFork() {
+/**
+ * Sets up local fork in native mode
+ * @returns proxy address
+ */
+async function setUpLocalForkInNativeMode() {
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const proxyAddress = config.getChainConfig(chainId).v5.ERC1538Proxy;
+    const proxyAddress = config.getChainConfig(chainId).v5.DiamondProxy;
     if (!proxyAddress) {
-        throw new Error('ERC1538Proxy is required');
+        throw new Error('DiamondProxy is required');
     }
-    // Send RLCs to default accounts
-    const srlcRichSigner = await ethers.getImpersonatedSigner(proxyAddress);
-    const otherAccountInitAmount =
-        10 * // Give this much RLC per account
-        10 ** 9;
-    const accounts = await getIexecAccounts();
-    const accountsArray = Object.values(accounts) as SignerWithAddress[];
-    console.log(`Rich account ${srlcRichSigner.address} sending RLCs to other accounts..`);
-    const iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
-    for (let i = 0; i < accountsArray.length; i++) {
-        const account = accountsArray[i];
-        await iexecPoco
-            .connect(srlcRichSigner)
-            .transfer(account.address, otherAccountInitAmount)
-            .then((tx) => tx.wait());
-        const balance = await iexecPoco.balanceOf(account.address);
-        console.log(`Account #${i}: ${account.address} (${balance.toLocaleString()} nRLC)`);
-    }
-    // Transfer ownership from Timelock to iexecAdmin EOA account
-    const timelockAddress = await iexecPoco.owner();
-    const timelock = await ethers.getImpersonatedSigner(timelockAddress);
-    const newIexecAdminAddress = accounts.iexecAdmin.address;
-    console.log(
-        `Transferring Poco ownership from Timelock:${timelockAddress} to iexecAdmin:${newIexecAdminAddress}`,
-    );
-    await iexecPoco
-        .connect(timelock)
-        .transferOwnership(newIexecAdminAddress)
-        .then((tx) => tx.wait());
+    await fundAccounts(proxyAddress, proxyAddress, true);
+    await transferAllOwnerships(config.getChainConfig(chainId));
+
     return proxyAddress;
 }
 
 /**
- * @returns proxy address.
+ * Sets up local fork in token mode
+ * @returns proxy address
+ */
+async function setUpLocalForkInTokenMode() {
+    const chainId = (await ethers.provider.getNetwork()).chainId;
+    const chainConfig = config.getChainConfig(chainId);
+    if (chainConfig.token) {
+        await saveToDeployments('RLC', new RLC__factory(), chainConfig.token);
+    }
+    if (chainConfig.token && chainConfig.richman) {
+        await fundAccounts(chainConfig.token, chainConfig.richman, false);
+    }
+    await transferAllOwnerships(chainConfig);
+
+    const proxyAddress = chainConfig.v5.DiamondProxy;
+    if (proxyAddress) {
+        console.log(`Using existing DiamondProxy at ${proxyAddress}`);
+        return proxyAddress;
+    } else {
+        console.log('No existing DiamondProxy found, deploying new contracts');
+        // Deploy all contracts
+        await deploy();
+        const newProxyAddress = (await deployments.get('Diamond')).address;
+        console.log(`Deployed new DiamondProxy at ${newProxyAddress}`);
+        return newProxyAddress;
+    }
+}
+
+/**
+ * Loads the appropriate fixture based on environment variables
+ * @returns proxy address
  */
 export const loadHardhatFixtureDeployment = async () => {
-    return await loadFixture(process.env.LOCAL_FORK != 'true' ? deployAll : setUpLocalFork);
+    if (process.env.LOCAL_FORK == 'true') {
+        return await loadFixture(setUpLocalForkInNativeMode);
+    }
+    if (process.env.FUJI_FORK == 'true' || process.env.ARBITRUM_SEPOLIA_FORK == 'true') {
+        return await loadFixture(setUpLocalForkInTokenMode);
+    }
+    return await loadFixture(deployAll);
 };
