@@ -263,15 +263,20 @@ const config: HardhatUserConfig = {
         templates: 'docs/solidity/templates',
         exclude: [
             'external',
+            'facets/FacetBase.sol', // duplicated in FacetBase.v8.sol
             'facets/IexecAccessorsABILegacyFacet.sol', // not relevant
+            // kept for events 'facets/IexecERC20Core.sol', // contains only internal/private
             'facets/IexecEscrowTokenSwapFacet.sol', // not relevant
+            // kept for events 'facets/IexecEscrow.v8.sol', // contains only internal/private
+            'facets/IexecPocoCommon.sol', // contains only internal/private
             'facets/SignatureVerifier.sol', // contains only internal/private
             'facets/SignatureVerifier.v8.sol',
             'interfaces', // interesting for events but too much doc duplication if enabled
             'registries', // ignore them for now
             'tools',
-            'Store.sol', // almost empty
-            'Store.v8.sol',
+            'Diamond.sol', // not relevant
+            'IexecInterfaceNativeABILegacy.sol', // not relevant
+            'IexecInterfaceTokenABILegacy.sol', // not relevant
         ],
     },
     mocha: { timeout: 300000 },

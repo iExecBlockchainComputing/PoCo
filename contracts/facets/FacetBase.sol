@@ -6,7 +6,6 @@ pragma solidity ^0.6.0;
 import "../libs/PocoStorageLib.sol";
 import "../interfaces/IOwnable.sol";
 
-// Functions that were declared in ERC1538Store are re-declared here.
 // TODO use LibDiamond.contractOwner() when migrating all contracts to v8.
 
 /**

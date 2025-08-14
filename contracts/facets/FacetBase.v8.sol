@@ -6,7 +6,6 @@ pragma solidity ^0.8.0;
 import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
-// Functions that were declared in ERC1538Store are re-declared here.
 // TODO use LibDiamond.contractOwner() when migrating all contracts to v8.
 
 /**
