@@ -1,35 +1,101 @@
 # Changelog
 
 ## vNEXT
+
+## v6.0.0 - Diamond Proxy Pattern (ERC-2535)
+
+### What's new?
+
+#### 🚨 Breaking changes
+The proxy architecture has been migrated from [ERC-1538 Transparent Contract Standard](https://eips.ethereum.org/EIPS/eip-1538) to [ERC-2535 Diamond Standard](https://eips.ethereum.org/EIPS/eip-2535).
+
+> **Impact:**
+> - **No changes** to on-chain business logic or contract interfaces used by regular clients.
+> - Existing integrations that interact with contract functions will **continue to work without modification**.
+> - **Breaking change** applies only to how the proxy’s upgrade mechanism works and how contract structure is exposed to **indexers, explorers, or tooling** that previously relied on ERC-1538’s upgrade API.
+
+💡 **Versioning note:**
+Technically, since public APIs for business logic did not change, this could be a **minor release** under Semantic Versioning.
+However, because the upgrade proxy standard changed and this could impact **indexers and tooling**, releasing as a **major** version ensures better visibility of this architectural shift.
+
+##### ❌ Removed functions and events (ERC-1538):
+
+- `function totalFunctions(...)`
+- `function functionByIndex(...)`
+- `function functionById(...)`
+- `function functionExists(...)`
+- `function functionSignatures(...)`
+- `function delegateFunctionSignatures(...)`
+- `function delegateAddress(...)`
+- `function delegateAddresses(...)`
+- `function updateContract(...)`
+- `event CommitMessage(...)`
+- `event FunctionUpdate(...)`
+
+##### ✨ New functions (ERC-2535)
+
+- `function diamondCut(FacetCut[] calldata _diamondCut, address _init, bytes calldata _calldata)`
+- `function facets() external view returns (Facet[] memory)`
+- `function facetFunctionSelectors(address _facet) external view returns (bytes4[] memory)`
+- `function facetAddresses() external view returns (address[] memory)`
+- `function facetAddress(bytes4 _selector) external view returns (address)`
+- `event DiamondCut(FacetCut[] _diamondCut, address _init, bytes _calldata)`
+
+### ✍️ Updated contracts
+All contracts have been updated (formatting, renaming, …) but **no breaking changes**
+have been introduced to the business logic.
+
+### 🚀 Deployment & network support
+- The PoCo protocol is now available on **Arbitrum One Mainnet**.
+
+### More details
+
 - Update docs and diagrams (#250)
-- Support Arbitrum One (#248)
-- Save IexecLibOrders_v5 in config file (#242)
-- Migrate proxy to Diamond pattern (ERC-2535):
-  - Use lib as storage. (#243)
+- Deploy on Arbitrum Mainnet (#249)
+- Add support for Arbitrum Mainnet (#248)
+- Publish NPM package for version `v5.6.0-rc1` (#247)
+- Deploy on Arbitrum Sepolia (#246)
+- Set owner at deployment (#245)
+- Use lib as storage. (#243)
+- Save `IexecLibOrders_v5` in config file (#242)
+- Migrate proxy to **Diamond pattern - ERC-2535** (#241):
   - Restore compatibility with iExec SDK. (#240)
   - Target latest EVM version (#239)
   - Adapt contracts file tree (#238)
   - Use namespaced storage (#236, #237)
   - Fix script folder (#235)
   - Format all solidity files (#233)
-  - Rename ERC1538 architure to diamond Proxy architecture(#226, #229, #230, #234)
+  - Replace ERC1538 wording by diamond Proxy wording (#229, #230, #234)
+  - Update deployment CI (#228)
+  - Format contracts (#227)
   - Remove ENS module (#225)
   - Add Diamond contract unit tests (#224)
   - Fix `fallback` and `receive` (#223)
-  - Migrate contracts (#222)
-- Add Github Action CI in order to publish NPM package
+  - Init contracts migration (#222)
+
+## v5.5.1 - Fresh development environment
+
+### What's new?
+
+- Add some small optimizations to `IexecPoco2Delegate` contract (#167, #168).
+- Add support for CreateX factory.
+- Migrate to Ethers v6.
+- Migrate all Javascript files to Typescript.
+- Purge Truffle.
+- Migrate CI from Jenkins to Github Actions.
 
 ### Updated contracts
 
 - [x] `IexecPoco2Delegate.sol`
 
-### Features
-<!-- TODO update this with v5.5.1 release notes -->
+### More details
+
+- Release v5.5.1 #220
 - Add gitub action workflow for deployment (#218)
-- Fix new testnets chain name (#217)
+- Rename Avalanche Fuji and Arbitrum Sepolia network configuration (#217)
 - Deploy on new testnet chains using CreateX factory (#216)
 - Add CreateX factory for new chain deployment (#215)
-- Support Arbitrum & Avalanche Fuji testnets (#215)
+- Add Github Action CI in order to publish NPM package (#214)
 - Housekeeping (#208)
 - Add Halborn "Poco v5.5 & Voucher v1.0" audit report (#205)
 - Refactor Factory deployer (#206)
@@ -80,7 +146,7 @@
     - kitty (#142, #144)
     - reopen (#135)
 
-## v5.5.0
+## v5.5.0 - Deal sponsoring
 
 ### What's new?
 
