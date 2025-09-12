@@ -78,6 +78,12 @@ Additionally, the migration process will look for some smart contracts before de
 
 # Development
 
+This project uses trunk-based development workflow with automatic release management. It means that:
+- Only squash merge commits are accepted.
+- When merging a PR, its title is used as the commit message.
+- A check is added to enforce using the correct format for PR titles (feat:..., fix:..., ...).
+- Release please is used to manage Github releases.
+
 ## Build
 
 The PoCo smart contracts are in the `contracts/` folder. Json artifacts, containing the contracts bytecode and ABI can be found in the `artifacts/` folder. In case you need to regenerate them, you can use the following command:
