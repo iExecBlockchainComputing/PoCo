@@ -272,7 +272,6 @@ const config: HardhatUserConfig = {
             'facets/SignatureVerifier.sol', // contains only internal/private
             'facets/SignatureVerifier.v8.sol',
             'interfaces', // interesting for events but too much doc duplication if enabled
-            // 'registries', // ignore them for now
             'tools',
             'Diamond.sol', // not relevant
             'IexecInterfaceNativeABILegacy.sol', // not relevant
