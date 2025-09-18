@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
+import {PocoStorageLib, IRegistry} from "../libs/PocoStorageLib.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
@@ -72,5 +72,164 @@ contract IexecPocoAccessorsFacet is
                 requestOrder.volume,
                 _toTypedDataHash(requestOrder.hash())
             );
+    }
+
+    // ========= Token and Account Accessors =========
+
+    function name() external view returns (string memory) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_name;
+    }
+
+    function symbol() external view returns (string memory) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_symbol;
+    }
+
+    function decimals() external view returns (uint8) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_decimals;
+    }
+
+    function totalSupply() external view returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_totalSupply;
+    }
+
+    function balanceOf(address account) external view returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_balances[account];
+    }
+
+    function frozenOf(address account) external view returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_frozens[account];
+    }
+
+    function allowance(address account, address spender) external view returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_allowances[account][spender];
+    }
+
+    function viewAccount(address account) external view returns (IexecLibCore_v5.Account memory) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return IexecLibCore_v5.Account($.m_balances[account], $.m_frozens[account]);
+    }
+
+    function token() external view returns (address) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return address($.m_baseToken);
+    }
+
+    // ========= Deal and Task Accessors =========
+
+    function viewConsumed(bytes32 _id) external view returns (uint256 consumed) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_consumed[_id];
+    }
+
+    function viewPresigned(bytes32 _id) external view returns (address signer) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_presigned[_id];
+    }
+
+    function viewContribution(
+        bytes32 _taskid,
+        address _worker
+    ) external view returns (IexecLibCore_v5.Contribution memory) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_contributions[_taskid][_worker];
+    }
+
+    function viewScore(address _worker) external view returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_workerScores[_worker];
+    }
+
+    function resultFor(bytes32 id) external view returns (bytes memory) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        IexecLibCore_v5.Task storage task = $.m_tasks[id];
+        require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, "task-pending");
+        return task.resultsCallback; // Expansion - result separation
+    }
+
+    // ========= Category Accessors =========
+
+    function viewCategory(
+        uint256 _catid
+    ) external view returns (IexecLibCore_v5.Category memory category) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_categories[_catid];
+    }
+
+    function countCategory() external view returns (uint256 count) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_categories.length;
+    }
+
+    // ========= Registry Accessors =========
+
+    function appregistry() external view returns (IRegistry) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_appregistry;
+    }
+
+    function datasetregistry() external view returns (IRegistry) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_datasetregistry;
+    }
+
+    function workerpoolregistry() external view returns (IRegistry) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_workerpoolregistry;
+    }
+
+    function teebroker() external view returns (address) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_teebroker;
+    }
+
+    function callbackgas() external view returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_callbackgas;
+    }
+
+    // ========= Constants Accessors =========
+
+    function contribution_deadline_ratio() external view returns (uint256) {
+        return CONTRIBUTION_DEADLINE_RATIO;
+    }
+
+    function reveal_deadline_ratio() external view returns (uint256) {
+        return REVEAL_DEADLINE_RATIO;
+    }
+
+    function final_deadline_ratio() external view returns (uint256) {
+        return FINAL_DEADLINE_RATIO;
+    }
+
+    function workerpool_stake_ratio() external view returns (uint256) {
+        return WORKERPOOL_STAKE_RATIO;
+    }
+
+    function kitty_ratio() external view returns (uint256) {
+        return KITTY_RATIO;
+    }
+
+    function kitty_min() external view returns (uint256) {
+        return KITTY_MIN;
+    }
+
+    function kitty_address() external view returns (address) {
+        return KITTY_ADDRESS;
+    }
+
+    function groupmember_purpose() external view returns (uint256) {
+        return GROUPMEMBER_PURPOSE;
+    }
+
+    function eip712domain_separator() external view returns (bytes32) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_eip712DomainSeparator;
     }
 }
