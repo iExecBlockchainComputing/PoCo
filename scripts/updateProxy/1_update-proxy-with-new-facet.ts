@@ -19,7 +19,15 @@ import { printFunctions } from '../upgrades/upgrade-helper';
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;
 
-    console.log('Updating diamond proxy with new IexecPocoAccessorsFacet...');
+    console.log(
+        'Updating diamond proxy: removing automatic getters and adding new IexecPocoAccessorsFacet...',
+    );
+    console.log(
+        `  - Removing: Only automatic getters from public constants (keeping legacy ABI functions)`,
+    );
+    console.log(
+        `  - Adding: IexecPocoAccessorsFacet (with explicit getters for internal constants)`,
+    );
     console.log(`Network: ${chainId}`);
 
     if (!deploymentOptions.DiamondProxy) {
@@ -53,7 +61,8 @@ import { printFunctions } from '../upgrades/upgrade-helper';
     // Find the specific old accessor facets to remove completely
     const oldAccessorFacets = new Set<string>();
 
-    const accessorFunctionSignatures = [
+    // Legacy accessor function signatures
+    const legacyAccessorFunctionSignatures = [
         '0x70a08231', // balanceOf()
         '0x06fdde03', // name()
         '0x95d89b41', // symbol()
@@ -65,36 +74,96 @@ import { printFunctions } from '../upgrades/upgrade-helper';
         '0x1bf6e00d', // datasetByIndex()
     ];
 
+    // Automatic getters from previous public constants that need to be removed
+    const automaticGettersFromPublicConstants = [
+        '0x7b244832', // CONTRIBUTION_DEADLINE_RATIO()
+        '0x5fde601d', // REVEAL_DEADLINE_RATIO()
+        '0x90fc26b1', // FINAL_DEADLINE_RATIO()
+        '0x4ec3b9e3', // WORKERPOOL_STAKE_RATIO()
+        '0x51152de1', // KITTY_RATIO()
+        '0xe2e7a8c1', // KITTY_MIN()
+        '0x9e986e81', // KITTY_ADDRESS()
+        '0x68a9ef1c', // GROUPMEMBER_PURPOSE()
+    ];
+    // NOTE: We are NOT removing legacy ABI functions - they will stay in IexecAccessorsABILegacyFacet
+
     const specificFunctionSignature = '0x66517ca6'; // ComputeDealVolume
 
-    // Find the current accessor facet in the diamond (the one with 32 functions)
+    // Find the current accessor facets in the diamond that need to be updated
+    const facetsWithFunctionsToRemove = new Map<string, string[]>();
+    const facetsToRemoveCompletely = new Set<string>();
+
+    // Find facets that contain functions we want to remove
     for (const facet of facets) {
-        const hasAccessorFunctions = facet.functionSelectors.some((selector) =>
-            accessorFunctionSignatures.includes(selector),
-        );
-        if (hasAccessorFunctions) {
-            oldAccessorFacets.add(facet.facetAddress);
+        const functionsToRemoveFromThisFacet: string[] = [];
+        let hasLegacyAccessorFunctions = false;
+
+        // Check each function in this facet
+        for (const selector of facet.functionSelectors) {
+            // Check if this facet has legacy accessor functions (if so, we remove ALL functions)
+            if (legacyAccessorFunctionSignatures.includes(selector)) {
+                hasLegacyAccessorFunctions = true;
+                break;
+            }
+            // Check for automatic getters that need selective removal
+            if (automaticGettersFromPublicConstants.includes(selector)) {
+                functionsToRemoveFromThisFacet.push(selector);
+            }
         }
 
+        // If this facet has legacy accessor functions, remove ALL functions from it
+        if (hasLegacyAccessorFunctions) {
+            facetsToRemoveCompletely.add(facet.facetAddress);
+            facetsWithFunctionsToRemove.set(facet.facetAddress, [...facet.functionSelectors]);
+            console.log(
+                `Found facet ${facet.facetAddress} with legacy accessor functions - will remove ALL ${facet.functionSelectors.length} functions`,
+            );
+        }
+        // Otherwise, if it has automatic getters, remove only those
+        else if (functionsToRemoveFromThisFacet.length > 0) {
+            facetsWithFunctionsToRemove.set(facet.facetAddress, functionsToRemoveFromThisFacet);
+            console.log(
+                `Found facet ${facet.facetAddress} with ${functionsToRemoveFromThisFacet.length} automatic getters to remove`,
+            );
+            console.log(`  Functions: ${functionsToRemoveFromThisFacet.join(', ')}`);
+        }
+
+        // Also check for the specific ComputeDealVolume function
         const hasSpecificFunction = facet.functionSelectors.includes(specificFunctionSignature);
-        if (hasSpecificFunction) {
-            oldAccessorFacets.add(facet.facetAddress);
+        if (hasSpecificFunction && !hasLegacyAccessorFunctions) {
+            const existing = facetsWithFunctionsToRemove.get(facet.facetAddress) || [];
+            if (!existing.includes(specificFunctionSignature)) {
+                existing.push(specificFunctionSignature);
+                facetsWithFunctionsToRemove.set(facet.facetAddress, existing);
+            }
+            console.log(`Found facet ${facet.facetAddress} with ComputeDealVolume function`);
         }
     }
 
-    // Find functions that need to be removed - ALL functions from old accessor facets
+    // Find functions that need to be removed - ONLY specific functions, not entire facets
     const functionsToRemove: string[] = [];
     const functionsToRemoveByFacet = new Map<string, string[]>();
 
-    // Remove ALL functions from the old accessor facets
-    for (const facet of facets) {
-        if (oldAccessorFacets.has(facet.facetAddress)) {
+    // Collect all functions to remove from each facet
+    for (const [facetAddress, selectors] of facetsWithFunctionsToRemove) {
+        if (facetsToRemoveCompletely.has(facetAddress)) {
             console.log(
-                `Found old accessor facet ${facet.facetAddress} with ${facet.functionSelectors.length} functions - will remove ALL`,
+                `Will remove ALL ${selectors.length} functions from legacy accessor facet ${facetAddress}`,
             );
-            functionsToRemove.push(...facet.functionSelectors);
-            functionsToRemoveByFacet.set(facet.facetAddress, [...facet.functionSelectors]);
+        } else {
+            console.log(
+                `Will remove ${selectors.length} specific functions from facet ${facetAddress}:`,
+            );
+            console.log(
+                `  Automatic getters: ${selectors.filter((s) => automaticGettersFromPublicConstants.includes(s)).length}`,
+            );
+            console.log(
+                `  ComputeDealVolume: ${selectors.includes(specificFunctionSignature) ? 1 : 0}`,
+            );
         }
+
+        functionsToRemove.push(...selectors);
+        functionsToRemoveByFacet.set(facetAddress, [...selectors]);
     }
 
     // Functions to add - ALL functions from the new facet, but exclude any that exist in other (non-accessor) facets
@@ -103,9 +172,9 @@ import { printFunctions } from '../upgrades/upgrade-helper';
 
     const functionsInOtherFacets = new Set<string>();
     for (const facet of facets) {
-        // Skip old accessor facets (we're removing them) and the updated facet (if it already exists)
+        // Skip facets that have functions being removed and the updated facet (if it already exists)
         if (
-            !oldAccessorFacets.has(facet.facetAddress) &&
+            !facetsWithFunctionsToRemove.has(facet.facetAddress) &&
             facet.facetAddress !== updatedFacetAddress
         ) {
             facet.functionSelectors.forEach((selector) => {
@@ -123,14 +192,25 @@ import { printFunctions } from '../upgrades/upgrade-helper';
         (selector) => !functionsInOtherFacets.has(selector),
     );
 
-    console.log(`Total functions to remove from old accessor facets: ${functionsToRemove.length}`);
+    console.log(`Total functions to remove from facets: ${functionsToRemove.length}`);
+    console.log(`  - Facets with legacy accessor functions: COMPLETE removal`);
+    console.log(`  - Automatic getters from public constants: SELECTIVE removal`);
+    console.log(`  - ComputeDealVolume function: SELECTIVE removal`);
+    console.log(`  - Legacy ABI functions will be KEPT in IexecAccessorsABILegacyFacet`);
     console.log(`Functions skipped (exist in other facets): ${functionsInOtherFacets.size}`);
-    console.log(`Functions to add to new facet: ${newFunctionSelectors.length}`);
+    console.log(`Functions to add to new IexecPocoAccessorsFacet: ${newFunctionSelectors.length}`);
+    console.log(`  - Explicit getter functions for constants (now internal)`);
+    console.log(`  - New accessor functions with improved interfaces`);
 
     const facetCuts: IDiamond.FacetCutStruct[] = [];
-    // Remove all functions from old accessor facets
-    for (const [, selectors] of functionsToRemoveByFacet) {
+    // Remove functions from facets (complete removal for legacy accessor facets, selective for others)
+    for (const [facetAddress, selectors] of functionsToRemoveByFacet) {
         if (selectors.length > 0) {
+            const isCompleteRemoval = facetsToRemoveCompletely.has(facetAddress);
+            console.log(
+                `${isCompleteRemoval ? 'Completely removing' : 'Selectively removing'} ${selectors.length} functions from facet ${facetAddress}`,
+            );
+
             facetCuts.push({
                 facetAddress: ZeroAddress,
                 action: FacetCutAction.Remove,
@@ -188,4 +268,19 @@ import { printFunctions } from '../upgrades/upgrade-helper';
 
     console.log('Proxy update completed successfully!');
     console.log(`New IexecPocoAccessorsFacet is now active at: ${updatedFacetAddress}`);
+    console.log('');
+    console.log('Summary of changes:');
+    console.log(
+        '  ✓ Completely removed facets containing legacy accessor functions (balanceOf, name, etc.)',
+    );
+    console.log(
+        '  ✓ Selectively removed automatic getters from public constants (CONTRIBUTION_DEADLINE_RATIO, etc.)',
+    );
+    console.log('  ✓ KEPT legacy ABI accessor functions in IexecAccessorsABILegacyFacet');
+    console.log('  ✓ Added explicit getter functions for internal constants');
+    console.log('  ✓ Added new improved accessor functions');
+    console.log('');
+    console.log(
+        'Note: Constants are now internal and accessible via explicit getter functions only.',
+    );
 })();
