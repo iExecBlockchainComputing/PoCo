@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import hre from 'hardhat';
-import { IexecPocoAccessorsFacet__factory } from '../../typechain';
-import config from '../../utils/config';
+import { IexecPocoAccessorsFacet__factory } from '../../../typechain';
+import config from '../../../utils/config';
 import { COMMON_SELECTORS, createUpdateSummary, validateDiamondUpdate } from './diamond-utils';
 import { updateDiamondProxy } from './generic-diamond-update';
 

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import hre from 'hardhat';
-import { DiamondLoupeFacet__factory } from '../../typechain';
+import { DiamondLoupeFacet__factory } from '../../../typechain';
 
 /**
  * Utility functions for diamond proxy management
