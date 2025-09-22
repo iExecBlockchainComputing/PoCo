@@ -14,7 +14,7 @@ import { Ownable__factory } from '../../../typechain/factories/rlc-faucet-contra
 import { FactoryDeployer } from '../../../utils/FactoryDeployer';
 import config from '../../../utils/config';
 import { mineBlockIfOnLocalFork } from '../../../utils/mine';
-import { getFunctionSelectors } from '../../../utils/proxy-tools';
+import { linkContractToProxy } from '../../../utils/proxy-tools';
 import { printFunctions } from '../upgrade-helper';
 
 (async () => {
@@ -63,7 +63,7 @@ import { printFunctions } from '../upgrade-helper';
         '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
     ]);
 
-    // Find functions that need to be removed - ALL functions from old accessor facets
+    // Functions to remove - ALL functions from the old accessor facets
     const functionsToRemoveByFacet = new Map<string, string[]>();
 
     // Remove ALL functions from the old accessor facets
@@ -74,55 +74,6 @@ import { printFunctions } from '../upgrade-helper';
             );
             functionsToRemoveByFacet.set(facet.facetAddress, [...facet.functionSelectors]);
         }
-    }
-
-    // Functions to add - ALL functions from the new facet, but exclude any that exist in other (non-accessor) facets
-    const allNewFunctionSelectors = getFunctionSelectors(newFacetFactory);
-
-    const functionsInOtherFacets = new Set<string>();
-    for (const facet of currentFacets) {
-        // Skip old accessor facets (we're removing them) and the updated facet (if it already exists)
-        if (!oldAccessorFacets.has(facet.facetAddress) && facet.facetAddress !== newFacetAddress) {
-            facet.functionSelectors.forEach((selector) => {
-                if (allNewFunctionSelectors.includes(selector)) {
-                    functionsInOtherFacets.add(selector);
-                    console.log(
-                        ` Function ${selector} already exists in other facet ${facet.facetAddress} - will not add`,
-                    );
-                }
-            });
-        }
-    }
-
-    const newFunctionSelectors = allNewFunctionSelectors.filter(
-        (selector) => !functionsInOtherFacets.has(selector),
-    );
-
-    console.log(`Functions skipped (exist in other facets): ${functionsInOtherFacets.size}`);
-    console.log(`Functions to add to new facet: ${newFunctionSelectors.length}`);
-
-    const facetCuts: IDiamond.FacetCutStruct[] = [];
-    // Remove all functions from old accessor facets
-    for (const [, selectors] of functionsToRemoveByFacet) {
-        if (selectors.length > 0) {
-            facetCuts.push({
-                facetAddress: ZeroAddress,
-                action: FacetCutAction.Remove,
-                functionSelectors: [...selectors],
-            });
-        }
-    }
-
-    // Add new functions
-    if (newFunctionSelectors.length > 0) {
-        console.log(
-            `Preparing to add ${newFunctionSelectors.length} functions to new facet ${newFacetAddress}`,
-        );
-        facetCuts.push({
-            facetAddress: newFacetAddress,
-            action: FacetCutAction.Add,
-            functionSelectors: [...newFunctionSelectors],
-        });
     }
 
     console.log('Functions before upgrade:');
@@ -136,17 +87,32 @@ import { printFunctions } from '../upgrade-helper';
         proxyOwnerSigner,
     );
 
-    console.log('Executing diamond cut...');
-    console.log(`Facet cuts: ${facetCuts.length}`);
-    facetCuts.forEach((cut, index) => {
-        console.log(`  Cut ${index + 1}: ${cut.action} ${cut.functionSelectors.length} functions`);
-        console.log(`    Facet: ${cut.facetAddress}`);
-    });
+    const removalCuts: IDiamond.FacetCutStruct[] = [];
+    for (const [, selectors] of functionsToRemoveByFacet) {
+        if (selectors.length > 0) {
+            removalCuts.push({
+                facetAddress: ZeroAddress,
+                action: FacetCutAction.Remove,
+                functionSelectors: [...selectors],
+            });
+        }
+    }
 
-    const tx = await diamondProxyWithOwner.diamondCut(facetCuts, ZeroAddress, '0x');
-    await tx.wait();
-    console.log('Diamond cut executed successfully');
-    console.log(`Transaction hash: ${tx.hash}`);
+    if (removalCuts.length > 0) {
+        console.log('Executing diamond cut to remove old functions...');
+        console.log(`Removal cuts: ${removalCuts.length}`);
+        removalCuts.forEach((cut, index) => {
+            console.log(`  Cut ${index + 1}: Remove ${cut.functionSelectors.length} functions`);
+        });
+
+        const removeTx = await diamondProxyWithOwner.diamondCut(removalCuts, ZeroAddress, '0x');
+        await removeTx.wait();
+        console.log('Old functions removed successfully');
+        console.log(`Transaction hash: ${removeTx.hash}`);
+    }
+    console.log('Adding new functions using linkContractToProxy...');
+    await linkContractToProxy(diamondProxyWithOwner, newFacetAddress, newFacetFactory);
+    console.log('New functions added successfully');
 
     console.log('Functions after upgrade:');
     await printFunctions(diamondProxyAddress);
