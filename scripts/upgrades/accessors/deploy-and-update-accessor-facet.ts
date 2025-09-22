@@ -63,7 +63,20 @@ import { printFunctions } from '../upgrade-helper';
         '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
     ]);
 
-    // Find functions that need to be removed - ALL functions from old accessor facets
+    // Specific constant getter functions to remove from facet
+    const constantFacetAddress = '0x56CDC32332648b1220a89172191798852706EB35'; // IexecAccessorsABILegacyFacet
+    const constantFunctionsToRemove = [
+        '0x7b244832', // CONTRIBUTION_DEADLINE_RATIO()
+        '0x90fc26b1', // FINAL_DEADLINE_RATIO()
+        '0x68a9ef1c', // GROUPMEMBER_PURPOSE()
+        '0x9e986e81', // KITTY_ADDRESS()
+        '0xe2e7a8c1', // KITTY_MIN()
+        '0x51152de1', // KITTY_RATIO()
+        '0x5fde601d', // REVEAL_DEADLINE_RATIO()
+        '0x4ec3b9e3', // WORKERPOOL_STAKE_RATIO()
+    ];
+
+    // Find functions that need to be removed - ALL functions from old accessor facets + specific constants
     const functionsToRemoveByFacet = new Map<string, string[]>();
 
     // Remove ALL functions from the old accessor facets
@@ -76,15 +89,32 @@ import { printFunctions } from '../upgrade-helper';
         }
     }
 
+    // Remove specific constant functions from the constants facet
+    for (const facet of facets) {
+        if (facet.facetAddress === constantFacetAddress) {
+            const functionsToRemove = facet.functionSelectors.filter((selector) =>
+                constantFunctionsToRemove.includes(selector),
+            );
+            if (functionsToRemove.length > 0) {
+                console.log(
+                    `Found constants facet ${facet.facetAddress} - will remove ${functionsToRemove.length} specific constant functions`,
+                );
+                functionsToRemoveByFacet.set(facet.facetAddress, functionsToRemove);
+            }
+            break;
+        }
+    }
+
     // Functions to add - ALL functions from the new facet, but exclude any that exist in other (non-accessor) facets
     const newFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
     const allNewFunctionSelectors = getFunctionSelectors(newFacetFactory);
 
     const functionsInOtherFacets = new Set<string>();
     for (const facet of facets) {
-        // Skip old accessor facets (we're removing them) and the updated facet (if it already exists)
+        // Skip old accessor facets (we're removing them), the constants facet (we're removing specific functions), and the updated facet (if it already exists)
         if (
             !oldAccessorFacets.has(facet.facetAddress) &&
+            facet.facetAddress !== constantFacetAddress &&
             facet.facetAddress !== updatedFacetAddress
         ) {
             facet.functionSelectors.forEach((selector) => {
@@ -106,7 +136,7 @@ import { printFunctions } from '../upgrade-helper';
     console.log(`Functions to add to new facet: ${newFunctionSelectors.length}`);
 
     const facetCuts: IDiamond.FacetCutStruct[] = [];
-    // Remove all functions from old accessor facets
+    // Remove functions from facets (both old accessor facets and specific constants)
     for (const [, selectors] of functionsToRemoveByFacet) {
         if (selectors.length > 0) {
             facetCuts.push({
