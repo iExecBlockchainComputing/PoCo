@@ -90,32 +90,6 @@ event Reward(address owner, uint256 amount, bytes32 ref)
 event Seize(address owner, uint256 amount, bytes32 ref)
 ```
 
-## IexecOrderManagementFacet
-
-### manageAppOrder
-
-```solidity
-function manageAppOrder(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) external
-```
-
-### manageDatasetOrder
-
-```solidity
-function manageDatasetOrder(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) external
-```
-
-### manageWorkerpoolOrder
-
-```solidity
-function manageWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) external
-```
-
-### manageRequestOrder
-
-```solidity
-function manageRequestOrder(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) external
-```
-
 ## Matching
 
 ```solidity
@@ -860,6 +834,46 @@ struct PocoStorage {
 function isRegistered(address _entry) external view returns (bool)
 ```
 
+## IWorkerpool
+
+### m_schedulerRewardRatioPolicy
+
+```solidity
+function m_schedulerRewardRatioPolicy() external returns (uint256)
+```
+
+### m_workerStakeRatioPolicy
+
+```solidity
+function m_workerStakeRatioPolicy() external returns (uint256)
+```
+
+## IexecOrderManagementFacet
+
+### manageAppOrder
+
+```solidity
+function manageAppOrder(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) external
+```
+
+### manageDatasetOrder
+
+```solidity
+function manageDatasetOrder(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) external
+```
+
+### manageWorkerpoolOrder
+
+```solidity
+function manageWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) external
+```
+
+### manageRequestOrder
+
+```solidity
+function manageRequestOrder(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) external
+```
+
 ## IexecInterfaceNative
 
 A global interface that aggregates all the interfaces needed to interact with
@@ -1353,5 +1367,310 @@ struct PocoStorage {
   contract IexecHubInterface m_v3_iexecHub;
   mapping(address => bool) m_v3_scoreImported;
 }
+```
+
+## IRegistry
+
+### isRegistered
+
+```solidity
+function isRegistered(address _entry) external view returns (bool)
+```
+
+## Registry
+
+### master
+
+```solidity
+address master
+```
+
+### proxyCode
+
+```solidity
+bytes proxyCode
+```
+
+### proxyCodeHash
+
+```solidity
+bytes32 proxyCodeHash
+```
+
+### previous
+
+```solidity
+contract IRegistry previous
+```
+
+### initialized
+
+```solidity
+bool initialized
+```
+
+### constructor
+
+```solidity
+constructor(address _master, string _name, string _symbol) public
+```
+
+### initialize
+
+```solidity
+function initialize(address _previous) external
+```
+
+### setBaseURI
+
+```solidity
+function setBaseURI(string _baseURI) external
+```
+
+### isRegistered
+
+```solidity
+function isRegistered(address _entry) external view returns (bool)
+```
+
+### setName
+
+```solidity
+function setName(address, string) external view
+```
+
+Sets the reverse registration name for a registry contract.
+
+_This functionality is supported only on the Bellecour chain.
+On other chains, this function will revert to maintain retrocompatibility
+in the SDK._
+
+## RegistryEntry
+
+_Referenced in the SDK with the current path `contracts/registries/RegistryEntry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### registry
+
+```solidity
+contract IRegistry registry
+```
+
+### owner
+
+```solidity
+function owner() public view returns (address)
+```
+
+### setName
+
+```solidity
+function setName(address, string) external view
+```
+
+Sets the reverse registration name for a registry entry contract.
+
+_This functionality is supported only on the Bellecour chain.
+On other chains, this function will revert to maintain retrocompatibility
+in the SDK._
+
+## App
+
+_Referenced in the SDK with the current path `contracts/registries/apps/AppRegistry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### m_appName
+
+```solidity
+string m_appName
+```
+
+Members
+
+### m_appType
+
+```solidity
+string m_appType
+```
+
+### m_appMultiaddr
+
+```solidity
+bytes m_appMultiaddr
+```
+
+### m_appChecksum
+
+```solidity
+bytes32 m_appChecksum
+```
+
+### m_appMREnclave
+
+```solidity
+bytes m_appMREnclave
+```
+
+### initialize
+
+```solidity
+function initialize(string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) public
+```
+
+Constructor
+
+## AppRegistry
+
+_Referenced in the SDK with the current path `contracts/registries/apps/AppRegistry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### constructor
+
+```solidity
+constructor() public
+```
+
+Constructor
+
+### createApp
+
+```solidity
+function createApp(address _appOwner, string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) external returns (contract App)
+```
+
+### predictApp
+
+```solidity
+function predictApp(address _appOwner, string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) external view returns (contract App)
+```
+
+## Dataset
+
+_Referenced in the SDK with the current path `contracts/registries/datasets/Dataset.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### m_datasetName
+
+```solidity
+string m_datasetName
+```
+
+Members
+
+### m_datasetMultiaddr
+
+```solidity
+bytes m_datasetMultiaddr
+```
+
+### m_datasetChecksum
+
+```solidity
+bytes32 m_datasetChecksum
+```
+
+### initialize
+
+```solidity
+function initialize(string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) public
+```
+
+Constructor
+
+## DatasetRegistry
+
+_Referenced in the SDK with the current path `contracts/registries/datasets/DatasetRegistry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### constructor
+
+```solidity
+constructor() public
+```
+
+Constructor
+
+### createDataset
+
+```solidity
+function createDataset(address _datasetOwner, string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) external returns (contract Dataset)
+```
+
+### predictDataset
+
+```solidity
+function predictDataset(address _datasetOwner, string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) external view returns (contract Dataset)
+```
+
+## Workerpool
+
+_Referenced in the SDK with the current path `contracts/registries/workerpools/Workerpool.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### m_workerpoolDescription
+
+```solidity
+string m_workerpoolDescription
+```
+
+Parameters
+
+### m_workerStakeRatioPolicy
+
+```solidity
+uint256 m_workerStakeRatioPolicy
+```
+
+### m_schedulerRewardRatioPolicy
+
+```solidity
+uint256 m_schedulerRewardRatioPolicy
+```
+
+### PolicyUpdate
+
+```solidity
+event PolicyUpdate(uint256 oldWorkerStakeRatioPolicy, uint256 newWorkerStakeRatioPolicy, uint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy)
+```
+
+Events
+
+### initialize
+
+```solidity
+function initialize(string _workerpoolDescription) public
+```
+
+Constructor
+
+### changePolicy
+
+```solidity
+function changePolicy(uint256 _newWorkerStakeRatioPolicy, uint256 _newSchedulerRewardRatioPolicy) external
+```
+
+## WorkerpoolRegistry
+
+_Referenced in the SDK with the current path `contracts/registries/workerpools/WorkerpoolRegistry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### constructor
+
+```solidity
+constructor() public
+```
+
+Constructor
+
+### createWorkerpool
+
+```solidity
+function createWorkerpool(address _workerpoolOwner, string _workerpoolDescription) external returns (contract Workerpool)
+```
+
+### predictWorkerpool
+
+```solidity
+function predictWorkerpool(address _workerpoolOwner, string _workerpoolDescription) external view returns (contract Workerpool)
 ```
 
