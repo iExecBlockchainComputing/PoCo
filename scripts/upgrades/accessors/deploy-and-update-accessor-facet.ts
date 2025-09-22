@@ -65,16 +65,19 @@ import { printFunctions } from '../upgrade-helper';
 
     // Specific constant getter functions to remove from facet
     const constantFacetAddress = '0x56CDC32332648b1220a89172191798852706EB35'; // IexecAccessorsABILegacyFacet
-    const constantFunctionsToRemove = [
-        '0x7b244832', // CONTRIBUTION_DEADLINE_RATIO()
-        '0x90fc26b1', // FINAL_DEADLINE_RATIO()
-        '0x68a9ef1c', // GROUPMEMBER_PURPOSE()
-        '0x9e986e81', // KITTY_ADDRESS()
-        '0xe2e7a8c1', // KITTY_MIN()
-        '0x51152de1', // KITTY_RATIO()
-        '0x5fde601d', // REVEAL_DEADLINE_RATIO()
-        '0x4ec3b9e3', // WORKERPOOL_STAKE_RATIO()
+    const constantFunctionSignatures = [
+        'CONTRIBUTION_DEADLINE_RATIO()',
+        'FINAL_DEADLINE_RATIO()',
+        'GROUPMEMBER_PURPOSE()',
+        'KITTY_ADDRESS()',
+        'KITTY_MIN()',
+        'KITTY_RATIO()',
+        'REVEAL_DEADLINE_RATIO()',
+        'WORKERPOOL_STAKE_RATIO()',
     ];
+    const constantFunctionsToRemove = constantFunctionSignatures.map((sig) =>
+        ethers.id(sig).slice(0, 10),
+    );
 
     // Find functions that need to be removed - ALL functions from old accessor facets + specific constants
     const functionsToRemoveByFacet = new Map<string, string[]>();
