@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ZeroAddress } from 'ethers';
-import { deployments, ethers } from 'hardhat';
+import { ethers } from 'hardhat';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import type { IDiamond } from '../../../typechain';
 import {
@@ -11,31 +11,43 @@ import {
     IexecPocoAccessorsFacet__factory,
 } from '../../../typechain';
 import { Ownable__factory } from '../../../typechain/factories/rlc-faucet-contract/contracts';
+import { FactoryDeployer } from '../../../utils/FactoryDeployer';
 import config from '../../../utils/config';
+import { mineBlockIfOnLocalFork } from '../../../utils/mine';
 import { getFunctionSelectors } from '../../../utils/proxy-tools';
 import { printFunctions } from '../upgrade-helper';
 
 (async () => {
+    console.log('Deploying and updating IexecPocoAccessorsFacet...');
+    await mineBlockIfOnLocalFork();
+
+    const [account] = await ethers.getSigners();
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;
 
-    console.log('Updating diamond proxy with new IexecPocoAccessorsFacet...');
-    console.log(`Network: ${chainId}`);
-
-    if (!deploymentOptions.DiamondProxy) {
-        throw new Error('DiamondProxy is required');
-    }
     if (!deploymentOptions.IexecLibOrders_v5) {
         throw new Error('IexecLibOrders_v5 is required');
     }
+    if (!deploymentOptions.DiamondProxy) {
+        throw new Error('DiamondProxy is required');
+    }
 
     const diamondProxyAddress = deploymentOptions.DiamondProxy;
+    console.log(`Network: ${chainId}`);
     console.log(`Diamond proxy address: ${diamondProxyAddress}`);
 
-    const [account] = await ethers.getSigners();
+    console.log('\n=== Step 1: Deploying new IexecPocoAccessorsFacet ===');
+    const factoryDeployer = new FactoryDeployer(account, chainId);
+    const iexecLibOrders = {
+        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
+            deploymentOptions.IexecLibOrders_v5,
+    };
 
-    const updatedFacetAddress = (await deployments.get('IexecPocoAccessorsFacet')).address;
-    console.log(`Updated facet address: ${updatedFacetAddress}`);
+    const facetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
+    const updatedFacetAddress = await factoryDeployer.deployContract(facetFactory);
+    console.log(`IexecPocoAccessorsFacet deployed at: ${updatedFacetAddress}`);
+
+    console.log('\n=== Step 2: Updating diamond proxy with new facet ===');
 
     const diamondLoupe = DiamondLoupeFacet__factory.connect(diamondProxyAddress, account);
     const facets = await diamondLoupe.facets();
@@ -44,11 +56,6 @@ import { printFunctions } from '../upgrade-helper';
     facets.forEach((facet) => {
         console.log(`  ${facet.facetAddress}: ${facet.functionSelectors.length} functions`);
     });
-
-    const iexecLibOrders = {
-        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
-            deploymentOptions.IexecLibOrders_v5,
-    };
 
     // Find the specific old accessor facets to remove completely
     const oldAccessorFacets = new Set<string>();
@@ -171,9 +178,10 @@ import { printFunctions } from '../upgrade-helper';
     console.log('Diamond cut executed successfully');
     console.log(`Transaction hash: ${tx.hash}`);
 
-    // Print functions after upgrade
     console.log('Functions after upgrade:');
     await printFunctions(diamondProxyAddress);
 
-    console.log('Proxy update completed successfully!');
+    console.log('\nUpgrade completed successfully!');
+    console.log(`New IexecPocoAccessorsFacet deployed at: ${updatedFacetAddress}`);
+    console.log('Diamond proxy updated with new facet');
 })();
