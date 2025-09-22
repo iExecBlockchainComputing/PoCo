@@ -105,7 +105,7 @@ contract IexecPocoAccessorsFacet is
         return task.resultsCallback; // Expansion - result separation
     }
 
-    // ========= Token and Account Accessors =========
+    // ========= SRLC Token and Account Accessors =========
 
     function name() external view returns (string memory) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
@@ -195,35 +195,35 @@ contract IexecPocoAccessorsFacet is
 
     // ========= Constants Accessors =========
 
-    function contribution_deadline_ratio() external view returns (uint256) {
+    function contribution_deadline_ratio() external pure returns (uint256) {
         return CONTRIBUTION_DEADLINE_RATIO;
     }
 
-    function reveal_deadline_ratio() external view returns (uint256) {
+    function reveal_deadline_ratio() external pure returns (uint256) {
         return REVEAL_DEADLINE_RATIO;
     }
 
-    function final_deadline_ratio() external view returns (uint256) {
+    function final_deadline_ratio() external pure returns (uint256) {
         return FINAL_DEADLINE_RATIO;
     }
 
-    function workerpool_stake_ratio() external view returns (uint256) {
+    function workerpool_stake_ratio() external pure returns (uint256) {
         return WORKERPOOL_STAKE_RATIO;
     }
 
-    function kitty_ratio() external view returns (uint256) {
+    function kitty_ratio() external pure returns (uint256) {
         return KITTY_RATIO;
     }
 
-    function kitty_min() external view returns (uint256) {
+    function kitty_min() external pure returns (uint256) {
         return KITTY_MIN;
     }
 
-    function kitty_address() external view returns (address) {
+    function kitty_address() external pure returns (address) {
         return KITTY_ADDRESS;
     }
 
-    function groupmember_purpose() external view returns (uint256) {
+    function groupmember_purpose() external pure returns (uint256) {
         return GROUPMEMBER_PURPOSE;
     }
 

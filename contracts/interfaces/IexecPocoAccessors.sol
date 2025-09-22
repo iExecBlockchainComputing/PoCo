@@ -33,7 +33,7 @@ interface IexecPocoAccessors {
 
     function resultFor(bytes32 id) external view returns (bytes memory);
 
-    // ========= Token and Account Accessors =========
+    // ========= SRLC Token and Account Accessors =========
     function name() external view returns (string memory);
     function symbol() external view returns (string memory);
     function decimals() external view returns (uint8);
