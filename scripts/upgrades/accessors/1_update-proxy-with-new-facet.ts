@@ -34,7 +34,7 @@ import { printFunctions } from '../upgrade-helper';
 
     const [account] = await ethers.getSigners();
 
-    const updatedFacetAddress = (await deployments.get('IexecPocoAccessorsFacet')).address; //C
+    const updatedFacetAddress = (await deployments.get('IexecPocoAccessorsFacet')).address;
     console.log(`Updated facet address: ${updatedFacetAddress}`);
 
     const diamondLoupe = DiamondLoupeFacet__factory.connect(diamondProxyAddress, account);
@@ -98,7 +98,7 @@ import { printFunctions } from '../upgrade-helper';
     }
 
     // Functions to add - ALL functions from the new facet, but exclude any that exist in other (non-accessor) facets
-    const newFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders); //C
+    const newFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
     const allNewFunctionSelectors = getFunctionSelectors(newFacetFactory);
 
     const functionsInOtherFacets = new Set<string>();
