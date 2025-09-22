@@ -63,8 +63,7 @@ import { printFunctions } from '../upgrade-helper';
         '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
     ]);
 
-    // Specific constant getter functions to remove from facet
-    const constantFacetAddress = '0x56CDC32332648b1220a89172191798852706EB35'; // IexecAccessorsABILegacyFacet
+    const constantFacetAddress = '0x56CDC32332648b1220a89172191798852706EB35'; // Facet providing constant getters (IexecAccessorsABILegacyFacet)
     const constantFunctionSignatures = [
         'CONTRIBUTION_DEADLINE_RATIO()',
         'FINAL_DEADLINE_RATIO()',
