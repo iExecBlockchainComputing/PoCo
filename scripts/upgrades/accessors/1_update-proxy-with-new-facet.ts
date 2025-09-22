@@ -83,7 +83,6 @@ import { printFunctions } from '../upgrade-helper';
     }
 
     // Find functions that need to be removed - ALL functions from old accessor facets
-    const functionsToRemove: string[] = [];
     const functionsToRemoveByFacet = new Map<string, string[]>();
 
     // Remove ALL functions from the old accessor facets
@@ -92,7 +91,6 @@ import { printFunctions } from '../upgrade-helper';
             console.log(
                 `Found old accessor facet ${facet.facetAddress} with ${facet.functionSelectors.length} functions - will remove ALL`,
             );
-            functionsToRemove.push(...facet.functionSelectors);
             functionsToRemoveByFacet.set(facet.facetAddress, [...facet.functionSelectors]);
         }
     }
@@ -123,7 +121,6 @@ import { printFunctions } from '../upgrade-helper';
         (selector) => !functionsInOtherFacets.has(selector),
     );
 
-    console.log(`Total functions to remove from old accessor facets: ${functionsToRemove.length}`);
     console.log(`Functions skipped (exist in other facets): ${functionsInOtherFacets.size}`);
     console.log(`Functions to add to new facet: ${newFunctionSelectors.length}`);
 
