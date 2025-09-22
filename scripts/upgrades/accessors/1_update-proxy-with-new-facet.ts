@@ -175,14 +175,5 @@ import { printFunctions } from '../upgrade-helper';
     console.log('Functions after upgrade:');
     await printFunctions(diamondProxyAddress);
 
-    // Update the deployment record to point to the new facet
-    const newFacetFactoryForSave = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
-    await deployments.save('IexecPocoAccessorsFacet', {
-        abi: newFacetFactoryForSave.interface.fragments as any,
-        address: updatedFacetAddress,
-        bytecode: newFacetFactoryForSave.bytecode,
-    });
-
     console.log('Proxy update completed successfully!');
-    console.log(`New IexecPocoAccessorsFacet is now active at: ${updatedFacetAddress}`);
 })();
