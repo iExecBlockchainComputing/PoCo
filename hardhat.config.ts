@@ -123,9 +123,7 @@ const config: HardhatUserConfig = {
 
             ...(isArbitrumFork && {
                 forking: {
-                    url:
-                        process.env.ARBITRUM_RPC_URL ||
-                        'https://lb.drpc.org/arbitrum/AhEPbH3buE5zjj_dDMs3E2hIUihFGTAR8J88ThukG97E',
+                    url: process.env.ARBITRUM_RPC_URL || 'https://arbitrum.gateway.tenderly.co',
                     blockNumber: process.env.ARBITRUM_BLOCK_NUMBER
                         ? parseInt(process.env.ARBITRUM_BLOCK_NUMBER)
                         : undefined,
