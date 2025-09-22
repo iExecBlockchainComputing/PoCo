@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { deployments, ethers } from 'hardhat';
-import { IexecPocoAccessorsFacet__factory } from '../../typechain';
-import { FactoryDeployer } from '../../utils/FactoryDeployer';
-import config from '../../utils/config';
-import { mineBlockIfOnLocalFork } from '../../utils/mine';
+import { IexecPocoAccessorsFacet__factory } from '../../../typechain';
+import { FactoryDeployer } from '../../../utils/FactoryDeployer';
+import config from '../../../utils/config';
+import { mineBlockIfOnLocalFork } from '../../../utils/mine';
 
 (async () => {
     console.log('Deploying updated IexecPocoAccessorsFacet...');

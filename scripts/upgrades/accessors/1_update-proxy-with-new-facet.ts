@@ -4,16 +4,16 @@
 import { ZeroAddress } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
-import type { IDiamond } from '../../typechain';
+import type { IDiamond } from '../../../typechain';
 import {
     DiamondCutFacet__factory,
     DiamondLoupeFacet__factory,
     IexecPocoAccessorsFacet__factory,
-} from '../../typechain';
-import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
-import config from '../../utils/config';
-import { getFunctionSelectors } from '../../utils/proxy-tools';
-import { printFunctions } from '../upgrades/upgrade-helper';
+} from '../../../typechain';
+import { Ownable__factory } from '../../../typechain/factories/rlc-faucet-contract/contracts';
+import config from '../../../utils/config';
+import { getFunctionSelectors } from '../../../utils/proxy-tools';
+import { printFunctions } from '../upgrade-helper';
 
 (async () => {
     const chainId = (await ethers.provider.getNetwork()).chainId;
