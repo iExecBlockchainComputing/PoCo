@@ -123,12 +123,7 @@ const config: HardhatUserConfig = {
 
             ...(isArbitrumFork && {
                 forking: {
-                    url:
-                        process.env.ARBITRUM_RPC_URL ||
-                        'https://lb.drpc.org/arbitrum/AhEPbH3buE5zjj_dDMs3E2hIUihFGTAR8J88ThukG97E',
-                    blockNumber: process.env.ARBITRUM_BLOCK_NUMBER
-                        ? parseInt(process.env.ARBITRUM_BLOCK_NUMBER)
-                        : undefined,
+                    url: process.env.ARBITRUM_RPC_URL || 'https://arbitrum.gateway.tenderly.co',
                 },
                 ...arbitrumBaseConfig,
             }),
@@ -289,7 +284,6 @@ const config: HardhatUserConfig = {
             'facets/SignatureVerifier.sol', // contains only internal/private
             'facets/SignatureVerifier.v8.sol',
             'interfaces', // interesting for events but too much doc duplication if enabled
-            'registries', // ignore them for now
             'tools',
             'Diamond.sol', // not relevant
             'IexecInterfaceNativeABILegacy.sol', // not relevant

@@ -92,7 +92,6 @@ export default async function deploy() {
     const isArbitrumMainnet = (await ethers.provider.getNetwork()).chainId === 42161n;
     const facets = [
         new IexecAccessorsABILegacyFacet__factory(),
-        // new IexecAccessorsFacet__factory(), to test the updated IexecPocoAccessorsFacet
         new IexecCategoryManagerFacet__factory(),
         new IexecConfigurationExtraFacet__factory(),
         new IexecConfigurationFacet__factory(iexecLibOrders),

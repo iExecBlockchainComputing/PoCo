@@ -25,6 +25,7 @@ contract IexecPocoAccessorsFacet is
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
+    // ========= Deal and Task Accessors =========
     /**
      * Get a deal created by PoCo classic facet.
      * @param id The ID of the deal.
@@ -74,7 +75,37 @@ contract IexecPocoAccessorsFacet is
             );
     }
 
-    // ========= Token and Account Accessors =========
+    function viewConsumed(bytes32 _id) external view returns (uint256 consumed) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_consumed[_id];
+    }
+
+    function viewPresigned(bytes32 _id) external view returns (address signer) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_presigned[_id];
+    }
+
+    function viewContribution(
+        bytes32 _taskid,
+        address _worker
+    ) external view returns (IexecLibCore_v5.Contribution memory) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_contributions[_taskid][_worker];
+    }
+
+    function viewScore(address _worker) external view returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_workerScores[_worker];
+    }
+
+    function resultFor(bytes32 id) external view returns (bytes memory) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        IexecLibCore_v5.Task storage task = $.m_tasks[id];
+        require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, "task-pending");
+        return task.resultsCallback; // Expansion - result separation
+    }
+
+    // ========= SRLC Token and Account Accessors =========
 
     function name() external view returns (string memory) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
@@ -121,38 +152,6 @@ contract IexecPocoAccessorsFacet is
         return address($.m_baseToken);
     }
 
-    // ========= Deal and Task Accessors =========
-
-    function viewConsumed(bytes32 _id) external view returns (uint256 consumed) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        return $.m_consumed[_id];
-    }
-
-    function viewPresigned(bytes32 _id) external view returns (address signer) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        return $.m_presigned[_id];
-    }
-
-    function viewContribution(
-        bytes32 _taskid,
-        address _worker
-    ) external view returns (IexecLibCore_v5.Contribution memory) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        return $.m_contributions[_taskid][_worker];
-    }
-
-    function viewScore(address _worker) external view returns (uint256) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        return $.m_workerScores[_worker];
-    }
-
-    function resultFor(bytes32 id) external view returns (bytes memory) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        IexecLibCore_v5.Task storage task = $.m_tasks[id];
-        require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, "task-pending");
-        return task.resultsCallback; // Expansion - result separation
-    }
-
     // ========= Category Accessors =========
 
     function viewCategory(
@@ -196,35 +195,35 @@ contract IexecPocoAccessorsFacet is
 
     // ========= Constants Accessors =========
 
-    function contribution_deadline_ratio() external view returns (uint256) {
+    function contribution_deadline_ratio() external pure returns (uint256) {
         return CONTRIBUTION_DEADLINE_RATIO;
     }
 
-    function reveal_deadline_ratio() external view returns (uint256) {
+    function reveal_deadline_ratio() external pure returns (uint256) {
         return REVEAL_DEADLINE_RATIO;
     }
 
-    function final_deadline_ratio() external view returns (uint256) {
+    function final_deadline_ratio() external pure returns (uint256) {
         return FINAL_DEADLINE_RATIO;
     }
 
-    function workerpool_stake_ratio() external view returns (uint256) {
+    function workerpool_stake_ratio() external pure returns (uint256) {
         return WORKERPOOL_STAKE_RATIO;
     }
 
-    function kitty_ratio() external view returns (uint256) {
+    function kitty_ratio() external pure returns (uint256) {
         return KITTY_RATIO;
     }
 
-    function kitty_min() external view returns (uint256) {
+    function kitty_min() external pure returns (uint256) {
         return KITTY_MIN;
     }
 
-    function kitty_address() external view returns (address) {
+    function kitty_address() external pure returns (address) {
         return KITTY_ADDRESS;
     }
 
-    function groupmember_purpose() external view returns (uint256) {
+    function groupmember_purpose() external pure returns (uint256) {
         return GROUPMEMBER_PURPOSE;
     }
 
