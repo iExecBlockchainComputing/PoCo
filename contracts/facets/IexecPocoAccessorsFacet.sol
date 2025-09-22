@@ -25,6 +25,7 @@ contract IexecPocoAccessorsFacet is
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
+    // ========= Deal and Task Accessors =========
     /**
      * Get a deal created by PoCo classic facet.
      * @param id The ID of the deal.
@@ -74,6 +75,36 @@ contract IexecPocoAccessorsFacet is
             );
     }
 
+    function viewConsumed(bytes32 _id) external view returns (uint256 consumed) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_consumed[_id];
+    }
+
+    function viewPresigned(bytes32 _id) external view returns (address signer) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_presigned[_id];
+    }
+
+    function viewContribution(
+        bytes32 _taskid,
+        address _worker
+    ) external view returns (IexecLibCore_v5.Contribution memory) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_contributions[_taskid][_worker];
+    }
+
+    function viewScore(address _worker) external view returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return $.m_workerScores[_worker];
+    }
+
+    function resultFor(bytes32 id) external view returns (bytes memory) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        IexecLibCore_v5.Task storage task = $.m_tasks[id];
+        require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, "task-pending");
+        return task.resultsCallback; // Expansion - result separation
+    }
+
     // ========= Token and Account Accessors =========
 
     function name() external view returns (string memory) {
@@ -119,38 +150,6 @@ contract IexecPocoAccessorsFacet is
     function token() external view returns (address) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return address($.m_baseToken);
-    }
-
-    // ========= Deal and Task Accessors =========
-
-    function viewConsumed(bytes32 _id) external view returns (uint256 consumed) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        return $.m_consumed[_id];
-    }
-
-    function viewPresigned(bytes32 _id) external view returns (address signer) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        return $.m_presigned[_id];
-    }
-
-    function viewContribution(
-        bytes32 _taskid,
-        address _worker
-    ) external view returns (IexecLibCore_v5.Contribution memory) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        return $.m_contributions[_taskid][_worker];
-    }
-
-    function viewScore(address _worker) external view returns (uint256) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        return $.m_workerScores[_worker];
-    }
-
-    function resultFor(bytes32 id) external view returns (bytes memory) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        IexecLibCore_v5.Task storage task = $.m_tasks[id];
-        require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, "task-pending");
-        return task.resultsCallback; // Expansion - result separation
     }
 
     // ========= Category Accessors =========
