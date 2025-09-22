@@ -58,36 +58,10 @@ import { printFunctions } from '../upgrade-helper';
     });
 
     // Find the specific old accessor facets to remove completely
-    const oldAccessorFacets = new Set<string>();
-
-    const accessorFunctionSignatures = [
-        '0x70a08231', // balanceOf()
-        '0x06fdde03', // name()
-        '0x95d89b41', // symbol()
-        '0x313ce567', // decimals()
-        '0x18160ddd', // totalSupply()
-        '0xdd62ed3e', // allowance()
-        '0x9910fd72', // workerpoolByIndex()
-        '0xdb8aaa26', // appByIndex()
-        '0x1bf6e00d', // datasetByIndex()
-    ];
-
-    const specificFunctionSignature = '0x66517ca6'; // ComputeDealVolume
-
-    // Find the current accessor facet in the diamond (the one with 32 functions)
-    for (const facet of facets) {
-        const hasAccessorFunctions = facet.functionSelectors.some((selector) =>
-            accessorFunctionSignatures.includes(selector),
-        );
-        if (hasAccessorFunctions) {
-            oldAccessorFacets.add(facet.facetAddress);
-        }
-
-        const hasSpecificFunction = facet.functionSelectors.includes(specificFunctionSignature);
-        if (hasSpecificFunction) {
-            oldAccessorFacets.add(facet.facetAddress);
-        }
-    }
+    const oldAccessorFacets = new Set<string>([
+        '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
+        '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
+    ]);
 
     // Find functions that need to be removed - ALL functions from old accessor facets
     const functionsToRemoveByFacet = new Map<string, string[]>();
