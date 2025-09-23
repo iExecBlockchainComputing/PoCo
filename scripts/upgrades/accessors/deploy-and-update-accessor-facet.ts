@@ -34,6 +34,15 @@ import { printFunctions } from '../upgrade-helper';
     console.log(`Network: ${chainId}`);
     console.log(`Diamond proxy address: ${diamondProxyAddress}`);
 
+    const proxyOwnerAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner();
+    console.log(`Diamond proxy owner: ${proxyOwnerAddress}`);
+    // TODO: remove getImpersonatedSigner when using in live production
+    const proxyOwnerSigner = await ethers.getImpersonatedSigner(proxyOwnerAddress);
+    const diamondProxyAsOwner = DiamondCutFacet__factory.connect(
+        diamondProxyAddress,
+        proxyOwnerSigner,
+    );
+
     console.log('\n=== Step 1: Deploying new IexecPocoAccessorsFacet ===');
     const factoryDeployer = new FactoryDeployer(account, chainId);
     const iexecLibOrders = {
@@ -43,9 +52,8 @@ import { printFunctions } from '../upgrade-helper';
 
     const newFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
     const newFacetAddress = await factoryDeployer.deployContract(newFacetFactory);
-    console.log(`IexecPocoAccessorsFacet deployed at: ${newFacetAddress}`);
 
-    console.log('\n=== Step 2: Updating diamond proxy with new facet ===');
+    console.log('\n=== Step 2: Remove old facets (remove all functions of each facet ===');
 
     const diamondLoupe = DiamondLoupeFacet__factory.connect(diamondProxyAddress, account);
     const currentFacets = await diamondLoupe.facets();
@@ -74,16 +82,8 @@ import { printFunctions } from '../upgrade-helper';
         }
     }
 
-    console.log('Functions before upgrade:');
+    console.log('Diamond functions before upgrade:');
     await printFunctions(diamondProxyAddress);
-
-    const proxyOwnerAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner();
-    console.log(`Diamond proxy owner: ${proxyOwnerAddress}`);
-    const proxyOwnerSigner = await ethers.getImpersonatedSigner(proxyOwnerAddress);
-    const diamondProxyWithOwner = DiamondCutFacet__factory.connect(
-        diamondProxyAddress,
-        proxyOwnerSigner,
-    );
 
     const removalCuts: IDiamond.FacetCutStruct[] = [];
     for (const [, selectors] of functionsToRemoveByFacet) {
@@ -103,19 +103,17 @@ import { printFunctions } from '../upgrade-helper';
             console.log(`  Cut ${index + 1}: Remove ${cut.functionSelectors.length} functions`);
         });
 
-        const removeTx = await diamondProxyWithOwner.diamondCut(removalCuts, ZeroAddress, '0x');
+        const removeTx = await diamondProxyAsOwner.diamondCut(removalCuts, ZeroAddress, '0x');
         await removeTx.wait();
-        console.log('Old functions removed successfully');
-        console.log(`Transaction hash: ${removeTx.hash}`);
+        console.log('Diamond functions after removing old facets:');
+        await printFunctions(diamondProxyAddress);
     }
-    console.log('Adding new functions using linkContractToProxy...');
-    await linkContractToProxy(diamondProxyWithOwner, newFacetAddress, newFacetFactory);
+    console.log('\n=== Step 3: Updating diamond proxy with new facet ===');
+    await linkContractToProxy(diamondProxyAsOwner, newFacetAddress, newFacetFactory);
     console.log('New functions added successfully');
 
-    console.log('Functions after upgrade:');
+    console.log('Diamond functions after adding new facet:');
     await printFunctions(diamondProxyAddress);
 
     console.log('\nUpgrade completed successfully!');
-    console.log(`New IexecPocoAccessorsFacet deployed at: ${newFacetAddress}`);
-    console.log('Diamond proxy updated with new facet');
 })();
