@@ -13,13 +13,11 @@ import {
 import { Ownable__factory } from '../../../typechain/factories/rlc-faucet-contract/contracts';
 import { FactoryDeployer } from '../../../utils/FactoryDeployer';
 import config from '../../../utils/config';
-import { mineBlockIfOnLocalFork } from '../../../utils/mine';
 import { linkContractToProxy } from '../../../utils/proxy-tools';
 import { printFunctions } from '../upgrade-helper';
 
 (async () => {
     console.log('Deploying and updating IexecPocoAccessorsFacet...');
-    await mineBlockIfOnLocalFork();
 
     const [account] = await ethers.getSigners();
     const chainId = (await ethers.provider.getNetwork()).chainId;
