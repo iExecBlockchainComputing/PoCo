@@ -13,13 +13,11 @@ import {
 import { Ownable__factory } from '../../../typechain/factories/rlc-faucet-contract/contracts';
 import { FactoryDeployer } from '../../../utils/FactoryDeployer';
 import config from '../../../utils/config';
-import { mineBlockIfOnLocalFork } from '../../../utils/mine';
 import { linkContractToProxy } from '../../../utils/proxy-tools';
 import { printFunctions } from '../upgrade-helper';
 
 (async () => {
     console.log('Deploying and updating IexecPocoAccessorsFacet...');
-    await mineBlockIfOnLocalFork();
 
     const [account] = await ethers.getSigners();
     const chainId = (await ethers.provider.getNetwork()).chainId;
@@ -36,6 +34,19 @@ import { printFunctions } from '../upgrade-helper';
     console.log(`Network: ${chainId}`);
     console.log(`Diamond proxy address: ${diamondProxyAddress}`);
 
+    const proxyOwnerAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner();
+    console.log(`Diamond proxy owner: ${proxyOwnerAddress}`);
+
+    // Use impersonated signer only for fork testing, otherwise use account signer
+    const proxyOwnerSigner =
+        process.env.ARBITRUM_FORK === 'true'
+            ? await ethers.getImpersonatedSigner(proxyOwnerAddress)
+            : account;
+    const diamondProxyAsOwner = DiamondCutFacet__factory.connect(
+        diamondProxyAddress,
+        proxyOwnerSigner,
+    );
+
     console.log('\n=== Step 1: Deploying new IexecPocoAccessorsFacet ===');
     const factoryDeployer = new FactoryDeployer(account, chainId);
     const iexecLibOrders = {
@@ -45,9 +56,10 @@ import { printFunctions } from '../upgrade-helper';
 
     const newFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
     const newFacetAddress = await factoryDeployer.deployContract(newFacetFactory);
-    console.log(`IexecPocoAccessorsFacet deployed at: ${newFacetAddress}`);
 
-    console.log('\n=== Step 2: Updating diamond proxy with new facet ===');
+    console.log(
+        '\n=== Step 2: Remove old facets (remove all functions of old accessors facets) ===',
+    );
 
     const diamondLoupe = DiamondLoupeFacet__factory.connect(diamondProxyAddress, account);
     const currentFacets = await diamondLoupe.facets();
@@ -57,13 +69,13 @@ import { printFunctions } from '../upgrade-helper';
         console.log(`  ${facet.facetAddress}: ${facet.functionSelectors.length} functions`);
     });
 
-    // Find the specific old accessor facets to remove completely
-    const oldAccessorFacets = new Set<string>([
+    const constantFacetAddress = '0x56CDC32332648b1220a89172191798852706EB35'; // Facet providing constant getters (IexecAccessorsABILegacyFacet)
+    const oldAccessorFacets = [
         '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
         '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
-    ]);
+        constantFacetAddress,
+    ];
 
-    const constantFacetAddress = '0x56CDC32332648b1220a89172191798852706EB35'; // Facet providing constant getters (IexecAccessorsABILegacyFacet)
     const constantFunctionSignatures = [
         'CONTRIBUTION_DEADLINE_RATIO()',
         'FINAL_DEADLINE_RATIO()',
@@ -77,49 +89,40 @@ import { printFunctions } from '../upgrade-helper';
     const constantFunctionsToRemove = constantFunctionSignatures.map((sig) =>
         ethers.id(sig).slice(0, 10),
     );
-    // Find functions that need to be removed - ALL functions from old accessor facets
-    const functionsToRemoveByFacet = new Map<string, string[]>();
 
-    // Remove ALL functions from the old accessor facets
-    for (const facet of currentFacets) {
-        if (oldAccessorFacets.has(facet.facetAddress)) {
-            console.log(
-                `Found old accessor facet ${facet.facetAddress} with ${facet.functionSelectors.length} functions - will remove ALL`,
-            );
-            functionsToRemoveByFacet.set(facet.facetAddress, [...facet.functionSelectors]);
-        }
-        if (facet.facetAddress === constantFacetAddress) {
-            const functionsToRemove = facet.functionSelectors.filter((selector) =>
-                constantFunctionsToRemove.includes(selector),
-            );
-            if (functionsToRemove.length > 0) {
-                console.log(
-                    `Found constants facet ${facet.facetAddress} - will remove ${functionsToRemove.length} specific constant functions`,
-                );
-                functionsToRemoveByFacet.set(facet.facetAddress, functionsToRemove);
-            }
-        }
-    }
-
-    console.log('Functions before upgrade:');
+    console.log('Diamond functions before upgrade:');
     await printFunctions(diamondProxyAddress);
 
-    const proxyOwnerAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner();
-    console.log(`Diamond proxy owner: ${proxyOwnerAddress}`);
-    const proxyOwnerSigner = await ethers.getImpersonatedSigner(proxyOwnerAddress);
-    const diamondProxyWithOwner = DiamondCutFacet__factory.connect(
-        diamondProxyAddress,
-        proxyOwnerSigner,
-    );
-
     const removalCuts: IDiamond.FacetCutStruct[] = [];
-    for (const [, selectors] of functionsToRemoveByFacet) {
+
+    // Remove ALL functions from the old accessor facets using diamondLoupe.facetFunctionSelectors() except of constant founctions
+    for (const facetAddress of oldAccessorFacets) {
+        const selectors = await diamondLoupe.facetFunctionSelectors(facetAddress);
         if (selectors.length > 0) {
-            removalCuts.push({
-                facetAddress: ZeroAddress,
-                action: FacetCutAction.Remove,
-                functionSelectors: [...selectors],
-            });
+            if (facetAddress === constantFacetAddress) {
+                const functionsToRemove = selectors.filter((selector) =>
+                    constantFunctionsToRemove.includes(selector),
+                );
+                if (functionsToRemove.length > 0) {
+                    console.log(
+                        `Found constants facet ${facetAddress} - will remove ${functionsToRemove.length} specific constant functions`,
+                    );
+                    removalCuts.push({
+                        facetAddress: ZeroAddress,
+                        action: FacetCutAction.Remove,
+                        functionSelectors: [...functionsToRemove],
+                    });
+                }
+            } else {
+                console.log(
+                    `Removing old accessor facet ${facetAddress} with ${selectors.length} functions - will remove ALL`,
+                );
+                removalCuts.push({
+                    facetAddress: ZeroAddress,
+                    action: FacetCutAction.Remove,
+                    functionSelectors: [...selectors],
+                });
+            }
         }
     }
 
@@ -130,14 +133,18 @@ import { printFunctions } from '../upgrade-helper';
             console.log(`  Cut ${index + 1}: Remove ${cut.functionSelectors.length} functions`);
         });
 
-        const removeTx = await diamondProxyWithOwner.diamondCut(removalCuts, ZeroAddress, '0x');
+        const removeTx = await diamondProxyAsOwner.diamondCut(removalCuts, ZeroAddress, '0x');
         await removeTx.wait();
         console.log(`Transaction hash: ${removeTx.hash}`);
+        console.log('Diamond functions after removing old facets:');
+        await printFunctions(diamondProxyAddress);
     }
-    await linkContractToProxy(diamondProxyWithOwner, newFacetAddress, newFacetFactory);
+    console.log('\n=== Step 3: Updating diamond proxy with new facet ===');
+    await linkContractToProxy(diamondProxyAsOwner, newFacetAddress, newFacetFactory);
     console.log('New functions added successfully');
 
-    console.log('Functions after upgrade:');
+    console.log('Diamond functions after adding new facet:');
     await printFunctions(diamondProxyAddress);
-    console.log('Diamond proxy updated with new facet');
+
+    console.log('\nUpgrade completed successfully!');
 })();
