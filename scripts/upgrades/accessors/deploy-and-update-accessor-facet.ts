@@ -36,8 +36,12 @@ import { printFunctions } from '../upgrade-helper';
 
     const proxyOwnerAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner();
     console.log(`Diamond proxy owner: ${proxyOwnerAddress}`);
-    // TODO: remove getImpersonatedSigner when using in live production
-    const proxyOwnerSigner = await ethers.getImpersonatedSigner(proxyOwnerAddress);
+
+    // Use impersonated signer only for fork testing, otherwise use account signer
+    const proxyOwnerSigner =
+        process.env.ARBITRUM_FORK === 'true'
+            ? await ethers.getImpersonatedSigner(proxyOwnerAddress)
+            : account;
     const diamondProxyAsOwner = DiamondCutFacet__factory.connect(
         diamondProxyAddress,
         proxyOwnerSigner,
