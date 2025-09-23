@@ -14,7 +14,6 @@ import {
     DiamondLoupeFacet__factory,
     Diamond__factory,
     IexecAccessorsABILegacyFacet__factory,
-    IexecAccessorsFacet__factory,
     IexecAccessors__factory,
     IexecCategoryManagerFacet__factory,
     IexecCategoryManager__factory,
@@ -93,7 +92,6 @@ export default async function deploy() {
     const isArbitrumMainnet = (await ethers.provider.getNetwork()).chainId === 42161n;
     const facets = [
         new IexecAccessorsABILegacyFacet__factory(),
-        new IexecAccessorsFacet__factory(),
         new IexecCategoryManagerFacet__factory(),
         new IexecConfigurationExtraFacet__factory(),
         new IexecConfigurationFacet__factory(iexecLibOrders),

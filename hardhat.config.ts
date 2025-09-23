@@ -17,6 +17,7 @@ const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
 const isFujiFork = process.env.FUJI_FORK == 'true';
 const isArbitrumSepoliaFork = process.env.ARBITRUM_SEPOLIA_FORK == 'true';
+const isArbitrumFork = process.env.ARBITRUM_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
 
 /**
@@ -119,6 +120,13 @@ const config: HardhatUserConfig = {
                 },
                 ...arbitrumSepoliaBaseConfig,
             }),
+
+            ...(isArbitrumFork && {
+                forking: {
+                    url: process.env.ARBITRUM_RPC_URL || 'https://arbitrum.gateway.tenderly.co',
+                },
+                ...arbitrumBaseConfig,
+            }),
         },
         'external-hardhat': {
             ...defaultHardhatNetworkParams,
@@ -138,6 +146,10 @@ const config: HardhatUserConfig = {
             ...(isArbitrumSepoliaFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 ...arbitrumSepoliaBaseConfig,
+            }),
+            ...(isArbitrumFork && {
+                accounts: 'remote', // Override defaults accounts for impersonation
+                ...arbitrumBaseConfig,
             }),
         },
         'dev-native': {
