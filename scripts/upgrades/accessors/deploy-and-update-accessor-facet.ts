@@ -132,17 +132,12 @@ import { printFunctions } from '../upgrade-helper';
 
         const removeTx = await diamondProxyWithOwner.diamondCut(removalCuts, ZeroAddress, '0x');
         await removeTx.wait();
-        console.log('Old functions removed successfully');
         console.log(`Transaction hash: ${removeTx.hash}`);
     }
-    console.log('Adding new functions using linkContractToProxy...');
     await linkContractToProxy(diamondProxyWithOwner, newFacetAddress, newFacetFactory);
     console.log('New functions added successfully');
 
     console.log('Functions after upgrade:');
     await printFunctions(diamondProxyAddress);
-
-    console.log('\nUpgrade completed successfully!');
-    console.log(`New IexecPocoAccessorsFacet deployed at: ${newFacetAddress}`);
     console.log('Diamond proxy updated with new facet');
 })();
