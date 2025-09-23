@@ -34,7 +34,8 @@ abstract contract FacetBase {
         _;
     }
 
-    function owner() public view returns (address) {
+    function owner() internal view returns (address) {
+        // TODO use LibDiamond.contractOwner() instead of an external call when migrating all contracts to v8.
         // Make an external call to delegatecall the OwnershipFacet.
         return IERC5313(address(this)).owner();
     }
