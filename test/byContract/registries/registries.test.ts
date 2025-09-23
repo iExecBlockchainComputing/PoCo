@@ -250,12 +250,7 @@ describe('Registries', () => {
             expect(await appRegistry.ownerOf(predictedAddress)).to.equal(appProvider.address);
 
             const tokenAtIndex = await appRegistry.tokenOfOwnerByIndex(appProvider.address, 0);
-            console.log('tokenAtIndex', tokenAtIndex);
-
-            console.log('ethers.getAddress(predictedAddress)', ethers.getAddress(predictedAddress));
-            console.log('bigintToAddress(tokenAtIndex)', bigintToAddress(tokenAtIndex));
             expect(bigintToAddress(tokenAtIndex)).to.equal(ethers.getAddress(predictedAddress));
-            console.log('BEFORE', ethers.getAddress(ethers.toBeHex(tokenAtIndex)));
 
             const tokenURI = await appRegistry.tokenURI(predictedAddress);
             const baseURI = await appRegistry.baseURI();
