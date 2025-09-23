@@ -47,7 +47,7 @@ describe('CategoryManager', async () => {
         const lastCategoryIndex = (await iexecPocoAsAnyone.countCategory()) - 1n;
         await expect(
             iexecPocoAsAnyone.viewCategory(lastCategoryIndex + 1n),
-        ).to.be.revertedWithPanic(0x32);
+        ).to.be.revertedWithoutReason();
     });
 
     it('Should create category', async () => {
