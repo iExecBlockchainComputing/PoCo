@@ -55,6 +55,19 @@ interface IexecPocoAccessors {
     function teebroker() external view returns (address);
     function callbackgas() external view returns (uint256);
 
+    // ========= Dataset Accessors =========
+    function viewDataset(
+        address dataset
+    ) external view returns (IexecLibCore_v5.DatasetInfo memory);
+
+    // ========= App Accessors =========
+    function viewApp(address app) external view returns (IexecLibCore_v5.AppInfo memory);
+
+    // ========= Workerpool Accessors =========
+    function viewWorkerpool(
+        address workerpool
+    ) external view returns (IexecLibCore_v5.WorkerpoolInfo memory);
+
     // ========= Constants Accessors =========
     function contribution_deadline_ratio() external view returns (uint256);
     function reveal_deadline_ratio() external view returns (uint256);

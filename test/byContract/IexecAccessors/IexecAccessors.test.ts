@@ -243,6 +243,32 @@ describe('IexecAccessors', async () => {
         expect(await iexecPoco.callbackgas()).to.equal(100_000n);
     });
 
+    it('viewDataset', async function () {
+        const datasetInfo = await iexecPoco.viewDataset(datasetAddress);
+        expect(datasetInfo.owner).to.equal(datasetProvider.address);
+        expect(datasetInfo.m_datasetName).to.equal('my-dataset');
+        expect(datasetInfo.m_datasetMultiaddr).to.equal(ZeroHash);
+        expect(datasetInfo.m_datasetChecksum).to.equal(ZeroHash);
+    });
+
+    it('viewApp', async function () {
+        const appInfo = await iexecPoco.viewApp(appAddress);
+        expect(appInfo.owner).to.equal(appProvider.address);
+        expect(appInfo.m_appName).to.equal('my-app');
+        expect(appInfo.m_appType).to.equal('APP_TYPE_0');
+        expect(appInfo.m_appMultiaddr).to.equal(ZeroHash);
+        expect(appInfo.m_appChecksum).to.equal(ZeroHash);
+        expect(appInfo.m_appMREnclave).to.equal(ZeroHash);
+    });
+
+    it('viewWorkerpool', async function () {
+        const workerpoolInfo = await iexecPoco.viewWorkerpool(workerpoolAddress);
+        expect(workerpoolInfo.owner).to.equal(scheduler.address);
+        expect(workerpoolInfo.m_workerpoolDescription).to.equal('my-workerpool');
+        expect(workerpoolInfo.m_workerStakeRatioPolicy).to.equal(30n);
+        expect(workerpoolInfo.m_schedulerRewardRatioPolicy).to.equal(1n);
+    });
+
     it('contributionDeadlineRatio', async function () {
         expect(await iexecPoco.contribution_deadline_ratio()).to.equal(7);
     });
