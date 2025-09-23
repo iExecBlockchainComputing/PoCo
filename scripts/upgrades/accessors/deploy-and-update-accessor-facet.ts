@@ -57,7 +57,7 @@ import { printFunctions } from '../upgrade-helper';
     const newFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
     const newFacetAddress = await factoryDeployer.deployContract(newFacetFactory);
 
-    console.log('\n=== Step 2: Remove old facets (remove all functions of each facet ===');
+    console.log('\n=== Step 2: Remove old facets (remove all functions of each facet) ===');
 
     const diamondLoupe = DiamondLoupeFacet__factory.connect(diamondProxyAddress, account);
     const currentFacets = await diamondLoupe.facets();
@@ -67,7 +67,6 @@ import { printFunctions } from '../upgrade-helper';
         console.log(`  ${facet.facetAddress}: ${facet.functionSelectors.length} functions`);
     });
 
-    // Find the specific old accessor facets to remove completely
     const oldAccessorFacets = [
         '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
         '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
@@ -83,7 +82,7 @@ import { printFunctions } from '../upgrade-helper';
         const selectors = await diamondLoupe.facetFunctionSelectors(facetAddress);
         if (selectors.length > 0) {
             console.log(
-                `Found old accessor facet ${facetAddress} with ${selectors.length} functions - will remove ALL`,
+                `Removing old accessor facet ${facetAddress} with ${selectors.length} functions - will remove ALL`,
             );
             removalCuts.push({
                 facetAddress: ZeroAddress,
@@ -102,6 +101,7 @@ import { printFunctions } from '../upgrade-helper';
 
         const removeTx = await diamondProxyAsOwner.diamondCut(removalCuts, ZeroAddress, '0x');
         await removeTx.wait();
+        console.log(`Transaction hash: ${removeTx.hash}`);
         console.log('Diamond functions after removing old facets:');
         await printFunctions(diamondProxyAddress);
     }
