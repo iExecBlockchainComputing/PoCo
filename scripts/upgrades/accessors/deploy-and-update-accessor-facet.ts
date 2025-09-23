@@ -64,30 +64,23 @@ import { printFunctions } from '../upgrade-helper';
     });
 
     // Find the specific old accessor facets to remove completely
-    const oldAccessorFacets = new Set<string>([
+    const oldAccessorFacets = [
         '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
         '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
-    ]);
-
-    // Functions to remove - ALL functions from the old accessor facets
-    const functionsToRemoveByFacet = new Map<string, string[]>();
-
-    // Remove ALL functions from the old accessor facets
-    for (const facet of currentFacets) {
-        if (oldAccessorFacets.has(facet.facetAddress)) {
-            console.log(
-                `Found old accessor facet ${facet.facetAddress} with ${facet.functionSelectors.length} functions - will remove ALL`,
-            );
-            functionsToRemoveByFacet.set(facet.facetAddress, [...facet.functionSelectors]);
-        }
-    }
+    ];
 
     console.log('Diamond functions before upgrade:');
     await printFunctions(diamondProxyAddress);
 
     const removalCuts: IDiamond.FacetCutStruct[] = [];
-    for (const [, selectors] of functionsToRemoveByFacet) {
+
+    // Remove ALL functions from the old accessor facets using diamondLoupe.facetFunctionSelectors()
+    for (const facetAddress of oldAccessorFacets) {
+        const selectors = await diamondLoupe.facetFunctionSelectors(facetAddress);
         if (selectors.length > 0) {
+            console.log(
+                `Found old accessor facet ${facetAddress} with ${selectors.length} functions - will remove ALL`,
+            );
             removalCuts.push({
                 facetAddress: ZeroAddress,
                 action: FacetCutAction.Remove,
