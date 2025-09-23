@@ -158,6 +158,9 @@ contract IexecPocoAccessorsFacet is
         uint256 _catid
     ) external view returns (IexecLibCore_v5.Category memory category) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        if (_catid >= $.m_categories.length) {
+            revert();
+        }
         return $.m_categories[_catid];
     }
 
