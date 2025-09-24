@@ -29,17 +29,6 @@ abstract contract FacetBase {
     // Used with ERC-734 Key Manager identity contract for authorization management.
     uint256 internal constant GROUPMEMBER_PURPOSE = 4;
 
-    modifier onlyOwner() {
-        require(_msgSender() == owner(), "Ownable: caller is not the owner");
-        _;
-    }
-
-    function owner() internal view returns (address) {
-        // TODO use LibDiamond.contractOwner() instead of an external call when migrating all contracts to v8.
-        // Make an external call to delegatecall the OwnershipFacet.
-        return IERC5313(address(this)).owner();
-    }
-
     function _msgSender() internal view returns (address) {
         return msg.sender;
     }
