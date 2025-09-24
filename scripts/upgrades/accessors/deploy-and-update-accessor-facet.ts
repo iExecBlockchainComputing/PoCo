@@ -69,13 +69,10 @@ import { printFunctions } from '../upgrade-helper';
         console.log(`  ${facet.facetAddress}: ${facet.functionSelectors.length} functions`);
     });
 
-    const constantFacetAddress = '0x56CDC32332648b1220a89172191798852706EB35'; // Facet providing constant getters (IexecAccessorsABILegacyFacet)
-    const oldAccessorFacets = [
-        '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
-        '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
-        constantFacetAddress,
-    ];
+    console.log('Diamond functions before upgrade:');
+    await printFunctions(diamondProxyAddress);
 
+    const removalCuts: IDiamond.FacetCutStruct[] = [];
     const constantFunctionSignatures = [
         'CONTRIBUTION_DEADLINE_RATIO()',
         'FINAL_DEADLINE_RATIO()',
@@ -89,40 +86,31 @@ import { printFunctions } from '../upgrade-helper';
     const constantFunctionsToRemove = constantFunctionSignatures.map((sig) =>
         ethers.id(sig).slice(0, 10),
     );
+    console.log(
+        `Removing specific constant functions from diamond Proxy - will remove ${constantFunctionsToRemove.length} specific constant functions`,
+    );
+    removalCuts.push({
+        facetAddress: ZeroAddress,
+        action: FacetCutAction.Remove,
+        functionSelectors: constantFunctionsToRemove,
+    });
 
-    console.log('Diamond functions before upgrade:');
-    await printFunctions(diamondProxyAddress);
-
-    const removalCuts: IDiamond.FacetCutStruct[] = [];
-
+    const oldAccessorFacets = [
+        '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
+        '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
+    ];
     // Remove ALL functions from the old accessor facets using diamondLoupe.facetFunctionSelectors() except of constant founctions
     for (const facetAddress of oldAccessorFacets) {
         const selectors = await diamondLoupe.facetFunctionSelectors(facetAddress);
         if (selectors.length > 0) {
-            if (facetAddress === constantFacetAddress) {
-                const functionsToRemove = selectors.filter((selector) =>
-                    constantFunctionsToRemove.includes(selector),
-                );
-                if (functionsToRemove.length > 0) {
-                    console.log(
-                        `Found constants facet ${facetAddress} - will remove ${functionsToRemove.length} specific constant functions`,
-                    );
-                    removalCuts.push({
-                        facetAddress: ZeroAddress,
-                        action: FacetCutAction.Remove,
-                        functionSelectors: [...functionsToRemove],
-                    });
-                }
-            } else {
-                console.log(
-                    `Removing old accessor facet ${facetAddress} with ${selectors.length} functions - will remove ALL`,
-                );
-                removalCuts.push({
-                    facetAddress: ZeroAddress,
-                    action: FacetCutAction.Remove,
-                    functionSelectors: [...selectors],
-                });
-            }
+            console.log(
+                `Removing old accessor facet ${facetAddress} with ${selectors.length} functions - will remove ALL`,
+            );
+            removalCuts.push({
+                facetAddress: ZeroAddress,
+                action: FacetCutAction.Remove,
+                functionSelectors: [...selectors],
+            });
         }
     }
 
