@@ -48,7 +48,7 @@ let [requester, appProvider, datasetProvider, scheduler, worker1, anyone]: Signe
 let ordersAssets: OrdersAssets;
 let ordersPrices: OrdersPrices;
 
-describe('IexecAccessors', async () => {
+describe('IexecPocoAccessors', async () => {
     beforeEach('Deploy', async () => {
         // Deploy all contracts
         proxyAddress = await loadHardhatFixtureDeployment();
