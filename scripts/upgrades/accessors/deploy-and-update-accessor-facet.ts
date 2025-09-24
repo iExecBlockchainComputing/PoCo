@@ -86,6 +86,9 @@ import { printFunctions } from '../upgrade-helper';
     const constantFunctionsToRemove = constantFunctionSignatures.map((sig) =>
         ethers.id(sig).slice(0, 10),
     );
+    console.log(
+        `Removing specific constant functions from diamond Proxy - will remove ${constantFunctionsToRemove.length} specific constant functions`,
+    );
     removalCuts.push({
         facetAddress: ZeroAddress,
         action: FacetCutAction.Remove,
