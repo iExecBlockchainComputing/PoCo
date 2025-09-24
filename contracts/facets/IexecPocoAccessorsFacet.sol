@@ -7,33 +7,12 @@ import {PocoStorageLib, IRegistry} from "../libs/PocoStorageLib.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
+import {IDataset} from "../registries/datasets/IDataset.v8.sol";
+import {IApp} from "../registries/apps/IApp.v8.sol";
+import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
-
-interface DatasetInterface {
-    function owner() external view returns (address);
-    function m_datasetName() external view returns (string memory);
-    function m_datasetMultiaddr() external view returns (bytes memory);
-    function m_datasetChecksum() external view returns (bytes32);
-}
-
-interface AppInterface {
-    function owner() external view returns (address);
-    function m_appName() external view returns (string memory);
-    function m_appType() external view returns (string memory);
-    function m_appMultiaddr() external view returns (bytes memory);
-    function m_appChecksum() external view returns (bytes32);
-    function m_appMREnclave() external view returns (bytes memory);
-}
-
-interface WorkerpoolInterface {
-    function owner() external view returns (address);
-    function m_workerpoolDescription() external view returns (string memory);
-    function m_workerStakeRatioPolicy() external view returns (uint256);
-    function m_schedulerRewardRatioPolicy() external view returns (uint256);
-}
-
 /**
  * @title Getters contract for PoCo facets.
  */
@@ -224,7 +203,7 @@ contract IexecPocoAccessorsFacet is
     function viewDataset(
         address dataset
     ) external view returns (IexecLibCore_v5.DatasetInfo memory) {
-        DatasetInterface datasetContract = DatasetInterface(dataset);
+        IDataset datasetContract = IDataset(dataset);
         return
             IexecLibCore_v5.DatasetInfo({
                 owner: datasetContract.owner(),
@@ -237,7 +216,7 @@ contract IexecPocoAccessorsFacet is
     // ========= App Accessors =========
 
     function viewApp(address app) external view returns (IexecLibCore_v5.AppInfo memory) {
-        AppInterface appContract = AppInterface(app);
+        IApp appContract = IApp(app);
         return
             IexecLibCore_v5.AppInfo({
                 owner: appContract.owner(),
@@ -254,7 +233,7 @@ contract IexecPocoAccessorsFacet is
     function viewWorkerpool(
         address workerpool
     ) external view returns (IexecLibCore_v5.WorkerpoolInfo memory) {
-        WorkerpoolInterface workerpoolContract = WorkerpoolInterface(workerpool);
+        IWorkerpool workerpoolContract = IWorkerpool(workerpool);
         return
             IexecLibCore_v5.WorkerpoolInfo({
                 owner: workerpoolContract.owner(),
