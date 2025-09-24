@@ -57,7 +57,9 @@ import { printFunctions } from '../upgrade-helper';
     const newFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
     const newFacetAddress = await factoryDeployer.deployContract(newFacetFactory);
 
-    console.log('\n=== Step 2: Remove old facets (remove all functions of each facet) ===');
+    console.log(
+        '\n=== Step 2: Remove old facets (remove all functions of old accessors facets) ===',
+    );
 
     const diamondLoupe = DiamondLoupeFacet__factory.connect(diamondProxyAddress, account);
     const currentFacets = await diamondLoupe.facets();
@@ -67,17 +69,37 @@ import { printFunctions } from '../upgrade-helper';
         console.log(`  ${facet.facetAddress}: ${facet.functionSelectors.length} functions`);
     });
 
-    const oldAccessorFacets = [
-        '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
-        '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
-    ];
-
     console.log('Diamond functions before upgrade:');
     await printFunctions(diamondProxyAddress);
 
     const removalCuts: IDiamond.FacetCutStruct[] = [];
+    const constantFunctionSignatures = [
+        'CONTRIBUTION_DEADLINE_RATIO()',
+        'FINAL_DEADLINE_RATIO()',
+        'GROUPMEMBER_PURPOSE()',
+        'KITTY_ADDRESS()',
+        'KITTY_MIN()',
+        'KITTY_RATIO()',
+        'REVEAL_DEADLINE_RATIO()',
+        'WORKERPOOL_STAKE_RATIO()',
+    ];
+    const constantFunctionsToRemove = constantFunctionSignatures.map((sig) =>
+        ethers.id(sig).slice(0, 10),
+    );
+    console.log(
+        `Removing specific constant functions from diamond Proxy - will remove ${constantFunctionsToRemove.length} specific constant functions`,
+    );
+    removalCuts.push({
+        facetAddress: ZeroAddress,
+        action: FacetCutAction.Remove,
+        functionSelectors: constantFunctionsToRemove,
+    });
 
-    // Remove ALL functions from the old accessor facets using diamondLoupe.facetFunctionSelectors()
+    const oldAccessorFacets = [
+        '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
+        '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
+    ];
+    // Remove ALL functions from the old accessor facets using diamondLoupe.facetFunctionSelectors() except of constant founctions
     for (const facetAddress of oldAccessorFacets) {
         const selectors = await diamondLoupe.facetFunctionSelectors(facetAddress);
         if (selectors.length > 0) {
