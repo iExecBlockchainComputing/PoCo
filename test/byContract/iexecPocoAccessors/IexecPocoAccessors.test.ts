@@ -10,6 +10,8 @@ import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
+    IexecPocoAccessors,
+    IexecPocoAccessors__factory,
 } from '../../../typechain';
 import {
     OrdersAssets,
@@ -42,6 +44,7 @@ const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(1
 
 let proxyAddress: string;
 let iexecPoco: IexecInterfaceNative;
+let iexecPocoAccessors: IexecPocoAccessors;
 let iexecWrapper: IexecWrapper;
 let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
 let [requester, appProvider, datasetProvider, scheduler, worker1, anyone]: SignerWithAddress[] = [];
@@ -62,6 +65,7 @@ describe('IexecPocoAccessors', async () => {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
+        iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,
@@ -75,31 +79,31 @@ describe('IexecPocoAccessors', async () => {
     }
 
     it('name', async function () {
-        expect(await iexecPoco.name()).to.equal('Staked RLC');
+        expect(await iexecPocoAccessors.name()).to.equal('Staked RLC');
     });
 
     it('symbol', async function () {
-        expect(await iexecPoco.symbol()).to.equal('SRLC');
+        expect(await iexecPocoAccessors.symbol()).to.equal('SRLC');
     });
 
     it('decimals', async function () {
-        expect(await iexecPoco.decimals()).to.equal(9n);
+        expect(await iexecPocoAccessors.decimals()).to.equal(9n);
     });
 
     it('totalSupply', async function () {
-        expect(await iexecPoco.totalSupply()).to.equal(0n);
+        expect(await iexecPocoAccessors.totalSupply()).to.equal(0n);
     });
 
     it('balanceOf', async function () {
         const amount = 3n;
         await iexecWrapper.depositInIexecAccount(anyone, amount);
-        expect(await iexecPoco.balanceOf(anyone.address)).to.equal(amount);
+        expect(await iexecPocoAccessors.balanceOf(anyone.address)).to.equal(amount);
     });
 
     it('frozenOf', async function () {
         await createDeal(); // Lock some requester funds.
         const dealPrice = appPrice + datasetPrice + workerpoolPrice; // volume == 1
-        expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealPrice);
+        expect(await iexecPocoAccessors.frozenOf(requester.address)).to.equal(dealPrice);
     });
 
     it('allowance', async function () {
@@ -107,7 +111,7 @@ describe('IexecPocoAccessors', async () => {
         const spender = randomAddress();
         await iexecWrapper.depositInIexecAccount(anyone, amount);
         await iexecPoco.connect(anyone).approve(spender, amount);
-        expect(await iexecPoco.allowance(anyone.address, spender)).to.equal(amount);
+        expect(await iexecPocoAccessors.allowance(anyone.address, spender)).to.equal(amount);
     });
 
     it('viewAccount', async function () {
@@ -117,19 +121,19 @@ describe('IexecPocoAccessors', async () => {
         const stakedBalance = 3n;
         await iexecWrapper.depositInIexecAccount(requester, stakedBalance);
         // Check staked and locked amounts.
-        const account = await iexecPoco.viewAccount(requester.address);
+        const account = await iexecPocoAccessors.viewAccount(requester.address);
         expect(account.stake).to.equal(stakedBalance);
         expect(account.locked).to.equal(dealPrice);
     });
 
     // TODO test the case where token() == 0x0 in native mode.
     it('token', async function () {
-        expect(await iexecPoco.token()).to.equal((await deployments.get('RLC')).address);
+        expect(await iexecPocoAccessors.token()).to.equal((await deployments.get('RLC')).address);
     });
 
     it('viewDeal', async function () {
         const { dealId } = await createDeal();
-        const deal = await iexecPoco.viewDeal(dealId);
+        const deal = await iexecPocoAccessors.viewDeal(dealId);
         expect(deal.app.pointer).to.equal(appAddress);
         expect(deal.app.owner).to.equal(appProvider.address);
         expect(deal.app.price).to.equal(appPrice);
@@ -156,7 +160,9 @@ describe('IexecPocoAccessors', async () => {
 
     it('viewConsumed', async function () {
         const { orders } = await createDeal();
-        expect(await iexecPoco.viewConsumed(iexecWrapper.hashOrder(orders.app))).to.equal(1);
+        expect(await iexecPocoAccessors.viewConsumed(iexecWrapper.hashOrder(orders.app))).to.equal(
+            1,
+        );
     });
 
     it('viewPresigned', async function () {
@@ -167,7 +173,7 @@ describe('IexecPocoAccessors', async () => {
             .connect(appProvider)
             .manageAppOrder(orderOperation)
             .then((tx) => tx.wait());
-        expect(await iexecPoco.viewPresigned(iexecWrapper.hashOrder(appOrder))).equal(
+        expect(await iexecPocoAccessors.viewPresigned(iexecWrapper.hashOrder(appOrder))).equal(
             appProvider.address,
         );
     });
@@ -176,10 +182,10 @@ describe('IexecPocoAccessors', async () => {
         const { dealId, taskId, taskIndex, startTime, timeRef } = await createDeal();
         await iexecWrapper.initializeTask(dealId, taskIndex);
 
-        const contributionDeadlineRatio = await iexecPoco.contribution_deadline_ratio();
-        const finalDeadlineRatio = await iexecPoco.final_deadline_ratio();
+        const contributionDeadlineRatio = await iexecPocoAccessors.contribution_deadline_ratio();
+        const finalDeadlineRatio = await iexecPocoAccessors.final_deadline_ratio();
 
-        const task = await iexecPoco.viewTask(taskId);
+        const task = await iexecPocoAccessors.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.ACTIVE);
         expect(task.dealid).to.equal(dealId);
         expect(task.idx).to.equal(taskIndex);
@@ -201,7 +207,7 @@ describe('IexecPocoAccessors', async () => {
         const { dealId, taskIndex, taskId } = await createDeal();
         await iexecWrapper.initializeTask(dealId, taskIndex);
         await iexecWrapper.contributeToTask(dealId, taskIndex, resultDigest, worker1);
-        const contribution = await iexecPoco.viewContribution(taskId, worker1.address);
+        const contribution = await iexecPocoAccessors.viewContribution(taskId, worker1.address);
         expect(contribution.status).to.equal(ContributionStatusEnum.CONTRIBUTED);
         expect(contribution.resultHash.length).to.equal(66);
         expect(contribution.resultSeal.length).to.equal(66);
@@ -210,41 +216,41 @@ describe('IexecPocoAccessors', async () => {
     });
 
     it.skip('[TODO] viewScore', async function () {
-        expect(await iexecPoco.viewScore(worker1.address)).to.equal(0);
+        expect(await iexecPocoAccessors.viewScore(worker1.address)).to.equal(0);
     });
 
     it('countCategory', async function () {
-        expect(await iexecPoco.countCategory()).to.equal(5);
+        expect(await iexecPocoAccessors.countCategory()).to.equal(5);
     });
 
     it('appRegistry', async function () {
-        expect(await iexecPoco.appregistry()).to.equal(
+        expect(await iexecPocoAccessors.appregistry()).to.equal(
             (await deployments.get('AppRegistry')).address,
         );
     });
 
     it('datasetRegistry', async function () {
-        expect(await iexecPoco.datasetregistry()).to.equal(
+        expect(await iexecPocoAccessors.datasetregistry()).to.equal(
             (await deployments.get('DatasetRegistry')).address,
         );
     });
 
     it('workerpoolRegistry', async function () {
-        expect(await iexecPoco.workerpoolregistry()).to.equal(
+        expect(await iexecPocoAccessors.workerpoolregistry()).to.equal(
             (await deployments.get('WorkerpoolRegistry')).address,
         );
     });
 
     it('teeBroker', async function () {
-        expect(await iexecPoco.teebroker()).to.equal(ZeroAddress);
+        expect(await iexecPocoAccessors.teebroker()).to.equal(ZeroAddress);
     });
 
     it('callbackGas', async function () {
-        expect(await iexecPoco.callbackgas()).to.equal(100_000n);
+        expect(await iexecPocoAccessors.callbackgas()).to.equal(100_000n);
     });
 
     it('viewDataset', async function () {
-        const datasetInfo = await iexecPoco.viewDataset(datasetAddress);
+        const datasetInfo = await iexecPocoAccessors.viewDataset(datasetAddress);
         expect(datasetInfo.owner).to.equal(datasetProvider.address);
         expect(datasetInfo.m_datasetName).to.equal('my-dataset');
         expect(datasetInfo.m_datasetMultiaddr).to.equal(ZeroHash);
@@ -252,7 +258,7 @@ describe('IexecPocoAccessors', async () => {
     });
 
     it('viewApp', async function () {
-        const appInfo = await iexecPoco.viewApp(appAddress);
+        const appInfo = await iexecPocoAccessors.viewApp(appAddress);
         expect(appInfo.owner).to.equal(appProvider.address);
         expect(appInfo.m_appName).to.equal('my-app');
         expect(appInfo.m_appType).to.equal('APP_TYPE_0');
@@ -262,7 +268,7 @@ describe('IexecPocoAccessors', async () => {
     });
 
     it('viewWorkerpool', async function () {
-        const workerpoolInfo = await iexecPoco.viewWorkerpool(workerpoolAddress);
+        const workerpoolInfo = await iexecPocoAccessors.viewWorkerpool(workerpoolAddress);
         expect(workerpoolInfo.owner).to.equal(scheduler.address);
         expect(workerpoolInfo.m_workerpoolDescription).to.equal('my-workerpool');
         expect(workerpoolInfo.m_workerStakeRatioPolicy).to.equal(30n);
@@ -270,41 +276,41 @@ describe('IexecPocoAccessors', async () => {
     });
 
     it('contributionDeadlineRatio', async function () {
-        expect(await iexecPoco.contribution_deadline_ratio()).to.equal(7);
+        expect(await iexecPocoAccessors.contribution_deadline_ratio()).to.equal(7);
     });
 
     it('revealDeadlineRatio', async function () {
-        expect(await iexecPoco.reveal_deadline_ratio()).to.equal(2n);
+        expect(await iexecPocoAccessors.reveal_deadline_ratio()).to.equal(2n);
     });
 
     it('finalDeadlineRatio', async function () {
-        expect(await iexecPoco.final_deadline_ratio()).to.equal(10n);
+        expect(await iexecPocoAccessors.final_deadline_ratio()).to.equal(10n);
     });
 
     it('workerpoolStakeRatio', async function () {
-        expect(await iexecPoco.workerpool_stake_ratio()).to.equal(30n);
+        expect(await iexecPocoAccessors.workerpool_stake_ratio()).to.equal(30n);
     });
 
     it('kittyRatio', async function () {
-        expect(await iexecPoco.kitty_ratio()).to.equal(10n);
+        expect(await iexecPocoAccessors.kitty_ratio()).to.equal(10n);
     });
 
     it('kittyMin', async function () {
-        expect(await iexecPoco.kitty_min()).to.equal(1_000_000_000n);
+        expect(await iexecPocoAccessors.kitty_min()).to.equal(1_000_000_000n);
     });
 
     it('kittyAddress', async function () {
-        expect(await iexecPoco.kitty_address()).to.equal(
+        expect(await iexecPocoAccessors.kitty_address()).to.equal(
             '0x99c2268479b93fDe36232351229815DF80837e23',
         );
     });
 
     it('groupMemberPurpose', async function () {
-        expect(await iexecPoco.groupmember_purpose()).to.equal(4n);
+        expect(await iexecPocoAccessors.groupmember_purpose()).to.equal(4n);
     });
 
     it('eip712domainSeparator', async function () {
-        expect(await iexecPoco.eip712domain_separator()).equal(
+        expect(await iexecPocoAccessors.eip712domain_separator()).equal(
             await hashDomain({
                 // TODO use IexecWrapper.getDomain() (with some modifications).
                 name: 'iExecODB',
@@ -335,7 +341,7 @@ describe('IexecPocoAccessors', async () => {
                 .then((tx) => tx.wait());
             const task = await iexecPoco.viewTask(taskId);
             expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
-            expect(await iexecPoco.resultFor(taskId)).to.equal(resultsCallback);
+            expect(await iexecPocoAccessors.resultFor(taskId)).to.equal(resultsCallback);
         });
 
         it('Should not get result when task is not completed', async function () {
@@ -367,13 +373,13 @@ async function createDeal(volume: bigint = 1n) {
     const { dealId, taskId, taskIndex, startTime } = await iexecWrapper.signAndMatchOrders(
         ...orders.toArray(),
     );
-    const dealCategory = (await iexecPoco.viewDeal(dealId)).category;
-    const timeRef = (await iexecPoco.viewCategory(dealCategory)).workClockTimeRef;
+    const dealCategory = (await iexecPocoAccessors.viewDeal(dealId)).category;
+    const timeRef = (await iexecPocoAccessors.viewCategory(dealCategory)).workClockTimeRef;
     return { dealId, taskId, taskIndex, startTime, timeRef, orders };
 }
 
 async function verifyTaskStatusAndResult(taskId: string, expectedStatus: number) {
-    const task = await iexecPoco.viewTask(taskId);
+    const task = await iexecPocoAccessors.viewTask(taskId);
     expect(task.status).to.equal(expectedStatus);
-    await expect(iexecPoco.resultFor(taskId)).to.be.revertedWith('task-pending');
+    await expect(iexecPocoAccessors.resultFor(taskId)).to.be.revertedWith('task-pending');
 }

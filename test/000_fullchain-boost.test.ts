@@ -7,9 +7,9 @@ import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
 import hre from 'hardhat';
 import {
-    IexecAccessors,
-    IexecAccessors__factory,
     IexecOrderManagement__factory,
+    IexecPocoAccessors,
+    IexecPocoAccessors__factory,
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet,
     IexecPocoBoostFacet__factory,
@@ -50,7 +50,7 @@ const workerpoolPrice = 1_000_000_000n;
 describe('IexecPocoBoostFacet (IT)', function () {
     let domain: TypedDataDomain;
     let proxyAddress: string;
-    let iexecInstance: IexecAccessors;
+    let iexecInstance: IexecPocoAccessors;
     let iexecPocoBoostInstance: IexecPocoBoostFacet;
     let iexecWrapper: IexecWrapper;
     let appAddress = '';
@@ -88,7 +88,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
             requester: requester,
         };
         iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, owner);
-        iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
+        iexecInstance = IexecPocoAccessors__factory.connect(proxyAddress, anyone);
         domain = {
             name: 'iExecODB',
             version: '5.0.0',

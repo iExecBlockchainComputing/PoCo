@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { deployments, ethers } from 'hardhat';
-import { IexecAccessors__factory, IexecConfigurationFacet__factory } from '../typechain';
+import { IexecConfigurationFacet__factory, IexecPocoAccessors__factory } from '../typechain';
 
 (async () => {
     const requestedCallbackGas = Number(process.env.CALLBACK_GAS);
@@ -14,7 +14,7 @@ import { IexecAccessors__factory, IexecConfigurationFacet__factory } from '../ty
     const [owner] = await ethers.getSigners();
     const diamondProxyAddress = (await deployments.get('Diamond')).address;
     const viewCallbackGas = async () =>
-        (await IexecAccessors__factory.connect(diamondProxyAddress, owner).callbackgas())
+        (await IexecPocoAccessors__factory.connect(diamondProxyAddress, owner).callbackgas())
             .toNumber()
             .toLocaleString();
     const callbackGasBefore = await viewCallbackGas();
