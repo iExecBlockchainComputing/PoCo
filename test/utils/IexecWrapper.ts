@@ -17,6 +17,7 @@ import {
     AppRegistry__factory,
     DatasetRegistry,
     DatasetRegistry__factory,
+    IWorkerpool__factory,
     IexecAccessors__factory,
     IexecConfigurationFacet__factory,
     IexecInterfaceNative__factory,
@@ -28,7 +29,6 @@ import {
     Registry__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
-    Workerpool__factory,
 } from '../../typechain';
 import { TransferEvent } from '../../typechain/contracts/registries/IRegistry';
 import { IexecPoco1__factory } from '../../typechain/factories/contracts/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
@@ -134,8 +134,7 @@ export class IexecWrapper {
      * @returns value of worker stake
      */
     async computeWorkerTaskStake(workerpoolAddress: string, workerpoolPrice: bigint) {
-        // TODO make "m_workerStakeRatioPolicy()" as view function in IWorkerpool.v8 and use it.
-        const workerStakeRatio = await Workerpool__factory.connect(
+        const workerStakeRatio = await IWorkerpool__factory.connect(
             workerpoolAddress,
             this.accounts.anyone,
         ).m_workerStakeRatioPolicy();
@@ -148,7 +147,7 @@ export class IexecWrapper {
      * @returns value of the reward
      */
     async getSchedulerRewardRatio(workerpoolAddress: string) {
-        return await Workerpool__factory.connect(
+        return await IWorkerpool__factory.connect(
             workerpoolAddress,
             this.accounts.anyone,
         ).m_schedulerRewardRatioPolicy();
