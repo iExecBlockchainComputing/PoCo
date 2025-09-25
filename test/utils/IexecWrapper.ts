@@ -10,7 +10,6 @@ import {
     Interface,
     TypedDataDomain,
     ZeroAddress,
-    ZeroHash,
 } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import {
@@ -52,6 +51,12 @@ import {
     setNextBlockTimestamp,
 } from '../../utils/poco-tools';
 
+export const APP_MULTIADDR = '0x68656c6c6f20776f726c64'; // "hello world" in hex
+export const APP_CHECKSUM = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+export const APP_MR_ENCLAVE = '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
+export const DATASET_MULTIADDR = '0x646174617365742064617461'; // "dataset data" in hex
+export const DATASET_CHECKSUM =
+    '0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321';
 export class IexecWrapper {
     proxyAddress: string;
     accounts: IexecAccounts;
@@ -302,9 +307,9 @@ export class IexecWrapper {
                 this.accounts.appProvider.address,
                 'my-app',
                 'APP_TYPE_0',
-                ZeroHash,
-                ZeroHash,
-                ZeroHash,
+                APP_MULTIADDR,
+                APP_CHECKSUM,
+                APP_MR_ENCLAVE,
             )
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(appReceipt);
@@ -317,7 +322,12 @@ export class IexecWrapper {
             this.accounts.datasetProvider,
         );
         const datasetReceipt = await datasetRegistry
-            .createDataset(this.accounts.datasetProvider.address, 'my-dataset', ZeroHash, ZeroHash)
+            .createDataset(
+                this.accounts.datasetProvider.address,
+                'my-dataset',
+                DATASET_MULTIADDR,
+                DATASET_CHECKSUM,
+            )
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(datasetReceipt);
     }
