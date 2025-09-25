@@ -505,7 +505,7 @@ export class IexecWrapper {
  * @param receipt contract receipt
  * @returns address of the entry in checksum format.
  */
-export async function extractRegistryEntryAddress(
+async function extractRegistryEntryAddress(
     receipt: ContractTransactionReceipt | null,
 ): Promise<string> {
     if (!receipt) {
