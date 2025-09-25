@@ -7,6 +7,11 @@ import { expect } from 'chai';
 import { ZeroAddress, ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
+    AppRegistry,
+    AppRegistry__factory,
+    DatasetRegistry,
+    DatasetRegistry__factory,
+    IexecAccessors__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
@@ -26,13 +31,20 @@ import {
     getIexecAccounts,
     getTaskId,
 } from '../../../utils/poco-tools';
-import { IexecWrapper } from '../../utils/IexecWrapper';
+import { IexecWrapper, extractRegistryEntryAddress } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import { hashDomain, randomAddress } from '../../utils/utils';
 
 /**
  * Test state view functions.
  */
+
+// Asset test data constants
+const APP_MULTIADDR = '0x68656c6c6f20776f726c64'; // "hello world" in hex
+const APP_CHECKSUM = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+const APP_MR_ENCLAVE = '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
+const DATASET_MULTIADDR = '0x646174617365742064617461'; // "dataset data" in hex
+const DATASET_CHECKSUM = '0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321';
 
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
@@ -44,6 +56,7 @@ let proxyAddress: string;
 let iexecPoco: IexecInterfaceNative;
 let iexecWrapper: IexecWrapper;
 let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
+let [appAddressWithData, datasetAddressWithData]: string[] = [];
 let [requester, appProvider, datasetProvider, scheduler, worker1, anyone]: SignerWithAddress[] = [];
 let ordersAssets: OrdersAssets;
 let ordersPrices: OrdersPrices;
@@ -61,6 +74,8 @@ describe('IexecPocoAccessors', async () => {
         ({ requester, appProvider, datasetProvider, scheduler, worker1, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
+        appAddressWithData = await createAppWithData();
+        datasetAddressWithData = await createDatasetWithData();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
         ordersAssets = {
             app: appAddress,
@@ -244,21 +259,21 @@ describe('IexecPocoAccessors', async () => {
     });
 
     it('viewDataset', async function () {
-        const datasetInfo = await iexecPoco.viewDataset(datasetAddress);
+        const datasetInfo = await iexecPoco.viewDataset(datasetAddressWithData);
         expect(datasetInfo.owner).to.equal(datasetProvider.address);
         expect(datasetInfo.m_datasetName).to.equal('my-dataset');
-        expect(datasetInfo.m_datasetMultiaddr).to.equal(ZeroHash);
-        expect(datasetInfo.m_datasetChecksum).to.equal(ZeroHash);
+        expect(datasetInfo.m_datasetMultiaddr).to.equal(DATASET_MULTIADDR);
+        expect(datasetInfo.m_datasetChecksum).to.equal(DATASET_CHECKSUM);
     });
 
     it('viewApp', async function () {
-        const appInfo = await iexecPoco.viewApp(appAddress);
+        const appInfo = await iexecPoco.viewApp(appAddressWithData);
         expect(appInfo.owner).to.equal(appProvider.address);
         expect(appInfo.m_appName).to.equal('my-app');
         expect(appInfo.m_appType).to.equal('APP_TYPE_0');
-        expect(appInfo.m_appMultiaddr).to.equal(ZeroHash);
-        expect(appInfo.m_appChecksum).to.equal(ZeroHash);
-        expect(appInfo.m_appMREnclave).to.equal(ZeroHash);
+        expect(appInfo.m_appMultiaddr).to.equal(APP_MULTIADDR);
+        expect(appInfo.m_appChecksum).to.equal(APP_CHECKSUM);
+        expect(appInfo.m_appMREnclave).to.equal(APP_MR_ENCLAVE);
     });
 
     it('viewWorkerpool', async function () {
@@ -376,4 +391,35 @@ async function verifyTaskStatusAndResult(taskId: string, expectedStatus: number)
     const task = await iexecPoco.viewTask(taskId);
     expect(task.status).to.equal(expectedStatus);
     await expect(iexecPoco.resultFor(taskId)).to.be.revertedWith('task-pending');
+}
+
+async function createAppWithData(): Promise<string> {
+    const iexec = IexecAccessors__factory.connect(proxyAddress, ethers.provider);
+    const appRegistry: AppRegistry = AppRegistry__factory.connect(
+        await iexec.appregistry(),
+        appProvider,
+    );
+    const appReceipt = await appRegistry
+        .createApp(
+            appProvider.address,
+            'my-app',
+            'APP_TYPE_0',
+            APP_MULTIADDR,
+            APP_CHECKSUM,
+            APP_MR_ENCLAVE,
+        )
+        .then((tx) => tx.wait());
+    return await extractRegistryEntryAddress(appReceipt);
+}
+
+async function createDatasetWithData(): Promise<string> {
+    const iexec = IexecAccessors__factory.connect(proxyAddress, ethers.provider);
+    const datasetRegistry: DatasetRegistry = DatasetRegistry__factory.connect(
+        await iexec.datasetregistry(),
+        datasetProvider,
+    );
+    const datasetReceipt = await datasetRegistry
+        .createDataset(datasetProvider.address, 'my-dataset', DATASET_MULTIADDR, DATASET_CHECKSUM)
+        .then((tx) => tx.wait());
+    return await extractRegistryEntryAddress(datasetReceipt);
 }
