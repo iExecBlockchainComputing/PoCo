@@ -46,4 +46,17 @@ interface IexecAccessors is IOracle {
     function kitty_address() external view returns (address);
     function groupmember_purpose() external view returns (uint256);
     function eip712domain_separator() external view returns (bytes32);
+
+    // ========= Dataset Accessors =========
+    function viewDataset(
+        address dataset
+    ) external view returns (IexecLibCore_v5.DatasetInfo memory);
+
+    // ========= App Accessors =========
+    function viewApp(address app) external view returns (IexecLibCore_v5.AppInfo memory);
+
+    // ========= Workerpool Accessors =========
+    function viewWorkerpool(
+        address workerpool
+    ) external view returns (IexecLibCore_v5.WorkerpoolInfo memory);
 }

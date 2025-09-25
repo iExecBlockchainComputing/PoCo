@@ -26,13 +26,22 @@ import {
     getIexecAccounts,
     getTaskId,
 } from '../../../utils/poco-tools';
-import { IexecWrapper } from '../../utils/IexecWrapper';
+import {
+    APP_CHECKSUM,
+    APP_MR_ENCLAVE,
+    APP_MULTIADDR,
+    DATASET_CHECKSUM,
+    DATASET_MULTIADDR,
+    IexecWrapper,
+} from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import { hashDomain, randomAddress } from '../../utils/utils';
 
 /**
  * Test state view functions.
  */
+
+// Asset test data constants
 
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
@@ -241,6 +250,32 @@ describe('IexecPocoAccessors', async () => {
 
     it('callbackGas', async function () {
         expect(await iexecPoco.callbackgas()).to.equal(100_000n);
+    });
+
+    it('viewDataset', async function () {
+        const datasetInfo = await iexecPoco.viewDataset(datasetAddress);
+        expect(datasetInfo.owner).to.equal(datasetProvider.address);
+        expect(datasetInfo.m_datasetName).to.equal('my-dataset');
+        expect(datasetInfo.m_datasetMultiaddr).to.equal(DATASET_MULTIADDR);
+        expect(datasetInfo.m_datasetChecksum).to.equal(DATASET_CHECKSUM);
+    });
+
+    it('viewApp', async function () {
+        const appInfo = await iexecPoco.viewApp(appAddress);
+        expect(appInfo.owner).to.equal(appProvider.address);
+        expect(appInfo.m_appName).to.equal('my-app');
+        expect(appInfo.m_appType).to.equal('APP_TYPE_0');
+        expect(appInfo.m_appMultiaddr).to.equal(APP_MULTIADDR);
+        expect(appInfo.m_appChecksum).to.equal(APP_CHECKSUM);
+        expect(appInfo.m_appMREnclave).to.equal(APP_MR_ENCLAVE);
+    });
+
+    it('viewWorkerpool', async function () {
+        const workerpoolInfo = await iexecPoco.viewWorkerpool(workerpoolAddress);
+        expect(workerpoolInfo.owner).to.equal(scheduler.address);
+        expect(workerpoolInfo.m_workerpoolDescription).to.equal('my-workerpool');
+        expect(workerpoolInfo.m_workerStakeRatioPolicy).to.equal(30n);
+        expect(workerpoolInfo.m_schedulerRewardRatioPolicy).to.equal(1n);
     });
 
     it('contributionDeadlineRatio', async function () {

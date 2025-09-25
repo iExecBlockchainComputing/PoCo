@@ -39,7 +39,7 @@ import { printFunctions } from '../upgrade-helper';
 
     // Use impersonated signer only for fork testing, otherwise use account signer
     const proxyOwnerSigner =
-        process.env.ARBITRUM_FORK === 'true'
+        process.env.ARBITRUM_FORK === 'true' || process.env.ARBITRUM_SEPOLIA_FORK === 'true'
             ? await ethers.getImpersonatedSigner(proxyOwnerAddress)
             : account;
     const diamondProxyAsOwner = DiamondCutFacet__factory.connect(
@@ -73,27 +73,31 @@ import { printFunctions } from '../upgrade-helper';
     await printFunctions(diamondProxyAddress);
 
     const removalCuts: IDiamond.FacetCutStruct[] = [];
-    const constantFunctionSignatures = [
-        'CONTRIBUTION_DEADLINE_RATIO()',
-        'FINAL_DEADLINE_RATIO()',
-        'GROUPMEMBER_PURPOSE()',
-        'KITTY_ADDRESS()',
-        'KITTY_MIN()',
-        'KITTY_RATIO()',
-        'REVEAL_DEADLINE_RATIO()',
-        'WORKERPOOL_STAKE_RATIO()',
-    ];
-    const constantFunctionsToRemove = constantFunctionSignatures.map((sig) =>
-        ethers.id(sig).slice(0, 10),
-    );
-    console.log(
-        `Removing specific constant functions from diamond Proxy - will remove ${constantFunctionsToRemove.length} specific constant functions`,
-    );
-    removalCuts.push({
-        facetAddress: ZeroAddress,
-        action: FacetCutAction.Remove,
-        functionSelectors: constantFunctionsToRemove,
-    });
+
+    // constant functions are deployed within IexecAccessorsFacet on arbitrum sepolia
+    if (process.env.ARBITRUM_FORK === 'true' || chainId == 42161n) {
+        const constantFunctionSignatures = [
+            'CONTRIBUTION_DEADLINE_RATIO()',
+            'FINAL_DEADLINE_RATIO()',
+            'GROUPMEMBER_PURPOSE()',
+            'KITTY_ADDRESS()',
+            'KITTY_MIN()',
+            'KITTY_RATIO()',
+            'REVEAL_DEADLINE_RATIO()',
+            'WORKERPOOL_STAKE_RATIO()',
+        ];
+        const constantFunctionsToRemove = constantFunctionSignatures.map((sig) =>
+            ethers.id(sig).slice(0, 10),
+        );
+        console.log(
+            `Removing specific constant functions from diamond Proxy - will remove ${constantFunctionsToRemove.length} specific constant functions`,
+        );
+        removalCuts.push({
+            facetAddress: ZeroAddress,
+            action: FacetCutAction.Remove,
+            functionSelectors: constantFunctionsToRemove,
+        });
+    }
 
     const oldAccessorFacets = [
         '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet

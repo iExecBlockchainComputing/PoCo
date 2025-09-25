@@ -7,6 +7,9 @@ import {PocoStorageLib, IRegistry} from "../libs/PocoStorageLib.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
+import {IDataset} from "../registries/datasets/IDataset.v8.sol";
+import {IApp} from "../registries/apps/IApp.v8.sol";
+import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
@@ -194,6 +197,51 @@ contract IexecPocoAccessorsFacet is
     function callbackgas() external view returns (uint256) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return $.m_callbackgas;
+    }
+
+    // ========= Dataset Accessors =========
+
+    function viewDataset(
+        address dataset
+    ) external view returns (IexecLibCore_v5.DatasetInfo memory) {
+        IDataset datasetContract = IDataset(dataset);
+        return
+            IexecLibCore_v5.DatasetInfo({
+                owner: datasetContract.owner(),
+                m_datasetName: datasetContract.m_datasetName(),
+                m_datasetMultiaddr: datasetContract.m_datasetMultiaddr(),
+                m_datasetChecksum: datasetContract.m_datasetChecksum()
+            });
+    }
+
+    // ========= App Accessors =========
+
+    function viewApp(address app) external view returns (IexecLibCore_v5.AppInfo memory) {
+        IApp appContract = IApp(app);
+        return
+            IexecLibCore_v5.AppInfo({
+                owner: appContract.owner(),
+                m_appName: appContract.m_appName(),
+                m_appType: appContract.m_appType(),
+                m_appMultiaddr: appContract.m_appMultiaddr(),
+                m_appChecksum: appContract.m_appChecksum(),
+                m_appMREnclave: appContract.m_appMREnclave()
+            });
+    }
+
+    // ========= Workerpool Accessors =========
+
+    function viewWorkerpool(
+        address workerpool
+    ) external view returns (IexecLibCore_v5.WorkerpoolInfo memory) {
+        IWorkerpool workerpoolContract = IWorkerpool(workerpool);
+        return
+            IexecLibCore_v5.WorkerpoolInfo({
+                owner: workerpoolContract.owner(),
+                m_workerpoolDescription: workerpoolContract.m_workerpoolDescription(),
+                m_workerStakeRatioPolicy: workerpoolContract.m_workerStakeRatioPolicy(),
+                m_schedulerRewardRatioPolicy: workerpoolContract.m_schedulerRewardRatioPolicy()
+            });
     }
 
     // ========= Constants Accessors =========

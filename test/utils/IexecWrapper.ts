@@ -10,7 +10,6 @@ import {
     Interface,
     TypedDataDomain,
     ZeroAddress,
-    ZeroHash,
 } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import {
@@ -18,6 +17,7 @@ import {
     AppRegistry__factory,
     DatasetRegistry,
     DatasetRegistry__factory,
+    IWorkerpool__factory,
     IexecAccessors__factory,
     IexecConfigurationFacet__factory,
     IexecInterfaceNative__factory,
@@ -29,7 +29,6 @@ import {
     Registry__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
-    Workerpool__factory,
 } from '../../typechain';
 import { TransferEvent } from '../../typechain/contracts/registries/IRegistry';
 import { IexecPoco1__factory } from '../../typechain/factories/contracts/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
@@ -52,6 +51,12 @@ import {
     setNextBlockTimestamp,
 } from '../../utils/poco-tools';
 
+export const APP_MULTIADDR = '0x68656c6c6f20776f726c64'; // "hello world" in hex
+export const APP_CHECKSUM = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+export const APP_MR_ENCLAVE = '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
+export const DATASET_MULTIADDR = '0x646174617365742064617461'; // "dataset data" in hex
+export const DATASET_CHECKSUM =
+    '0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321';
 export class IexecWrapper {
     proxyAddress: string;
     accounts: IexecAccounts;
@@ -129,8 +134,7 @@ export class IexecWrapper {
      * @returns value of worker stake
      */
     async computeWorkerTaskStake(workerpoolAddress: string, workerpoolPrice: bigint) {
-        // TODO make "m_workerStakeRatioPolicy()" as view function in IWorkerpool.v8 and use it.
-        const workerStakeRatio = await Workerpool__factory.connect(
+        const workerStakeRatio = await IWorkerpool__factory.connect(
             workerpoolAddress,
             this.accounts.anyone,
         ).m_workerStakeRatioPolicy();
@@ -143,7 +147,7 @@ export class IexecWrapper {
      * @returns value of the reward
      */
     async getSchedulerRewardRatio(workerpoolAddress: string) {
-        return await Workerpool__factory.connect(
+        return await IWorkerpool__factory.connect(
             workerpoolAddress,
             this.accounts.anyone,
         ).m_schedulerRewardRatioPolicy();
@@ -302,9 +306,9 @@ export class IexecWrapper {
                 this.accounts.appProvider.address,
                 'my-app',
                 'APP_TYPE_0',
-                ZeroHash,
-                ZeroHash,
-                ZeroHash,
+                APP_MULTIADDR,
+                APP_CHECKSUM,
+                APP_MR_ENCLAVE,
             )
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(appReceipt);
@@ -317,7 +321,12 @@ export class IexecWrapper {
             this.accounts.datasetProvider,
         );
         const datasetReceipt = await datasetRegistry
-            .createDataset(this.accounts.datasetProvider.address, 'my-dataset', ZeroHash, ZeroHash)
+            .createDataset(
+                this.accounts.datasetProvider.address,
+                'my-dataset',
+                DATASET_MULTIADDR,
+                DATASET_CHECKSUM,
+            )
             .then((tx) => tx.wait());
         return await extractRegistryEntryAddress(datasetReceipt);
     }

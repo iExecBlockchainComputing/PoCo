@@ -16,6 +16,28 @@ library IexecLibCore_v5 {
         string description;
         uint256 workClockTimeRef;
     }
+    struct DatasetInfo {
+        address owner;
+        string m_datasetName;
+        bytes m_datasetMultiaddr;
+        bytes32 m_datasetChecksum;
+    }
+
+    struct AppInfo {
+        address owner;
+        string m_appName;
+        string m_appType;
+        bytes m_appMultiaddr;
+        bytes32 m_appChecksum;
+        bytes m_appMREnclave;
+    }
+
+    struct WorkerpoolInfo {
+        address owner;
+        string m_workerpoolDescription;
+        uint256 m_workerStakeRatioPolicy;
+        uint256 m_schedulerRewardRatioPolicy;
+    }
 
     /**
      * Clerk - Deals
