@@ -17,7 +17,6 @@ import {
     AppRegistry__factory,
     DatasetRegistry,
     DatasetRegistry__factory,
-    IexecAccessors__factory,
     IexecConfigurationFacet__factory,
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
@@ -96,7 +95,10 @@ export class IexecWrapper {
             return;
         }
         const rlc = RLC__factory.connect(
-            await IexecAccessors__factory.connect(this.proxyAddress, this.accounts.anyone).token(),
+            await IexecPocoAccessors__factory.connect(
+                this.proxyAddress,
+                this.accounts.anyone,
+            ).token(),
             this.accounts.iexecAdmin,
         );
         // Transfer RLC from owner to recipient
@@ -119,7 +121,7 @@ export class IexecWrapper {
      * @returns total amount to stake by the scheduler
      */
     async computeSchedulerDealStake(workerpoolPrice: bigint, volume: bigint): Promise<bigint> {
-        const stakeRatio = await IexecAccessors__factory.connect(
+        const stakeRatio = await IexecPocoAccessors__factory.connect(
             this.proxyAddress,
             this.accounts.anyone,
         ).workerpool_stake_ratio();
@@ -171,7 +173,7 @@ export class IexecWrapper {
             ).workerReward;
         }
         // CLASSIC mode.
-        const deal = await IexecAccessors__factory.connect(
+        const deal = await IexecPocoAccessors__factory.connect(
             this.proxyAddress,
             ethers.provider,
         ).viewDeal(dealId);
@@ -256,7 +258,7 @@ export class IexecWrapper {
         const datasetOrder = orders.dataset;
         const workerpoolOrder = orders.workerpool;
         const requestOrder = orders.requester;
-        const taskIndex = await IexecAccessors__factory.connect(
+        const taskIndex = await IexecPocoAccessors__factory.connect(
             this.proxyAddress,
             ethers.provider,
         ).viewConsumed(this.hashOrder(requestOrder));
@@ -297,7 +299,7 @@ export class IexecWrapper {
     }
 
     async createApp() {
-        const iexec = IexecAccessors__factory.connect(this.proxyAddress, this.accounts.anyone);
+        const iexec = IexecPocoAccessors__factory.connect(this.proxyAddress, this.accounts.anyone);
         const appRegistry: AppRegistry = AppRegistry__factory.connect(
             await iexec.appregistry(),
             this.accounts.appProvider,
@@ -316,7 +318,7 @@ export class IexecWrapper {
     }
 
     async createDataset() {
-        const iexec = IexecAccessors__factory.connect(this.proxyAddress, this.accounts.anyone);
+        const iexec = IexecPocoAccessors__factory.connect(this.proxyAddress, this.accounts.anyone);
         const datasetRegistry: DatasetRegistry = DatasetRegistry__factory.connect(
             await iexec.datasetregistry(),
             this.accounts.datasetProvider,
@@ -416,7 +418,7 @@ export class IexecWrapper {
         useEnclave: Boolean,
     ) {
         const taskId = getTaskId(dealId, taskIndex);
-        const workerStakePerTask = await IexecAccessors__factory.connect(
+        const workerStakePerTask = await IexecPocoAccessors__factory.connect(
             this.proxyAddress,
             ethers.provider,
         )
@@ -456,7 +458,7 @@ export class IexecWrapper {
     }
 
     async createWorkerpool() {
-        const iexec = IexecAccessors__factory.connect(this.proxyAddress, this.accounts.anyone);
+        const iexec = IexecPocoAccessors__factory.connect(this.proxyAddress, this.accounts.anyone);
         const workerpoolRegistry: WorkerpoolRegistry = WorkerpoolRegistry__factory.connect(
             await iexec.workerpoolregistry(),
             this.accounts.scheduler,
