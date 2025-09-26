@@ -6,6 +6,17 @@ pragma solidity ^0.8.0;
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 interface IexecPoco1 {
+    struct Matching {
+        bytes32 apporderHash;
+        address appOwner;
+        bytes32 datasetorderHash;
+        address datasetOwner;
+        bytes32 workerpoolorderHash;
+        address workerpoolOwner;
+        bytes32 requestorderHash;
+        bool hasDataset;
+    }
+
     event SchedulerNotice(address indexed workerpool, bytes32 dealid);
     event OrdersMatched(
         bytes32 dealid,
@@ -40,4 +51,9 @@ interface IexecPoco1 {
         IexecLibOrders_v5.WorkerpoolOrder calldata,
         IexecLibOrders_v5.RequestOrder calldata
     ) external returns (bytes32);
+
+    function isDatasetCompatibleWithDeal(
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        bytes32 dealid
+    ) external view returns (bool);
 }

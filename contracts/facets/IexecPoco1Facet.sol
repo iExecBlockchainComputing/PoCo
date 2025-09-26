@@ -15,24 +15,7 @@ import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
-struct Matching {
-    bytes32 apporderHash;
-    address appOwner;
-    bytes32 datasetorderHash;
-    address datasetOwner;
-    bytes32 workerpoolorderHash;
-    address workerpoolOwner;
-    bytes32 requestorderHash;
-    bool hasDataset;
-}
-
-contract IexecPoco1Facet is
-    IexecPoco1,
-    FacetBase,
-    IexecEscrow,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
@@ -386,5 +369,72 @@ contract IexecPoco1Facet is
         );
 
         return dealid;
+    }
+
+    /**
+     * @notice Public view function to check if a dataset order is compatible with a deal.
+     * This function performs all the necessary checks to verify dataset order compatibility with a deal.
+     *
+     * @param datasetOrder The dataset order to verify
+     * @param dealid The deal ID to check against
+     * @return true if the dataset order is compatible with the deal, false otherwise
+     */
+    function isDatasetCompatibleWithDeal(
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        bytes32 dealid
+    ) external view override returns (bool) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+
+        // Check if deal exists
+        //TODO: check
+        IexecLibCore_v5.Deal storage deal = $.m_deals[dealid];
+        if (deal.requester == address(0)) {
+            return false;
+        }
+
+        // Check if deal dataset is address 0 (no dataset in deal)
+        if (deal.dataset.pointer != address(0)) {
+            return false;
+        }
+
+        // Check dataset order owner signature (including presign and EIP1271)
+        bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
+        address datasetOwner = IERC5313(datasetOrder.dataset).owner();
+        if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
+            return false; // Invalid signature
+        }
+
+        // Check if dataset order is not fully consumed
+        if ($.m_consumed[datasetOrderHash] >= datasetOrder.volume) {
+            return false;
+        }
+
+        // Check if deal app is allowed by dataset order apprestrict (including whitelist)
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.app.pointer)) {
+            return false;
+        }
+
+        // Check if deal workerpool is allowed by dataset order workerpoolrestrict (including whitelist)
+        if (
+            !_isAccountAuthorizedByRestriction(
+                datasetOrder.workerpoolrestrict,
+                deal.workerpool.pointer
+            )
+        ) {
+            return false;
+        }
+
+        // Check if deal requester is allowed by dataset order requesterrestrict (including whitelist)
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
+            return false;
+        }
+
+        // Check if deal tag fulfills all the tag bits of the dataset order
+        if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
+            return false;
+        }
+
+        // All checks passed
+        return true;
     }
 }
