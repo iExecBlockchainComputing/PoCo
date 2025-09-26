@@ -1075,6 +1075,173 @@ describe('IexecPoco1', () => {
         });
     });
 
+    describe('isDatasetCompatibleWithDeal', () => {
+        let dealIdWithoutDataset: string;
+        let compatibleDatasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
+        let incompatibleDatasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
+
+        beforeEach('Create a deal without dataset and dataset orders', async () => {
+            // Create a deal without dataset
+            const ordersWithoutDataset = buildOrders({
+                assets: { ...ordersAssets, dataset: ZeroAddress },
+                prices: ordersPrices,
+                requester: requester.address,
+                tag: teeDealTag,
+                volume: volume,
+            });
+            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
+            await signOrders(iexecWrapper.getDomain(), ordersWithoutDataset, ordersActors);
+            dealIdWithoutDataset = getDealId(
+                iexecWrapper.getDomain(),
+                ordersWithoutDataset.requester,
+            );
+            await iexecPocoAsRequester.matchOrders(...ordersWithoutDataset.toArray());
+
+            // Create a compatible dataset order (same restrictions as the deal)
+            compatibleDatasetOrder = {
+                dataset: datasetAddress,
+                datasetprice: datasetPrice,
+                volume: volume,
+                tag: teeDealTag,
+                apprestrict: ordersWithoutDataset.app.app,
+                workerpoolrestrict: ordersWithoutDataset.workerpool.workerpool,
+                requesterrestrict: ordersWithoutDataset.requester.requester,
+                salt: ethers.keccak256(ethers.toUtf8Bytes('compatible-salt')),
+                sign: '0x',
+            };
+            await signOrder(iexecWrapper.getDomain(), compatibleDatasetOrder, datasetProvider);
+
+            // Create an incompatible dataset order (different restrictions)
+            incompatibleDatasetOrder = {
+                dataset: datasetAddress,
+                datasetprice: datasetPrice,
+                volume: volume,
+                tag: teeDealTag,
+                apprestrict: randomAddress, // Different app restriction
+                workerpoolrestrict: ordersWithoutDataset.workerpool.workerpool,
+                requesterrestrict: ordersWithoutDataset.requester.requester,
+                salt: ethers.keccak256(ethers.toUtf8Bytes('incompatible-salt')),
+                sign: '0x',
+            };
+            await signOrder(iexecWrapper.getDomain(), incompatibleDatasetOrder, datasetProvider);
+        });
+
+        it('Should return true for compatible dataset order', async () => {
+            expect(
+                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                    compatibleDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.be.true;
+        });
+
+        it('Should return false for incompatible dataset order (app restriction)', async () => {
+            expect(
+                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                    incompatibleDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.be.false;
+        });
+
+        it('Should return false for non-existent deal', async () => {
+            const nonExistentDealId = ethers.keccak256(ethers.toUtf8Bytes('non-existent-deal'));
+            expect(
+                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                    compatibleDatasetOrder,
+                    nonExistentDealId,
+                ),
+            ).to.be.false;
+        });
+
+        it('Should return false for dataset order with invalid signature', async () => {
+            // Create dataset order with invalid signature
+            const invalidSignatureDatasetOrder = {
+                ...compatibleDatasetOrder,
+                sign: randomSignature, // Invalid signature
+            };
+
+            expect(
+                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                    invalidSignatureDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.be.false;
+        });
+
+        it('Should return false for fully consumed dataset order', async () => {
+            // Create dataset order with volume 0 (fully consumed)
+            const consumedDatasetOrder = {
+                ...compatibleDatasetOrder,
+                volume: 0n,
+            };
+            await signOrder(iexecWrapper.getDomain(), consumedDatasetOrder, datasetProvider);
+
+            expect(
+                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                    consumedDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.be.false;
+        });
+
+        it('Should return false for dataset order with incompatible tag', async () => {
+            // Create dataset order with incompatible tag
+            const incompatibleTagDatasetOrder = {
+                ...compatibleDatasetOrder,
+                tag: '0x0000000000000000000000000000000000000000000000000000000000000002', // Different tag
+            };
+            await signOrder(iexecWrapper.getDomain(), incompatibleTagDatasetOrder, datasetProvider);
+
+            expect(
+                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                    incompatibleTagDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.be.false;
+        });
+
+        it('Should return false for dataset order with incompatible workerpool restriction', async () => {
+            // Create dataset order with incompatible workerpool restriction
+            const incompatibleWorkerpoolDatasetOrder = {
+                ...compatibleDatasetOrder,
+                workerpoolrestrict: randomAddress, // Different workerpool restriction
+            };
+            await signOrder(
+                iexecWrapper.getDomain(),
+                incompatibleWorkerpoolDatasetOrder,
+                datasetProvider,
+            );
+
+            expect(
+                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                    incompatibleWorkerpoolDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.be.false;
+        });
+
+        it('Should return false for dataset order with incompatible requester restriction', async () => {
+            // Create dataset order with incompatible requester restriction
+            const incompatibleRequesterDatasetOrder = {
+                ...compatibleDatasetOrder,
+                requesterrestrict: randomAddress, // Different requester restriction
+            };
+            await signOrder(
+                iexecWrapper.getDomain(),
+                incompatibleRequesterDatasetOrder,
+                datasetProvider,
+            );
+
+            expect(
+                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                    incompatibleRequesterDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.be.false;
+        });
+    });
+
     /**
      * Helper function to deposit requester and scheduler stakes with
      * default prices for tests that do not rely on custom prices.

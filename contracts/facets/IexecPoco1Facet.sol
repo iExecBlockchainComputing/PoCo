@@ -401,7 +401,7 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
         address datasetOwner = IERC5313(datasetOrder.dataset).owner();
         if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
-            return false; // Invalid signature
+            return false;
         }
 
         // Check if dataset order is not fully consumed
@@ -433,8 +433,6 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
             return false;
         }
-
-        // All checks passed
         return true;
     }
 }
