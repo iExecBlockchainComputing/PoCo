@@ -386,7 +386,6 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
 
         // Check if deal exists
-        //TODO: check
         IexecLibCore_v5.Deal storage deal = $.m_deals[dealid];
         if (deal.requester == address(0)) {
             return false;
