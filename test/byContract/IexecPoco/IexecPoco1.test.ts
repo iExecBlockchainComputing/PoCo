@@ -1111,6 +1111,15 @@ describe('IexecPoco1', () => {
             await signOrder(iexecWrapper.getDomain(), compatibleDatasetOrder, datasetProvider);
         });
 
+        it('Should return true for compatible dataset order', async () => {
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    compatibleDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.be.true;
+        });
+
         it('Should return false for non-existent deal', async () => {
             const nonExistentDealId = ethers.keccak256(ethers.toUtf8Bytes('non-existent-deal'));
             expect(
@@ -1260,15 +1269,6 @@ describe('IexecPoco1', () => {
                     dealIdWithoutDataset,
                 ),
             ).to.be.false;
-        });
-
-        it('Should return true for compatible dataset order', async () => {
-            expect(
-                await iexecPoco.isDatasetCompatibleWithDeal(
-                    compatibleDatasetOrder,
-                    dealIdWithoutDataset,
-                ),
-            ).to.be.true;
         });
     });
 
