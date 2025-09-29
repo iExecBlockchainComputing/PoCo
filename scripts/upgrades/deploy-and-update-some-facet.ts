@@ -58,7 +58,7 @@ import { printFunctions } from './upgrade-helper';
     console.log('Deploying new IexecPocoAccessorsFacet...');
     const iexecPocoAccessorsFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
     const iexecPocoAccessorsFacet = await factoryDeployer.deployContract(
-        iexecPocoAccessorsFacetFactory,
+        new IexecPocoAccessorsFacet__factory(iexecLibOrders),
     );
 
     console.log('Deploying new IexecPoco1Facet...');

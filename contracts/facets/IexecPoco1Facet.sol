@@ -48,12 +48,12 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         return _verifySignatureOrPresignature(_identity, _hash, _signature);
     }
 
-    /***************************************************************************
-     *                  ODB DatasetOrder compatibility with a deal              *
-     ***************************************************************************/
     /**
      * @notice Public view function to check if a dataset order is compatible with a deal.
      * This function performs all the necessary checks to verify dataset order compatibility with a deal.
+     *
+     * @dev This function is mainly consumed by offchain clients. It should be carefully inspected if used inside on-chain code.
+     * This function should not be used in matchOrders as it does not check the same requirements.
      *
      * @param datasetOrder The dataset order to verify
      * @param dealid The deal ID to check against
@@ -79,7 +79,7 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         IexecLibCore_v5.Deal storage deal = $.m_deals[dealid];
         dealExists = (deal.requester != address(0));
 
-        // Check if deal dataset is address 0 (no dataset in deal)
+        // The specified deal should not have a dataset.
         dealHasNoDataset = (deal.dataset.pointer == address(0));
 
         // Check dataset order owner signature (including presign and EIP1271)
