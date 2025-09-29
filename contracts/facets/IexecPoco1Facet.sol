@@ -69,7 +69,7 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         if (deal.requester == address(0)) {
             return false;
         }
-        // Check if deal dataset is address 0 (no dataset in deal)
+        // The specified deal should not have a dataset.
         if (deal.dataset.pointer != address(0)) {
             return false;
         }
