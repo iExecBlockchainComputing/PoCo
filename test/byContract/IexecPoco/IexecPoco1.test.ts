@@ -1121,7 +1121,7 @@ describe('IexecPoco1', () => {
             ).to.be.false;
         });
 
-        it('Should return false for deal that already has a dataset', async () => {
+        it('Should return false for deal with a dataset', async () => {
             // Use the original orders that include a dataset to create a deal with dataset
             const ordersWithDataset = buildOrders({
                 assets: ordersAssets, // This includes the dataset
