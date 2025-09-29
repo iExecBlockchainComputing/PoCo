@@ -56,9 +56,11 @@ import { printFunctions } from './upgrade-helper';
     };
 
     console.log('Deploying new IexecPocoAccessorsFacet...');
-    const newFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
-    const newFacetAddress = await factoryDeployer.deployContract(newFacetFactory);
-    console.log(`IexecPocoAccessorsFacet deployed at: ${newFacetAddress}`);
+    const iexecPocoAccessorsFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
+    const iexecPocoAccessorsFacet = await factoryDeployer.deployContract(
+        iexecPocoAccessorsFacetFactory,
+    );
+    console.log(`IexecPocoAccessorsFacet deployed at: ${iexecPocoAccessorsFacet}`);
 
     console.log('Deploying new IexecPoco1Facet...');
     const newIexecPoco1FacetFactory = new IexecPoco1Facet__factory(iexecLibOrders);
@@ -143,7 +145,11 @@ import { printFunctions } from './upgrade-helper';
     }
     console.log('\n=== Step 3: Updating diamond proxy with all new facets ===');
     console.log('Adding new IexecPocoAccessorsFacet...');
-    await linkContractToProxy(diamondProxyAsOwner, newFacetAddress, newFacetFactory);
+    await linkContractToProxy(
+        diamondProxyAsOwner,
+        iexecPocoAccessorsFacet,
+        iexecPocoAccessorsFacetFactory,
+    );
     console.log('New IexecPocoAccessorsFacet added successfully');
 
     console.log('Adding new IexecPoco1Facet ...');
