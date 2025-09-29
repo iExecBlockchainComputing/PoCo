@@ -158,6 +158,4 @@ import { printFunctions } from './upgrade-helper';
     await printFunctions(diamondProxyAddress);
 
     console.log('\nUpgrade completed successfully!');
-    console.log(`New IexecPocoAccessorsFacet deployed at: ${newFacetAddress}`);
-    console.log(`New IexecPoco1Facet deployed at: ${newIexecPoco1FacetAddress}`);
 })();
