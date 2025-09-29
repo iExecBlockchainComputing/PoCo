@@ -52,6 +52,9 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
      * @notice Public view function to check if a dataset order is compatible with a deal.
      * This function performs all the necessary checks to verify dataset order compatibility with a deal.
      *
+     * @dev This function is mainly consumed by offchain clients. It should be carefully inspected if used inside on-chain code.
+     * This function should not be used in matchOrders as it does not check the same requirements.
+     *
      * @param datasetOrder The dataset order to verify
      * @param dealid The deal ID to check against
      * @return true if the dataset order is compatible with the deal, false otherwise
