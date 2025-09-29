@@ -48,9 +48,6 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         return _verifySignatureOrPresignature(_identity, _hash, _signature);
     }
 
-    /***************************************************************************
-     *                  ODB DatasetOrder compatibility with a deal              *
-     ***************************************************************************/
     /**
      * @notice Public view function to check if a dataset order is compatible with a deal.
      * This function performs all the necessary checks to verify dataset order compatibility with a deal.
