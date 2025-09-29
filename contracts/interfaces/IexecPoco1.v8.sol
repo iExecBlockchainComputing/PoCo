@@ -15,7 +15,7 @@ interface IexecPoco1 {
         address workerpoolOwner;
         bytes32 requestorderHash;
         bool hasDataset;
-    }
+    };
 
     event SchedulerNotice(address indexed workerpool, bytes32 dealid);
     event OrdersMatched(
