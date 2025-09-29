@@ -1151,7 +1151,6 @@ describe('IexecPoco1', () => {
             );
             await iexecPocoAsRequester.matchOrders(...ordersWithDataset.toArray());
 
-            // Create any dataset order - it should return false because the deal already has a dataset
             expect(
                 await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
                     compatibleDatasetOrder,
