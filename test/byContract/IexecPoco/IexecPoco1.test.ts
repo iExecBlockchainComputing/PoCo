@@ -1120,17 +1120,14 @@ describe('IexecPoco1', () => {
             ).to.be.true;
         });
 
-        it('Should return false for non-existent deal', async () => {
+        it('Should revert with status for non-existent deal', async () => {
             const nonExistentDealId = ethers.keccak256(ethers.toUtf8Bytes('non-existent-deal'));
-            expect(
-                await iexecPoco.isDatasetCompatibleWithDeal(
-                    compatibleDatasetOrder,
-                    nonExistentDealId,
-                ),
-            ).to.be.false;
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(compatibleDatasetOrder, nonExistentDealId),
+            ).to.be.revertedWith('DatasetCompatibilityCheck: 0-1-1-1-0-0-0-0');
         });
 
-        it('Should return false for deal with a dataset', async () => {
+        it('Should revert with status for deal with a dataset', async () => {
             // Use the original orders that include a dataset to create a deal with dataset
             const ordersWithDataset = buildOrders({
                 assets: ordersAssets, // This includes the dataset
@@ -1160,30 +1157,27 @@ describe('IexecPoco1', () => {
             );
             await iexecPocoAsRequester.matchOrders(...ordersWithDataset.toArray());
 
-            expect(
-                await iexecPoco.isDatasetCompatibleWithDeal(
-                    compatibleDatasetOrder,
-                    dealIdWithDataset,
-                ),
-            ).to.be.false;
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(compatibleDatasetOrder, dealIdWithDataset),
+            ).to.be.revertedWith('DatasetCompatibilityCheck: 1-0-1-1-1-1-1-1');
         });
 
-        it('Should return false for dataset order with invalid signature', async () => {
+        it('Should revert with status for dataset order with invalid signature', async () => {
             // Create dataset order with invalid signature
             const invalidSignatureDatasetOrder = {
                 ...compatibleDatasetOrder,
                 sign: randomSignature, // Invalid signature
             };
 
-            expect(
-                await iexecPoco.isDatasetCompatibleWithDeal(
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(
                     invalidSignatureDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.be.revertedWith('DatasetCompatibilityCheck: 1-1-0-1-1-1-1-1');
         });
 
-        it('Should return false for fully consumed dataset order', async () => {
+        it('Should revert with status for fully consumed dataset order', async () => {
             // Create dataset order with volume 0 (fully consumed)
             const consumedDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1191,15 +1185,12 @@ describe('IexecPoco1', () => {
             };
             await signOrder(iexecWrapper.getDomain(), consumedDatasetOrder, datasetProvider);
 
-            expect(
-                await iexecPoco.isDatasetCompatibleWithDeal(
-                    consumedDatasetOrder,
-                    dealIdWithoutDataset,
-                ),
-            ).to.be.false;
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(consumedDatasetOrder, dealIdWithoutDataset),
+            ).to.be.revertedWith('DatasetCompatibilityCheck: 1-1-1-0-1-1-1-1');
         });
 
-        it('Should return false for dataset order with incompatible app restriction', async () => {
+        it('Should revert with status for dataset order with incompatible app restriction', async () => {
             // Create dataset order with incompatible app restriction
             const incompatibleAppDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1207,15 +1198,15 @@ describe('IexecPoco1', () => {
             };
             await signOrder(iexecWrapper.getDomain(), incompatibleAppDatasetOrder, datasetProvider);
 
-            expect(
-                await iexecPoco.isDatasetCompatibleWithDeal(
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(
                     incompatibleAppDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.be.revertedWith('DatasetCompatibilityCheck: 1-1-1-1-0-1-1-1');
         });
 
-        it('Should return false for dataset order with incompatible workerpool restriction', async () => {
+        it('Should revert with status for dataset order with incompatible workerpool restriction', async () => {
             // Create dataset order with incompatible workerpool restriction
             const incompatibleWorkerpoolDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1227,15 +1218,15 @@ describe('IexecPoco1', () => {
                 datasetProvider,
             );
 
-            expect(
-                await iexecPoco.isDatasetCompatibleWithDeal(
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(
                     incompatibleWorkerpoolDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.be.revertedWith('DatasetCompatibilityCheck: 1-1-1-1-1-0-1-1');
         });
 
-        it('Should return false for dataset order with incompatible requester restriction', async () => {
+        it('Should revert with status for dataset order with incompatible requester restriction', async () => {
             // Create dataset order with incompatible requester restriction
             const incompatibleRequesterDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1247,15 +1238,15 @@ describe('IexecPoco1', () => {
                 datasetProvider,
             );
 
-            expect(
-                await iexecPoco.isDatasetCompatibleWithDeal(
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(
                     incompatibleRequesterDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.be.revertedWith('DatasetCompatibilityCheck: 1-1-1-1-1-1-0-1');
         });
 
-        it('Should return false for dataset order with incompatible tag', async () => {
+        it('Should revert with status for dataset order with incompatible tag', async () => {
             // Create dataset order with incompatible tag
             const incompatibleTagDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1263,12 +1254,12 @@ describe('IexecPoco1', () => {
             };
             await signOrder(iexecWrapper.getDomain(), incompatibleTagDatasetOrder, datasetProvider);
 
-            expect(
-                await iexecPoco.isDatasetCompatibleWithDeal(
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(
                     incompatibleTagDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.be.revertedWith('DatasetCompatibilityCheck: 1-1-1-1-1-1-1-0');
         });
     });
 

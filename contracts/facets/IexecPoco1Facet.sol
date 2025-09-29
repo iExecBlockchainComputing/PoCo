@@ -65,53 +65,90 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
     ) external view override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
 
+        // Track status of all checks
+        bool dealExists;
+        bool dealHasNoDataset;
+        bool signatureValid;
+        bool notFullyConsumed;
+        bool appRestrictionValid;
+        bool workerpoolRestrictionValid;
+        bool requesterRestrictionValid;
+        bool tagCompatible;
+
         // Check if deal exists
         IexecLibCore_v5.Deal storage deal = $.m_deals[dealid];
-        if (deal.requester == address(0)) {
-            return false;
-        }
+        dealExists = (deal.requester != address(0));
 
         // Check if deal dataset is address 0 (no dataset in deal)
-        if (deal.dataset.pointer != address(0)) {
-            return false;
-        }
+        dealHasNoDataset = (deal.dataset.pointer == address(0));
 
         // Check dataset order owner signature (including presign and EIP1271)
         bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
         address datasetOwner = IERC5313(datasetOrder.dataset).owner();
-        if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
-            return false;
-        }
+        signatureValid = _verifySignatureOrPresignature(
+            datasetOwner,
+            datasetOrderHash,
+            datasetOrder.sign
+        );
 
         // Check if dataset order is not fully consumed
-        if ($.m_consumed[datasetOrderHash] >= datasetOrder.volume) {
-            return false;
-        }
+        notFullyConsumed = ($.m_consumed[datasetOrderHash] < datasetOrder.volume);
 
         // Check if deal app is allowed by dataset order apprestrict (including whitelist)
-        if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.app.pointer)) {
-            return false;
-        }
+        appRestrictionValid = _isAccountAuthorizedByRestriction(
+            datasetOrder.apprestrict,
+            deal.app.pointer
+        );
 
         // Check if deal workerpool is allowed by dataset order workerpoolrestrict (including whitelist)
-        if (
-            !_isAccountAuthorizedByRestriction(
-                datasetOrder.workerpoolrestrict,
-                deal.workerpool.pointer
-            )
-        ) {
-            return false;
-        }
+        workerpoolRestrictionValid = _isAccountAuthorizedByRestriction(
+            datasetOrder.workerpoolrestrict,
+            deal.workerpool.pointer
+        );
 
         // Check if deal requester is allowed by dataset order requesterrestrict (including whitelist)
-        if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
-            return false;
-        }
+        requesterRestrictionValid = _isAccountAuthorizedByRestriction(
+            datasetOrder.requesterrestrict,
+            deal.requester
+        );
 
         // Check if deal tag fulfills all the tag bits of the dataset order
-        if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
-            return false;
+        tagCompatible = ((deal.tag & datasetOrder.tag) == datasetOrder.tag);
+
+        // Check if all conditions are met
+        bool allChecksPassed = dealExists &&
+            dealHasNoDataset &&
+            signatureValid &&
+            notFullyConsumed &&
+            appRestrictionValid &&
+            workerpoolRestrictionValid &&
+            requesterRestrictionValid &&
+            tagCompatible;
+
+        if (!allChecksPassed) {
+            string memory status = string(
+                abi.encodePacked(
+                    "DatasetCompatibilityCheck: ",
+                    dealExists ? "1" : "0",
+                    "-",
+                    dealHasNoDataset ? "1" : "0",
+                    "-",
+                    signatureValid ? "1" : "0",
+                    "-",
+                    notFullyConsumed ? "1" : "0",
+                    "-",
+                    appRestrictionValid ? "1" : "0",
+                    "-",
+                    workerpoolRestrictionValid ? "1" : "0",
+                    "-",
+                    requesterRestrictionValid ? "1" : "0",
+                    "-",
+                    tagCompatible ? "1" : "0"
+                )
+            );
+            revert(status);
         }
+
         return true;
     }
 
