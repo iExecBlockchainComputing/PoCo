@@ -1114,7 +1114,7 @@ describe('IexecPoco1', () => {
         it('Should return false for non-existent deal', async () => {
             const nonExistentDealId = ethers.keccak256(ethers.toUtf8Bytes('non-existent-deal'));
             expect(
-                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                await iexecPoco.isDatasetCompatibleWithDeal(
                     compatibleDatasetOrder,
                     nonExistentDealId,
                 ),
@@ -1152,7 +1152,7 @@ describe('IexecPoco1', () => {
             await iexecPocoAsRequester.matchOrders(...ordersWithDataset.toArray());
 
             expect(
-                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                await iexecPoco.isDatasetCompatibleWithDeal(
                     compatibleDatasetOrder,
                     dealIdWithDataset,
                 ),
@@ -1167,7 +1167,7 @@ describe('IexecPoco1', () => {
             };
 
             expect(
-                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                await iexecPoco.isDatasetCompatibleWithDeal(
                     invalidSignatureDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1183,7 +1183,7 @@ describe('IexecPoco1', () => {
             await signOrder(iexecWrapper.getDomain(), consumedDatasetOrder, datasetProvider);
 
             expect(
-                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                await iexecPoco.isDatasetCompatibleWithDeal(
                     consumedDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1199,7 +1199,7 @@ describe('IexecPoco1', () => {
             await signOrder(iexecWrapper.getDomain(), incompatibleAppDatasetOrder, datasetProvider);
 
             expect(
-                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                await iexecPoco.isDatasetCompatibleWithDeal(
                     incompatibleAppDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1219,7 +1219,7 @@ describe('IexecPoco1', () => {
             );
 
             expect(
-                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                await iexecPoco.isDatasetCompatibleWithDeal(
                     incompatibleWorkerpoolDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1239,7 +1239,7 @@ describe('IexecPoco1', () => {
             );
 
             expect(
-                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                await iexecPoco.isDatasetCompatibleWithDeal(
                     incompatibleRequesterDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1255,7 +1255,7 @@ describe('IexecPoco1', () => {
             await signOrder(iexecWrapper.getDomain(), incompatibleTagDatasetOrder, datasetProvider);
 
             expect(
-                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                await iexecPoco.isDatasetCompatibleWithDeal(
                     incompatibleTagDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1264,7 +1264,7 @@ describe('IexecPoco1', () => {
 
         it('Should return true for compatible dataset order', async () => {
             expect(
-                await iexecPocoAsSponsor.isDatasetCompatibleWithDeal(
+                await iexecPoco.isDatasetCompatibleWithDeal(
                     compatibleDatasetOrder,
                     dealIdWithoutDataset,
                 ),
