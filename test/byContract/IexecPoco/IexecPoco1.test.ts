@@ -330,7 +330,7 @@ describe('IexecPoco1', () => {
 
                     it(`Should fail to ${verifyPresignatureFunction} for an unknown messageHash for ${asset}`, async () => {
                         const { providerAddress } = orderManagement[asset];
-                        const unknownMessageHash = ethers.keccak256(ethers.toUtf8Bytes('unknown'));
+                        const unknownMessageHash = ethers.id('unknown');
 
                         const args = [
                             providerAddress,
@@ -1105,7 +1105,7 @@ describe('IexecPoco1', () => {
                 apprestrict: ordersWithoutDataset.app.app,
                 workerpoolrestrict: ordersWithoutDataset.workerpool.workerpool,
                 requesterrestrict: ordersWithoutDataset.requester.requester,
-                salt: ethers.keccak256(ethers.toUtf8Bytes('compatible-salt')),
+                salt: ethers.id('compatible-salt'),
                 sign: '0x',
             };
             await signOrder(iexecWrapper.getDomain(), compatibleDatasetOrder, datasetProvider);
@@ -1121,7 +1121,7 @@ describe('IexecPoco1', () => {
         });
 
         it('Should return false with reason for non-existent deal', async () => {
-            const nonExistentDealId = ethers.keccak256(ethers.toUtf8Bytes('non-existent-deal'));
+            const nonExistentDealId = ethers.id('non-existent-deal');
             const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
                 compatibleDatasetOrder,
                 nonExistentDealId,
@@ -1141,7 +1141,7 @@ describe('IexecPoco1', () => {
             });
 
             // Use fresh salts to avoid order consumption conflicts
-            ordersWithDataset.app.salt = ethers.keccak256(ethers.toUtf8Bytes('fresh-app-salt'));
+            ordersWithDataset.app.salt = ethers.id('fresh-app-salt');
             ordersWithDataset.dataset.salt = ethers.keccak256(
                 ethers.toUtf8Bytes('fresh-dataset-salt'),
             );
