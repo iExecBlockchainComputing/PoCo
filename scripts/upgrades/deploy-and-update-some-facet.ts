@@ -4,20 +4,21 @@
 import { ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
-import type { IDiamond } from '../../../typechain';
+import type { IDiamond } from '../../typechain';
 import {
     DiamondCutFacet__factory,
     DiamondLoupeFacet__factory,
+    IexecPoco1Facet__factory,
     IexecPocoAccessorsFacet__factory,
-} from '../../../typechain';
-import { Ownable__factory } from '../../../typechain/factories/rlc-faucet-contract/contracts';
-import { FactoryDeployer } from '../../../utils/FactoryDeployer';
-import config from '../../../utils/config';
-import { linkContractToProxy } from '../../../utils/proxy-tools';
-import { printFunctions } from '../upgrade-helper';
+} from '../../typechain';
+import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
+import { FactoryDeployer } from '../../utils/FactoryDeployer';
+import config from '../../utils/config';
+import { linkContractToProxy } from '../../utils/proxy-tools';
+import { printFunctions } from './upgrade-helper';
 
 (async () => {
-    console.log('Deploying and updating IexecPocoAccessorsFacet...');
+    console.log('Deploying and updating IexecPocoAccessorsFacet & IexecPoco1Facet...');
 
     const [account] = await ethers.getSigners();
     const chainId = (await ethers.provider.getNetwork()).chainId;
@@ -47,18 +48,25 @@ import { printFunctions } from '../upgrade-helper';
         proxyOwnerSigner,
     );
 
-    console.log('\n=== Step 1: Deploying new IexecPocoAccessorsFacet ===');
+    console.log('\n=== Step 1: Deploying all new facets ===');
     const factoryDeployer = new FactoryDeployer(account, chainId);
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
             deploymentOptions.IexecLibOrders_v5,
     };
 
-    const newFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
-    const newFacetAddress = await factoryDeployer.deployContract(newFacetFactory);
+    console.log('Deploying new IexecPocoAccessorsFacet...');
+    const iexecPocoAccessorsFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
+    const iexecPocoAccessorsFacet = await factoryDeployer.deployContract(
+        new IexecPocoAccessorsFacet__factory(iexecLibOrders),
+    );
+
+    console.log('Deploying new IexecPoco1Facet...');
+    const newIexecPoco1FacetFactory = new IexecPoco1Facet__factory(iexecLibOrders);
+    const newIexecPoco1Facet = await factoryDeployer.deployContract(newIexecPoco1FacetFactory);
 
     console.log(
-        '\n=== Step 2: Remove old facets (remove all functions of old accessors facets) ===',
+        '\n=== Step 2: Remove old facets (IexecAccessorsFacet & IexecPocoAccessorsFacet & IexecPoco1Facet) ===',
     );
 
     const diamondLoupe = DiamondLoupeFacet__factory.connect(diamondProxyAddress, account);
@@ -99,16 +107,17 @@ import { printFunctions } from '../upgrade-helper';
         });
     }
 
-    const oldAccessorFacets = [
+    const oldFacets = [
         '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
         '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
+        '0x46b555fE117DFd8D4eAC2470FA2d739c6c3a0152', //IexecPoco1Facet
     ];
-    // Remove ALL functions from the old accessor facets using diamondLoupe.facetFunctionSelectors() except of constant founctions
-    for (const facetAddress of oldAccessorFacets) {
+    // Remove ALL functions from the old facets using diamondLoupe.facetFunctionSelectors() except of constant founctions
+    for (const facetAddress of oldFacets) {
         const selectors = await diamondLoupe.facetFunctionSelectors(facetAddress);
         if (selectors.length > 0) {
             console.log(
-                `Removing old accessor facet ${facetAddress} with ${selectors.length} functions - will remove ALL`,
+                `Removing old facet ${facetAddress} with ${selectors.length} functions - will remove ALL`,
             );
             removalCuts.push({
                 facetAddress: ZeroAddress,
@@ -131,12 +140,23 @@ import { printFunctions } from '../upgrade-helper';
         console.log('Diamond functions after removing old facets:');
         await printFunctions(diamondProxyAddress);
     }
-    console.log('\n=== Step 3: Updating diamond proxy with new facet ===');
-    await linkContractToProxy(diamondProxyAsOwner, newFacetAddress, newFacetFactory);
-    console.log('New functions added successfully');
+    console.log('\n=== Step 3: Updating diamond proxy with all new facets ===');
+    console.log('Adding new IexecPocoAccessorsFacet...');
+    await linkContractToProxy(
+        diamondProxyAsOwner,
+        iexecPocoAccessorsFacet,
+        iexecPocoAccessorsFacetFactory,
+    );
+    console.log('New IexecPocoAccessorsFacet added successfully');
 
-    console.log('Diamond functions after adding new facet:');
+    console.log('Adding new IexecPoco1Facet ...');
+    await linkContractToProxy(diamondProxyAsOwner, newIexecPoco1Facet, newIexecPoco1FacetFactory);
+    console.log('New IexecPoco1Facet with isDatasetCompatibleWithDeal added successfully');
+
+    console.log('Diamond functions after adding new facets:');
     await printFunctions(diamondProxyAddress);
 
     console.log('\nUpgrade completed successfully!');
+    console.log(`New IexecPocoAccessorsFacet deployed at: ${iexecPocoAccessorsFacet}`);
+    console.log(`New IexecPoco1Facet deployed at: ${newIexecPoco1Facet}`);
 })();

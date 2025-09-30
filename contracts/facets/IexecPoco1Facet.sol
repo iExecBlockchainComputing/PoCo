@@ -26,13 +26,7 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is
-    IexecPoco1,
-    FacetBase,
-    IexecEscrow,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
@@ -63,6 +57,65 @@ contract IexecPoco1Facet is
         bytes calldata _signature
     ) external view override returns (bool) {
         return _verifySignatureOrPresignature(_identity, _hash, _signature);
+    }
+
+    /**
+     * @notice Public view function to check if a dataset order is compatible with a deal.
+     * This function performs all the necessary checks to verify dataset order compatibility with a deal.
+     *
+     * @dev This function is mainly consumed by offchain clients. It should be carefully inspected if used inside on-chain code.
+     * This function should not be used in matchOrders as it does not check the same requirements.
+     *
+     * @param datasetOrder The dataset order to verify
+     * @param dealid The deal ID to check against
+     * @return true if the dataset order is compatible with the deal, false otherwise
+     */
+    function isDatasetCompatibleWithDeal(
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        bytes32 dealid
+    ) external view override returns (bool) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        // Check if deal exists
+        IexecLibCore_v5.Deal storage deal = $.m_deals[dealid];
+        if (deal.requester == address(0)) {
+            return false;
+        }
+        // The specified deal should not have a dataset.
+        if (deal.dataset.pointer != address(0)) {
+            return false;
+        }
+        // Check dataset order owner signature (including presign and EIP1271)
+        bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
+        address datasetOwner = IERC5313(datasetOrder.dataset).owner();
+        if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
+            return false;
+        }
+        // Check if dataset order is not fully consumed
+        if ($.m_consumed[datasetOrderHash] >= datasetOrder.volume) {
+            return false;
+        }
+        // Check if deal app is allowed by dataset order apprestrict (including whitelist)
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.app.pointer)) {
+            return false;
+        }
+        // Check if deal workerpool is allowed by dataset order workerpoolrestrict (including whitelist)
+        if (
+            !_isAccountAuthorizedByRestriction(
+                datasetOrder.workerpoolrestrict,
+                deal.workerpool.pointer
+            )
+        ) {
+            return false;
+        }
+        // Check if deal requester is allowed by dataset order requesterrestrict (including whitelist)
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
+            return false;
+        }
+        // Check if deal tag fulfills all the tag bits of the dataset order
+        if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
+            return false;
+        }
+        return true;
     }
 
     /***************************************************************************
