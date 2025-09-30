@@ -4,60 +4,6 @@
 
 _Every facet must inherit from this contract._
 
-### CONTRIBUTION_DEADLINE_RATIO
-
-```solidity
-uint256 CONTRIBUTION_DEADLINE_RATIO
-```
-
-### REVEAL_DEADLINE_RATIO
-
-```solidity
-uint256 REVEAL_DEADLINE_RATIO
-```
-
-### FINAL_DEADLINE_RATIO
-
-```solidity
-uint256 FINAL_DEADLINE_RATIO
-```
-
-### WORKERPOOL_STAKE_RATIO
-
-```solidity
-uint256 WORKERPOOL_STAKE_RATIO
-```
-
-### KITTY_RATIO
-
-```solidity
-uint256 KITTY_RATIO
-```
-
-### KITTY_MIN
-
-```solidity
-uint256 KITTY_MIN
-```
-
-### KITTY_ADDRESS
-
-```solidity
-address KITTY_ADDRESS
-```
-
-### GROUPMEMBER_PURPOSE
-
-```solidity
-uint256 GROUPMEMBER_PURPOSE
-```
-
-### owner
-
-```solidity
-function owner() public view returns (address)
-```
-
 ## IexecEscrow
 
 ### Transfer
@@ -88,148 +34,6 @@ event Reward(address owner, uint256 amount, bytes32 ref)
 
 ```solidity
 event Seize(address owner, uint256 amount, bytes32 ref)
-```
-
-## Matching
-
-```solidity
-struct Matching {
-  bytes32 apporderHash;
-  address appOwner;
-  bytes32 datasetorderHash;
-  address datasetOwner;
-  bytes32 workerpoolorderHash;
-  address workerpoolOwner;
-  bytes32 requestorderHash;
-  bool hasDataset;
-}
-```
-
-## IexecPoco1Facet
-
-### verifySignature
-
-```solidity
-function verifySignature(address _identity, bytes32 _hash, bytes _signature) external view returns (bool)
-```
-
-### verifyPresignature
-
-```solidity
-function verifyPresignature(address _identity, bytes32 _hash) external view returns (bool)
-```
-
-### verifyPresignatureOrSignature
-
-```solidity
-function verifyPresignatureOrSignature(address _identity, bytes32 _hash, bytes _signature) external view returns (bool)
-```
-
-### matchOrders
-
-```solidity
-function matchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) external returns (bytes32)
-```
-
-Match orders. The requester gets debited.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _apporder | struct IexecLibOrders_v5.AppOrder | The app order. |
-| _datasetorder | struct IexecLibOrders_v5.DatasetOrder | The dataset order. |
-| _workerpoolorder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order. |
-| _requestorder | struct IexecLibOrders_v5.RequestOrder | The requester order. |
-
-### sponsorMatchOrders
-
-```solidity
-function sponsorMatchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) external returns (bytes32)
-```
-
-Sponsor match orders for a requester.
-Unlike the standard `matchOrders(..)` hook where the requester pays for
-the deal, this current hook makes it possible for any `msg.sender` to pay for
-a third party requester.
-
-Be aware that anyone seeing a valid request order on the network
-(via an off-chain public marketplace, via a `sponsorMatchOrders(..)`
-pending transaction in the mempool or by any other means) might decide
-to call the standard `matchOrders(..)` hook which will result in the
-requester being debited instead. Therefore, such a front run would result
-in a loss of some of the requester funds deposited in the iExec account
-(a loss value equivalent to the price of the deal).
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _apporder | struct IexecLibOrders_v5.AppOrder | The app order. |
-| _datasetorder | struct IexecLibOrders_v5.DatasetOrder | The dataset order. |
-| _workerpoolorder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order. |
-| _requestorder | struct IexecLibOrders_v5.RequestOrder | The requester order. |
-
-## IexecPoco2Facet
-
-### initialize
-
-```solidity
-function initialize(bytes32 _dealid, uint256 idx) public returns (bytes32)
-```
-
-### contribute
-
-```solidity
-function contribute(bytes32 _taskid, bytes32 _resultHash, bytes32 _resultSeal, address _enclaveChallenge, bytes _enclaveSign, bytes _authorizationSign) external
-```
-
-### contributeAndFinalize
-
-```solidity
-function contributeAndFinalize(bytes32 _taskid, bytes32 _resultDigest, bytes _results, bytes _resultsCallback, address _enclaveChallenge, bytes _enclaveSign, bytes _authorizationSign) external
-```
-
-### reveal
-
-```solidity
-function reveal(bytes32 _taskid, bytes32 _resultDigest) external
-```
-
-### reopen
-
-```solidity
-function reopen(bytes32 _taskid) external
-```
-
-### finalize
-
-```solidity
-function finalize(bytes32 _taskid, bytes _results, bytes _resultsCallback) external
-```
-
-### claim
-
-```solidity
-function claim(bytes32 _taskid) public
-```
-
-### initializeArray
-
-```solidity
-function initializeArray(bytes32[] _dealid, uint256[] _idx) external returns (bool)
-```
-
-### claimArray
-
-```solidity
-function claimArray(bytes32[] _taskid) external returns (bool)
-```
-
-### initializeAndClaimArray
-
-```solidity
-function initializeAndClaimArray(bytes32[] _dealid, uint256[] _idx) external returns (bool)
 ```
 
 ## IexecPocoAccessorsFacet
@@ -286,6 +90,204 @@ For existing deals, use the deal accessors instead.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | [0] | uint256 | The computed deal volume. |
+
+### viewConsumed
+
+```solidity
+function viewConsumed(bytes32 _id) external view returns (uint256 consumed)
+```
+
+### viewPresigned
+
+```solidity
+function viewPresigned(bytes32 _id) external view returns (address signer)
+```
+
+### viewContribution
+
+```solidity
+function viewContribution(bytes32 _taskid, address _worker) external view returns (struct IexecLibCore_v5.Contribution)
+```
+
+### viewScore
+
+```solidity
+function viewScore(address _worker) external view returns (uint256)
+```
+
+### resultFor
+
+```solidity
+function resultFor(bytes32 id) external view returns (bytes)
+```
+
+### name
+
+```solidity
+function name() external view returns (string)
+```
+
+### symbol
+
+```solidity
+function symbol() external view returns (string)
+```
+
+### decimals
+
+```solidity
+function decimals() external view returns (uint8)
+```
+
+### totalSupply
+
+```solidity
+function totalSupply() external view returns (uint256)
+```
+
+### balanceOf
+
+```solidity
+function balanceOf(address account) external view returns (uint256)
+```
+
+### frozenOf
+
+```solidity
+function frozenOf(address account) external view returns (uint256)
+```
+
+### allowance
+
+```solidity
+function allowance(address account, address spender) external view returns (uint256)
+```
+
+### viewAccount
+
+```solidity
+function viewAccount(address account) external view returns (struct IexecLibCore_v5.Account)
+```
+
+### token
+
+```solidity
+function token() external view returns (address)
+```
+
+### viewCategory
+
+```solidity
+function viewCategory(uint256 _catid) external view returns (struct IexecLibCore_v5.Category category)
+```
+
+### countCategory
+
+```solidity
+function countCategory() external view returns (uint256 count)
+```
+
+### appregistry
+
+```solidity
+function appregistry() external view returns (contract IRegistry)
+```
+
+### datasetregistry
+
+```solidity
+function datasetregistry() external view returns (contract IRegistry)
+```
+
+### workerpoolregistry
+
+```solidity
+function workerpoolregistry() external view returns (contract IRegistry)
+```
+
+### teebroker
+
+```solidity
+function teebroker() external view returns (address)
+```
+
+### callbackgas
+
+```solidity
+function callbackgas() external view returns (uint256)
+```
+
+### viewDataset
+
+```solidity
+function viewDataset(address dataset) external view returns (struct IexecLibCore_v5.DatasetInfo)
+```
+
+### viewApp
+
+```solidity
+function viewApp(address app) external view returns (struct IexecLibCore_v5.AppInfo)
+```
+
+### viewWorkerpool
+
+```solidity
+function viewWorkerpool(address workerpool) external view returns (struct IexecLibCore_v5.WorkerpoolInfo)
+```
+
+### contribution_deadline_ratio
+
+```solidity
+function contribution_deadline_ratio() external pure returns (uint256)
+```
+
+### reveal_deadline_ratio
+
+```solidity
+function reveal_deadline_ratio() external pure returns (uint256)
+```
+
+### final_deadline_ratio
+
+```solidity
+function final_deadline_ratio() external pure returns (uint256)
+```
+
+### workerpool_stake_ratio
+
+```solidity
+function workerpool_stake_ratio() external pure returns (uint256)
+```
+
+### kitty_ratio
+
+```solidity
+function kitty_ratio() external pure returns (uint256)
+```
+
+### kitty_min
+
+```solidity
+function kitty_min() external pure returns (uint256)
+```
+
+### kitty_address
+
+```solidity
+function kitty_address() external pure returns (address)
+```
+
+### groupmember_purpose
+
+```solidity
+function groupmember_purpose() external pure returns (uint256)
+```
+
+### eip712domain_separator
+
+```solidity
+function eip712domain_separator() external view returns (bytes32)
+```
 
 ## IexecPocoBoostAccessorsFacet
 
@@ -396,6 +398,32 @@ Claim task to get a refund if task is not completed after deadline.
 | dealId | bytes32 | The ID of the deal. |
 | index | uint256 | The index of the task. |
 
+### isDatasetCompatibleWithDealBoost
+
+```solidity
+function isDatasetCompatibleWithDealBoost(struct IexecLibOrders_v5.DatasetOrder datasetOrder, bytes32 dealid) external view returns (bool result, string reason)
+```
+
+Public view function to check if a dataset order is compatible with a boost deal.
+This function performs all the necessary checks to verify dataset order compatibility with a boost deal.
+
+_This function is mainly consumed by offchain clients. It should be carefully inspected if used inside on-chain code.
+This function should not be used in matchOrdersBoost as it does not check the same requirements._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| datasetOrder | struct IexecLibOrders_v5.DatasetOrder | The dataset order to verify |
+| dealid | bytes32 | The boost deal ID to check against |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| result | bool | true if the dataset order is compatible with the deal, false otherwise |
+| reason | string | the reason for which a condition has not been respected |
+
 ## IexecLibCore_v5
 
 ### Account
@@ -416,6 +444,41 @@ struct Category {
   string name;
   string description;
   uint256 workClockTimeRef;
+}
+```
+
+### DatasetInfo
+
+```solidity
+struct DatasetInfo {
+  address owner;
+  string m_datasetName;
+  bytes m_datasetMultiaddr;
+  bytes32 m_datasetChecksum;
+}
+```
+
+### AppInfo
+
+```solidity
+struct AppInfo {
+  address owner;
+  string m_appName;
+  string m_appType;
+  bytes m_appMultiaddr;
+  bytes32 m_appChecksum;
+  bytes m_appMREnclave;
+}
+```
+
+### WorkerpoolInfo
+
+```solidity
+struct WorkerpoolInfo {
+  address owner;
+  string m_workerpoolDescription;
+  uint256 m_workerStakeRatioPolicy;
+  uint256 m_schedulerRewardRatioPolicy;
 }
 ```
 
@@ -834,18 +897,94 @@ struct PocoStorage {
 function isRegistered(address _entry) external view returns (bool)
 ```
 
+## IApp
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+### m_appName
+
+```solidity
+function m_appName() external view returns (string)
+```
+
+### m_appType
+
+```solidity
+function m_appType() external view returns (string)
+```
+
+### m_appMultiaddr
+
+```solidity
+function m_appMultiaddr() external view returns (bytes)
+```
+
+### m_appChecksum
+
+```solidity
+function m_appChecksum() external view returns (bytes32)
+```
+
+### m_appMREnclave
+
+```solidity
+function m_appMREnclave() external view returns (bytes)
+```
+
+## IDataset
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+### m_datasetName
+
+```solidity
+function m_datasetName() external view returns (string)
+```
+
+### m_datasetMultiaddr
+
+```solidity
+function m_datasetMultiaddr() external view returns (bytes)
+```
+
+### m_datasetChecksum
+
+```solidity
+function m_datasetChecksum() external view returns (bytes32)
+```
+
 ## IWorkerpool
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+### m_workerpoolDescription
+
+```solidity
+function m_workerpoolDescription() external view returns (string)
+```
 
 ### m_schedulerRewardRatioPolicy
 
 ```solidity
-function m_schedulerRewardRatioPolicy() external returns (uint256)
+function m_schedulerRewardRatioPolicy() external view returns (uint256)
 ```
 
 ### m_workerStakeRatioPolicy
 
 ```solidity
-function m_workerStakeRatioPolicy() external returns (uint256)
+function m_workerStakeRatioPolicy() external view returns (uint256)
 ```
 
 ## IexecOrderManagementFacet
@@ -874,6 +1013,173 @@ function manageWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrderOperation
 function manageRequestOrder(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) external
 ```
 
+## Matching
+
+```solidity
+struct Matching {
+  bytes32 apporderHash;
+  address appOwner;
+  bytes32 datasetorderHash;
+  address datasetOwner;
+  bytes32 workerpoolorderHash;
+  address workerpoolOwner;
+  bytes32 requestorderHash;
+  bool hasDataset;
+}
+```
+
+## IexecPoco1Facet
+
+### verifySignature
+
+```solidity
+function verifySignature(address _identity, bytes32 _hash, bytes _signature) external view returns (bool)
+```
+
+### verifyPresignature
+
+```solidity
+function verifyPresignature(address _identity, bytes32 _hash) external view returns (bool)
+```
+
+### verifyPresignatureOrSignature
+
+```solidity
+function verifyPresignatureOrSignature(address _identity, bytes32 _hash, bytes _signature) external view returns (bool)
+```
+
+### isDatasetCompatibleWithDeal
+
+```solidity
+function isDatasetCompatibleWithDeal(struct IexecLibOrders_v5.DatasetOrder datasetOrder, bytes32 dealid) external view returns (bool)
+```
+
+Public view function to check if a dataset order is compatible with a deal.
+This function performs all the necessary checks to verify dataset order compatibility with a deal.
+
+_This function is mainly consumed by offchain clients. It should be carefully inspected if used inside on-chain code.
+This function should not be used in matchOrders as it does not check the same requirements._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| datasetOrder | struct IexecLibOrders_v5.DatasetOrder | The dataset order to verify |
+| dealid | bytes32 | The deal ID to check against |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | true if the dataset order is compatible with the deal, false otherwise |
+
+### matchOrders
+
+```solidity
+function matchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) external returns (bytes32)
+```
+
+Match orders. The requester gets debited.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _apporder | struct IexecLibOrders_v5.AppOrder | The app order. |
+| _datasetorder | struct IexecLibOrders_v5.DatasetOrder | The dataset order. |
+| _workerpoolorder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order. |
+| _requestorder | struct IexecLibOrders_v5.RequestOrder | The requester order. |
+
+### sponsorMatchOrders
+
+```solidity
+function sponsorMatchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) external returns (bytes32)
+```
+
+Sponsor match orders for a requester.
+Unlike the standard `matchOrders(..)` hook where the requester pays for
+the deal, this current hook makes it possible for any `msg.sender` to pay for
+a third party requester.
+
+Be aware that anyone seeing a valid request order on the network
+(via an off-chain public marketplace, via a `sponsorMatchOrders(..)`
+pending transaction in the mempool or by any other means) might decide
+to call the standard `matchOrders(..)` hook which will result in the
+requester being debited instead. Therefore, such a front run would result
+in a loss of some of the requester funds deposited in the iExec account
+(a loss value equivalent to the price of the deal).
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _apporder | struct IexecLibOrders_v5.AppOrder | The app order. |
+| _datasetorder | struct IexecLibOrders_v5.DatasetOrder | The dataset order. |
+| _workerpoolorder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order. |
+| _requestorder | struct IexecLibOrders_v5.RequestOrder | The requester order. |
+
+## IexecPoco2Facet
+
+### initialize
+
+```solidity
+function initialize(bytes32 _dealid, uint256 idx) public returns (bytes32)
+```
+
+### contribute
+
+```solidity
+function contribute(bytes32 _taskid, bytes32 _resultHash, bytes32 _resultSeal, address _enclaveChallenge, bytes _enclaveSign, bytes _authorizationSign) external
+```
+
+### contributeAndFinalize
+
+```solidity
+function contributeAndFinalize(bytes32 _taskid, bytes32 _resultDigest, bytes _results, bytes _resultsCallback, address _enclaveChallenge, bytes _enclaveSign, bytes _authorizationSign) external
+```
+
+### reveal
+
+```solidity
+function reveal(bytes32 _taskid, bytes32 _resultDigest) external
+```
+
+### reopen
+
+```solidity
+function reopen(bytes32 _taskid) external
+```
+
+### finalize
+
+```solidity
+function finalize(bytes32 _taskid, bytes _results, bytes _resultsCallback) external
+```
+
+### claim
+
+```solidity
+function claim(bytes32 _taskid) public
+```
+
+### initializeArray
+
+```solidity
+function initializeArray(bytes32[] _dealid, uint256[] _idx) external returns (bool)
+```
+
+### claimArray
+
+```solidity
+function claimArray(bytes32[] _taskid) external returns (bool)
+```
+
+### initializeAndClaimArray
+
+```solidity
+function initializeAndClaimArray(bytes32[] _dealid, uint256[] _idx) external returns (bool)
+```
+
 ## IexecInterfaceNative
 
 A global interface that aggregates all the interfaces needed to interact with
@@ -900,200 +1206,6 @@ receive() external payable
 
 ```solidity
 fallback() external payable
-```
-
-## IexecAccessorsFacet
-
-### name
-
-```solidity
-function name() external view returns (string)
-```
-
-### symbol
-
-```solidity
-function symbol() external view returns (string)
-```
-
-### decimals
-
-```solidity
-function decimals() external view returns (uint8)
-```
-
-### totalSupply
-
-```solidity
-function totalSupply() external view returns (uint256)
-```
-
-### balanceOf
-
-```solidity
-function balanceOf(address account) external view returns (uint256)
-```
-
-### frozenOf
-
-```solidity
-function frozenOf(address account) external view returns (uint256)
-```
-
-### allowance
-
-```solidity
-function allowance(address account, address spender) external view returns (uint256)
-```
-
-### viewAccount
-
-```solidity
-function viewAccount(address account) external view returns (struct IexecLibCore_v5.Account)
-```
-
-### token
-
-```solidity
-function token() external view returns (address)
-```
-
-### viewDeal
-
-```solidity
-function viewDeal(bytes32 _id) external view returns (struct IexecLibCore_v5.Deal deal)
-```
-
-### viewConsumed
-
-```solidity
-function viewConsumed(bytes32 _id) external view returns (uint256 consumed)
-```
-
-### viewPresigned
-
-```solidity
-function viewPresigned(bytes32 _id) external view returns (address signer)
-```
-
-### viewTask
-
-```solidity
-function viewTask(bytes32 _taskid) external view returns (struct IexecLibCore_v5.Task)
-```
-
-### viewContribution
-
-```solidity
-function viewContribution(bytes32 _taskid, address _worker) external view returns (struct IexecLibCore_v5.Contribution)
-```
-
-### viewScore
-
-```solidity
-function viewScore(address _worker) external view returns (uint256)
-```
-
-### resultFor
-
-```solidity
-function resultFor(bytes32 id) external view returns (bytes)
-```
-
-### viewCategory
-
-```solidity
-function viewCategory(uint256 _catid) external view returns (struct IexecLibCore_v5.Category category)
-```
-
-### countCategory
-
-```solidity
-function countCategory() external view returns (uint256 count)
-```
-
-### appregistry
-
-```solidity
-function appregistry() external view returns (contract IRegistry)
-```
-
-### datasetregistry
-
-```solidity
-function datasetregistry() external view returns (contract IRegistry)
-```
-
-### workerpoolregistry
-
-```solidity
-function workerpoolregistry() external view returns (contract IRegistry)
-```
-
-### teebroker
-
-```solidity
-function teebroker() external view returns (address)
-```
-
-### callbackgas
-
-```solidity
-function callbackgas() external view returns (uint256)
-```
-
-### contribution_deadline_ratio
-
-```solidity
-function contribution_deadline_ratio() external view returns (uint256)
-```
-
-### reveal_deadline_ratio
-
-```solidity
-function reveal_deadline_ratio() external view returns (uint256)
-```
-
-### final_deadline_ratio
-
-```solidity
-function final_deadline_ratio() external view returns (uint256)
-```
-
-### workerpool_stake_ratio
-
-```solidity
-function workerpool_stake_ratio() external view returns (uint256)
-```
-
-### kitty_ratio
-
-```solidity
-function kitty_ratio() external view returns (uint256)
-```
-
-### kitty_min
-
-```solidity
-function kitty_min() external view returns (uint256)
-```
-
-### kitty_address
-
-```solidity
-function kitty_address() external view returns (address)
-```
-
-### groupmember_purpose
-
-```solidity
-function groupmember_purpose() external view returns (uint256)
-```
-
-### eip712domain_separator
-
-```solidity
-function eip712domain_separator() external view returns (bytes32)
 ```
 
 ## IexecCategoryManagerFacet

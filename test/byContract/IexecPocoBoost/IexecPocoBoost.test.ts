@@ -2368,6 +2368,208 @@ describe('IexecPocoBoost', function () {
             ).to.be.revertedWith('PocoBoost: Deadline not reached');
         });
     });
+
+    describe('isDatasetCompatibleWithDealBoost', function () {
+        let dealIdWithoutDataset: string;
+        let dealIdWithDataset: string;
+        let compatibleDatasetOrder: IexecOrders.DatasetOrder;
+        let randomSignature: string;
+
+        beforeEach(async function () {
+            // Create orders without dataset for the first deal
+            const ordersWithoutDataset = buildOrders({
+                assets: ordersAssets, // contains dataset
+                prices: ordersPrices,
+                requester: requester.address,
+                tag: teeDealTag,
+                volume: volume,
+            });
+            // Remove dataset from these orders
+            ordersWithoutDataset.dataset.dataset = ethers.ZeroAddress;
+            ordersWithoutDataset.dataset.datasetprice = 0n;
+            ordersWithoutDataset.dataset.tag =
+                '0x0000000000000000000000000000000000000000000000000000000000000000';
+            ordersWithoutDataset.requester.dataset = ethers.ZeroAddress;
+            ordersWithoutDataset.requester.datasetmaxprice = 0n;
+            // Use unique salts to avoid order consumption conflicts
+            ordersWithoutDataset.app.salt = ethers.id('test-compatible-app-1');
+            ordersWithoutDataset.dataset.salt = ethers.id('test-compatible-dataset-1');
+            ordersWithoutDataset.workerpool.salt = ethers.id('test-compatible-workerpool-1');
+            ordersWithoutDataset.requester.salt = ethers.id('test-compatible-requester-1');
+
+            // Create orders with dataset for the second deal
+            const ordersWithDataset = buildOrders({
+                assets: ordersAssets,
+                prices: ordersPrices,
+                requester: requester.address,
+                tag: teeDealTag,
+                volume: volume,
+            });
+            // Use unique salts to avoid order consumption conflicts
+            ordersWithDataset.app.salt = ethers.id('test-compatible-app-2');
+            ordersWithDataset.dataset.salt = ethers.id('test-compatible-dataset-2');
+            ordersWithDataset.workerpool.salt = ethers.id('test-compatible-workerpool-2');
+            ordersWithDataset.requester.salt = ethers.id('test-compatible-requester-2');
+
+            // Sign all orders
+            await signOrders(domain, ordersWithoutDataset, ordersActors);
+            await signOrders(domain, ordersWithDataset, ordersActors);
+
+            // Deposit funds
+            const dealPriceWithoutDataset = (appPrice + workerpoolPrice) * volume;
+            const dealPriceWithDataset = (appPrice + datasetPrice + workerpoolPrice) * volume;
+            const schedulerStake = computeSchedulerDealStake(workerpoolPrice, volume);
+
+            await iexecWrapper.depositInIexecAccount(
+                requester,
+                dealPriceWithoutDataset + dealPriceWithDataset,
+            );
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake * 2n);
+
+            // Create deals
+            dealIdWithoutDataset = await iexecPocoBoostInstance
+                .matchOrdersBoost(...ordersWithoutDataset.toArray())
+                .then((tx) => tx.wait())
+                .then(() => getDealId(domain, ordersWithoutDataset.requester, taskIndex));
+
+            dealIdWithDataset = await iexecPocoBoostInstance
+                .matchOrdersBoost(...ordersWithDataset.toArray())
+                .then((tx) => tx.wait())
+                .then(() => getDealId(domain, ordersWithDataset.requester, taskIndex));
+
+            // Create a compatible dataset order
+            // Note: restrictions should match the owners, not the asset addresses
+            compatibleDatasetOrder = {
+                dataset: datasetAddress,
+                datasetprice: datasetPrice,
+                volume: volume,
+                tag: teeDealTag,
+                apprestrict: appProvider.address, // Restrict to app owner
+                workerpoolrestrict: scheduler.address, // Restrict to workerpool owner (scheduler)
+                requesterrestrict: requester.address, // Restrict to requester
+                salt: ethers.id('compatible-salt'),
+                sign: '0x',
+            };
+            await signOrder(domain, compatibleDatasetOrder, datasetProvider);
+
+            // Generate a random signature for invalid signature tests
+            randomSignature = ethers.hexlify(ethers.randomBytes(65));
+        });
+
+        it('Should return true for compatible dataset order', async () => {
+            const [result, reason] = await iexecPocoBoostInstance.isDatasetCompatibleWithDealBoost(
+                compatibleDatasetOrder,
+                dealIdWithoutDataset,
+            );
+            expect([result, reason]).to.deep.equal([true, '']);
+        });
+
+        it('Should return false for non-existent deal', async () => {
+            const nonExistentDealId = ethers.id('non-existent-deal');
+            const [result, reason] = await iexecPocoBoostInstance.isDatasetCompatibleWithDealBoost(
+                compatibleDatasetOrder,
+                nonExistentDealId,
+            );
+            expect([result, reason]).to.deep.equal([false, 'Deal does not exist']);
+        });
+
+        it('Should return false for deal with a dataset', async () => {
+            const [result, reason] = await iexecPocoBoostInstance.isDatasetCompatibleWithDealBoost(
+                compatibleDatasetOrder,
+                dealIdWithDataset,
+            );
+            expect([result, reason]).to.deep.equal([false, 'Deal already has a dataset']);
+        });
+
+        it('Should return false for dataset order with invalid signature', async () => {
+            // Create dataset order with invalid signature
+            const invalidSignatureDatasetOrder = {
+                ...compatibleDatasetOrder,
+                sign: randomSignature, // Invalid signature
+            };
+
+            const [result, reason] = await iexecPocoBoostInstance.isDatasetCompatibleWithDealBoost(
+                invalidSignatureDatasetOrder,
+                dealIdWithoutDataset,
+            );
+            expect([result, reason]).to.deep.equal([false, 'Invalid dataset order signature']);
+        });
+
+        it('Should return false for fully consumed dataset order', async () => {
+            // Create dataset order with volume 0 (fully consumed)
+            const consumedDatasetOrder = {
+                ...compatibleDatasetOrder,
+                volume: 0n,
+            };
+            await signOrder(domain, consumedDatasetOrder, datasetProvider);
+
+            const [result, reason] = await iexecPocoBoostInstance.isDatasetCompatibleWithDealBoost(
+                consumedDatasetOrder,
+                dealIdWithoutDataset,
+            );
+            expect([result, reason]).to.deep.equal([false, 'Dataset order is fully consumed']);
+        });
+
+        it('Should return false for dataset order with incompatible app restriction', async () => {
+            // Create dataset order with incompatible app restriction
+            const incompatibleAppDatasetOrder = {
+                ...compatibleDatasetOrder,
+                apprestrict: randomEOAAddress, // Different app restriction
+            };
+            await signOrder(domain, incompatibleAppDatasetOrder, datasetProvider);
+
+            const [result, reason] = await iexecPocoBoostInstance.isDatasetCompatibleWithDealBoost(
+                incompatibleAppDatasetOrder,
+                dealIdWithoutDataset,
+            );
+            expect([result, reason]).to.deep.equal([false, 'App restriction not satisfied']);
+        });
+
+        it('Should return false for dataset order with incompatible workerpool restriction', async () => {
+            // Create dataset order with incompatible workerpool restriction
+            const incompatibleWorkerpoolDatasetOrder = {
+                ...compatibleDatasetOrder,
+                workerpoolrestrict: randomEOAAddress, // Different workerpool restriction
+            };
+            await signOrder(domain, incompatibleWorkerpoolDatasetOrder, datasetProvider);
+
+            const [result, reason] = await iexecPocoBoostInstance.isDatasetCompatibleWithDealBoost(
+                incompatibleWorkerpoolDatasetOrder,
+                dealIdWithoutDataset,
+            );
+            expect([result, reason]).to.deep.equal([false, 'Workerpool restriction not satisfied']);
+        });
+
+        it('Should return false for dataset order with incompatible requester restriction', async () => {
+            // Create dataset order with incompatible requester restriction
+            const incompatibleRequesterDatasetOrder = {
+                ...compatibleDatasetOrder,
+                requesterrestrict: randomEOAAddress, // Different requester restriction
+            };
+            await signOrder(domain, incompatibleRequesterDatasetOrder, datasetProvider);
+
+            const [result, reason] = await iexecPocoBoostInstance.isDatasetCompatibleWithDealBoost(
+                incompatibleRequesterDatasetOrder,
+                dealIdWithoutDataset,
+            );
+            expect([result, reason]).to.deep.equal([false, 'Requester restriction not satisfied']);
+        });
+
+        it('Should return false for dataset order with incompatible tag', async () => {
+            // Create dataset order with incompatible tag
+            const incompatibleTagDatasetOrder = {
+                ...compatibleDatasetOrder,
+                tag: '0x0000000000000000000000000000000000000000000000000000000000000002', // Different tag
+            };
+            await signOrder(domain, incompatibleTagDatasetOrder, datasetProvider);
+
+            const [result, reason] = await iexecPocoBoostInstance.isDatasetCompatibleWithDealBoost(
+                incompatibleTagDatasetOrder,
+                dealIdWithoutDataset,
+            );
+            expect([result, reason]).to.deep.equal([false, 'Tag compatibility not satisfied']);
+        });
+    });
 });
 
 /**

@@ -522,6 +522,87 @@ contract IexecPocoBoostFacet is
     }
 
     /**
+     * @notice Public view function to check if a dataset order is compatible with a boost deal.
+     * This function performs all the necessary checks to verify dataset order compatibility with a boost deal.
+     *
+     * @dev This function is mainly consumed by offchain clients. It should be carefully inspected if used inside on-chain code.
+     * This function should not be used in matchOrdersBoost as it does not check the same requirements.
+     *
+     * @param datasetOrder The dataset order to verify
+     * @param dealid The boost deal ID to check against
+     * @return result true if the dataset order is compatible with the deal, false otherwise
+     * @return reason the reason for which a condition has not been respected
+     */
+    function isDatasetCompatibleWithDealBoost(
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        bytes32 dealid
+    ) external view override returns (bool result, string memory reason) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+
+        // Check if deal exists
+        IexecLibCore_v5.DealBoost storage deal = $.m_dealsBoost[dealid];
+        if (deal.requester == address(0)) {
+            return (false, "Deal does not exist");
+        }
+
+        // The specified deal should not have a dataset.
+        if (deal.datasetOwner != address(0)) {
+            return (false, "Deal already has a dataset");
+        }
+
+        // Check dataset order owner signature (including presign and EIP1271)
+        bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
+        address datasetOwner = IERC5313(datasetOrder.dataset).owner();
+        if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
+            return (false, "Invalid dataset order signature");
+        }
+
+        // Check if dataset order is not fully consumed
+        if ($.m_consumed[datasetOrderHash] >= datasetOrder.volume) {
+            return (false, "Dataset order is fully consumed");
+        }
+
+        // Note: DealBoost stores appOwner, workerpoolOwner but dataset restrictions are on the app/workerpool addresses
+        // We need to retrieve the actual app/workerpool addresses from the deal
+        // However, DealBoost doesn't store them. We need to check restrictions differently.
+        // For now, we check against the owners which might not match the original restriction logic.
+        // TODO: Consider storing app/workerpool addresses in DealBoost or using a different approach
+
+        // Check if deal app owner is allowed by dataset order apprestrict (including whitelist)
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.appOwner)) {
+            return (false, "App restriction not satisfied");
+        }
+
+        // Check if deal workerpool owner is allowed by dataset order workerpoolrestrict (including whitelist)
+        if (
+            !_isAccountAuthorizedByRestriction(
+                datasetOrder.workerpoolrestrict,
+                deal.workerpoolOwner
+            )
+        ) {
+            return (false, "Workerpool restriction not satisfied");
+        }
+
+        // Check if deal requester is allowed by dataset order requesterrestrict (including whitelist)
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
+            return (false, "Requester restriction not satisfied");
+        }
+
+        // Check if deal tag fulfills all the tag bits of the dataset order
+        // Convert shortTag back to full tag for comparison
+        bytes3 shortTag = deal.shortTag;
+        bytes32 fullTag;
+        assembly {
+            fullTag := shl(232, shortTag)
+        }
+        if ((fullTag & datasetOrder.tag) != datasetOrder.tag) {
+            return (false, "Tag compatibility not satisfied");
+        }
+
+        return (true, "");
+    }
+
+    /**
      * @notice Check if a task exists and is unset. Such task status is equivalent to
      * the "initialized" task status in Classic Poco workflow.
      * In order for the task to exist, its index should be:

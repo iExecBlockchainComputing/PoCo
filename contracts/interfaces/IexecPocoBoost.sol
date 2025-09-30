@@ -101,4 +101,9 @@ interface IexecPocoBoost {
     ) external;
 
     function claimBoost(bytes32 dealId, uint256 index) external;
+
+    function isDatasetCompatibleWithDealBoost(
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        bytes32 dealid
+    ) external view returns (bool result, string memory reason);
 }
