@@ -1112,22 +1112,22 @@ describe('IexecPoco1', () => {
         });
 
         it('Should return true for compatible dataset order', async () => {
-            const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
-                compatibleDatasetOrder,
-                dealIdWithoutDataset,
-            );
-            expect(result).to.be.true;
-            expect(reason).to.equal('');
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    compatibleDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.deep.equal([true, '']);
         });
 
         it('Should return false with reason for non-existent deal', async () => {
             const nonExistentDealId = ethers.id('non-existent-deal');
-            const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
-                compatibleDatasetOrder,
-                nonExistentDealId,
-            );
-            expect(result).to.be.false;
-            expect(reason).to.equal('Deal does not exist');
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    compatibleDatasetOrder,
+                    nonExistentDealId,
+                ),
+            ).to.deep.equal([false, 'Deal does not exist']);
         });
 
         it('Should return false with reason for deal with a dataset', async () => {
@@ -1142,15 +1142,9 @@ describe('IexecPoco1', () => {
 
             // Use fresh salts to avoid order consumption conflicts
             ordersWithDataset.app.salt = ethers.id('fresh-app-salt');
-            ordersWithDataset.dataset.salt = ethers.keccak256(
-                ethers.toUtf8Bytes('fresh-dataset-salt'),
-            );
-            ordersWithDataset.workerpool.salt = ethers.keccak256(
-                ethers.toUtf8Bytes('fresh-workerpool-salt'),
-            );
-            ordersWithDataset.requester.salt = ethers.keccak256(
-                ethers.toUtf8Bytes('fresh-requester-salt'),
-            );
+            ordersWithDataset.dataset.salt = ethers.id('fresh-dataset-salt');
+            ordersWithDataset.workerpool.salt = ethers.id('fresh-workerpool-salt');
+            ordersWithDataset.requester.salt = ethers.id('fresh-requester-salt');
 
             await depositForRequesterAndSchedulerWithDefaultPrices(volume);
             await signOrders(iexecWrapper.getDomain(), ordersWithDataset, ordersActors);
@@ -1160,12 +1154,12 @@ describe('IexecPoco1', () => {
             );
             await iexecPocoAsRequester.matchOrders(...ordersWithDataset.toArray());
 
-            const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
-                compatibleDatasetOrder,
-                dealIdWithDataset,
-            );
-            expect(result).to.be.false;
-            expect(reason).to.equal('Deal already has a dataset');
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    compatibleDatasetOrder,
+                    dealIdWithDataset,
+                ),
+            ).to.deep.equal([false, 'Deal already has a dataset']);
         });
 
         it('Should return false with reason for dataset order with invalid signature', async () => {
@@ -1175,12 +1169,12 @@ describe('IexecPoco1', () => {
                 sign: randomSignature, // Invalid signature
             };
 
-            const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
-                invalidSignatureDatasetOrder,
-                dealIdWithoutDataset,
-            );
-            expect(result).to.be.false;
-            expect(reason).to.equal('Invalid dataset order signature');
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    invalidSignatureDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.deep.equal([false, 'Invalid dataset order signature']);
         });
 
         it('Should return false with reason for fully consumed dataset order', async () => {
@@ -1191,12 +1185,12 @@ describe('IexecPoco1', () => {
             };
             await signOrder(iexecWrapper.getDomain(), consumedDatasetOrder, datasetProvider);
 
-            const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
-                consumedDatasetOrder,
-                dealIdWithoutDataset,
-            );
-            expect(result).to.be.false;
-            expect(reason).to.equal('Dataset order is fully consumed');
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    consumedDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.deep.equal([false, 'Dataset order is fully consumed']);
         });
 
         it('Should return false with reason for dataset order with incompatible app restriction', async () => {
@@ -1207,12 +1201,12 @@ describe('IexecPoco1', () => {
             };
             await signOrder(iexecWrapper.getDomain(), incompatibleAppDatasetOrder, datasetProvider);
 
-            const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
-                incompatibleAppDatasetOrder,
-                dealIdWithoutDataset,
-            );
-            expect(result).to.be.false;
-            expect(reason).to.equal('App restriction not satisfied');
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    incompatibleAppDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.deep.equal([false, 'App restriction not satisfied']);
         });
 
         it('Should return false with reason for dataset order with incompatible workerpool restriction', async () => {
@@ -1227,12 +1221,12 @@ describe('IexecPoco1', () => {
                 datasetProvider,
             );
 
-            const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
-                incompatibleWorkerpoolDatasetOrder,
-                dealIdWithoutDataset,
-            );
-            expect(result).to.be.false;
-            expect(reason).to.equal('Workerpool restriction not satisfied');
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    incompatibleWorkerpoolDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.deep.equal([false, 'Workerpool restriction not satisfied']);
         });
 
         it('Should return false with reason for dataset order with incompatible requester restriction', async () => {
@@ -1247,12 +1241,12 @@ describe('IexecPoco1', () => {
                 datasetProvider,
             );
 
-            const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
-                incompatibleRequesterDatasetOrder,
-                dealIdWithoutDataset,
-            );
-            expect(result).to.be.false;
-            expect(reason).to.equal('Requester restriction not satisfied');
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    incompatibleRequesterDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.deep.equal([false, 'Requester restriction not satisfied']);
         });
 
         it('Should return false with reason for dataset order with incompatible tag', async () => {
@@ -1263,12 +1257,12 @@ describe('IexecPoco1', () => {
             };
             await signOrder(iexecWrapper.getDomain(), incompatibleTagDatasetOrder, datasetProvider);
 
-            const [result, reason] = await iexecPoco.isDatasetCompatibleWithDeal(
-                incompatibleTagDatasetOrder,
-                dealIdWithoutDataset,
-            );
-            expect(result).to.be.false;
-            expect(reason).to.equal('Tag compatibility not satisfied');
+            expect(
+                await iexecPoco.isDatasetCompatibleWithDeal(
+                    incompatibleTagDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.deep.equal([false, 'Tag compatibility not satisfied']);
         });
     });
 
