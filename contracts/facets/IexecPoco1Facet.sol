@@ -15,6 +15,17 @@ import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
+struct Matching {
+    bytes32 apporderHash;
+    address appOwner;
+    bytes32 datasetorderHash;
+    address datasetOwner;
+    bytes32 workerpoolorderHash;
+    address workerpoolOwner;
+    bytes32 requestorderHash;
+    bool hasDataset;
+}
+
 contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
