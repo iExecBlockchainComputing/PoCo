@@ -1105,7 +1105,7 @@ describe('IexecPoco1', () => {
                 apprestrict: ordersWithoutDataset.app.app,
                 workerpoolrestrict: ordersWithoutDataset.workerpool.workerpool,
                 requesterrestrict: ordersWithoutDataset.requester.requester,
-                salt: ethers.keccak256(ethers.toUtf8Bytes('compatible-salt')),
+                salt: ethers.id('compatible-salt'),
                 sign: '0x',
             };
             await signOrder(iexecWrapper.getDomain(), compatibleDatasetOrder, datasetProvider);
