@@ -1121,7 +1121,7 @@ describe('IexecPoco1', () => {
         });
 
         it('Should return false for non-existent deal', async () => {
-            const nonExistentDealId = ethers.keccak256(ethers.toUtf8Bytes('non-existent-deal'));
+            const nonExistentDealId = ethers.id('non-existent-deal');
             expect(
                 await iexecPoco.isDatasetCompatibleWithDeal(
                     compatibleDatasetOrder,
@@ -1141,7 +1141,7 @@ describe('IexecPoco1', () => {
             });
 
             // Use fresh salts to avoid order consumption conflicts
-            ordersWithDataset.app.salt = ethers.keccak256(ethers.toUtf8Bytes('fresh-app-salt'));
+            ordersWithDataset.app.salt = ethers.id('fresh-app-salt');
             ordersWithDataset.dataset.salt = ethers.keccak256(
                 ethers.toUtf8Bytes('fresh-dataset-salt'),
             );
