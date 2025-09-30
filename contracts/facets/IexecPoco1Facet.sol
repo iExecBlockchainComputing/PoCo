@@ -68,7 +68,7 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
      *
      * @param datasetOrder The dataset order to verify
      * @param dealid The deal ID to check against
-     * @return true with empty string if the dataset order is compatible with the deal, false and a reason string otherwise
+     * @return result True with empty string if the dataset order is compatible with the deal, false and a reason string otherwise
      */
     function isDatasetCompatibleWithDeal(
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
