@@ -231,7 +231,7 @@ export default async function deploy() {
     );
     // Verify contracts if not on a development network.
     if (
-        ['hardhat', 'localhost', 'external-hardhat', 'dev-native', 'dev-token'].includes(
+        !['hardhat', 'localhost', 'external-hardhat', 'dev-native', 'dev-token'].includes(
             network.name,
         )
     ) {
