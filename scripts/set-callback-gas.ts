@@ -22,4 +22,7 @@ import { IexecInterfaceToken__factory } from '../typechain';
     await iexecPoCo.setCallbackGas(requestedCallbackGas).then((tx) => tx.wait());
     const callbackGasAfter = (await iexecPoCo.callbackgas()).toLocaleString();
     console.log(`Changed callback-gas from ${callbackGasBefore} to ${callbackGasAfter}`);
-})().catch((error) => console.log(error));
+})().catch((error) => {
+    console.log(error);
+    process.exitCode = 1;
+});
