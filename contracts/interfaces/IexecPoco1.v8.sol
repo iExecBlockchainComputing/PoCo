@@ -44,5 +44,5 @@ interface IexecPoco1 {
     function isDatasetCompatibleWithDeal(
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
         bytes32 dealid
-    ) external view returns (bool);
+    ) external view returns (bool result, string memory reason);
 }

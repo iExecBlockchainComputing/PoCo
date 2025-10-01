@@ -68,35 +68,36 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
      *
      * @param datasetOrder The dataset order to verify
      * @param dealid The deal ID to check against
-     * @return true if the dataset order is compatible with the deal, false otherwise
+     * @return result true if the dataset order is compatible with the deal, false otherwise
+     * @return reason the specific reason why the compatibility check failed, empty string if successful
      */
     function isDatasetCompatibleWithDeal(
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
         bytes32 dealid
-    ) external view override returns (bool) {
+    ) external view override returns (bool result, string memory reason) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         // Check if deal exists
         IexecLibCore_v5.Deal storage deal = $.m_deals[dealid];
         if (deal.requester == address(0)) {
-            return false;
+            return (false, "Deal does not exist");
         }
         // The specified deal should not have a dataset.
         if (deal.dataset.pointer != address(0)) {
-            return false;
+            return (false, "Deal already has a dataset");
         }
         // Check dataset order owner signature (including presign and EIP1271)
         bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
         address datasetOwner = IERC5313(datasetOrder.dataset).owner();
         if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
-            return false;
+            return (false, "Invalid dataset order signature");
         }
         // Check if dataset order is not fully consumed
         if ($.m_consumed[datasetOrderHash] >= datasetOrder.volume) {
-            return false;
+            return (false, "Dataset order is fully consumed");
         }
         // Check if deal app is allowed by dataset order apprestrict (including whitelist)
         if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.app.pointer)) {
-            return false;
+            return (false, "App restriction not satisfied");
         }
         // Check if deal workerpool is allowed by dataset order workerpoolrestrict (including whitelist)
         if (
@@ -105,17 +106,17 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
                 deal.workerpool.pointer
             )
         ) {
-            return false;
+            return (false, "Workerpool restriction not satisfied");
         }
         // Check if deal requester is allowed by dataset order requesterrestrict (including whitelist)
         if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
-            return false;
+            return (false, "Requester restriction not satisfied");
         }
         // Check if deal tag fulfills all the tag bits of the dataset order
         if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
-            return false;
+            return (false, "Tag compatibility not satisfied");
         }
-        return true;
+        return (true, "");
     }
 
     /***************************************************************************

@@ -330,7 +330,7 @@ describe('IexecPoco1', () => {
 
                     it(`Should fail to ${verifyPresignatureFunction} for an unknown messageHash for ${asset}`, async () => {
                         const { providerAddress } = orderManagement[asset];
-                        const unknownMessageHash = ethers.keccak256(ethers.toUtf8Bytes('unknown'));
+                        const unknownMessageHash = ethers.id('unknown');
 
                         const args = [
                             providerAddress,
@@ -1117,20 +1117,20 @@ describe('IexecPoco1', () => {
                     compatibleDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.true;
+            ).to.deep.equal([true, '']);
         });
 
-        it('Should return false for non-existent deal', async () => {
+        it('Should return false with reason for non-existent deal', async () => {
             const nonExistentDealId = ethers.id('non-existent-deal');
             expect(
                 await iexecPoco.isDatasetCompatibleWithDeal(
                     compatibleDatasetOrder,
                     nonExistentDealId,
                 ),
-            ).to.be.false;
+            ).to.deep.equal([false, 'Deal does not exist']);
         });
 
-        it('Should return false for deal with a dataset', async () => {
+        it('Should return false with reason for deal with a dataset', async () => {
             // Use the original orders that include a dataset to create a deal with dataset
             const ordersWithDataset = buildOrders({
                 assets: ordersAssets, // This includes the dataset
@@ -1142,15 +1142,9 @@ describe('IexecPoco1', () => {
 
             // Use fresh salts to avoid order consumption conflicts
             ordersWithDataset.app.salt = ethers.id('fresh-app-salt');
-            ordersWithDataset.dataset.salt = ethers.keccak256(
-                ethers.toUtf8Bytes('fresh-dataset-salt'),
-            );
-            ordersWithDataset.workerpool.salt = ethers.keccak256(
-                ethers.toUtf8Bytes('fresh-workerpool-salt'),
-            );
-            ordersWithDataset.requester.salt = ethers.keccak256(
-                ethers.toUtf8Bytes('fresh-requester-salt'),
-            );
+            ordersWithDataset.dataset.salt = ethers.id('fresh-dataset-salt');
+            ordersWithDataset.workerpool.salt = ethers.id('fresh-workerpool-salt');
+            ordersWithDataset.requester.salt = ethers.id('fresh-requester-salt');
 
             await depositForRequesterAndSchedulerWithDefaultPrices(volume);
             await signOrders(iexecWrapper.getDomain(), ordersWithDataset, ordersActors);
@@ -1165,10 +1159,10 @@ describe('IexecPoco1', () => {
                     compatibleDatasetOrder,
                     dealIdWithDataset,
                 ),
-            ).to.be.false;
+            ).to.deep.equal([false, 'Deal already has a dataset']);
         });
 
-        it('Should return false for dataset order with invalid signature', async () => {
+        it('Should return false with reason for dataset order with invalid signature', async () => {
             // Create dataset order with invalid signature
             const invalidSignatureDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1180,10 +1174,10 @@ describe('IexecPoco1', () => {
                     invalidSignatureDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.deep.equal([false, 'Invalid dataset order signature']);
         });
 
-        it('Should return false for fully consumed dataset order', async () => {
+        it('Should return false with reason for fully consumed dataset order', async () => {
             // Create dataset order with volume 0 (fully consumed)
             const consumedDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1196,10 +1190,10 @@ describe('IexecPoco1', () => {
                     consumedDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.deep.equal([false, 'Dataset order is fully consumed']);
         });
 
-        it('Should return false for dataset order with incompatible app restriction', async () => {
+        it('Should return false with reason for dataset order with incompatible app restriction', async () => {
             // Create dataset order with incompatible app restriction
             const incompatibleAppDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1212,10 +1206,10 @@ describe('IexecPoco1', () => {
                     incompatibleAppDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.deep.equal([false, 'App restriction not satisfied']);
         });
 
-        it('Should return false for dataset order with incompatible workerpool restriction', async () => {
+        it('Should return false with reason for dataset order with incompatible workerpool restriction', async () => {
             // Create dataset order with incompatible workerpool restriction
             const incompatibleWorkerpoolDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1232,10 +1226,10 @@ describe('IexecPoco1', () => {
                     incompatibleWorkerpoolDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.deep.equal([false, 'Workerpool restriction not satisfied']);
         });
 
-        it('Should return false for dataset order with incompatible requester restriction', async () => {
+        it('Should return false with reason for dataset order with incompatible requester restriction', async () => {
             // Create dataset order with incompatible requester restriction
             const incompatibleRequesterDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1252,10 +1246,10 @@ describe('IexecPoco1', () => {
                     incompatibleRequesterDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.deep.equal([false, 'Requester restriction not satisfied']);
         });
 
-        it('Should return false for dataset order with incompatible tag', async () => {
+        it('Should return false with reason for dataset order with incompatible tag', async () => {
             // Create dataset order with incompatible tag
             const incompatibleTagDatasetOrder = {
                 ...compatibleDatasetOrder,
@@ -1268,7 +1262,7 @@ describe('IexecPoco1', () => {
                     incompatibleTagDatasetOrder,
                     dealIdWithoutDataset,
                 ),
-            ).to.be.false;
+            ).to.deep.equal([false, 'Tag compatibility not satisfied']);
         });
     });
 
