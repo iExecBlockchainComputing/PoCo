@@ -40,13 +40,15 @@
     "url": "https://github.com/iExecBlockchainComputing/PoCo/issues"
   },
   "files": [
+    "/artifacts/contracts",
+    "!/artifacts/contracts/tools/testing/**/*",
+    "!/artifacts/contracts/tools/diagrams/**/*",
+    "!/artifacts/contracts/**/*.dbg.json",
     "/contracts",
     "!/contracts/tools/testing/**/*",
-    "/artifacts/contracts",
-    "!/artifacts/contracts/**/*.dbg.json",
-    "!/artifacts/contracts/tools/testing/**/*",
     "/deployments"
   ],
+  "__filesComment": "!!! Update .gitignore if this is updated",
   "dependencies": {
     "@iexec/interface": "3.0.35-8",
     "@iexec/solidity": "^0.1.1",

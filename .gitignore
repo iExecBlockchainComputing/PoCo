@@ -12,7 +12,6 @@ typechain-types
 
 # Hardhat files
 cache
-artifacts
 
 contracts/hardhat-dependency-compiler/
 deployments/*hardhat*
@@ -20,3 +19,12 @@ deployments/dev-*
 
 # Flattened Solidity file used to generate diagrams.
 flatten.sol
+
+# Contract artifacts are used by the SDKs and the Middleware.
+# Irrelevant files are ignored.
+# /!\ Update package.json#files if this is updated.
+/artifacts/*
+!/artifacts/contracts/
+/artifacts/contracts/tools/testing/
+/artifacts/contracts/tools/diagrams/
+/artifacts/contracts/**/*.dbg.json
