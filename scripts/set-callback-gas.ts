@@ -3,17 +3,24 @@
 
 // Usage: CALLBACK_GAS=<value> npx hardhat run scripts/set-callback-gas.ts --network <network>
 
-import { deployments, ethers } from 'hardhat';
+import { ethers } from 'hardhat';
 import { IexecInterfaceToken__factory } from '../typechain';
+import config from '../utils/config';
 
 (async () => {
     const requestedCallbackGas = Number(process.env.CALLBACK_GAS);
     if (!requestedCallbackGas) {
         throw new Error('`CALLBACK_GAS` env variable is missing or invalid.');
     }
-    const diamondProxyAddress = (await deployments.get('Diamond')).address;
+    const { chainId, name: chainName } = await ethers.provider.getNetwork();
+    console.log(`Network: ${chainName} (${chainId})`);
+    const proxyAddress = config.getChainConfig(chainId).v5.DiamondProxy;
+    if (!proxyAddress) {
+        throw new Error('Diamond proxy address is required');
+    }
+    console.log(`Diamond proxy address: ${proxyAddress}`);
     const [owner] = await ethers.getSigners();
-    const iexecPoCo = IexecInterfaceToken__factory.connect(diamondProxyAddress, owner);
+    const iexecPoCo = IexecInterfaceToken__factory.connect(proxyAddress, owner);
     if ((await iexecPoCo.owner()) !== owner.address) {
         throw new Error(`Sender account ${owner.address} is not the PoCo owner.`);
     }
