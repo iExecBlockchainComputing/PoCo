@@ -229,7 +229,12 @@ export default async function deploy() {
         deployer,
         ownerAddress,
     );
-    if (network.name !== 'hardhat' && network.name !== 'localhost') {
+    // Verify contracts if not on a development network.
+    if (
+        !['hardhat', 'localhost', 'external-hardhat', 'dev-native', 'dev-token'].includes(
+            network.name,
+        )
+    ) {
         console.log('Waiting for block explorer to index the contracts...');
         await new Promise((resolve) => setTimeout(resolve, 60000));
         await import('../scripts/verify').then((module) => module.default());

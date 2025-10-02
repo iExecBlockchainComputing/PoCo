@@ -1,25 +1,35 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { deployments, ethers } from 'hardhat';
-import { IexecAccessors__factory, IexecConfigurationFacet__factory } from '../typechain';
+// Usage: CALLBACK_GAS=<value> npx hardhat run scripts/set-callback-gas.ts --network <network>
+
+import { ethers } from 'hardhat';
+import { IexecInterfaceToken__factory } from '../typechain';
+import config from '../utils/config';
 
 (async () => {
     const requestedCallbackGas = Number(process.env.CALLBACK_GAS);
     if (!requestedCallbackGas) {
-        console.error('`CALLBACK_GAS` env variable is missing. Aborting.');
-        process.exit(1);
+        throw new Error('`CALLBACK_GAS` env variable is missing or invalid.');
+    }
+    const { chainId, name: chainName } = await ethers.provider.getNetwork();
+    console.log(`Network: ${chainName} (${chainId})`);
+    const proxyAddress = config.getChainConfig(chainId).v5.DiamondProxy;
+    if (!proxyAddress) {
+        throw new Error('Diamond proxy address is required');
+    }
+    console.log(`Diamond proxy address: ${proxyAddress}`);
+    const [owner] = await ethers.getSigners();
+    const iexecPoCo = IexecInterfaceToken__factory.connect(proxyAddress, owner);
+    if ((await iexecPoCo.owner()) !== owner.address) {
+        throw new Error(`Sender account ${owner.address} is not the PoCo owner.`);
     }
     console.log(`Setting callback-gas to ${requestedCallbackGas.toLocaleString()} ..`);
-    const [owner] = await ethers.getSigners();
-    const diamondProxyAddress = (await deployments.get('Diamond')).address;
-    const viewCallbackGas = async () =>
-        (await IexecAccessors__factory.connect(diamondProxyAddress, owner).callbackgas())
-            .toNumber()
-            .toLocaleString();
-    const callbackGasBefore = await viewCallbackGas();
-    await IexecConfigurationFacet__factory.connect(diamondProxyAddress, owner)
-        .setCallbackGas(requestedCallbackGas)
-        .then((tx) => tx.wait());
-    console.log(`Changed callback-gas from ${callbackGasBefore} to ${await viewCallbackGas()}`);
-})().catch((error) => console.log(error));
+    const callbackGasBefore = (await iexecPoCo.callbackgas()).toLocaleString();
+    await iexecPoCo.setCallbackGas(requestedCallbackGas).then((tx) => tx.wait());
+    const callbackGasAfter = (await iexecPoCo.callbackgas()).toLocaleString();
+    console.log(`Changed callback-gas from ${callbackGasBefore} to ${callbackGasAfter}`);
+})().catch((error) => {
+    console.log(error);
+    process.exitCode = 1;
+});
