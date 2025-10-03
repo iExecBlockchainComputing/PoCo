@@ -8,9 +8,8 @@
   "main": "",
   "scripts": {
     "prepare": "husky",
-    "build": "npx hardhat compile && npx hardhat abis",
+    "build": "npx hardhat compile",
     "deploy": "npx hardhat deploy",
-    "abis": "npx hardhat abis",
     "deploy:timelock": "hardhat run scripts/deploy-timelock.ts",
     "check-storage-layout": "npx hardhat run scripts/check-storage.ts",
     "clean": "rm -rf deployments/hardhat",
@@ -36,7 +35,7 @@
     "!/contracts/tools/TimelockController/**/*",
     "/deployments"
   ],
-  "__filesComment": "!!! Update Hardhat `abis` task if this is updated",
+  "__filesComment": "!!! @dev Update Hardhat `abis` task if this is updated",
   "lint-staged": {
     "*.{js,ts,sol,json,yml}": [
       "prettier --write"

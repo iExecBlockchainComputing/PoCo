@@ -333,6 +333,12 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     }
 });
 
+// Automatically update ABIs after compiling contracts.
+task('compile').setAction(async (taskArgs: any, hre, runSuper) => {
+    await runSuper(taskArgs);
+    await hre.run('abis');
+});
+
 task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
     const abisDir = './abis';
     // Remove old ABIs folder if it exists.
@@ -355,7 +361,7 @@ task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
         fs.mkdirSync(abiFileDir, { recursive: true });
         fs.writeFileSync(abiFile, JSON.stringify(artifact.abi, null, 2));
     }
-    console.log(`Saved ${contracts.length} ABI files to ${abisDir}`);
+    console.log(`Saved ${contracts.length} ABI files to ${abisDir} folder`);
 });
 
 export default config;
