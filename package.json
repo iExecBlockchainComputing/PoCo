@@ -33,9 +33,14 @@
     "!/contracts/tools/testing/**/*",
     "!/contracts/tools/diagrams/**/*",
     "!/contracts/tools/TimelockController/**/*",
-    "/deployments"
+    "/deployments",
+    "/artifacts/contracts",
+    "!/artifacts/contracts/**/*.dbg.json"
   ],
-  "__filesComment": "!!! @dev Update Hardhat `abis` task if this is updated",
+  "__filesComment": [
+    "!!! @dev Update Hardhat `abis` task if this is updated",
+    "TODO remove artifacts/ from NPM package when releasing a major version"
+  ],
   "lint-staged": {
     "*.{js,ts,sol,json,yml}": [
       "prettier --write"
