@@ -1,6 +1,7 @@
 import '@nomicfoundation/hardhat-toolbox';
 import 'dotenv/config';
 import * as fs from 'fs';
+import * as path from 'path';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
 import { HardhatUserConfig, task } from 'hardhat/config';
@@ -330,6 +331,37 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
             await cleanupDeployments(networkName);
         }
     }
+});
+
+// Automatically update ABIs after compiling contracts.
+task('compile').setAction(async (taskArgs: any, hre, runSuper) => {
+    await runSuper(taskArgs);
+    await hre.run('abis');
+});
+
+task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
+    const abisDir = './abis';
+    // Remove old ABIs folder if it exists.
+    if (fs.existsSync(abisDir)) {
+        fs.rmSync(abisDir, { recursive: true, force: true });
+    }
+    fs.mkdirSync(abisDir);
+    const contracts = (await hre.artifacts.getAllFullyQualifiedNames())
+        // Keep only "contracts/" folder
+        .filter((name) => name.startsWith('contracts/'))
+        // Remove non relevant contracts
+        // !!! Update package.json#files if this is updated.
+        .filter((name) => !name.startsWith('contracts/tools/testing'))
+        .filter((name) => !name.startsWith('contracts/tools/diagrams'))
+        .filter((name) => !name.startsWith('contracts/tools/TimelockController'));
+    for (const contractFile of contracts) {
+        const artifact = await hre.artifacts.readArtifact(contractFile);
+        const abiFileDir = `${abisDir}/${path.dirname(contractFile)}`;
+        const abiFile = `${abiFileDir}/${artifact.contractName}.json`;
+        fs.mkdirSync(abiFileDir, { recursive: true });
+        fs.writeFileSync(abiFile, JSON.stringify(artifact.abi, null, 2));
+    }
+    console.log(`Saved ${contracts.length} ABI files to ${abisDir} folder`);
 });
 
 export default config;

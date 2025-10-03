@@ -1,7 +1,7 @@
 {
   "name": "@iexec/poco",
   "version": "6.0.0",
-  "description": "",
+  "description": "iExec Proof of Contribution protocol smart contracts",
   "author": "iExec",
   "license": "Apache-2.0",
   "homepage": "https://github.com/iExecBlockchainComputing/PoCo#readme",
@@ -27,27 +27,20 @@
     "storage-to-diagrams": "bash scripts/tools/storage-to-diagrams.sh",
     "doc": "npx hardhat docgen"
   },
+  "files": [
+    "/abis",
+    "/contracts",
+    "!/contracts/tools/testing/**/*",
+    "!/contracts/tools/diagrams/**/*",
+    "!/contracts/tools/TimelockController/**/*",
+    "/deployments"
+  ],
+  "__filesComment": "!!! @dev Update Hardhat `abis` task if this is updated",
   "lint-staged": {
     "*.{js,ts,sol,json,yml}": [
       "prettier --write"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/iExecBlockchainComputing/PoCo.git"
-  },
-  "bugs": {
-    "url": "https://github.com/iExecBlockchainComputing/PoCo/issues"
-  },
-  "files": [
-    "/contracts",
-    "!/contracts/tools/testing/**/*",
-    "/artifacts/contracts",
-    "!/artifacts/contracts/**/*.dbg.json",
-    "!/artifacts/contracts/tools/testing/**/*",
-    "/deployments",
-    "/build"
-  ],
   "dependencies": {
     "@iexec/interface": "3.0.35-8",
     "@iexec/solidity": "^0.1.1",
@@ -85,5 +78,12 @@
   "__devDependenciesComments": {
     "mocha": "[Optional] Install Mocha Test Explorer in VSCode to see tests in VSCode UI",
     "solidity-coverage": "Fixing Hardhat's solidity-coverage: TypeError: provider.send is not a function"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iExecBlockchainComputing/PoCo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iExecBlockchainComputing/PoCo/issues"
   }
 }
