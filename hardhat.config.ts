@@ -1,7 +1,6 @@
 import '@nomicfoundation/hardhat-toolbox';
 import 'dotenv/config';
 import * as fs from 'fs';
-import * as path from 'path';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
 import { HardhatUserConfig, task } from 'hardhat/config';
@@ -10,6 +9,7 @@ import {
     defaultHardhatNetworkParams,
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
+import * as path from 'path';
 import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
@@ -179,6 +179,7 @@ const config: HardhatUserConfig = {
                 'https://api.avax-test.network/ext/bc/C/rpc',
             accounts: [
                 process.env.DEPLOYER_PRIVATE_KEY ||
+                    process.env.ADMIN_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...fujiBaseConfig,
@@ -190,6 +191,7 @@ const config: HardhatUserConfig = {
                 'https://arbitrum.gateway.tenderly.co',
             accounts: [
                 process.env.DEPLOYER_PRIVATE_KEY ||
+                    process.env.ADMIN_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...arbitrumBaseConfig,
@@ -201,6 +203,7 @@ const config: HardhatUserConfig = {
                 'https://sepolia-rollup.arbitrum.io/rpc',
             accounts: [
                 process.env.DEPLOYER_PRIVATE_KEY ||
+                    process.env.ADMIN_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...arbitrumSepoliaBaseConfig,
@@ -210,6 +213,7 @@ const config: HardhatUserConfig = {
             url: 'https://bellecour.iex.ec',
             accounts: [
                 process.env.DEPLOYER_PRIVATE_KEY ||
+                    process.env.ADMIN_PRIVATE_KEY ||
                     '0x0000000000000000000000000000000000000000000000000000000000000000',
             ],
             ...bellecourBaseConfig,
