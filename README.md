@@ -50,6 +50,7 @@ All contract audit files can be found in [audits/](./audits/) folder.
 * **NPM Package**: all contract ABIs, source code, and deployment artifacts (with addresses) are bundled in the [@iexec/poco](https://www.npmjs.com/package/@iexec/poco) package.
 * **ABIs**: available in the `abis/` folder of this repository and in the NPM package (`/abis`).
 * **Deployment addresses**: published in the `deployments/` folder of this repository and in the NPM package (`/deployments/<chain>`).
+* **Artifacts**: ⚠️ DEPRECATED and replaced by `abis`. This will be removed in future versions.
 
 Note: `abis/` folder contains the most up to date version of the ABIs even before deployment on live networks.
 ## Configure a deployment
