@@ -4,9 +4,9 @@
 
 # Introduction
 
-This repository contains the smart contract implementation of iExec's PoCo protocol.
+This repository contains the smart contract implementation of iExec's Proof of Contribution protocol.
 
-## Related articles on medium
+## Related articles
 
 - [PoCo Series #1 — About Trust and Agents Incentives](https://medium.com/iex-ec/about-trust-and-agents-incentives-4651c138974c)
 - [PoCo Series #2 — On the use of staking to prevent attacks](https://medium.com/iex-ec/poco-series-2-on-the-use-of-staking-to-prevent-attacks-2a5c700558bd)
@@ -15,9 +15,14 @@ This repository contains the smart contract implementation of iExec's PoCo proto
 - [PoCo Series #5 — Open decentralized brokering on the iExec platform](https://medium.com/iex-ec/poco-series-5-open-decentralized-brokering-on-the-iexec-platform-67b266e330d8)
 - [PoCo Series #6 — Smart Contract Upgradeability and Governance](https://medium.com/iex-ec/poco-series-6-smart-contract-upgradeability-and-governance-68d2cdecd120)
 - [PoCo Series #8 — Future-proofing iExec - Smart Contract Interoperability and Modularity](https://medium.com/iex-ec/poco-series-8-future-proofing-iexec-smart-contract-interoperability-and-modularity-37a3d3613f11)
+- [iExec PoCo v6 — Building the diamond foundation](https://www.iex.ec/news/iexec-poco-v6-building-the-diamond-foundation)
 
-## PoCo UMLs
+## Documentation
 
+- [Protocol documentation](https://docs.iex.ec/protocol/proof-of-contribution)
+- [Solidity API documentation](./docs/solidity/index.md)
+
+### UML and storage diagrams
 - [Contracts and Actors Architecture](./docs/README.md#contracts-and-actors-architecture)
 - [State diagrams](./docs/Statuses.md)
 - [Nominal workflow sequence](./docs/README.md#nominal)
@@ -34,20 +39,22 @@ This repository contains the smart contract implementation of iExec's PoCo proto
     - [iExec PoCo libraries](./docs/uml/class-uml-dir-libs.svg)
     - [iExec PoCo modules (facets)](./docs/uml/class-uml-dir-facets.svg)
 
-## Documentation
-
-- [Solidity API documentation](./docs/solidity/index.md)
-- [Full PoCo documentation](https://docs.iex.ec/protocol/proof-of-contribution)
-
 ## Audits
 
-All contract audit files can be found in [audit/](./audit/) folder.
+All contract audit files can be found in [audits/](./audits/) folder.
 
 # How to?
 
+## Resources
+
+* **NPM Package**: all contract ABIs, source code, and deployment artifacts (with addresses) are bundled in the [@iexec/poco](https://www.npmjs.com/package/@iexec/poco) package.
+* **ABIs**: available the `abis/` folder of this repository and in the NPM package (`/abis`).
+* **Deployment addresses**: published in the `deployments/` folder of this repository and in the NPM package (`/deployments/<chain>`).
+
+Note: `abis/` folder contains the most up to date version of the ABIs even before deployment on live networks.
 ## Configure a deployment
 
-Starting from version 5, the PoCo uses a modular design based on [ERC-2535](https://eips.ethereum.org/EIPS/eip-2535). The migration scripts and tests will use different modules (facets) and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated sidechains (Native token based RLC).
+Starting from version 5, the PoCo uses a modular design based on [ERC-2535](https://eips.ethereum.org/EIPS/eip-2535). Tests and deployment scripts will use different modules (facets) and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated sidechains (Native token based RLC).
 
 The configuration file is located in `./config/config.json`.
 
