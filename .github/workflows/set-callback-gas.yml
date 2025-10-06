@@ -25,6 +25,13 @@ jobs:
       contents: read
     environment: ${{ inputs.network }} # Use the selected environment
     steps:
+      - name: Validate callback gas input
+        run: |
+          if ! [[ "${{ inputs.callback_gas-value }}" =~ ^[0-9]+$ ]]; then
+            echo "Error: Callback gas must be a positive integer"
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -39,13 +46,6 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Validate callback gas input
-        run: |
-          if ! [[ "${{ inputs.callback_gas-value }}" =~ ^[0-9]+$ ]]; then
-            echo "Error: Callback gas must be a positive integer"
-            exit 1
-          fi
 
       - name: Set callback gas on ${{ inputs.network }}
         env:
