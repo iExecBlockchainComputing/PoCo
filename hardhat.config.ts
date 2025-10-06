@@ -1,5 +1,6 @@
 import '@nomicfoundation/hardhat-toolbox';
 import 'dotenv/config';
+import { Wallet } from 'ethers';
 import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
@@ -89,6 +90,22 @@ const config: HardhatUserConfig = {
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],
+    },
+    namedAccounts: {
+        deployer: {
+            default: 0,
+            bellecour: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
+            arbitrum: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
+            arbitrumSepolia: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
+            avalancheFujiTestnet: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
+        },
+        admin: {
+            default: 1,
+            bellecour: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
+            arbitrum: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
+            arbitrumSepolia: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
+            avalancheFujiTestnet: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
+        },
     },
     networks: {
         hardhat: {
@@ -364,5 +381,19 @@ task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
     }
     console.log(`Saved ${contracts.length} ABI files to ${abisDir} folder`);
 });
+
+function getAddressFromPrivateKey(
+    privateKey: string | undefined,
+    fallback: number | string,
+): number | string {
+    if (!privateKey || privateKey === ZERO_PRIVATE_KEY) {
+        return fallback;
+    }
+    try {
+        return new Wallet(privateKey).address;
+    } catch {
+        return fallback;
+    }
+}
 
 export default config;

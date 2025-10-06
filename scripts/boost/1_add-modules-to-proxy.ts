@@ -3,7 +3,7 @@
 
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { BytesLike, ZeroHash } from 'ethers';
-import { deployments, ethers } from 'hardhat';
+import { deployments, ethers, getNamedAccounts } from 'hardhat';
 import {
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet__factory,
@@ -32,7 +32,8 @@ import {
     const iexecPocoBoostAccessorsFacetAddress = (
         await deployments.get('IexecPocoBoostAccessorsFacet')
     ).address; // Bellecour: 0x56185a2b0dc8b556BBfBAFB702BC971Ed75e868C
-    const [account] = await ethers.getSigners();
+    const { admin: adminAddress } = await getNamedAccounts();
+    const account = await ethers.getSigner(adminAddress);
     const timelockAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner(); // Bellecour: 0x4611B943AA1d656Fc669623b5DA08756A7e288E9
 
     const iexecLibOrders = {

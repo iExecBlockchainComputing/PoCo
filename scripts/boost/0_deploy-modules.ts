@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { deployments, ethers } from 'hardhat';
+import { deployments, ethers, getNamedAccounts } from 'hardhat';
 import {
     GenericFactory__factory,
     IexecPocoBoostAccessorsFacet__factory,
@@ -14,7 +14,8 @@ const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.
 (async () => {
     console.log('Deploying Boost modules..');
     await mineBlockIfOnLocalFork();
-    const [owner] = await ethers.getSigners();
+    const { deployer: deployerAddress } = await getNamedAccounts();
+    const owner = await ethers.getSigner(deployerAddress);
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;
     if (!deploymentOptions.IexecLibOrders_v5) {

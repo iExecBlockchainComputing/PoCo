@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
-import { deployments, ethers } from 'hardhat';
+import { deployments, ethers, getNamedAccounts } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
     AppRegistry__factory,
@@ -49,7 +49,8 @@ export default async function deploy() {
     console.log('Deploying PoCo..');
     const network = await ethers.provider.getNetwork();
     const chainId = network.chainId;
-    const [deployer] = await ethers.getSigners();
+    const { deployer: deployerAddress } = await getNamedAccounts();
+    const deployer = await ethers.getSigner(deployerAddress);
     console.log(`Deployer: ${deployer.address}`);
     console.log(`Network: ${network.name} (${chainId})`);
     const deploymentOptions = config.getChainConfigOrDefault(chainId);

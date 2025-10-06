@@ -98,7 +98,8 @@ export async function addModulesToProxy() {
     console.log(`Expected Timelock proposer: ${timelockAdminAddress}`);
     /*
     // Enable this in production
-    const [proposer] = await ethers.getSigners();
+    const { admin: adminAddress } = await getNamedAccounts();
+    const proposer = await ethers.getSigner(adminAddress);
     console.log(`Actual Timelock proposer: ${proposer.address}`);
     if (proposer.address != timelockAdminAddress) {
         console.error('Bad proposer');
