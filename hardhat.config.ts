@@ -1,6 +1,7 @@
 import '@nomicfoundation/hardhat-toolbox';
 import 'dotenv/config';
 import * as fs from 'fs';
+import * as path from 'path';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
 import { HardhatUserConfig, task } from 'hardhat/config';
@@ -9,7 +10,6 @@ import {
     defaultHardhatNetworkParams,
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
-import * as path from 'path';
 import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
