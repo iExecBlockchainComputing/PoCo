@@ -13,7 +13,7 @@ on:
           - avalancheFujiTestnet
           - bellecour
         default: 'arbitrumSepolia'
-      callback_gas:
+      callback_gas-value:
         description: 'Callback Gas Value'
         required: true
         type: string
@@ -42,7 +42,7 @@ jobs:
 
       - name: Validate callback gas input
         run: |
-          if ! [[ "${{ inputs.callback_gas }}" =~ ^[0-9]+$ ]]; then
+          if ! [[ "${{ inputs.callback_gas-value }}" =~ ^[0-9]+$ ]]; then
             echo "Error: Callback gas must be a positive integer"
             exit 1
           fi
@@ -51,5 +51,5 @@ jobs:
         env:
           ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
-          CALLBACK_GAS: ${{ inputs.callback_gas }}
+          CALLBACK_GAS: ${{ inputs.callback_gas-value }}
         run: npx hardhat run scripts/set-callback-gas.ts --network ${{ inputs.network }}
