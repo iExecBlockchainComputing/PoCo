@@ -1,0 +1,54 @@
+name: Set Callback Gas
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Network'
+        required: true
+        type: choice
+        options:
+          - arbitrumSepolia
+          - arbitrum
+          - bellecour
+        default: 'arbitrumSepolia'
+      callback_gas-value:
+        description: 'Callback Gas Value'
+        required: true
+        type: string
+
+jobs:
+  set-callback-gas:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment: ${{ inputs.network }} # Use the selected environment
+    steps:
+      - name: Validate callback gas input
+        run: |
+          if ! [[ "${{ inputs.callback_gas-value }}" =~ ^[0-9]+$ ]]; then
+            echo "Error: Callback gas must be a positive integer"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # Cache dependencies
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Set callback gas on ${{ inputs.network }}
+        env:
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+          CALLBACK_GAS: ${{ inputs.callback_gas-value }}
+        run: npx hardhat run scripts/set-callback-gas.ts --network ${{ inputs.network }}
