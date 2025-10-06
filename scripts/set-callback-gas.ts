@@ -21,6 +21,7 @@ import config from '../utils/config';
     console.log(`Diamond proxy address: ${proxyAddress}`);
     const { admin: adminAddress } = await getNamedAccounts();
     const owner = await ethers.getSigner(adminAddress);
+    // TODO: update here to use getNamedAccounts
     const iexecPoCo = IexecInterfaceToken__factory.connect(proxyAddress, owner);
     if ((await iexecPoCo.owner()) !== owner.address) {
         throw new Error(`Sender account ${owner.address} is not the PoCo owner.`);
