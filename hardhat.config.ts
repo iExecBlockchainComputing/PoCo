@@ -1,7 +1,6 @@
 import '@nomicfoundation/hardhat-toolbox';
 import 'dotenv/config';
 import * as fs from 'fs';
-import * as path from 'path';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
 import { HardhatUserConfig, task } from 'hardhat/config';
@@ -10,10 +9,12 @@ import {
     defaultHardhatNetworkParams,
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
+import * as path from 'path';
 import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
 
+const ZERO_PRIVATE_KEY = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
 const isFujiFork = process.env.FUJI_FORK == 'true';
@@ -178,9 +179,8 @@ const config: HardhatUserConfig = {
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://api.avax-test.network/ext/bc/C/rpc',
             accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY ||
-                    process.env.ADMIN_PRIVATE_KEY ||
-                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
+                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
             ],
             ...fujiBaseConfig,
         },
@@ -190,9 +190,8 @@ const config: HardhatUserConfig = {
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://arbitrum.gateway.tenderly.co',
             accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY ||
-                    process.env.ADMIN_PRIVATE_KEY ||
-                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
+                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
             ],
             ...arbitrumBaseConfig,
         },
@@ -202,9 +201,8 @@ const config: HardhatUserConfig = {
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://sepolia-rollup.arbitrum.io/rpc',
             accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY ||
-                    process.env.ADMIN_PRIVATE_KEY ||
-                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
+                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
             ],
             ...arbitrumSepoliaBaseConfig,
         },
@@ -212,9 +210,8 @@ const config: HardhatUserConfig = {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
             accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY ||
-                    process.env.ADMIN_PRIVATE_KEY ||
-                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
+                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
             ],
             ...bellecourBaseConfig,
             verify: {
