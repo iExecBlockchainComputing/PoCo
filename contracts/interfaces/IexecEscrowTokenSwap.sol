@@ -7,6 +7,7 @@ pragma experimental ABIEncoderV2;
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "../libs/IexecLibOrders_v5.sol";
 
+// TODO add this to IexecInterfaceToken when the facet is deployed.
 interface IexecEscrowTokenSwap {
     receive() external payable;
     fallback() external payable;
