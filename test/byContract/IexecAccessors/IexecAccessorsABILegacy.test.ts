@@ -5,10 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { Wallet, ZeroAddress } from 'ethers';
-import {
-    IexecInterfaceNativeABILegacy,
-    IexecInterfaceNativeABILegacy__factory,
-} from '../../../typechain';
+import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     ContributionStatusEnum,
@@ -33,7 +30,7 @@ const { resultDigest } = buildUtf8ResultAndDigest('result');
 const taskIndex = 0n;
 
 let proxyAddress: string;
-let iexecPocoABILegacy: IexecInterfaceNativeABILegacy;
+let iexecPocoABILegacy: IexecInterfaceNative;
 let iexecWrapper: IexecWrapper;
 let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
 let [
@@ -63,7 +60,7 @@ describe('IexecAccessorsABILegacy', function () {
             accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPocoABILegacy = IexecInterfaceNativeABILegacy__factory.connect(proxyAddress, anyone);
+        iexecPocoABILegacy = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,

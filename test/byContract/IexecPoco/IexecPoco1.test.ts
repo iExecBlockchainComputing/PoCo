@@ -16,8 +16,6 @@ import {
     IexecPocoAccessors__factory,
     OwnableMock__factory,
 } from '../../../typechain';
-import { IexecPoco1 } from '../../../typechain/contracts/interfaces/IexecPoco1.v8.sol/IexecPoco1';
-import { IexecPoco1__factory } from '../../../typechain/factories/contracts/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
 import {
     IexecOrders,
     OrdersActors,
@@ -60,9 +58,7 @@ const someWallet = Wallet.createRandom();
 describe('IexecPoco1', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
-    let iexecPocoAsSponsor: IexecPoco1; // Sponsor function not available yet in IexecInterfaceNative.
-    // TODO use iexecPoco when IexecInterfaceNative is up-to-date
-    // and contains the function `computeDealVolume`.
+    let iexecPocoAsSponsor: IexecInterfaceNative;
     let iexecPocoAccessors: IexecPocoAccessors;
     let iexecPocoContract: Contract;
     let iexecWrapper: IexecWrapper;
@@ -110,9 +106,9 @@ describe('IexecPoco1', () => {
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
-        iexecPocoAsSponsor = IexecPoco1__factory.connect(proxyAddress, sponsor);
+        iexecPocoAsSponsor = iexecPoco.connect(sponsor);
         iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);
-        iexecPocoContract = iexecPoco as Contract;
+        iexecPocoContract = iexecPoco as unknown as Contract;
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
