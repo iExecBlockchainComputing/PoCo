@@ -20,8 +20,8 @@ import { printFunctions } from './upgrade-helper';
 (async () => {
     console.log('Deploying and updating IexecPocoAccessorsFacet & IexecPoco1Facet...');
 
-    const { owner: ownerAddress } = await getNamedAccounts();
-    console.log('Founded admin address: ', adminAddress);
+    const { deployer: deployerAddress, owner: ownerAddress } = await getNamedAccounts();
+    const deployer = await ethers.getSigner(deployerAddress);
     const owner = await ethers.getSigner(ownerAddress);
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;
@@ -51,7 +51,7 @@ import { printFunctions } from './upgrade-helper';
     );
 
     console.log('\n=== Step 1: Deploying all new facets ===');
-    const factoryDeployer = new FactoryDeployer(owner, chainId);
+    const factoryDeployer = new FactoryDeployer(deployer, chainId);
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
             deploymentOptions.IexecLibOrders_v5,
