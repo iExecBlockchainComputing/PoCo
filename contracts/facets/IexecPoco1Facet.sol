@@ -63,8 +63,9 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
      * @notice Public view function to check if a dataset order is compatible with a deal.
      * This function performs all the necessary checks to verify dataset order compatibility with a deal.
      *
-     * @dev This function is mainly consumed by offchain clients. It should be carefully inspected if used inside on-chain code.
-     * This function should not be used in matchOrders as it does not check the same requirements.
+     * @dev This function is mainly consumed by offchain clients. It should be carefully inspected if
+     * used inside on-chain code.
+     * @dev This function should not be used in matchOrders as it does not check the same requirements.
      *
      * @param datasetOrder The dataset order to verify
      * @param dealid The deal ID to check against
@@ -76,7 +77,19 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         bytes32 dealid
     ) external view override returns (bool result, string memory reason) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        // Check if deal exists
+        bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
+        // Check if dataset order is not revoked or fully consumed.
+        // Note: This should be the first check because it is the most important
+        // and the most likely to occur (users revoking their dataset orders).
+        if ($.m_consumed[datasetOrderHash] >= datasetOrder.volume) {
+            return (false, "Dataset order is revoked or fully consumed");
+        }
+        // Check dataset order signature (including presign and ERC-1271).
+        address datasetOwner = IERC5313(datasetOrder.dataset).owner();
+        if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
+            return (false, "Invalid dataset order signature");
+        }
+        // Check if the deal exists
         IexecLibCore_v5.Deal storage deal = $.m_deals[dealid];
         if (deal.requester == address(0)) {
             return (false, "Deal does not exist");
@@ -85,21 +98,11 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         if (deal.dataset.pointer != address(0)) {
             return (false, "Deal already has a dataset");
         }
-        // Check dataset order owner signature (including presign and EIP1271)
-        bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
-        address datasetOwner = IERC5313(datasetOrder.dataset).owner();
-        if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
-            return (false, "Invalid dataset order signature");
-        }
-        // Check if dataset order is not fully consumed
-        if ($.m_consumed[datasetOrderHash] >= datasetOrder.volume) {
-            return (false, "Dataset order is fully consumed");
-        }
-        // Check if deal app is allowed by dataset order apprestrict (including whitelist)
+        // Check if deal app is allowed by order restriction.
         if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.app.pointer)) {
             return (false, "App restriction not satisfied");
         }
-        // Check if deal workerpool is allowed by dataset order workerpoolrestrict (including whitelist)
+        // Check if deal workerpool is allowed by order restriction.
         if (
             !_isAccountAuthorizedByRestriction(
                 datasetOrder.workerpoolrestrict,
@@ -108,7 +111,7 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
         ) {
             return (false, "Workerpool restriction not satisfied");
         }
-        // Check if deal requester is allowed by dataset order requesterrestrict (including whitelist)
+        // Check if deal requester is allowed by order restriction.
         if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
             return (false, "Requester restriction not satisfied");
         }
