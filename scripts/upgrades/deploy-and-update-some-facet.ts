@@ -20,9 +20,9 @@ import { printFunctions } from './upgrade-helper';
 (async () => {
     console.log('Deploying and updating IexecPocoAccessorsFacet & IexecPoco1Facet...');
 
-    const { admin: adminAddress } = await getNamedAccounts();
+    const { owner: ownerAddress } = await getNamedAccounts();
     console.log('Founded admin address: ', adminAddress);
-    const account = await ethers.getSigner(adminAddress);
+    const owner = await ethers.getSigner(ownerAddress);
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;
 
@@ -37,21 +37,21 @@ import { printFunctions } from './upgrade-helper';
     console.log(`Network: ${chainId}`);
     console.log(`Diamond proxy address: ${diamondProxyAddress}`);
 
-    const proxyOwnerAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner();
+    const proxyOwnerAddress = await Ownable__factory.connect(diamondProxyAddress, owner).owner();
     console.log(`Diamond proxy owner: ${proxyOwnerAddress}`);
 
-    // Use impersonated signer only for fork testing, otherwise use account signer
+    // Use impersonated signer only for fork testing, otherwise use owner signer
     const proxyOwnerSigner =
         process.env.ARBITRUM_FORK === 'true' || process.env.ARBITRUM_SEPOLIA_FORK === 'true'
             ? await ethers.getImpersonatedSigner(proxyOwnerAddress)
-            : account;
+            : owner;
     const diamondProxyAsOwner = DiamondCutFacet__factory.connect(
         diamondProxyAddress,
         proxyOwnerSigner,
     );
 
     console.log('\n=== Step 1: Deploying all new facets ===');
-    const factoryDeployer = new FactoryDeployer(account, chainId);
+    const factoryDeployer = new FactoryDeployer(owner, chainId);
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
             deploymentOptions.IexecLibOrders_v5,
@@ -71,7 +71,7 @@ import { printFunctions } from './upgrade-helper';
         '\n=== Step 2: Remove old facets (IexecAccessorsFacet & IexecPocoAccessorsFacet & IexecPoco1Facet) ===',
     );
 
-    const diamondLoupe = DiamondLoupeFacet__factory.connect(diamondProxyAddress, account);
+    const diamondLoupe = DiamondLoupeFacet__factory.connect(diamondProxyAddress, owner);
     const currentFacets = await diamondLoupe.facets();
 
     console.log('\nCurrent facets in diamond:');

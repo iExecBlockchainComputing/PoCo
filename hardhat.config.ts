@@ -99,7 +99,7 @@ const config: HardhatUserConfig = {
             arbitrumSepolia: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
             avalancheFujiTestnet: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
         },
-        admin: {
+        owner: {
             default: 1,
             bellecour: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
             arbitrum: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
