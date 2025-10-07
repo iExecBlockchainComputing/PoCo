@@ -10,7 +10,7 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
 /**
  * @title Getters contract for PoCo Boost facet.
- * @notice Access to PoCo Boost tasks must be done with PoCo Classic `IexecAccessors`.
+ * @notice Access to PoCo Boost tasks must be done with PoCo Classic `IexecPocoAccessors`.
  */
 contract IexecPocoBoostAccessorsFacet is IexecPocoBoostAccessors, FacetBase {
     /**
