@@ -28,6 +28,11 @@ interface IexecPoco1 {
         bytes calldata
     ) external view returns (bool);
 
+    function assertDatasetDealCompatibility(
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        bytes32 dealId
+    ) external view;
+
     function matchOrders(
         IexecLibOrders_v5.AppOrder calldata,
         IexecLibOrders_v5.DatasetOrder calldata,
@@ -41,9 +46,4 @@ interface IexecPoco1 {
         IexecLibOrders_v5.WorkerpoolOrder calldata,
         IexecLibOrders_v5.RequestOrder calldata
     ) external returns (bytes32);
-
-    function isDatasetCompatibleWithDeal(
-        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
-        bytes32 dealid
-    ) external view returns (bool result, string memory reason);
 }
