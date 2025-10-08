@@ -25,7 +25,7 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
  * Changing the name or the path would cause a breaking change in the SDK.
  */
 interface IexecInterfaceNative is
-    // TODO Remove this interface Legacy when
+    // TODO Remove this legacy interface when
     // IexecInterfaceToken is removed.
     IexecAccessorsABILegacy,
     IexecCategoryManager,
