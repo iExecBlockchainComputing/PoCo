@@ -1,5 +1,16 @@
 [
   {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "IncompatibleDatasetOrder",
+    "type": "error"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -920,6 +931,71 @@
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "dataset",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "datasetprice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "volume",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "tag",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "address",
+            "name": "apprestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "workerpoolrestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "requesterrestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "salt",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes",
+            "name": "sign",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IexecLibOrders_v5.DatasetOrder",
+        "name": "datasetOrder",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "dealId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "assertDatasetDealCompatibility",
+    "outputs": [],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -2074,82 +2150,6 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "dataset",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "datasetprice",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "volume",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "tag",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "address",
-            "name": "apprestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "workerpoolrestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "requesterrestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "salt",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes",
-            "name": "sign",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IexecLibOrders_v5.DatasetOrder",
-        "name": "datasetOrder",
-        "type": "tuple"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "dealid",
-        "type": "bytes32"
-      }
-    ],
-    "name": "isDatasetCompatibleWithDeal",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "result",
-        "type": "bool"
-      },
-      {
-        "internalType": "string",
-        "name": "reason",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
