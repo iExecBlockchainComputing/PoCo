@@ -1113,6 +1113,37 @@ describe('IexecPoco1', () => {
             ).to.not.be.reverted;
         });
 
+        it('Should revert when the dataset order is revoked or fully consumed', async () => {
+            // Create dataset order with volume 0 (fully consumed)
+            const consumedDatasetOrder = {
+                ...compatibleDatasetOrder,
+                volume: 0n,
+            };
+            await signOrder(iexecWrapper.getDomain(), consumedDatasetOrder, datasetProvider);
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(consumedDatasetOrder, dealIdWithoutDataset),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('Dataset order is revoked or fully consumed');
+        });
+
+        it('Should revert when dataset order signature is invalid', async () => {
+            // Create dataset order with invalid signature
+            const invalidSignatureDatasetOrder = {
+                ...compatibleDatasetOrder,
+                sign: randomSignature, // Invalid signature
+            };
+
+            await expect(
+                iexecPoco.isDatasetCompatibleWithDeal(
+                    invalidSignatureDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('Invalid dataset order signature');
+        });
+
         it('Should revert when the deal is not found', async () => {
             const nonExistentDealId = ethers.id('non-existent-deal');
             await expect(
@@ -1151,38 +1182,6 @@ describe('IexecPoco1', () => {
             )
                 .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
                 .withArgs('Deal already has a dataset');
-        });
-
-        it('Should revert when dataset order signature is invalid', async () => {
-            // Create dataset order with invalid signature
-            const invalidSignatureDatasetOrder = {
-                ...compatibleDatasetOrder,
-                sign: randomSignature, // Invalid signature
-            };
-
-            await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(
-                    invalidSignatureDatasetOrder,
-                    dealIdWithoutDataset,
-                ),
-            )
-                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
-                .withArgs('Invalid dataset order signature');
-        });
-
-        it('Should revert when the dataset order is revoked or fully consumed', async () => {
-            // Create dataset order with volume 0 (fully consumed)
-            const consumedDatasetOrder = {
-                ...compatibleDatasetOrder,
-                volume: 0n,
-            };
-            await signOrder(iexecWrapper.getDomain(), consumedDatasetOrder, datasetProvider);
-
-            await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(consumedDatasetOrder, dealIdWithoutDataset),
-            )
-                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
-                .withArgs('Dataset order is revoked or fully consumed');
         });
 
         it('Should revert when app restriction is not satisfied', async () => {
