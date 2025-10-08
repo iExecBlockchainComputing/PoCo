@@ -1114,14 +1114,19 @@ describe('IexecPoco1', () => {
         });
 
         it('Should revert when the dataset order is revoked or fully consumed', async () => {
-            // Create dataset order with volume 0 (fully consumed)
-            const consumedDatasetOrder = {
-                ...compatibleDatasetOrder,
-                volume: 0n,
-            };
-            await signOrder(iexecWrapper.getDomain(), consumedDatasetOrder, datasetProvider);
+            await signOrder(iexecWrapper.getDomain(), compatibleDatasetOrder, datasetProvider);
+            // Revoke order on-chain.
+            await iexecPoco
+                .connect(datasetProvider)
+                .manageDatasetOrder(
+                    createOrderOperation(compatibleDatasetOrder, OrderOperationEnum.CLOSE),
+                );
+            expect(
+                await iexecPoco.viewConsumed(iexecWrapper.hashOrder(compatibleDatasetOrder)),
+            ).equal(compatibleDatasetOrder.volume);
+
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(consumedDatasetOrder, dealIdWithoutDataset),
+                iexecPoco.isDatasetCompatibleWithDeal(compatibleDatasetOrder, dealIdWithoutDataset),
             )
                 .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
                 .withArgs('Dataset order is revoked or fully consumed');
