@@ -28,7 +28,7 @@ interface IexecPoco1 {
         bytes calldata
     ) external view returns (bool);
 
-    function isDatasetCompatibleWithDeal(
+    function assertDatasetDealCompatibility(
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
         bytes32 dealId
     ) external view;

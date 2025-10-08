@@ -75,7 +75,7 @@ contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow
      * Reverts with `IncompatibleDatasetOrder(reason)` if the dataset order is not compatible with the deal, does
      * nothing otherwise.
      */
-    function isDatasetCompatibleWithDeal(
+    function assertDatasetDealCompatibility(
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
         bytes32 dealId
     ) external view override {
@@ -118,6 +118,7 @@ contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow
         if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
             revert IncompatibleDatasetOrder("Requester restriction not satisfied");
         }
+        // TODO test inclusion not strict equality.
         // The deal's tag should fulfill all the tag bits of the dataset order.
         if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
             revert IncompatibleDatasetOrder("Tag compatibility not satisfied");

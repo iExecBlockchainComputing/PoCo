@@ -71,10 +71,10 @@ function verifyPresignature(address _identity, bytes32 _hash) external view retu
 function verifyPresignatureOrSignature(address _identity, bytes32 _hash, bytes _signature) external view returns (bool)
 ```
 
-### isDatasetCompatibleWithDeal
+### assertDatasetDealCompatibility
 
 ```solidity
-function isDatasetCompatibleWithDeal(struct IexecLibOrders_v5.DatasetOrder datasetOrder, bytes32 dealid) external view returns (bool result, string reason)
+function assertDatasetDealCompatibility(struct IexecLibOrders_v5.DatasetOrder datasetOrder, bytes32 dealid) external view returns (bool result, string reason)
 ```
 
 Public view function to check if a dataset order is compatible with a deal.

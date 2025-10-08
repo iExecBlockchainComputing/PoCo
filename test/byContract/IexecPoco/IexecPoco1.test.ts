@@ -1071,7 +1071,7 @@ describe('IexecPoco1', () => {
         });
     });
 
-    describe.only('isDatasetCompatibleWithDeal', () => {
+    describe('assertDatasetDealCompatibility', () => {
         let dealIdWithoutDataset: string;
         let compatibleDatasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
 
@@ -1109,7 +1109,10 @@ describe('IexecPoco1', () => {
 
         it('Should not revert when dataset order is compatible with deal', async () => {
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(compatibleDatasetOrder, dealIdWithoutDataset),
+                iexecPoco.assertDatasetDealCompatibility(
+                    compatibleDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
             ).to.not.be.reverted;
         });
 
@@ -1126,7 +1129,10 @@ describe('IexecPoco1', () => {
             ).equal(compatibleDatasetOrder.volume);
 
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(compatibleDatasetOrder, dealIdWithoutDataset),
+                iexecPoco.assertDatasetDealCompatibility(
+                    compatibleDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
             )
                 .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
                 .withArgs('Dataset order is revoked or fully consumed');
@@ -1140,7 +1146,7 @@ describe('IexecPoco1', () => {
             };
 
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(
+                iexecPoco.assertDatasetDealCompatibility(
                     invalidSignatureDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1152,7 +1158,7 @@ describe('IexecPoco1', () => {
         it('Should revert when the deal is not found', async () => {
             const nonExistentDealId = ethers.id('non-existent-deal');
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(compatibleDatasetOrder, nonExistentDealId),
+                iexecPoco.assertDatasetDealCompatibility(compatibleDatasetOrder, nonExistentDealId),
             )
                 .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
                 .withArgs('Deal not found');
@@ -1183,7 +1189,7 @@ describe('IexecPoco1', () => {
             await iexecPocoAsRequester.matchOrders(...ordersWithDataset.toArray());
 
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(compatibleDatasetOrder, dealIdWithDataset),
+                iexecPoco.assertDatasetDealCompatibility(compatibleDatasetOrder, dealIdWithDataset),
             )
                 .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
                 .withArgs('Deal already has a dataset');
@@ -1197,7 +1203,7 @@ describe('IexecPoco1', () => {
             };
             await signOrder(iexecWrapper.getDomain(), incompatibleAppDatasetOrder, datasetProvider);
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(
+                iexecPoco.assertDatasetDealCompatibility(
                     incompatibleAppDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1218,7 +1224,7 @@ describe('IexecPoco1', () => {
                 datasetProvider,
             );
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(
+                iexecPoco.assertDatasetDealCompatibility(
                     incompatibleWorkerpoolDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1239,7 +1245,7 @@ describe('IexecPoco1', () => {
                 datasetProvider,
             );
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(
+                iexecPoco.assertDatasetDealCompatibility(
                     incompatibleRequesterDatasetOrder,
                     dealIdWithoutDataset,
                 ),
@@ -1256,7 +1262,7 @@ describe('IexecPoco1', () => {
             };
             await signOrder(iexecWrapper.getDomain(), incompatibleTagDatasetOrder, datasetProvider);
             await expect(
-                iexecPoco.isDatasetCompatibleWithDeal(
+                iexecPoco.assertDatasetDealCompatibility(
                     incompatibleTagDatasetOrder,
                     dealIdWithoutDataset,
                 ),
