@@ -11,6 +11,7 @@ import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
+import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
@@ -26,7 +27,7 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
+contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
@@ -64,62 +65,63 @@ contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifie
      * This function performs all the necessary checks to verify dataset order compatibility with a deal.
      *
      * @dev This function is mainly consumed by offchain clients. It should be carefully inspected if
-     * used inside on-chain code.
-     * @dev This function should not be used in matchOrders as it does not check the same requirements.
+     * used in on-chain code.
+     * @dev This function should not be used in `matchOrders` since it does not check the same requirements.
+     * @dev The choice of reverting instead of returning true/false is motivated by the Java middleware
+     * requirements.
      *
+     * @param dealId The deal ID to check against
      * @param datasetOrder The dataset order to verify
-     * @param dealid The deal ID to check against
-     * @return result true if the dataset order is compatible with the deal, false otherwise
-     * @return reason the specific reason why the compatibility check failed, empty string if successful
+     * Reverts with `IncompatibleDatasetOrder(reason)` if the dataset order is not compatible with the deal, does
+     * nothing otherwise.
      */
     function isDatasetCompatibleWithDeal(
         IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
-        bytes32 dealid
-    ) external view override returns (bool result, string memory reason) {
+        bytes32 dealId
+    ) external view override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
         // Check if dataset order is not revoked or fully consumed.
         // Note: This should be the first check because it is the most important
         // and the most likely to occur (users revoking their dataset orders).
         if ($.m_consumed[datasetOrderHash] >= datasetOrder.volume) {
-            return (false, "Dataset order is revoked or fully consumed");
+            revert IncompatibleDatasetOrder("Dataset order is revoked or fully consumed");
         }
         // Check dataset order signature (including presign and ERC-1271).
         address datasetOwner = IERC5313(datasetOrder.dataset).owner();
         if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
-            return (false, "Invalid dataset order signature");
+            revert IncompatibleDatasetOrder("Invalid dataset order signature");
         }
-        // Check if the deal exists
-        IexecLibCore_v5.Deal storage deal = $.m_deals[dealid];
+        // The deal should exist.
+        IexecLibCore_v5.Deal storage deal = $.m_deals[dealId];
         if (deal.requester == address(0)) {
-            return (false, "Deal does not exist");
+            revert IncompatibleDatasetOrder("Deal not found");
         }
-        // The specified deal should not have a dataset.
+        // The deal should not have a dataset.
         if (deal.dataset.pointer != address(0)) {
-            return (false, "Deal already has a dataset");
+            revert IncompatibleDatasetOrder("Deal already has a dataset");
         }
-        // Check if deal app is allowed by order restriction.
+        // The deal's app should be allowed by order restriction.
         if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.app.pointer)) {
-            return (false, "App restriction not satisfied");
+            revert IncompatibleDatasetOrder("App restriction not satisfied");
         }
-        // Check if deal workerpool is allowed by order restriction.
+        // The deal's workerpool should be allowed by order restriction.
         if (
             !_isAccountAuthorizedByRestriction(
                 datasetOrder.workerpoolrestrict,
                 deal.workerpool.pointer
             )
         ) {
-            return (false, "Workerpool restriction not satisfied");
+            revert IncompatibleDatasetOrder("Workerpool restriction not satisfied");
         }
-        // Check if deal requester is allowed by order restriction.
+        // The deal's requester should be allowed by order restriction.
         if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
-            return (false, "Requester restriction not satisfied");
+            revert IncompatibleDatasetOrder("Requester restriction not satisfied");
         }
-        // Check if deal tag fulfills all the tag bits of the dataset order
+        // The deal's tag should fulfill all the tag bits of the dataset order.
         if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
-            return (false, "Tag compatibility not satisfied");
+            revert IncompatibleDatasetOrder("Tag compatibility not satisfied");
         }
-        return (true, "");
     }
 
     /***************************************************************************
