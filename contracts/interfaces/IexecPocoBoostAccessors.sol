@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 
+// TODO add this to IexecInterfaceToken when the facet is deployed.
 interface IexecPocoBoostAccessors {
     function viewDealBoost(bytes32 id) external view returns (IexecLibCore_v5.DealBoost memory);
 }

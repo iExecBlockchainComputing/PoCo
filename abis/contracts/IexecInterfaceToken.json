@@ -833,28 +833,15 @@
     "type": "fallback"
   },
   {
-    "inputs": [],
-    "name": "UniswapV2Router",
-    "outputs": [
-      {
-        "internalType": "contract IUniswapV2Router02",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "account",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "",
+        "name": "spender",
         "type": "address"
       }
     ],
@@ -939,7 +926,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "account",
         "type": "address"
       }
     ],
@@ -1255,8 +1242,31 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "address",
         "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "changeRegistries",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "taskId",
         "type": "bytes32"
       }
     ],
@@ -1269,7 +1279,7 @@
     "inputs": [
       {
         "internalType": "bytes32[]",
-        "name": "",
+        "name": "taskIds",
         "type": "bytes32[]"
       }
     ],
@@ -1282,6 +1292,273 @@
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "app",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "appprice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "volume",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "tag",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "address",
+            "name": "datasetrestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "workerpoolrestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "requesterrestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "salt",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes",
+            "name": "sign",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IexecLibOrders_v5.AppOrder",
+        "name": "appOrder",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "dataset",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "datasetprice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "volume",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "tag",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "address",
+            "name": "apprestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "workerpoolrestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "requesterrestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "salt",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes",
+            "name": "sign",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IexecLibOrders_v5.DatasetOrder",
+        "name": "datasetOrder",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "workerpool",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "workerpoolprice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "volume",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "tag",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "category",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "trust",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "apprestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "datasetrestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "requesterrestrict",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "salt",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes",
+            "name": "sign",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IexecLibOrders_v5.WorkerpoolOrder",
+        "name": "workerpoolOrder",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "app",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "appmaxprice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "dataset",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "datasetmaxprice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "workerpool",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "workerpoolmaxprice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "requester",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "volume",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "tag",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "category",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "trust",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "callback",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "params",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "salt",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes",
+            "name": "sign",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IexecLibOrders_v5.RequestOrder",
+        "name": "requestOrder",
+        "type": "tuple"
+      }
+    ],
+    "name": "computeDealVolume",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1336,32 +1613,32 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "taskId",
         "type": "bytes32"
       },
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "resultHash",
         "type": "bytes32"
       },
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "resultSeal",
         "type": "bytes32"
       },
       {
         "internalType": "address",
-        "name": "",
+        "name": "enclaveChallenge",
         "type": "address"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "enclaveSign",
         "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "authorizationSign",
         "type": "bytes"
       }
     ],
@@ -1374,37 +1651,37 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "taskId",
         "type": "bytes32"
       },
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "resultDigest",
         "type": "bytes32"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "results",
         "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "resultsCallback",
         "type": "bytes"
       },
       {
         "internalType": "address",
-        "name": "",
+        "name": "enclaveChallenge",
         "type": "address"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "enclaveSign",
         "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "authorizationSign",
         "type": "bytes"
       }
     ],
@@ -1538,26 +1815,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "depositEth",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "depositEthFor",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -1654,82 +1911,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "estimateDepositEthSent",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "estimateDepositTokenWanted",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "estimateWithdrawEthWanted",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "estimateWithdrawTokenSent",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "final_deadline_ratio",
     "outputs": [
@@ -1746,17 +1927,17 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "taskId",
         "type": "bytes32"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "results",
         "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "resultsCallback",
         "type": "bytes"
       }
     ],
@@ -1769,7 +1950,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "account",
         "type": "address"
       }
     ],
@@ -1838,12 +2019,12 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "dealId",
         "type": "bytes32"
       },
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "index",
         "type": "uint256"
       }
     ],
@@ -1862,12 +2043,12 @@
     "inputs": [
       {
         "internalType": "bytes32[]",
-        "name": "",
+        "name": "dealIds",
         "type": "bytes32[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "",
+        "name": "indexes",
         "type": "uint256[]"
       }
     ],
@@ -1886,12 +2067,12 @@
     "inputs": [
       {
         "internalType": "bytes32[]",
-        "name": "",
+        "name": "dealIds",
         "type": "bytes32[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "",
+        "name": "indexes",
         "type": "uint256[]"
       }
     ],
@@ -2642,273 +2823,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "app",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "appprice",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "volume",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "tag",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "address",
-            "name": "datasetrestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "workerpoolrestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "requesterrestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "salt",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes",
-            "name": "sign",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IexecLibOrders_v5.AppOrder",
-        "name": "",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "dataset",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "datasetprice",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "volume",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "tag",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "address",
-            "name": "apprestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "workerpoolrestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "requesterrestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "salt",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes",
-            "name": "sign",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IexecLibOrders_v5.DatasetOrder",
-        "name": "",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "workerpool",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "workerpoolprice",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "volume",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "tag",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "uint256",
-            "name": "category",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "trust",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "apprestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "datasetrestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "requesterrestrict",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "salt",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes",
-            "name": "sign",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IexecLibOrders_v5.WorkerpoolOrder",
-        "name": "",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "app",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "appmaxprice",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "dataset",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "datasetmaxprice",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "workerpool",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "workerpoolmaxprice",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "requester",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "volume",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "tag",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "uint256",
-            "name": "category",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "trust",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "beneficiary",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "callback",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "params",
-            "type": "string"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "salt",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes",
-            "name": "sign",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IexecLibOrders_v5.RequestOrder",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "name": "matchOrdersWithEth",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "name",
     "outputs": [
@@ -2992,7 +2906,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "taskId",
         "type": "bytes32"
       }
     ],
@@ -3004,39 +2918,8 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "requestToken",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "requestTokenFor",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
-        "name": "",
+        "name": "id",
         "type": "bytes32"
       }
     ],
@@ -3055,12 +2938,12 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "taskId",
         "type": "bytes32"
       },
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "resultDigest",
         "type": "bytes32"
       }
     ],
@@ -3080,78 +2963,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "safeDepositEth",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "safeDepositEthFor",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "safeWithdrawEth",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "safeWithdrawEthTo",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -3658,7 +3469,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "account",
         "type": "address"
       }
     ],
@@ -3680,6 +3491,30 @@
         "internalType": "struct IexecLibCore_v5.Account",
         "name": "",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "viewAccountABILegacy",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -3740,7 +3575,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "_catid",
         "type": "uint256"
       }
     ],
@@ -3775,13 +3610,23 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
+        "internalType": "uint256",
+        "name": "_catid",
+        "type": "uint256"
       }
     ],
-    "name": "viewConsumed",
+    "name": "viewCategoryABILegacy",
     "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
       {
         "internalType": "uint256",
         "name": "",
@@ -3795,12 +3640,75 @@
     "inputs": [
       {
         "internalType": "bytes32",
+        "name": "_id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "viewConfigABILegacy",
+    "outputs": [
+      {
+        "internalType": "uint256",
         "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "viewConsumed",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "consumed",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_taskid",
         "type": "bytes32"
       },
       {
         "internalType": "address",
-        "name": "",
+        "name": "_worker",
         "type": "address"
       }
     ],
@@ -3837,6 +3745,45 @@
         "internalType": "struct IexecLibCore_v5.Contribution",
         "name": "",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_taskid",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "_worker",
+        "type": "address"
+      }
+    ],
+    "name": "viewContributionABILegacy",
+    "outputs": [
+      {
+        "internalType": "enum IexecLibCore_v5.ContributionStatusEnum",
+        "name": "",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -3887,7 +3834,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "id",
         "type": "bytes32"
       }
     ],
@@ -4039,7 +3986,110 @@
     "inputs": [
       {
         "internalType": "bytes32",
+        "name": "_id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "viewDealABILegacy_pt1",
+    "outputs": [
+      {
+        "internalType": "address",
         "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "viewDealABILegacy_pt2",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_id",
         "type": "bytes32"
       }
     ],
@@ -4047,7 +4097,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "signer",
         "type": "address"
       }
     ],
@@ -4058,7 +4108,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "_worker",
         "type": "address"
       }
     ],
@@ -4077,7 +4127,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "id",
         "type": "bytes32"
       }
     ],
@@ -4172,6 +4222,80 @@
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "_taskid",
+        "type": "bytes32"
+      }
+    ],
+    "name": "viewTaskABILegacy",
+    "outputs": [
+      {
+        "internalType": "enum IexecLibCore_v5.TaskStatusEnum",
+        "name": "",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "workerpool",
         "type": "address"
@@ -4226,37 +4350,6 @@
         "type": "bool"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdrawEth",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "withdrawEthTo",
-    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
