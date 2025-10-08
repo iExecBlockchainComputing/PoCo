@@ -422,7 +422,7 @@
 <text text-anchor="start" x="6054.93" y="-327.9" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;verifySignature(_identity: address, _hash: bytes32, _signature: bytes): bool</text>
 <text text-anchor="start" x="6054.93" y="-311.1" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;verifyPresignature(_identity: address, _hash: bytes32): bool</text>
 <text text-anchor="start" x="6054.93" y="-294.3" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;verifyPresignatureOrSignature(_identity: address, _hash: bytes32, _signature: bytes): bool</text>
-<text text-anchor="start" x="6054.93" y="-277.5" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;isDatasetCompatibleWithDeal(datasetOrder: IexecLibOrders_v5.DatasetOrder, dealid: bytes32): (result: bool, reason: string)</text>
+<text text-anchor="start" x="6054.93" y="-277.5" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;assertDatasetDealCompatibility(datasetOrder: IexecLibOrders_v5.DatasetOrder, dealId: bytes32)</text>
 <text text-anchor="start" x="6054.93" y="-260.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;matchOrders(_apporder: IexecLibOrders_v5.AppOrder, _datasetorder: IexecLibOrders_v5.DatasetOrder, _workerpoolorder: IexecLibOrders_v5.WorkerpoolOrder, _requestorder: IexecLibOrders_v5.RequestOrder): bytes32</text>
 <text text-anchor="start" x="6054.93" y="-243.9" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;sponsorMatchOrders(_apporder: IexecLibOrders_v5.AppOrder, _datasetorder: IexecLibOrders_v5.DatasetOrder, _workerpoolorder: IexecLibOrders_v5.WorkerpoolOrder, _requestorder: IexecLibOrders_v5.RequestOrder): bytes32</text>
 </g>

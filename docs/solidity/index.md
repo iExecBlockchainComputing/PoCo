@@ -90,28 +90,26 @@ function verifyPresignatureOrSignature(address _identity, bytes32 _hash, bytes _
 ### assertDatasetDealCompatibility
 
 ```solidity
-function assertDatasetDealCompatibility(struct IexecLibOrders_v5.DatasetOrder datasetOrder, bytes32 dealid) external view returns (bool result, string reason)
+function assertDatasetDealCompatibility(struct IexecLibOrders_v5.DatasetOrder datasetOrder, bytes32 dealId) external view
 ```
 
 Public view function to check if a dataset order is compatible with a deal.
 This function performs all the necessary checks to verify dataset order compatibility with a deal.
+Reverts with `IncompatibleDatasetOrder(reason)` if the dataset order is not compatible with the deal, does
+nothing otherwise.
 
-_This function is mainly consumed by offchain clients. It should be carefully inspected if used inside on-chain code.
-This function should not be used in matchOrders as it does not check the same requirements._
+_This function is mainly consumed by offchain clients. It should be carefully inspected if
+used in on-chain code.
+This function should not be used in `matchOrders` since it does not check the same requirements.
+The choice of reverting instead of returning true/false is motivated by the Java middleware
+requirements._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | datasetOrder | struct IexecLibOrders_v5.DatasetOrder | The dataset order to verify |
-| dealid | bytes32 | The deal ID to check against |
-
-#### Return Values
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| result | bool | true if the dataset order is compatible with the deal, false otherwise |
-| reason | string | the specific reason why the compatibility check failed, empty string if successful |
+| dealId | bytes32 | The deal ID to check against |
 
 ### matchOrders
 
