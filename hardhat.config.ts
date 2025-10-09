@@ -14,7 +14,7 @@ import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
 
-const ZERO_PRIVATE_KEY = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const ZERO_PRIVATE_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
 const isFujiFork = process.env.FUJI_FORK == 'true';
