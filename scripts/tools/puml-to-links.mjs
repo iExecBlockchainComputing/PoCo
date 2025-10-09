@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 
-// TODO: Add this script to pre-commit hook in order to keep up-to-date links
+// TODO update and fix this script.
 
 // Render .puml files (referenced in markdown comments) to web links
 // Usage: "npm run puml2links" or "npx zx scripts/tools/puml-to-links.mjs"
