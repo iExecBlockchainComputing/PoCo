@@ -1096,7 +1096,7 @@ describe('IexecPoco1', () => {
                 dataset: datasetAddress,
                 datasetprice: datasetPrice,
                 volume: volume,
-                tag: ethers.toBeHex(TAG_TEE, 32),
+                tag: TAG_TEE,
                 apprestrict: ordersWithoutDataset.app.app,
                 workerpoolrestrict: ordersWithoutDataset.workerpool.workerpool,
                 requesterrestrict: ordersWithoutDataset.requester.requester,
