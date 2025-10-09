@@ -4,7 +4,7 @@ import { HashZero } from '@ethersproject/constants';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { BytesLike, TypedDataDomain } from 'ethers';
+import { BytesLike, TypedDataDomain, ZeroAddress } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import {
     ERC1271Mock__factory,
@@ -29,6 +29,7 @@ import {
     TestClient__factory,
 } from '../../../typechain';
 import * as constants from '../../../utils/constants';
+import { TAG_TEE } from '../../../utils/constants';
 import {
     IexecOrders,
     OrdersActors,
@@ -60,7 +61,6 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import { randomAddress } from '../../utils/utils';
 
-const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0n;
 const volume = taskIndex + 1n;
 const schedulerRewardRatio = 1n;
@@ -172,7 +172,7 @@ describe('IexecPocoBoost', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 prices: ordersPrices,
                 callback: randomAddress(),
             });
@@ -219,7 +219,7 @@ describe('IexecPocoBoost', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
-                    teeDealTag,
+                    TAG_TEE,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -268,7 +268,7 @@ describe('IexecPocoBoost', function () {
             );
             expect(deal.callback)
                 .to.be.equal(requestOrder.callback, 'Callback mismatch')
-                .to.not.be.equal(constants.NULL.ADDRESS);
+                .to.not.be.equal(ZeroAddress);
             // Check prices.
             expect(deal.workerpoolPrice).to.be.equal(
                 workerpoolOrder.workerpoolprice,
@@ -303,7 +303,7 @@ describe('IexecPocoBoost', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 prices: ordersPrices,
                 callback: randomAddress(),
             });
@@ -356,7 +356,7 @@ describe('IexecPocoBoost', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
-                    teeDealTag,
+                    TAG_TEE,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -399,9 +399,7 @@ describe('IexecPocoBoost', function () {
                     7n * // contribution deadline ratio
                         categoryTime, // requested category time reference
             );
-            expect(deal.callback)
-                .to.be.equal(requestOrder.callback)
-                .to.not.be.equal(constants.NULL.ADDRESS);
+            expect(deal.callback).to.be.equal(requestOrder.callback).to.not.be.equal(ZeroAddress);
             // Check prices.
             expect(deal.workerpoolPrice).to.be.equal(workerpoolOrder.workerpoolprice);
             expect(deal.appPrice).to.be.equal(appOrder.appprice);
@@ -560,7 +558,7 @@ describe('IexecPocoBoost', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             }).toObject();
             const iexecOrderManagement = IexecOrderManagement__factory.connect(
                 proxyAddress,
@@ -601,7 +599,7 @@ describe('IexecPocoBoost', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
-                    teeDealTag,
+                    TAG_TEE,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -626,7 +624,7 @@ describe('IexecPocoBoost', function () {
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = buildOrders({
                 assets: {
                     app: appAddress,
-                    dataset: constants.NULL.ADDRESS, // No dataset.
+                    dataset: ZeroAddress, // No dataset.
                     workerpool: workerpoolAddress,
                 },
                 requester: requester.address,
@@ -636,7 +634,7 @@ describe('IexecPocoBoost', function () {
                     dataset: 0n,
                     workerpool: workerpoolPrice,
                 },
-                tag: teeDealTag,
+                tag: TAG_TEE,
             }).toObject();
             await signOrder(domain, appOrder, appProvider);
             await signOrder(domain, workerpoolOrder, scheduler);
@@ -658,9 +656,9 @@ describe('IexecPocoBoost', function () {
                     workerpoolAddress,
                     dealId,
                     appAddress,
-                    constants.NULL.ADDRESS, // No dataset.
+                    ZeroAddress, // No dataset.
                     requestOrder.category,
-                    teeDealTag,
+                    TAG_TEE,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -964,7 +962,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             });
             // Manually set the tags for app, dataset, and request orders
             orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000001'; // 0b0001
@@ -984,7 +982,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             });
             // Manually set the tags for app, dataset, and request orders
             // The last bit of dataset and request tag is 1, but app tag does not set it
@@ -1341,7 +1339,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 prices: ordersPrices,
                 volume: volume,
                 callback: await oracleConsumerInstance.getAddress(),
@@ -1506,7 +1504,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester, taskIndex);
@@ -1548,7 +1546,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             });
             await iexecConfigurationAsAdmin.setTeeBroker(sms.address).then((tx) => tx.wait());
 
@@ -1599,7 +1597,7 @@ describe('IexecPocoBoost', function () {
             await iexecPocoBoostInstance
                 .matchOrdersBoost(...orders.toArray())
                 .then((tx) => tx.wait());
-            const emptyEnclaveAddress = constants.NULL.ADDRESS;
+            const emptyEnclaveAddress = ZeroAddress;
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
@@ -1628,7 +1626,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 callback: randomAddress(),
             });
             await signOrders(domain, orders, ordersActors);
@@ -1672,7 +1670,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 callback: await revertingOracleConsumer.getAddress(), // will revert
             });
             await signOrders(domain, orders, ordersActors);
@@ -1733,7 +1731,7 @@ describe('IexecPocoBoost', function () {
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
-                constants.NULL.ADDRESS,
+                ZeroAddress,
                 scheduler,
             );
 
@@ -1746,7 +1744,7 @@ describe('IexecPocoBoost', function () {
                         results,
                         resultsCallback,
                         schedulerSignature,
-                        constants.NULL.ADDRESS,
+                        ZeroAddress,
                         constants.NULL.SIGNATURE,
                     ),
             )
@@ -1767,7 +1765,7 @@ describe('IexecPocoBoost', function () {
                         '0x',
                         constants.NULL.BYTES32,
                         constants.NULL.SIGNATURE,
-                        constants.NULL.ADDRESS,
+                        ZeroAddress,
                         constants.NULL.SIGNATURE,
                     ),
             ).to.be.revertedWith('PocoBoost: Unknown task');
@@ -1791,7 +1789,7 @@ describe('IexecPocoBoost', function () {
                     '0x',
                     constants.NULL.BYTES32,
                     constants.NULL.SIGNATURE,
-                    constants.NULL.ADDRESS,
+                    ZeroAddress,
                     constants.NULL.SIGNATURE,
                 ),
             ).to.be.revertedWith('PocoBoost: Unknown task');
@@ -1808,7 +1806,7 @@ describe('IexecPocoBoost', function () {
             await iexecPocoBoostInstance
                 .matchOrdersBoost(...orders.toArray())
                 .then((tx) => tx.wait());
-            const emptyEnclaveAddress = constants.NULL.ADDRESS;
+            const emptyEnclaveAddress = ZeroAddress;
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
@@ -1865,7 +1863,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             });
             await signOrders(domain, orders, ordersActors);
             const dealId = getDealId(domain, orders.requester, taskIndex);
@@ -1882,7 +1880,7 @@ describe('IexecPocoBoost', function () {
                         results,
                         constants.NULL.BYTES32,
                         constants.NULL.SIGNATURE,
-                        constants.NULL.ADDRESS,
+                        ZeroAddress,
                         constants.NULL.SIGNATURE,
                     ),
             ).to.be.revertedWith('PocoBoost: Tag requires enclave challenge');
@@ -1946,7 +1944,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             });
 
             await signOrders(domain, orders, ordersActors);
@@ -1981,7 +1979,7 @@ describe('IexecPocoBoost', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 callback: randomAddress(),
             });
             await signOrders(domain, orders, ordersActors);
@@ -2035,7 +2033,7 @@ describe('IexecPocoBoost', function () {
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
-                constants.NULL.ADDRESS,
+                ZeroAddress,
                 scheduler,
             );
             const pushResultArgs = [
@@ -2044,7 +2042,7 @@ describe('IexecPocoBoost', function () {
                 results,
                 resultsCallback,
                 schedulerSignature,
-                constants.NULL.ADDRESS,
+                ZeroAddress,
                 constants.NULL.SIGNATURE,
             ] as [BytesLike, bigint, BytesLike, BytesLike, BytesLike, string, BytesLike];
             const successfulTxGasLimit = await iexecPocoBoostInstance
@@ -2338,7 +2336,7 @@ describe('IexecPocoBoost', function () {
             const schedulerSignature = await buildAndSignContributionAuthorizationMessage(
                 worker.address,
                 taskId,
-                constants.NULL.ADDRESS,
+                ZeroAddress,
                 scheduler,
             );
             await iexecPocoBoostInstance
@@ -2349,7 +2347,7 @@ describe('IexecPocoBoost', function () {
                     results,
                     constants.NULL.BYTES32,
                     schedulerSignature,
-                    constants.NULL.ADDRESS,
+                    ZeroAddress,
                     constants.NULL.SIGNATURE,
                 );
 

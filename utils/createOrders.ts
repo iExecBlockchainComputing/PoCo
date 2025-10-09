@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
-import { TypedDataDomain } from 'ethers';
+import { TypedDataDomain, ZeroAddress } from 'ethers';
 import { IexecLibOrders_v5 } from '../typechain';
 import * as constants from './constants';
 import { hashStruct, signStruct } from './odb-tools';
@@ -99,13 +99,13 @@ export interface OrderOperation {
 
 export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
     return {
-        app: constants.NULL.ADDRESS,
+        app: ZeroAddress,
         appprice: 0n,
         volume: 1,
         tag: constants.NULL.BYTES32,
-        datasetrestrict: constants.NULL.ADDRESS,
-        workerpoolrestrict: constants.NULL.ADDRESS,
-        requesterrestrict: constants.NULL.ADDRESS,
+        datasetrestrict: ZeroAddress,
+        workerpoolrestrict: ZeroAddress,
+        requesterrestrict: ZeroAddress,
         salt: constants.NULL.BYTES32,
         sign: constants.NULL.SIGNATURE,
     };
@@ -113,19 +113,19 @@ export function createEmptyAppOrder(): IexecLibOrders_v5.AppOrderStruct {
 
 export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct {
     return {
-        app: constants.NULL.ADDRESS,
+        app: ZeroAddress,
         appmaxprice: 0,
-        dataset: constants.NULL.ADDRESS,
+        dataset: ZeroAddress,
         datasetmaxprice: 0,
-        workerpool: constants.NULL.ADDRESS,
+        workerpool: ZeroAddress,
         workerpoolmaxprice: 0,
         volume: 1,
         tag: constants.NULL.BYTES32,
         category: 0,
         trust: 0n,
-        requester: constants.NULL.ADDRESS,
-        beneficiary: constants.NULL.ADDRESS,
-        callback: constants.NULL.ADDRESS,
+        requester: ZeroAddress,
+        beneficiary: ZeroAddress,
+        callback: ZeroAddress,
         params: '',
         salt: constants.NULL.BYTES32,
         sign: constants.NULL.SIGNATURE,
@@ -134,15 +134,15 @@ export function createEmptyRequestOrder(): IexecLibOrders_v5.RequestOrderStruct 
 
 export function createEmptyWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderStruct {
     return {
-        workerpool: constants.NULL.ADDRESS,
+        workerpool: ZeroAddress,
         workerpoolprice: 0,
         volume: 1,
         tag: constants.NULL.BYTES32,
         category: 0,
         trust: 0n,
-        apprestrict: constants.NULL.ADDRESS,
-        datasetrestrict: constants.NULL.ADDRESS,
-        requesterrestrict: constants.NULL.ADDRESS,
+        apprestrict: ZeroAddress,
+        datasetrestrict: ZeroAddress,
+        requesterrestrict: ZeroAddress,
         salt: constants.NULL.BYTES32,
         sign: constants.NULL.SIGNATURE,
     };
@@ -150,13 +150,13 @@ export function createEmptyWorkerpoolOrder(): IexecLibOrders_v5.WorkerpoolOrderS
 
 export function createEmptyDatasetOrder(): IexecLibOrders_v5.DatasetOrderStruct {
     return {
-        dataset: constants.NULL.ADDRESS,
+        dataset: ZeroAddress,
         datasetprice: 0,
         volume: 1,
         tag: constants.NULL.BYTES32,
-        apprestrict: constants.NULL.ADDRESS,
-        workerpoolrestrict: constants.NULL.ADDRESS,
-        requesterrestrict: constants.NULL.ADDRESS,
+        apprestrict: ZeroAddress,
+        workerpoolrestrict: ZeroAddress,
+        requesterrestrict: ZeroAddress,
         salt: constants.NULL.BYTES32,
         sign: constants.NULL.SIGNATURE,
     };
@@ -204,7 +204,7 @@ export function buildOrders(matchOrdersArgs: MatchOrdersArgs) {
             appOrder.appprice = prices.app;
             requestOrder.appmaxprice = prices.app;
         }
-        if (prices.dataset && assets.dataset != constants.NULL.ADDRESS) {
+        if (prices.dataset && assets.dataset != ZeroAddress) {
             datasetOrder.datasetprice = prices.dataset;
             requestOrder.datasetmaxprice = prices.dataset;
         }

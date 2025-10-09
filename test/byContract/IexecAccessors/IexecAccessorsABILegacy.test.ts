@@ -16,8 +16,8 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { TAG_STANDARD } from '../../../utils/constants';
 
-const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const volume = 1n;
 const trust = 1n;
 const categoryId = 1;
@@ -76,7 +76,7 @@ describe('IexecAccessorsABILegacy', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: standardDealTag,
+            tag: TAG_STANDARD,
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
@@ -108,7 +108,7 @@ describe('IexecAccessorsABILegacy', function () {
         const dealPart2 = await iexecPocoABILegacy.viewDealABILegacy_pt2(dealId);
         expect(dealPart2.length).to.equal(6);
         expect(dealPart2[0]).to.equal(trust);
-        expect(dealPart2[1]).to.equal(standardDealTag);
+        expect(dealPart2[1]).to.equal(TAG_STANDARD);
         expect(dealPart2[2]).to.equal(requester.address);
         expect(dealPart2[3]).to.equal(beneficiary.address);
         expect(dealPart2[4]).to.equal(callbackAddress);
