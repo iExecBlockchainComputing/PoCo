@@ -118,8 +118,10 @@ contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow
         if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
             revert IncompatibleDatasetOrder("Requester restriction not satisfied");
         }
-        // TODO check inclusion not strict equality.
-        // The deal's tag should fulfill all the tag bits of the dataset order.
+        // The deal's tag should include all tag bits of the dataset order.
+        // Deal: 0b0101, Dataset: 0b0101 => ok
+        // Deal: 0b0101, Dataset: 0b0001 => ok
+        // Deal: 0b0101, Dataset: 0b0010 => !ok
         if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
             revert IncompatibleDatasetOrder("Tag compatibility not satisfied");
         }
@@ -211,7 +213,6 @@ contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow
          */
 
         // computation environment & allowed enough funds
-        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
         require(_requestorder.category == _workerpoolorder.category, "iExecV5-matchOrders-0x00");
         require(_requestorder.category < $.m_categories.length, "iExecV5-matchOrders-0x01");
         require(_requestorder.trust <= _workerpoolorder.trust, "iExecV5-matchOrders-0x02");
@@ -224,6 +225,8 @@ contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
             "iExecV5-matchOrders-0x05"
         );
+        // The workerpool tag should include all tag bits of dataset, app, and requester orders.
+        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
         require(tag & ~_workerpoolorder.tag == 0x0, "iExecV5-matchOrders-0x06");
         require((tag ^ _apporder.tag)[31] & 0x01 == 0x0, "iExecV5-matchOrders-0x07");
 
