@@ -14,10 +14,10 @@ import {
     GasWasterClient__factory,
     IERC721__factory,
     IOracleConsumer__factory,
-    IexecAccessors,
-    IexecAccessors__factory,
     IexecConfiguration,
     IexecConfiguration__factory,
+    IexecInterfaceNative,
+    IexecInterfaceNative__factory,
     IexecOrderManagement__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
@@ -75,7 +75,7 @@ const randomEOAAddress = randomAddress();
 let proxyAddress: string;
 let iexecPocoBoostInstance: IexecPocoBoostFacet;
 let iexecConfigurationAsAdmin: IexecConfiguration;
-let iexecAccessor: IexecAccessors;
+let iexecPocoAccessor: IexecInterfaceNative;
 let oracleConsumerInstance: TestClient;
 let gasWasterClientInstance: GasWasterClient;
 let gasWasterClientAddress: string;
@@ -130,7 +130,7 @@ describe('IexecPocoBoost', function () {
             proxyAddress,
             accounts.iexecAdmin,
         );
-        iexecAccessor = IexecAccessors__factory.connect(proxyAddress, ethers.provider);
+        iexecPocoAccessor = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -161,9 +161,9 @@ describe('IexecPocoBoost', function () {
             dataset: datasetPrice,
             workerpool: workerpoolPrice,
         };
-        workerpoolStakeRatio = await iexecAccessor.workerpool_stake_ratio();
-        kittyAddress = await iexecAccessor.kitty_address();
-        categoryTime = (await iexecAccessor.viewCategory(category)).workClockTimeRef;
+        workerpoolStakeRatio = await iexecPocoAccessor.workerpool_stake_ratio();
+        kittyAddress = await iexecPocoAccessor.kitty_address();
+        categoryTime = (await iexecPocoAccessor.viewCategory(category)).workClockTimeRef;
     }
 
     describe('Match orders Boost', function () {
@@ -286,7 +286,7 @@ describe('IexecPocoBoost', function () {
 
             // Check balances and frozens
             await expect(matchOrdersBoostTx).to.changeTokenBalances(
-                iexecAccessor,
+                iexecPocoAccessor,
                 [proxyAddress, requester.address, scheduler.address],
                 [
                     dealPrice + schedulerStake, // Poco proxy
@@ -413,7 +413,7 @@ describe('IexecPocoBoost', function () {
 
             // Check balances and frozens
             await expect(sponsorMatchOrdersBoostTx).to.changeTokenBalances(
-                iexecAccessor,
+                iexecPocoAccessor,
                 [proxyAddress, requester.address, sponsor.address, scheduler.address],
                 [
                     dealPrice + schedulerStake, // Poco proxy
@@ -526,13 +526,16 @@ describe('IexecPocoBoost', function () {
                 requester: requester.address,
             }).toObject();
             const erc1271Address = await deployErc1271MockContract();
-            await IERC721__factory.connect(await iexecAccessor.appregistry(), appProvider)
+            await IERC721__factory.connect(await iexecPocoAccessor.appregistry(), appProvider)
                 .transferFrom(appProvider.address, erc1271Address, appAddress)
                 .then((tx) => tx.wait());
-            await IERC721__factory.connect(await iexecAccessor.datasetregistry(), datasetProvider)
+            await IERC721__factory.connect(
+                await iexecPocoAccessor.datasetregistry(),
+                datasetProvider,
+            )
                 .transferFrom(datasetProvider.address, erc1271Address, datasetAddress)
                 .then((tx) => tx.wait());
-            await IERC721__factory.connect(await iexecAccessor.workerpoolregistry(), scheduler)
+            await IERC721__factory.connect(await iexecPocoAccessor.workerpoolregistry(), scheduler)
                 .transferFrom(scheduler.address, erc1271Address, workerpoolAddress)
                 .then((tx) => tx.wait());
             requestOrder.requester = erc1271Address;
@@ -1105,7 +1108,7 @@ describe('IexecPocoBoost', function () {
 
         it('Should fail when invalid app order signature from contract', async function () {
             const erc1271Address = await deployErc1271MockContract();
-            await IERC721__factory.connect(await iexecAccessor.appregistry(), appProvider)
+            await IERC721__factory.connect(await iexecPocoAccessor.appregistry(), appProvider)
                 .transferFrom(appProvider.address, erc1271Address, appAddress)
                 .then((tx) => tx.wait());
             const orders = buildOrders({
@@ -1150,7 +1153,10 @@ describe('IexecPocoBoost', function () {
 
         it('Should fail when invalid dataset order signature from contract', async function () {
             const erc1271Address = await deployErc1271MockContract();
-            await IERC721__factory.connect(await iexecAccessor.datasetregistry(), datasetProvider)
+            await IERC721__factory.connect(
+                await iexecPocoAccessor.datasetregistry(),
+                datasetProvider,
+            )
                 .transferFrom(datasetProvider.address, erc1271Address, datasetAddress)
                 .then((tx) => tx.wait());
             const orders = buildOrders({
@@ -1197,7 +1203,7 @@ describe('IexecPocoBoost', function () {
 
         it('Should fail when invalid workerpool order signature from contract', async function () {
             const erc1271Address = await deployErc1271MockContract();
-            await IERC721__factory.connect(await iexecAccessor.workerpoolregistry(), scheduler)
+            await IERC721__factory.connect(await iexecPocoAccessor.workerpoolregistry(), scheduler)
                 .transferFrom(scheduler.address, erc1271Address, workerpoolAddress)
                 .then((tx) => tx.wait());
             const orders = buildOrders({
@@ -1268,7 +1274,7 @@ describe('IexecPocoBoost', function () {
 
             const initialRequesterBalance = 2n;
             await iexecWrapper.depositInIexecAccount(requester, initialRequesterBalance);
-            expect(await iexecAccessor.balanceOf(requester.address)).to.be.lessThan(dealPrice);
+            expect(await iexecPocoAccessor.balanceOf(requester.address)).to.be.lessThan(dealPrice);
 
             await signOrders(domain, orders, ordersActors);
             await expect(
@@ -1293,9 +1299,13 @@ describe('IexecPocoBoost', function () {
             );
             await iexecWrapper.depositInIexecAccount(scheduler, initialSchedulerBalance);
             // Make sure the tx does not fail because of requester's balance.
-            expect(await iexecAccessor.balanceOf(requester.address)).to.be.greaterThan(dealPrice);
+            expect(await iexecPocoAccessor.balanceOf(requester.address)).to.be.greaterThan(
+                dealPrice,
+            );
             // Make sure the scheduler does not have enough to stake.
-            expect(await iexecAccessor.balanceOf(scheduler.address)).to.be.lessThan(schedulerStake);
+            expect(await iexecPocoAccessor.balanceOf(scheduler.address)).to.be.lessThan(
+                schedulerStake,
+            );
 
             await signOrders(domain, orders, ordersActors);
             await expect(
@@ -1312,7 +1322,7 @@ describe('IexecPocoBoost', function () {
 
             const initialSponsorBalance = 2n;
             await iexecWrapper.depositInIexecAccount(sponsor, initialSponsorBalance);
-            expect(await iexecAccessor.balanceOf(sponsor.address)).to.be.lessThan(dealPrice);
+            expect(await iexecPocoAccessor.balanceOf(sponsor.address)).to.be.lessThan(dealPrice);
 
             await signOrders(domain, orders, ordersActors);
             await expect(
@@ -1350,7 +1360,7 @@ describe('IexecPocoBoost', function () {
                 }).toArray(),
             );
             await time.setNextBlockTimestamp(
-                (await iexecAccessor.viewDeal(kittyFillingDeal.dealId)).startTime +
+                (await iexecPocoAccessor.viewDeal(kittyFillingDeal.dealId)).startTime +
                     10n * categoryTime,
             );
             await IexecPoco2__factory.connect(proxyAddress, anyone)
@@ -1444,7 +1454,7 @@ describe('IexecPocoBoost', function () {
                 .to.emit(iexecPocoBoostInstance, 'ResultPushedBoost')
                 .withArgs(dealId, taskIndex, results);
             // Check task status
-            const task = await iexecAccessor.viewTask(taskId);
+            const task = await iexecPocoAccessor.viewTask(taskId);
             expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
             expect(task.dealid).to.equal(HashZero);
             expect(task.idx).to.equal(0);
@@ -1462,7 +1472,7 @@ describe('IexecPocoBoost', function () {
             expect(task.resultsCallback).to.equal('0x');
             // Check balances and frozens
             await expect(pushResultBoostTx).to.changeTokenBalances(
-                iexecAccessor,
+                iexecPocoAccessor,
                 [
                     proxyAddress,
                     requester.address,
@@ -2041,7 +2051,7 @@ describe('IexecPocoBoost', function () {
                 .connect(worker)
                 .pushResultBoost.estimateGas(...pushResultArgs);
             const failingTxGaslimit =
-                successfulTxGasLimit - (await iexecAccessor.callbackgas()) / 63n;
+                successfulTxGasLimit - (await iexecPocoAccessor.callbackgas()) / 63n;
             // Forward to consumer contract less gas than it has the right to consume
 
             const pushResultBoost = iexecPocoBoostInstance
@@ -2102,7 +2112,7 @@ describe('IexecPocoBoost', function () {
                 .to.emit(iexecPocoBoostInstance, 'TaskClaimed')
                 .withArgs(taskId);
             // Check task status
-            const task = await iexecAccessor.viewTask(taskId);
+            const task = await iexecPocoAccessor.viewTask(taskId);
             expect(task.status).to.equal(TaskStatusEnum.FAILED);
             expect(task.dealid).to.equal(HashZero);
             expect(task.idx).to.equal(0);
@@ -2120,7 +2130,7 @@ describe('IexecPocoBoost', function () {
             expect(task.resultsCallback).to.equal('0x');
             // Check balances and frozens
             await expect(claimBoostTx).to.changeTokenBalances(
-                iexecAccessor,
+                iexecPocoAccessor,
                 [proxyAddress, requester.address, scheduler.address],
                 [
                     -taskPrice, // PoCo proxy
@@ -2169,7 +2179,7 @@ describe('IexecPocoBoost', function () {
                 // Verifications after claiming "claimedTasks" tasks.
                 // Check balances and frozens
                 await expect(claimBoostTx).to.changeTokenBalances(
-                    iexecAccessor,
+                    iexecPocoAccessor,
                     [proxyAddress, requester.address, scheduler.address],
                     [
                         -taskPrice, // PoCo proxy
@@ -2238,10 +2248,12 @@ describe('IexecPocoBoost', function () {
                 .withArgs(taskId);
 
             // Check task status
-            expect((await iexecAccessor.viewTask(taskId)).status).to.equal(TaskStatusEnum.FAILED);
+            expect((await iexecPocoAccessor.viewTask(taskId)).status).to.equal(
+                TaskStatusEnum.FAILED,
+            );
             // Check balances and frozens
             await expect(claimBoostTx).to.changeTokenBalances(
-                iexecAccessor,
+                iexecPocoAccessor,
                 [proxyAddress, requester.address, sponsor.address, scheduler.address],
                 [
                     -taskPrice, // PoCo proxy
@@ -2392,7 +2404,10 @@ async function whenIdentityContractCalledForCandidateInGroupThenReturnTrue(
     candidate: string,
 ) {
     await erc734IdentityContractInstance
-        .setKeyHasPurpose(addressToBytes32(candidate), await iexecAccessor.groupmember_purpose())
+        .setKeyHasPurpose(
+            addressToBytes32(candidate),
+            await iexecPocoAccessor.groupmember_purpose(),
+        )
         .then((tx) => tx.wait());
 }
 
@@ -2431,11 +2446,11 @@ function computeSchedulerDealStake(workerpoolPrice: bigint, volume: bigint) {
 }
 
 async function expectOrderConsumed(orderHash: string, expectedConsumedVolume: bigint) {
-    expect(await iexecAccessor.viewConsumed(orderHash)).to.equal(expectedConsumedVolume);
+    expect(await iexecPocoAccessor.viewConsumed(orderHash)).to.equal(expectedConsumedVolume);
 }
 
 async function frozenOf(account: string) {
-    return await iexecAccessor.frozenOf(account);
+    return await iexecPocoAccessor.frozenOf(account);
 }
 
 async function expectFrozen(account: string, expectedFrozenValue: bigint) {

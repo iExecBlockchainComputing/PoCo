@@ -297,7 +297,7 @@ describe('IexecPoco2#claim', async () => {
                 ...orders.toArray(),
             );
             const taskIds = [];
-            for (let taskIndex = 0; taskIndex < volume; taskIndex++) {
+            for (let taskIndex = 0n; taskIndex < volume; taskIndex++) {
                 taskIds.push(getTaskId(dealId, taskIndex));
                 await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
             }
@@ -324,8 +324,8 @@ describe('IexecPoco2#claim', async () => {
             const { dealId, startTime } = await iexecWrapper.signAndMatchOrders(
                 ...orders.toArray(),
             );
-            const taskIndex1 = 0;
-            const taskIndex2 = 1;
+            const taskIndex1 = 0n;
+            const taskIndex2 = 1n;
             const taskId1 = getTaskId(dealId, taskIndex1);
             const taskId2 = getTaskId(dealId, taskIndex2);
             // Initialize only 1 task.
@@ -365,7 +365,7 @@ describe('IexecPoco2#claim', async () => {
                     .initializeAndClaimArray(dealIds, taskIndexes);
                 await initializeAndClaimArrayTx.wait();
                 for (const taskIndex of taskIndexes) {
-                    const taskId = getTaskId(dealId, taskIndex);
+                    const taskId = getTaskId(dealId, BigInt(taskIndex));
                     await expect(initializeAndClaimArrayTx)
                         .to.emit(iexecPoco, 'TaskInitialize')
                         .withArgs(taskId, orders.workerpool.workerpool)
