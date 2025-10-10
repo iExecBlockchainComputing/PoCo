@@ -4,7 +4,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { Wallet, ZeroAddress, ZeroHash, ethers } from 'ethers';
+import { Wallet, ZeroAddress, ethers } from 'ethers';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
@@ -25,6 +25,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
@@ -33,8 +34,6 @@ const taskPrice = appPrice + datasetPrice + workerpoolPrice;
 const timeRef = BigInt(config.categories[0].workClockTimeRef);
 const trust = 1n;
 const volume = 1n;
-const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const standardDealTag = ZeroHash;
 const emptyEnclaveAddress = ZeroAddress;
 const emptyEnclaveSignature = '0x';
 const noCallbackData = '0x';
@@ -103,7 +102,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 callback: callbackConsumerAddress,
             }).toArray(),
         );
@@ -139,7 +138,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         await contributeAndFinalizeTx.wait();
         // Check state.
         const deal = await iexecPoco.viewDeal(dealId);
-        expect(deal.tag).to.equal(teeDealTag);
+        expect(deal.tag).to.equal(TAG_TEE);
         const contribution = await iexecPoco.viewContribution(taskId, worker.address);
         expect(contribution.status).to.equal(ContributionStatusEnum.PROVED);
         expect(contribution.resultHash).to.equal(resultHash);
@@ -238,7 +237,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust,
-                tag: standardDealTag,
+                tag: TAG_STANDARD,
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -263,7 +262,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         await contributeAndFinalizeTx.wait();
         // Check relevant state.
         const deal = await iexecPoco.viewDeal(dealId);
-        expect(deal.tag).to.equal(standardDealTag);
+        expect(deal.tag).to.equal(TAG_STANDARD);
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.COMPLETED);
         expect(task.resultDigest).to.equal(resultDigest);
@@ -290,7 +289,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust,
-                tag: standardDealTag,
+                tag: TAG_STANDARD,
             }).toArray(),
         );
         // No initialize.
@@ -323,7 +322,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust,
-                tag: standardDealTag,
+                tag: TAG_STANDARD,
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -362,7 +361,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust: 3n,
-                tag: standardDealTag,
+                tag: TAG_STANDARD,
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -396,7 +395,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust,
-                tag: standardDealTag,
+                tag: TAG_STANDARD,
                 callback: Wallet.createRandom().address, // Using callback
             }).toArray(),
         );
@@ -429,7 +428,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -462,7 +461,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust,
-                tag: standardDealTag,
+                tag: TAG_STANDARD,
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -489,7 +488,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -525,7 +524,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 prices: ordersPrices,
                 volume,
                 trust,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             }).toArray(),
         );
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());

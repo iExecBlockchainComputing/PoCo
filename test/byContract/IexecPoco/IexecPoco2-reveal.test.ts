@@ -6,7 +6,7 @@ import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ZeroAddress, ZeroHash, ethers } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
-import { NULL } from '../../../utils/constants';
+import { NULL, TAG_STANDARD } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     ContributionStatusEnum,
@@ -21,7 +21,6 @@ import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
 const volume = 1n;
-const standardDealTag = ZeroHash;
 const { resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
 const emptyEnclaveAddress = ZeroAddress;
@@ -80,7 +79,7 @@ describe('IexecPoco2#reveal', () => {
             prices: ordersPrices,
             volume,
             trust: 1n,
-            tag: standardDealTag,
+            tag: TAG_STANDARD,
         });
         ({ dealId, taskIndex, taskId } = await iexecWrapper.signAndMatchOrders(
             ...orders.toArray(),
@@ -196,7 +195,7 @@ describe('IexecPoco2#reveal', () => {
                 prices: ordersPrices,
                 volume,
                 trust: 3n,
-                tag: standardDealTag,
+                tag: TAG_STANDARD,
                 salt: ethers.zeroPadValue(ethers.toBeHex(Date.now()), 32), // make
             }).toArray(), // app and dataset orders unique since already matched in
             // beforeEach. A useless salt is also added to workerpool and request

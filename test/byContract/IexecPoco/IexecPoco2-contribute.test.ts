@@ -7,7 +7,7 @@ import { assert, expect } from 'chai';
 import { ZeroAddress, ZeroHash } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import config from '../../../utils/config';
-import { NULL } from '../../../utils/constants';
+import { NULL, TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     ContributionStatusEnum,
@@ -25,8 +25,6 @@ import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deploy
 
 const timeRef = BigInt(config.categories[0].workClockTimeRef);
 const volume = 3n;
-const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-const standardDealTag = ZeroHash;
 const { resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultDigest: badResultDigest } = buildUtf8ResultAndDigest('bad-result');
 const emptyEnclaveAddress = ZeroAddress;
@@ -94,7 +92,7 @@ describe('IexecPoco2#contribute', () => {
             prices: ordersPrices,
             volume,
             trust: 0n,
-            tag: standardDealTag,
+            tag: TAG_STANDARD,
         });
     }
 
@@ -108,7 +106,7 @@ describe('IexecPoco2#contribute', () => {
                     prices: ordersPrices,
                     volume,
                     trust: 3n,
-                    tag: teeDealTag,
+                    tag: TAG_TEE,
                 }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -213,7 +211,7 @@ describe('IexecPoco2#contribute', () => {
                     prices: ordersPrices,
                     volume,
                     trust: 0n,
-                    tag: teeDealTag,
+                    tag: TAG_TEE,
                 }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -338,7 +336,7 @@ describe('IexecPoco2#contribute', () => {
                     prices: ordersPrices,
                     volume,
                     trust: 3n, // so consensus is not yet reached on first contribution
-                    tag: standardDealTag,
+                    tag: TAG_STANDARD,
                 }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -396,7 +394,7 @@ describe('IexecPoco2#contribute', () => {
                     prices: ordersPrices,
                     volume,
                     trust: 0n,
-                    tag: teeDealTag,
+                    tag: TAG_TEE,
                 }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
@@ -461,7 +459,7 @@ describe('IexecPoco2#contribute', () => {
                     prices: ordersPrices,
                     volume,
                     trust: 0n,
-                    tag: teeDealTag,
+                    tag: TAG_TEE,
                 }).toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());

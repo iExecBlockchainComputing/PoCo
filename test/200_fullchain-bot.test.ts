@@ -9,8 +9,8 @@ import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/
 import { TaskStatusEnum, buildUtf8ResultAndDigest, getIexecAccounts } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
+import { TAG_STANDARD } from '../utils/constants';
 
-const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
@@ -109,7 +109,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: standardDealTag,
+            tag: TAG_STANDARD,
             volume,
             trust: 4n,
         });

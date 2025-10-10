@@ -36,6 +36,7 @@ import {
 import { compactSignature } from '../../../utils/tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 
 /*
  * TODO add Standard tests.
@@ -44,8 +45,6 @@ import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deploy
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
-const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const volume = 1n;
 const botVolume = 321n;
 const someMessage = 'some-message';
@@ -129,7 +128,7 @@ describe('IexecPoco1', () => {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: teeDealTag,
+            tag: TAG_TEE,
             volume: volume,
         });
         const randomWallet = ethers.Wallet.createRandom();
@@ -354,7 +353,7 @@ describe('IexecPoco1', () => {
                 prices: ordersPrices,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 volume: botVolume,
                 callback: randomAddress,
                 trust: trust,
@@ -435,7 +434,7 @@ describe('IexecPoco1', () => {
             expect(deal.workerpool.price).to.equal(workerpoolPrice);
             expect(deal.trust).to.equal(trust);
             expect(deal.category).to.equal(category);
-            expect(deal.tag).to.equal(teeDealTag);
+            expect(deal.tag).to.equal(TAG_TEE);
             expect(deal.requester).to.equal(requester.address);
             expect(deal.beneficiary).to.equal(beneficiary.address);
             expect(deal.callback).to.equal(randomAddress);
@@ -458,7 +457,7 @@ describe('IexecPoco1', () => {
                 prices: ordersPrices,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: standardDealTag,
+                tag: TAG_STANDARD,
                 volume: botVolume,
                 callback: randomAddress,
                 trust: trust,
@@ -487,7 +486,7 @@ describe('IexecPoco1', () => {
             expect(deal.workerpool.price).to.equal(workerpoolPrice);
             expect(deal.trust).to.equal(trust);
             expect(deal.category).to.equal(category);
-            expect(deal.tag).to.equal(standardDealTag);
+            expect(deal.tag).to.equal(TAG_STANDARD);
             expect(deal.requester).to.equal(requester.address);
             expect(deal.beneficiary).to.equal(beneficiary.address);
             expect(deal.callback).to.equal(randomAddress);
@@ -1081,7 +1080,7 @@ describe('IexecPoco1', () => {
                 assets: { ...ordersAssets, dataset: ZeroAddress },
                 prices: ordersPrices,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 volume: volume,
             });
             await depositForRequesterAndSchedulerWithDefaultPrices(volume);
@@ -1097,7 +1096,7 @@ describe('IexecPoco1', () => {
                 dataset: datasetAddress,
                 datasetprice: datasetPrice,
                 volume: volume,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 apprestrict: ordersWithoutDataset.app.app,
                 workerpoolrestrict: ordersWithoutDataset.workerpool.workerpool,
                 requesterrestrict: ordersWithoutDataset.requester.requester,
@@ -1170,7 +1169,7 @@ describe('IexecPoco1', () => {
                 assets: ordersAssets, // This includes the dataset
                 prices: ordersPrices,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 volume: volume,
             });
 
@@ -1258,7 +1257,7 @@ describe('IexecPoco1', () => {
             // Create dataset order with incompatible tag
             const incompatibleTagDatasetOrder = {
                 ...compatibleDatasetOrder,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000002', // Different tag
+                tag: '0x0000000000000000000000000000000000000000000000000000000000000010', // Different tag
             };
             await signOrder(iexecWrapper.getDomain(), incompatibleTagDatasetOrder, datasetProvider);
             await expect(
