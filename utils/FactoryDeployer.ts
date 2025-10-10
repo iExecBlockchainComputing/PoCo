@@ -16,7 +16,7 @@ export class FactoryDeployer {
     factory?: ICreateX | GenericFactory;
 
     constructor(owner: SignerWithAddress, chainId: bigint) {
-        const deploymentOptions = config.getChainConfigOrDefault(chainId);
+        const deploymentOptions = config.getChainConfig(chainId);
         this.owner = owner;
         this.salt = process.env.SALT || deploymentOptions.v5.salt || ethers.ZeroHash;
         this.factoryAddress = process.env.FACTORY_ADDRESS || deploymentOptions.v5.factory;

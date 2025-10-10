@@ -53,10 +53,8 @@ export default async function deploy() {
     const { deployer } = await getDeployerAndOwnerSigners();
     console.log(`Deployer: ${deployer.address}`);
     console.log(`Network: ${network.name} (${chainId})`);
-    const deploymentOptions = config.getChainConfigOrDefault(chainId);
-    // TODO: remove the fallback on deployer address to avoid deployement
-    // misconfiguration.
-    const ownerAddress = deploymentOptions.owner || deployer.address;
+    const deploymentOptions = config.getChainConfig(chainId);
+    const ownerAddress = deploymentOptions.owner;
     factoryDeployer = new FactoryDeployer(deployer, chainId);
     // Deploy RLC
     const isTokenMode = !config.isNativeChain(deploymentOptions);
