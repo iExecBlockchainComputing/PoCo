@@ -1,6 +1,5 @@
 import '@nomicfoundation/hardhat-toolbox';
 import 'dotenv/config';
-import { Wallet } from 'ethers';
 import * as fs from 'fs';
 import 'hardhat-dependency-compiler';
 import 'hardhat-deploy';
@@ -15,7 +14,6 @@ import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
 
-const ZERO_PRIVATE_KEY = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
 const isFujiFork = process.env.FUJI_FORK == 'true';
@@ -94,17 +92,15 @@ const config: HardhatUserConfig = {
     namedAccounts: {
         deployer: {
             default: 0,
-            bellecour: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
-            arbitrum: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
-            arbitrumSepolia: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
-            avalancheFujiTestnet: getAddressFromPrivateKey(process.env.DEPLOYER_PRIVATE_KEY, 0),
+            bellecour: chainConfig.chains['134'].deployer || 0,
+            arbitrum: chainConfig.chains['42161'].deployer || 0,
+            arbitrumSepolia: chainConfig.chains['421614'].deployer || 0,
         },
         owner: {
             default: 1,
-            bellecour: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
-            arbitrum: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
-            arbitrumSepolia: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
-            avalancheFujiTestnet: getAddressFromPrivateKey(process.env.ADMIN_PRIVATE_KEY, 1),
+            bellecour: chainConfig.chains['134'].owner || 1,
+            arbitrum: chainConfig.chains['42161'].owner || 1,
+            arbitrumSepolia: chainConfig.chains['421614'].owner || 1,
         },
     },
     networks: {
@@ -195,10 +191,7 @@ const config: HardhatUserConfig = {
                 process.env.FUJI_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://api.avax-test.network/ext/bc/C/rpc',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-            ],
+            accounts: _getPrivateKeys(),
             ...fujiBaseConfig,
         },
         arbitrum: {
@@ -206,10 +199,7 @@ const config: HardhatUserConfig = {
                 process.env.ARBITRUM_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://arbitrum.gateway.tenderly.co',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-            ],
+            accounts: _getPrivateKeys(),
             ...arbitrumBaseConfig,
         },
         arbitrumSepolia: {
@@ -217,19 +207,13 @@ const config: HardhatUserConfig = {
                 process.env.ARBITRUM_SEPOLIA_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://sepolia-rollup.arbitrum.io/rpc',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-            ],
+            accounts: _getPrivateKeys(),
             ...arbitrumSepoliaBaseConfig,
         },
         bellecour: {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-            ],
+            accounts: _getPrivateKeys(),
             ...bellecourBaseConfig,
             verify: {
                 etherscan: {
@@ -382,18 +366,12 @@ task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
     console.log(`Saved ${contracts.length} ABI files to ${abisDir} folder`);
 });
 
-function getAddressFromPrivateKey(
-    privateKey: string | undefined,
-    fallback: number | string,
-): number | string {
-    if (!privateKey || privateKey === ZERO_PRIVATE_KEY) {
-        return fallback;
+function _getPrivateKeys() {
+    const keys = [process.env.DEPLOYER_PRIVATE_KEY, process.env.ADMIN_PRIVATE_KEY];
+    if (keys.length < 2 || !keys[0] || !keys[1]) {
+        throw new Error('Invalid private keys');
     }
-    try {
-        return new Wallet(privateKey).address;
-    } catch {
-        return fallback;
-    }
+    return keys as string[];
 }
 
 export default config;
