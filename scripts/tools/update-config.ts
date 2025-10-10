@@ -16,7 +16,8 @@ async function update() {
     const { deployer, owner } = await getDeployerAndOwnerSigners();
     const proxyAddress = (await deployments.get('Diamond')).address;
     const iexecLibOrdersAddress = (await deployments.get('IexecLibOrders_v5')).address;
-    const rlcAddress = (await deployments.get('RLC')).address;
+    const rlcDeployement = await deployments.getOrNull('RLC');
+    const rlcAddress = rlcDeployement ? rlcDeployement.address : null;
     if (!proxyAddress) {
         console.error(`Proxy address not defined`);
         process.exit(1);
@@ -57,6 +58,13 @@ async function update() {
         console.log(
             `Updated ${chainId}.v5.${iexecLibOrdersName} from ${previousLibAddress} to ${iexecLibOrdersAddress}`,
         );
+    }
+    // Save `RLC` address if found.
+    const token = 'token';
+    if (rlcAddress) {
+        const previousRlcAddress = localConfig.chains[chainId][token] || null;
+        localConfig.chains[chainId][token] = rlcAddress;
+        console.log(`Updated ${chainId}.${token} from ${previousRlcAddress} to ${rlcAddress}`);
     }
     // Write the updated config back to file
     fs.writeFileSync(configPath, JSON.stringify(localConfig, null, 2));
