@@ -33,7 +33,8 @@
   },
   "chains": {
     "1": {
-      "_comment": "asset should be Token or Native",
+      "name": "Ethereum Mainnet",
+      "owner": "",
       "asset": "Token",
       "token": "0x607F4C5BB672230e8672085532f7e901544a7375",
       "uniswap": true,
@@ -51,7 +52,9 @@
       }
     },
     "134": {
-      "_comment": "asset should be Token or Native",
+      "name": "Bellecour Sidechain",
+      "owner": "0x4611B943AA1d656Fc669623b5DA08756A7e288E9",
+      "_ownerComment": "Timelock contract",
       "asset": "Native",
       "v3": {
         "Hub": "0xD5125A2d186E5266dA60e958043d32fE6fBA662f",
@@ -68,11 +71,10 @@
       }
     },
     "42161": {
-      "_comment": "Arbitrum One Mainnet",
+      "name": "Arbitrum One Mainnet",
+      "owner": "0x111165e3c379e4f8285df34d7137b433c30afa66",
       "asset": "Token",
       "token": "0xe649e6a1F2afc63ca268C2363691ceCAF75CF47C",
-      "richman": "",
-      "owner": "0x111165e3c379e4f8285df34d7137b433c30afa66",
       "uniswap": false,
       "v3": {
         "Hub": null,
@@ -89,11 +91,11 @@
       }
     },
     "421614": {
-      "_comment": "Arbitrum Sepolia Testnet",
+      "name": "Arbitrum Sepolia Testnet",
+      "owner": "0x9990cfb1Feb7f47297F54bef4d4EbeDf6c5463a3",
       "asset": "Token",
       "token": "0x9923eD3cbd90CD78b910c475f9A731A6e0b8C963",
       "richman": "0x9990cfb1Feb7f47297F54bef4d4EbeDf6c5463a3",
-      "owner": "0x9990cfb1Feb7f47297F54bef4d4EbeDf6c5463a3",
       "uniswap": false,
       "v3": {
         "Hub": null,
@@ -109,11 +111,48 @@
         "IexecLibOrders_v5": "0x1Ecf986A719271846a04F095c426D90d564e4842"
       }
     },
-    "default": {
-      "_comment": "asset should be Token or Native",
+    "31337": {
+      "name": "Hardhat network (also PoCo chain)",
+      "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "_ownerComment": "Hardhat account #0",
       "asset": "Token",
       "token": null,
+      "v3": {
+        "Hub": null,
+        "AppRegistry": null,
+        "DatasetRegistry": null,
+        "WorkerpoolRegistry": null
+      },
+      "v5": {
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "65535": {
+      "name": "PoCo chain native",
+      "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "_ownerComment": "Hardhat account #0",
+      "asset": "Native",
+      "token": null,
+      "v3": {
+        "Hub": null,
+        "AppRegistry": null,
+        "DatasetRegistry": null,
+        "WorkerpoolRegistry": null
+      },
+      "v5": {
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "<networkId>": {
+      "name": "<networkName>",
+      "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "_ownerComment": "Hardhat account #0",
+      "asset": "Token",
+      "_assetComment": "asset should be `Token` or `Native`",
+      "token": null,
+      "_tokenComment": "Address of the RLC token contract",
       "uniswap": false,
+      "_uniswapComment": "TODO remove when removing `IexecEscrowTokenSwap`",
       "v3": {
         "Hub": null,
         "AppRegistry": null,

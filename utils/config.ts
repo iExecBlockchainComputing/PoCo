@@ -4,8 +4,13 @@ import { Category } from './poco-tools';
 const config = json as Config;
 
 function isNativeChain(chain?: ChainConfig) {
-    chain = chain ?? config.chains.default;
-    return chain.asset === 'Native' || process.env.TEST__IS_NATIVE_CHAIN === 'true';
+    if (process.env.IS_NATIVE_CHAIN) {
+        return process.env.IS_NATIVE_CHAIN === 'true';
+    }
+    if (chain) {
+        return chain.asset === 'Native';
+    }
+    return false;
 }
 
 /**
@@ -17,10 +22,6 @@ function getChainConfig(chainId: bigint): ChainConfig {
         throw new Error(`Chain config undefined for chain ${chainId}`);
     }
     return chainConfig;
-}
-
-function getChainConfigOrDefault(chainId: bigint): ChainConfig {
-    return config.chains[chainId.toString()] ?? config.chains.default;
 }
 
 type Config = {
@@ -36,13 +37,16 @@ type Config = {
 };
 
 type ChainConfig = {
-    _comment: string;
+    name: string;
+    owner: string;
+    _ownerComment?: string;
     asset: string;
+    _assetComment?: string;
     token?: string | null; // The token deployed should be compatible with Approve and call
-    richman?: string | null; // The richman account is needed if the token is already deployed
-    owner?: string | null;
+    _tokenComment?: string;
+    richman?: string; // The richman account is needed if the token is already deployed
     uniswap?: boolean;
-    etoken?: string;
+    _uniswapComment?: string;
     v3: {
         Hub: string | null;
         AppRegistry: string | null;
@@ -68,5 +72,4 @@ export default {
     ...config,
     isNativeChain,
     getChainConfig,
-    getChainConfigOrDefault,
 };
