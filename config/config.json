@@ -35,6 +35,7 @@
     "1": {
       "name": "Ethereum Mainnet",
       "owner": "",
+      "deployer": "",
       "asset": "Token",
       "token": "0x607F4C5BB672230e8672085532f7e901544a7375",
       "uniswap": true,
@@ -54,6 +55,7 @@
     "134": {
       "name": "Bellecour Sidechain",
       "owner": "0x4611B943AA1d656Fc669623b5DA08756A7e288E9",
+      "deployer": "",
       "_ownerComment": "Timelock contract",
       "asset": "Native",
       "v3": {
@@ -73,8 +75,10 @@
     "42161": {
       "name": "Arbitrum One Mainnet",
       "owner": "0x111165e3c379e4f8285df34d7137b433c30afa66",
+      "deployer": "0x111167a21d2bdb8e10b84aee3501059d50756b67",
       "asset": "Token",
       "token": "0xe649e6a1F2afc63ca268C2363691ceCAF75CF47C",
+      "richman": "",
       "uniswap": false,
       "v3": {
         "Hub": null,
@@ -93,6 +97,7 @@
     "421614": {
       "name": "Arbitrum Sepolia Testnet",
       "owner": "0x9990cfb1Feb7f47297F54bef4d4EbeDf6c5463a3",
+      "deployer": "0x9990cfb1Feb7f47297F54bef4d4EbeDf6c5463a3",
       "asset": "Token",
       "token": "0x9923eD3cbd90CD78b910c475f9A731A6e0b8C963",
       "richman": "0x9990cfb1Feb7f47297F54bef4d4EbeDf6c5463a3",
@@ -115,6 +120,7 @@
       "name": "Hardhat network (also PoCo chain)",
       "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "_ownerComment": "Hardhat account #0",
+      "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "asset": "Token",
       "token": null,
       "v3": {
@@ -131,6 +137,7 @@
       "name": "PoCo chain native",
       "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "_ownerComment": "Hardhat account #0",
+      "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "asset": "Native",
       "token": null,
       "v3": {
@@ -147,6 +154,7 @@
       "name": "<networkName>",
       "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "_ownerComment": "Hardhat account #0",
+      "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "asset": "Token",
       "_assetComment": "asset should be `Token` or `Native`",
       "token": null,

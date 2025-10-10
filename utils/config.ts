@@ -40,11 +40,12 @@ type ChainConfig = {
     name: string;
     owner: string;
     _ownerComment?: string;
+    deployer: string; // The deployer account is needed to deploy contracts
     asset: string;
     _assetComment?: string;
     token?: string | null; // The token deployed should be compatible with Approve and call
     _tokenComment?: string;
-    richman?: string; // The richman account is needed if the token is already deployed
+    richman?: string | null; // The richman account is needed if the token is already deployed
     uniswap?: boolean;
     _uniswapComment?: string;
     v3: {

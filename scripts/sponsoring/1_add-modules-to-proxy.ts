@@ -98,15 +98,15 @@ export async function addModulesToProxy() {
     console.log(`Expected Timelock proposer: ${timelockAdminAddress}`);
     /*
     // Enable this in production
-    const [proposer] = await ethers.getSigners();
-    console.log(`Actual Timelock proposer: ${proposer.address}`);
-    if (proposer.address != timelockAdminAddress) {
+    const { owner } = await getDeployerAndOwnerSigners();
+    console.log(`Actual Timelock proposer: ${owner.address}`);
+    if (owner.address != timelockAdminAddress) {
         console.error('Bad proposer');
         process.exit(1);
     }
     */
     const timelockAdminSigner = await ethers.getImpersonatedSigner(timelockAdminAddress);
-    //const timelockAdminSigner = proposer; // Enable this in production
+    //const timelockAdminSigner = owner; // Enable this in production
     await scheduleUpgrade();
     await time.increase(delay); // Disable this in production
     console.log('Time traveling..');

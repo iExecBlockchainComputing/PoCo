@@ -5,6 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
+import { TAG_STANDARD, TAG_TEE } from '../utils/constants';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import {
     PocoMode,
@@ -16,7 +17,6 @@ import {
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
 import { randomAddress } from './utils/utils';
-import { TAG_STANDARD, TAG_TEE } from '../utils/constants';
 
 //  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
 //  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |              Type                           |

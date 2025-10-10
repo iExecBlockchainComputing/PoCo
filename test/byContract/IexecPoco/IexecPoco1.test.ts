@@ -16,6 +16,7 @@ import {
     IexecPocoAccessors__factory,
     OwnableMock__factory,
 } from '../../../typechain';
+import { TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 import {
     IexecOrders,
     OrdersActors,
@@ -36,7 +37,6 @@ import {
 import { compactSignature } from '../../../utils/tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 
 /*
  * TODO add Standard tests.

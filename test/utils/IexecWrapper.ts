@@ -115,8 +115,7 @@ export class IexecWrapper {
      * @returns total amount to stake by the scheduler
      */
     async computeSchedulerDealStake(workerpoolPrice: bigint, volume: bigint): Promise<bigint> {
-        const stakeRatio = await this.iexecPoco
-            .workerpool_stake_ratio();
+        const stakeRatio = await this.iexecPoco.workerpool_stake_ratio();
         return ((workerpoolPrice * stakeRatio) / 100n) * volume;
     }
 

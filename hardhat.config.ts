@@ -14,7 +14,6 @@ import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
 
-const ZERO_PRIVATE_KEY = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
 const isArbitrumSepoliaFork = process.env.ARBITRUM_SEPOLIA_FORK == 'true';
@@ -81,6 +80,20 @@ const config: HardhatUserConfig = {
             { version: '0.6.12', settings }, // PoCo contracts
             { version: '0.4.11', settings }, // RLC contracts
         ],
+    },
+    namedAccounts: {
+        deployer: {
+            default: 0,
+            bellecour: chainConfig.chains['134'].deployer || 0,
+            arbitrum: chainConfig.chains['42161'].deployer || 0,
+            arbitrumSepolia: chainConfig.chains['421614'].deployer || 0,
+        },
+        owner: {
+            default: 1,
+            bellecour: chainConfig.chains['134'].owner || 1,
+            arbitrum: chainConfig.chains['42161'].owner || 1,
+            arbitrumSepolia: chainConfig.chains['421614'].owner || 1,
+        },
     },
     networks: {
         hardhat: {
@@ -157,10 +170,7 @@ const config: HardhatUserConfig = {
                 process.env.ARBITRUM_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://arbitrum.gateway.tenderly.co',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-            ],
+            accounts: _getPrivateKeys(),
             ...arbitrumBaseConfig,
         },
         arbitrumSepolia: {
@@ -168,19 +178,13 @@ const config: HardhatUserConfig = {
                 process.env.ARBITRUM_SEPOLIA_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://sepolia-rollup.arbitrum.io/rpc',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-            ],
+            accounts: _getPrivateKeys(),
             ...arbitrumSepoliaBaseConfig,
         },
         bellecour: {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-            ],
+            accounts: _getPrivateKeys(),
             ...bellecourBaseConfig,
             verify: {
                 etherscan: {
@@ -328,5 +332,12 @@ task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
     }
     console.log(`Saved ${contracts.length} ABI files to ${abisDir} folder`);
 });
+
+function _getPrivateKeys() {
+    const ZERO_PRIVATE_KEY = '0x0000000000000000000000000000000000000000000000000000000000000000';
+    const deployerKey = process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY;
+    const adminKey = process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY;
+    return [deployerKey, adminKey];
+}
 
 export default config;
