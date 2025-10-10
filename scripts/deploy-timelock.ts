@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { duration } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
-import { ethers, getNamedAccounts } from 'hardhat';
+import { ethers } from 'hardhat';
 import { TimelockController__factory } from '../typechain';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
+import { getDeployerAndOwnerSigners } from '../utils/deploy-tools';
 
 /**
  * Deploy TimelockController contract using the generic factory.
@@ -13,8 +14,7 @@ import { FactoryDeployer } from '../utils/FactoryDeployer';
 export const deploy = async () => {
     console.log('Deploying TimelockController..');
     const chainId = (await ethers.provider.getNetwork()).chainId;
-    const { deployer: deployerAddress } = await getNamedAccounts();
-    const deployer = await ethers.getSigner(deployerAddress);
+    const { deployer } = await getDeployerAndOwnerSigners();
     const factoryDeployer = new FactoryDeployer(deployer, chainId);
 
     // Deploy TimelockController

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ZeroAddress } from 'ethers';
-import { ethers, getNamedAccounts } from 'hardhat';
+import { ethers } from 'hardhat';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import type { IDiamond } from '../../typechain';
 import {
@@ -14,15 +14,14 @@ import {
 import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
 import { FactoryDeployer } from '../../utils/FactoryDeployer';
 import config from '../../utils/config';
+import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
 import { linkContractToProxy } from '../../utils/proxy-tools';
 import { printFunctions } from './upgrade-helper';
 
 (async () => {
     console.log('Deploying and updating IexecPocoAccessorsFacet & IexecPoco1Facet...');
 
-    const { deployer: deployerAddress, owner: ownerAddress } = await getNamedAccounts();
-    const deployer = await ethers.getSigner(deployerAddress);
-    const owner = await ethers.getSigner(ownerAddress);
+    const { deployer, owner } = await getDeployerAndOwnerSigners();
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;
 

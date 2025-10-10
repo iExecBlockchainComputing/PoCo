@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { deployments, ethers, getNamedAccounts } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import {
     GenericFactory__factory,
     IexecOrderManagementFacet__factory,
@@ -10,6 +10,7 @@ import {
     IexecPocoAccessorsFacet__factory,
 } from '../../typechain';
 import config from '../../utils/config';
+import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
 
 if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
@@ -20,8 +21,7 @@ if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
 
 export async function deployModules() {
     console.log('Deploying modules..');
-    const { deployer: deployerAddress } = await getNamedAccounts();
-    const deployer = await ethers.getSigner(deployerAddress);
+    const { deployer } = await getDeployerAndOwnerSigners();
     console.log(`Deployer: ${deployer.address}`);
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;

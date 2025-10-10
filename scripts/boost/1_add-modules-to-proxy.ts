@@ -3,7 +3,7 @@
 
 import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { BytesLike, ZeroHash } from 'ethers';
-import { deployments, ethers, getNamedAccounts } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import {
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet__factory,
@@ -11,6 +11,7 @@ import {
 } from '../../typechain';
 import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
 import config from '../../utils/config';
+import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
 import {
     encodeModuleProxyUpdate,
     printBlockTime,
@@ -32,8 +33,7 @@ import {
     const iexecPocoBoostAccessorsFacetAddress = (
         await deployments.get('IexecPocoBoostAccessorsFacet')
     ).address; // Bellecour: 0x56185a2b0dc8b556BBfBAFB702BC971Ed75e868C
-    const { owner: ownerAddress } = await getNamedAccounts();
-    const owner = await ethers.getSigner(ownerAddress);
+    const { owner } = await getDeployerAndOwnerSigners();
     const timelockAddress = await Ownable__factory.connect(diamondProxyAddress, owner).owner(); // Bellecour: 0x4611B943AA1d656Fc669623b5DA08756A7e288E9
 
     const iexecLibOrders = {
