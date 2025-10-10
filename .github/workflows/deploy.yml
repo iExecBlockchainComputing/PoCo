@@ -54,6 +54,7 @@ jobs:
       - name: Deploy contracts
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
           ARBISCAN_API_KEY: ${{ secrets.ARBISCAN_API_KEY }}
           # TODO: Use Etherscan V2 API
@@ -65,6 +66,7 @@ jobs:
         if: inputs.network != 'hardhat'
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }} # Fixes hardhat issue.
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
         run: npx hardhat run scripts/tools/update-config.ts --network ${{ inputs.network }}
 
       - name: Save deployment artifacts and updated config
