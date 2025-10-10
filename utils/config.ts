@@ -38,9 +38,10 @@ type Config = {
 
 type ChainConfig = {
     name: string;
+    deployer: string;
+    _deployerComment?: string;
     owner: string;
     _ownerComment?: string;
-    deployer: string; // The deployer account is needed to deploy contracts
     asset: string;
     _assetComment?: string;
     token?: string | null; // The token deployed should be compatible with Approve and call
@@ -49,10 +50,10 @@ type ChainConfig = {
     uniswap?: boolean;
     _uniswapComment?: string;
     v3: {
-        Hub: string | null;
-        AppRegistry: string | null;
-        DatasetRegistry: string | null;
-        WorkerpoolRegistry: string | null;
+        Hub?: string | null;
+        AppRegistry?: string | null;
+        DatasetRegistry?: string | null;
+        WorkerpoolRegistry?: string | null;
     };
     v5: {
         factory?: string;

@@ -2,24 +2,28 @@ import * as fs from 'fs';
 import { deployments, ethers } from 'hardhat';
 import * as path from 'path';
 import localConfig from '../../utils/config';
+import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
 
-async function main(): Promise<void> {
+// Used in poco-chain
+async function update() {
     // Get the absolute path to the config file
     const configPath = path.resolve('config/config.json');
     // Get network info from ethers
     const network = await ethers.provider.getNetwork();
     const networkName = network.name;
     const chainId = network.chainId.toString();
-
-    console.log(`Working with network: ${networkName} (Chain ID: ${chainId})`);
-    const deployment = await deployments.get('Diamond');
-    const contractAddress = deployment.address;
-
-    if (!contractAddress || contractAddress === 'null') {
-        console.error(`Failed to extract a valid Diamond proxy address from Hardhat deployment`);
+    console.log(`Network: ${networkName} (${chainId})`);
+    const { deployer, owner } = await getDeployerAndOwnerSigners();
+    const proxyAddress = (await deployments.get('Diamond')).address;
+    const iexecLibOrdersAddress = (await deployments.get('IexecLibOrders_v5')).address;
+    const rlcAddress = (await deployments.get('RLC')).address;
+    if (!proxyAddress) {
+        console.error(`Proxy address not defined`);
         process.exit(1);
     }
-    console.log(`Diamond proxy address to save: ${contractAddress}`);
+    console.log(`Diamond proxy address: ${proxyAddress}`);
+    console.log(`IexecLibOrders_v5: ${iexecLibOrdersAddress}`);
+    console.log(`RLC address: ${rlcAddress}`);
 
     // Ensure the chain structure exists
     if (!localConfig.chains) {
@@ -27,14 +31,11 @@ async function main(): Promise<void> {
     }
     if (!localConfig.chains[chainId]) {
         localConfig.chains[chainId] = {
-            _comment: `Chain ${networkName} (${chainId})`,
+            name: `Chain ${networkName}`,
+            deployer: deployer.address,
+            owner: owner.address,
             asset: 'Token', // Default value, update as needed
-            v3: {
-                Hub: null,
-                AppRegistry: null,
-                DatasetRegistry: null,
-                WorkerpoolRegistry: null,
-            },
+            v3: {},
             v5: {},
         };
     }
@@ -44,18 +45,17 @@ async function main(): Promise<void> {
     // Save the Diamond proxy address.
     const diamondProxyName = 'DiamondProxy';
     const previousDiamondAddress = localConfig.chains[chainId].v5[diamondProxyName] || 'null';
-    localConfig.chains[chainId].v5[diamondProxyName] = contractAddress;
+    localConfig.chains[chainId].v5[diamondProxyName] = proxyAddress;
     console.log(
-        `Updated ${chainId}.v5.${diamondProxyName} from ${previousDiamondAddress} to ${contractAddress}`,
+        `Updated ${chainId}.v5.${diamondProxyName} from ${previousDiamondAddress} to ${proxyAddress}`,
     );
     // Save `IexecLibOrders_v5` address if it exists
     const iexecLibOrdersName = 'IexecLibOrders_v5';
-    const iexecLibOrdersDeployment = await deployments.get(iexecLibOrdersName);
-    if (iexecLibOrdersDeployment && iexecLibOrdersDeployment.address) {
+    if (iexecLibOrdersAddress) {
         const previousLibAddress = localConfig.chains[chainId].v5[iexecLibOrdersName] || 'null';
-        localConfig.chains[chainId].v5[iexecLibOrdersName] = iexecLibOrdersDeployment.address;
+        localConfig.chains[chainId].v5[iexecLibOrdersName] = iexecLibOrdersAddress;
         console.log(
-            `Updated ${chainId}.v5.${iexecLibOrdersName} from ${previousLibAddress} to ${iexecLibOrdersDeployment.address}`,
+            `Updated ${chainId}.v5.${iexecLibOrdersName} from ${previousLibAddress} to ${iexecLibOrdersAddress}`,
         );
     }
     // Write the updated config back to file
@@ -63,10 +63,10 @@ async function main(): Promise<void> {
     console.log(`Configuration updated successfully in ${configPath}`);
 }
 
-// Execute the main function and handle any errors
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
+// Execute only when run directly (not when imported)
+if (require.main === module) {
+    update().catch((error) => {
         console.error('Error in update-config script:', error);
         process.exit(1);
     });
+}
