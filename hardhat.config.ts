@@ -17,7 +17,6 @@ import chainConfig from './utils/config';
 const ZERO_PRIVATE_KEY = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
-const isFujiFork = process.env.FUJI_FORK == 'true';
 const isArbitrumSepoliaFork = process.env.ARBITRUM_SEPOLIA_FORK == 'true';
 const isArbitrumFork = process.env.ARBITRUM_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
@@ -33,13 +32,6 @@ const bellecourBaseConfig = {
     hardfork: 'berlin', // No EIP-1559 before London fork
     gasPrice: 0,
     blockGasLimit: 6_700_000,
-};
-
-// Avalanche Fuji specific configuration
-const fujiBaseConfig = {
-    gasPrice: 25_000_000_000, // 25 Gwei default
-    blockGasLimit: 8_000_000,
-    chainId: 43113,
 };
 
 // Arbitrum Sepolia specific configuration
@@ -102,15 +94,6 @@ const config: HardhatUserConfig = {
                 },
                 chainId: 134,
             }),
-            ...(isFujiFork && {
-                forking: {
-                    url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
-                    blockNumber: process.env.FUJI_BLOCK_NUMBER
-                        ? parseInt(process.env.FUJI_BLOCK_NUMBER)
-                        : undefined,
-                },
-                ...fujiBaseConfig,
-            }),
             ...(isArbitrumSepoliaFork && {
                 forking: {
                     url:
@@ -141,10 +124,6 @@ const config: HardhatUserConfig = {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 chainId: 134,
             }),
-            ...(isFujiFork && {
-                accounts: 'remote', // Override defaults accounts for impersonation
-                ...fujiBaseConfig,
-            }),
             ...(isArbitrumSepoliaFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 ...arbitrumSepoliaBaseConfig,
@@ -172,17 +151,6 @@ const config: HardhatUserConfig = {
             // force-sealing disabled, deployment gets stuck if gasPrice is
             // not manually set. Other approaches might be considered here.
             gasPrice: 8_000_000_000, // 8 Gwei
-        },
-        avalancheFujiTestnet: {
-            url:
-                process.env.FUJI_RPC_URL || // Used in local development
-                process.env.RPC_URL || // Defined in Github Actions environments
-                'https://api.avax-test.network/ext/bc/C/rpc',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-                process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY,
-            ],
-            ...fujiBaseConfig,
         },
         arbitrum: {
             url:
@@ -226,7 +194,6 @@ const config: HardhatUserConfig = {
         // TODO migrate to Etherscan V2 API and use process.env.EXPLORER_API_KEY
         apiKey: {
             arbitrumOne: process.env.ARBISCAN_API_KEY || '', // This name is required by the plugin.
-            avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
             arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
         },
@@ -321,9 +288,6 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     try {
         if (process.env.ARBITRUM_SEPOLIA_FORK === 'true') {
             networkName = 'arbitrumSepolia';
-            deploymentsCopied = await copyDeployments(networkName);
-        } else if (process.env.FUJI_FORK === 'true') {
-            networkName = 'avalancheFujiTestnet';
             deploymentsCopied = await copyDeployments(networkName);
         }
         await runSuper(taskArgs);
