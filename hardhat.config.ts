@@ -84,15 +84,15 @@ const config: HardhatUserConfig = {
     namedAccounts: {
         deployer: {
             default: 0,
-            bellecour: chainConfig.chains['134'].deployer || 0,
-            arbitrum: chainConfig.chains['42161'].deployer || 0,
-            arbitrumSepolia: chainConfig.chains['421614'].deployer || 0,
+            bellecour: chainConfig.chains['134'].deployer,
+            arbitrum: chainConfig.chains['42161'].deployer,
+            arbitrumSepolia: chainConfig.chains['421614'].deployer,
         },
         owner: {
-            default: 1,
-            bellecour: chainConfig.chains['134'].owner || 1,
-            arbitrum: chainConfig.chains['42161'].owner || 1,
-            arbitrumSepolia: chainConfig.chains['421614'].owner || 1,
+            default: 0, // TODO change this to 1 and update admin tests.
+            bellecour: chainConfig.chains['134'].owner,
+            arbitrum: chainConfig.chains['42161'].owner,
+            arbitrumSepolia: chainConfig.chains['421614'].owner,
         },
     },
     networks: {
