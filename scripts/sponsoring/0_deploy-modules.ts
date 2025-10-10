@@ -10,6 +10,7 @@ import {
     IexecPocoAccessorsFacet__factory,
 } from '../../typechain';
 import config from '../../utils/config';
+import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
 
 if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
@@ -20,7 +21,7 @@ if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
 
 export async function deployModules() {
     console.log('Deploying modules..');
-    const [deployer] = await ethers.getSigners();
+    const { deployer } = await getDeployerAndOwnerSigners();
     console.log(`Deployer: ${deployer.address}`);
     const chainId = (await ethers.provider.getNetwork()).chainId;
     const deploymentOptions = config.getChainConfig(chainId).v5;

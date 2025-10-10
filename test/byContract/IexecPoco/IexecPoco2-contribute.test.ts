@@ -4,7 +4,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { assert, expect } from 'chai';
-import { ZeroAddress, ZeroHash } from 'ethers';
+import { ZeroAddress } from 'ethers';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
 import config from '../../../utils/config';
 import { NULL, TAG_STANDARD, TAG_TEE } from '../../../utils/constants';

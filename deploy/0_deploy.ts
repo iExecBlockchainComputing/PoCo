@@ -38,6 +38,7 @@ import { DiamondArgsStruct } from '../typechain/contracts/Diamond';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
+import { getDeployerAndOwnerSigners } from '../utils/deploy-tools';
 import { getFunctionSelectors, linkContractToProxy } from '../utils/proxy-tools';
 import { getLibDiamondConfigOrEmpty } from '../utils/tools';
 
@@ -49,7 +50,7 @@ export default async function deploy() {
     console.log('Deploying PoCo..');
     const network = await ethers.provider.getNetwork();
     const chainId = network.chainId;
-    const [deployer] = await ethers.getSigners();
+    const { deployer } = await getDeployerAndOwnerSigners();
     console.log(`Deployer: ${deployer.address}`);
     console.log(`Network: ${network.name} (${chainId})`);
     const deploymentOptions = config.getChainConfigOrDefault(chainId);
