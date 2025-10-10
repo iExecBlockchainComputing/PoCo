@@ -153,7 +153,7 @@ import { printFunctions } from './upgrade-helper';
 
     console.log('Adding new IexecPoco1Facet ...');
     await linkContractToProxy(diamondProxyAsOwner, newIexecPoco1Facet, newIexecPoco1FacetFactory);
-    console.log('New IexecPoco1Facet with isDatasetCompatibleWithDeal added successfully');
+    console.log('New IexecPoco1Facet with assertDatasetDealCompatibility added successfully');
 
     console.log('Diamond functions after adding new facets:');
     await printFunctions(diamondProxyAddress);

@@ -8,6 +8,7 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 /**
  * @title Interface definition of the PoCo Boost facet.
  */
+// TODO add this to IexecInterfaceToken when the facet is deployed.
 interface IexecPocoBoost {
     /**
      * @notice Emitted when a set of compatible orders are matched and a new deal is created.

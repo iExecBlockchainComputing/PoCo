@@ -5,6 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
+import { TAG_STANDARD, TAG_TEE } from '../utils/constants';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import {
     PocoMode,
@@ -29,8 +30,6 @@ import { randomAddress } from './utils/utils';
 //  |   [7]   |     x       |     ✔       |     x       |    x     |  x  |     Standard, 4 good workers 1 bad worker   |
 //  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
 
-const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
@@ -113,7 +112,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: standardDealTag,
+            tag: TAG_STANDARD,
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
@@ -204,7 +203,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: standardDealTag,
+            tag: TAG_STANDARD,
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
@@ -292,7 +291,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: teeDealTag,
+            tag: TAG_TEE,
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
@@ -370,7 +369,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: teeDealTag,
+            tag: TAG_TEE,
             beneficiary: beneficiary.address,
             callback: callbackAddress,
             volume,
@@ -448,7 +447,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: teeDealTag,
+            tag: TAG_TEE,
             volume,
             trust: 1n,
         });
@@ -520,7 +519,7 @@ describe('Integration tests', function () {
                     assets: ordersAssets,
                     prices: ordersPrices,
                     requester: requester.address,
-                    tag: standardDealTag,
+                    tag: TAG_STANDARD,
                     volume,
                     trust: BigInt(workerNumber ** 2 - 1),
                 });
@@ -622,7 +621,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: standardDealTag,
+            tag: TAG_STANDARD,
             volume,
             trust: BigInt(winningWorkers.length),
         });

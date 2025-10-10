@@ -18,12 +18,9 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     IWorkerpool__factory,
-    IexecAccessors__factory,
-    IexecConfigurationFacet__factory,
+    IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
-    IexecPoco2__factory,
-    IexecPocoAccessors__factory,
     IexecPocoBoostAccessors__factory,
     RLC__factory,
     Registry__factory,
@@ -31,7 +28,6 @@ import {
     WorkerpoolRegistry__factory,
 } from '../../typechain';
 import { TransferEvent } from '../../typechain/contracts/registries/IRegistry';
-import { IexecPoco1__factory } from '../../typechain/factories/contracts/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
 import config from '../../utils/config';
 import {
     IexecOrders,
@@ -59,11 +55,13 @@ export const DATASET_CHECKSUM =
     '0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321';
 export class IexecWrapper {
     proxyAddress: string;
+    iexecPoco: IexecInterfaceNative;
     accounts: IexecAccounts;
     domain: TypedDataDomain;
 
     constructor(proxyAddress: string, accounts: IexecAccounts) {
         this.proxyAddress = proxyAddress;
+        this.iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
         this.accounts = accounts;
         this.domain = {
             name: 'iExecODB',
@@ -88,17 +86,15 @@ export class IexecWrapper {
      */
     async depositInIexecAccount(account: SignerWithAddress, value: bigint) {
         if (config.isNativeChain()) {
-            await IexecInterfaceNative__factory.connect(this.proxyAddress, account)
+            await this.iexecPoco
+                .connect(account)
                 .deposit({
                     value: (value * 10n ** 9n).toString(),
                 })
                 .then((tx) => tx.wait());
             return;
         }
-        const rlc = RLC__factory.connect(
-            await IexecAccessors__factory.connect(this.proxyAddress, this.accounts.anyone).token(),
-            this.accounts.iexecAdmin,
-        );
+        const rlc = RLC__factory.connect(await this.iexecPoco.token(), this.accounts.iexecAdmin);
         // Transfer RLC from owner to recipient
         await rlc.transfer(account.address, value).then((tx) => tx.wait());
         // Deposit
@@ -119,10 +115,7 @@ export class IexecWrapper {
      * @returns total amount to stake by the scheduler
      */
     async computeSchedulerDealStake(workerpoolPrice: bigint, volume: bigint): Promise<bigint> {
-        const stakeRatio = await IexecAccessors__factory.connect(
-            this.proxyAddress,
-            this.accounts.anyone,
-        ).workerpool_stake_ratio();
+        const stakeRatio = await this.iexecPoco.workerpool_stake_ratio();
         return ((workerpoolPrice * stakeRatio) / 100n) * volume;
     }
 
@@ -170,17 +163,15 @@ export class IexecWrapper {
             ).workerReward;
         }
         // CLASSIC mode.
-        const deal = await IexecAccessors__factory.connect(
-            this.proxyAddress,
-            ethers.provider,
-        ).viewDeal(dealId);
+        const deal = await this.iexecPoco.viewDeal(dealId);
         // reward = (workerpoolPrice * workersRatio) / 100
         const workersRewardRatio = 100n - deal.schedulerRewardRatio;
         return (deal.workerpool.price * workersRewardRatio) / 100n;
     }
 
     async setTeeBroker(brokerAddress: string) {
-        await IexecConfigurationFacet__factory.connect(this.proxyAddress, this.accounts.iexecAdmin)
+        await this.iexecPoco
+            .connect(this.accounts.iexecAdmin)
             .setTeeBroker(brokerAddress)
             .then((tx) => tx.wait());
     }
@@ -210,7 +201,7 @@ export class IexecWrapper {
     async signOrderOperation(
         orderOperation: OrderOperation,
         signer: SignerWithAddress,
-    ): Promise<void> {
+    ): Promise<Record<string, any>> {
         return signOrderOperation(this.domain, orderOperation, signer);
     }
 
@@ -255,16 +246,15 @@ export class IexecWrapper {
         const datasetOrder = orders.dataset;
         const workerpoolOrder = orders.workerpool;
         const requestOrder = orders.requester;
-        const taskIndex = await IexecAccessors__factory.connect(
-            this.proxyAddress,
-            ethers.provider,
-        ).viewConsumed(this.hashOrder(requestOrder));
+        const taskIndex = await this.iexecPoco.viewConsumed(this.hashOrder(requestOrder));
         const dealId = getDealId(this.domain, requestOrder, taskIndex);
         const taskId = getTaskId(dealId, taskIndex);
-        const volume = await IexecPocoAccessors__factory.connect(
-            this.proxyAddress,
-            ethers.provider,
-        ).computeDealVolume(appOrder, datasetOrder, workerpoolOrder, requestOrder);
+        const volume = await this.iexecPoco.computeDealVolume(
+            appOrder,
+            datasetOrder,
+            workerpoolOrder,
+            requestOrder,
+        );
         const taskPrice =
             BigInt(appOrder.appprice) +
             BigInt(datasetOrder.datasetprice) +
@@ -278,7 +268,7 @@ export class IexecWrapper {
         );
         await this.depositInIexecAccount(this.accounts.scheduler, schedulerStakePerDeal);
         const startTime = await setNextBlockTimestamp();
-        const iexecPocoAsDealPayer = IexecPoco1__factory.connect(this.proxyAddress, dealPayer);
+        const iexecPocoAsDealPayer = this.iexecPoco.connect(dealPayer);
         await (
             withSponsor
                 ? iexecPocoAsDealPayer.sponsorMatchOrders(...orders.toArray())
@@ -296,9 +286,8 @@ export class IexecWrapper {
     }
 
     async createApp() {
-        const iexec = IexecAccessors__factory.connect(this.proxyAddress, this.accounts.anyone);
         const appRegistry: AppRegistry = AppRegistry__factory.connect(
-            await iexec.appregistry(),
+            await this.iexecPoco.appregistry(),
             this.accounts.appProvider,
         );
         const appReceipt = await appRegistry
@@ -315,9 +304,8 @@ export class IexecWrapper {
     }
 
     async createDataset() {
-        const iexec = IexecAccessors__factory.connect(this.proxyAddress, this.accounts.anyone);
         const datasetRegistry: DatasetRegistry = DatasetRegistry__factory.connect(
-            await iexec.datasetregistry(),
+            await this.iexecPoco.datasetregistry(),
             this.accounts.datasetProvider,
         );
         const datasetReceipt = await datasetRegistry
@@ -338,7 +326,8 @@ export class IexecWrapper {
      * @returns
      */
     async initializeTask(dealId: string, taskIndex: bigint) {
-        await IexecPoco2__factory.connect(this.proxyAddress, this.accounts.anyone)
+        await this.iexecPoco
+            .connect(this.accounts.anyone)
             .initialize(dealId, taskIndex)
             .then((tx) => tx.wait());
         return getTaskId(dealId, taskIndex);
@@ -415,10 +404,7 @@ export class IexecWrapper {
         useEnclave: Boolean,
     ) {
         const taskId = getTaskId(dealId, taskIndex);
-        const workerStakePerTask = await IexecAccessors__factory.connect(
-            this.proxyAddress,
-            ethers.provider,
-        )
+        const workerStakePerTask = await this.iexecPoco
             .viewDeal(dealId)
             .then((deal) => deal.workerStake);
         const { resultHash, resultSeal } = buildResultHashAndResultSeal(
@@ -441,7 +427,8 @@ export class IexecWrapper {
             this.accounts.scheduler,
         );
         await this.depositInIexecAccount(contributor, workerStakePerTask);
-        await IexecPoco2__factory.connect(this.proxyAddress, contributor)
+        await this.iexecPoco
+            .connect(contributor)
             .contribute(
                 taskId,
                 resultHash,
@@ -455,9 +442,8 @@ export class IexecWrapper {
     }
 
     async createWorkerpool() {
-        const iexec = IexecAccessors__factory.connect(this.proxyAddress, this.accounts.anyone);
         const workerpoolRegistry: WorkerpoolRegistry = WorkerpoolRegistry__factory.connect(
-            await iexec.workerpoolregistry(),
+            await this.iexecPoco.workerpoolregistry(),
             this.accounts.scheduler,
         );
         const workerpoolReceipt = await workerpoolRegistry
@@ -467,12 +453,11 @@ export class IexecWrapper {
     }
 
     async getInitialFrozens(accounts: SignerWithAddress[]) {
-        let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
         const initialFrozens = [];
         for (const account of accounts) {
             initialFrozens.push({
                 address: account.address,
-                frozen: await iexecPoco.frozenOf(account.address),
+                frozen: await this.iexecPoco.frozenOf(account.address),
             });
         }
         return initialFrozens;
@@ -482,19 +467,15 @@ export class IexecWrapper {
         accountsInitialFrozens: { address: string; frozen: bigint }[],
         expectedFrozenChanges: bigint[],
     ) {
-        let iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
         for (let i = 0; i < accountsInitialFrozens.length; i++) {
-            const actualFrozen = await iexecPoco.frozenOf(accountsInitialFrozens[i].address);
+            const actualFrozen = await this.iexecPoco.frozenOf(accountsInitialFrozens[i].address);
             const expectedFrozen = accountsInitialFrozens[i].frozen + expectedFrozenChanges[i];
             expect(actualFrozen).to.equal(expectedFrozen, `Mismatch at index ${i}`);
         }
     }
 
     async computeWorkersRewardForCurrentTask(totalPoolReward: bigint, dealId: string) {
-        const deal = await IexecInterfaceNative__factory.connect(
-            this.proxyAddress,
-            ethers.provider,
-        ).viewDeal(dealId);
+        const deal = await this.iexecPoco.viewDeal(dealId);
         return (totalPoolReward * (100n - deal.schedulerRewardRatio)) / 100n;
     }
 }

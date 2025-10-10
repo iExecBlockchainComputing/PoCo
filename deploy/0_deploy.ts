@@ -14,7 +14,6 @@ import {
     DiamondLoupeFacet__factory,
     Diamond__factory,
     IexecAccessorsABILegacyFacet__factory,
-    IexecAccessors__factory,
     IexecCategoryManagerFacet__factory,
     IexecCategoryManager__factory,
     IexecConfigurationExtraFacet__factory,
@@ -27,6 +26,7 @@ import {
     IexecPoco1Facet__factory,
     IexecPoco2Facet__factory,
     IexecPocoAccessorsFacet__factory,
+    IexecPocoAccessors__factory,
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet__factory,
     IexecRelayFacet__factory,
@@ -187,7 +187,10 @@ export default async function deploy() {
     }
 
     // Set main configuration
-    const iexecAccessorsInstance = IexecAccessors__factory.connect(diamondProxyAddress, deployer);
+    const iexecAccessorsInstance = IexecPocoAccessors__factory.connect(
+        diamondProxyAddress,
+        deployer,
+    );
     const iexecInitialized = (await iexecAccessorsInstance.eip712domain_separator()) != ZeroHash;
     if (!iexecInitialized) {
         // TODO replace this with DiamondInit.init().

@@ -136,23 +136,12 @@
       },
       {
         "internalType": "bytes32",
-        "name": "dealid",
+        "name": "dealId",
         "type": "bytes32"
       }
     ],
-    "name": "isDatasetCompatibleWithDeal",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "result",
-        "type": "bool"
-      },
-      {
-        "internalType": "string",
-        "name": "reason",
-        "type": "string"
-      }
-    ],
+    "name": "assertDatasetDealCompatibility",
+    "outputs": [],
     "stateMutability": "view",
     "type": "function"
   },
