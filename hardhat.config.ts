@@ -367,11 +367,10 @@ task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
 });
 
 function _getPrivateKeys() {
-    const keys = [process.env.DEPLOYER_PRIVATE_KEY, process.env.ADMIN_PRIVATE_KEY];
-    if (keys.length < 2 || !keys[0] || !keys[1]) {
-        throw new Error('Invalid private keys');
-    }
-    return keys as string[];
+    const ZERO_PRIVATE_KEY = '0x0000000000000000000000000000000000000000000000000000000000000000';
+    const deployerKey = process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY;
+    const adminKey = process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY;
+    return [deployerKey, adminKey];
 }
 
 export default config;
