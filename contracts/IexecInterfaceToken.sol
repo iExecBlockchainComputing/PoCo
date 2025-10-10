@@ -25,9 +25,9 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
  * @dev Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
  * Changing the name or the path would cause a breaking change in the SDK.
  */
-// TODO Remove this interface when it's not used in the middelware anymore.
-// https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
 interface IexecInterfaceToken is
+    // TODO Remove this interface when it's not used in the middelware anymore.
+    // https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
     IexecAccessorsABILegacy,
     IexecCategoryManager,
     IexecConfiguration,

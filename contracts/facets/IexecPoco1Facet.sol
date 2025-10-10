@@ -27,14 +27,7 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is
-    IexecPoco1,
-    IexecPoco1Errors,
-    FacetBase,
-    IexecEscrow,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
