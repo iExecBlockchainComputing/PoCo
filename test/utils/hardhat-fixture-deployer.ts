@@ -70,7 +70,7 @@ export const loadHardhatFixtureDeployment = async () => {
     if (process.env.LOCAL_FORK == 'true') {
         return await loadFixture(setUpLocalForkInNativeMode);
     }
-    if (process.env.FUJI_FORK == 'true' || process.env.ARBITRUM_SEPOLIA_FORK == 'true') {
+    if (process.env.ARBITRUM_SEPOLIA_FORK == 'true') {
         return await loadFixture(setUpLocalForkInTokenMode);
     }
     return await loadFixture(deployAll);

@@ -16,7 +16,6 @@ import chainConfig from './utils/config';
 
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
-const isFujiFork = process.env.FUJI_FORK == 'true';
 const isArbitrumSepoliaFork = process.env.ARBITRUM_SEPOLIA_FORK == 'true';
 const isArbitrumFork = process.env.ARBITRUM_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
@@ -32,13 +31,6 @@ const bellecourBaseConfig = {
     hardfork: 'berlin', // No EIP-1559 before London fork
     gasPrice: 0,
     blockGasLimit: 6_700_000,
-};
-
-// Avalanche Fuji specific configuration
-const fujiBaseConfig = {
-    gasPrice: 25_000_000_000, // 25 Gwei default
-    blockGasLimit: 8_000_000,
-    chainId: 43113,
 };
 
 // Arbitrum Sepolia specific configuration
@@ -92,15 +84,15 @@ const config: HardhatUserConfig = {
     namedAccounts: {
         deployer: {
             default: 0,
-            bellecour: chainConfig.chains['134'].deployer || 0,
-            arbitrum: chainConfig.chains['42161'].deployer || 0,
-            arbitrumSepolia: chainConfig.chains['421614'].deployer || 0,
+            bellecour: chainConfig.chains['134'].deployer,
+            arbitrum: chainConfig.chains['42161'].deployer,
+            arbitrumSepolia: chainConfig.chains['421614'].deployer,
         },
         owner: {
-            default: 1,
-            bellecour: chainConfig.chains['134'].owner || 1,
-            arbitrum: chainConfig.chains['42161'].owner || 1,
-            arbitrumSepolia: chainConfig.chains['421614'].owner || 1,
+            default: 0, // TODO change this to 1 and update admin tests.
+            bellecour: chainConfig.chains['134'].owner,
+            arbitrum: chainConfig.chains['42161'].owner,
+            arbitrumSepolia: chainConfig.chains['421614'].owner,
         },
     },
     networks: {
@@ -114,15 +106,6 @@ const config: HardhatUserConfig = {
                     url: 'https://bellecour.iex.ec',
                 },
                 chainId: 134,
-            }),
-            ...(isFujiFork && {
-                forking: {
-                    url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
-                    blockNumber: process.env.FUJI_BLOCK_NUMBER
-                        ? parseInt(process.env.FUJI_BLOCK_NUMBER)
-                        : undefined,
-                },
-                ...fujiBaseConfig,
             }),
             ...(isArbitrumSepoliaFork && {
                 forking: {
@@ -154,10 +137,6 @@ const config: HardhatUserConfig = {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 chainId: 134,
             }),
-            ...(isFujiFork && {
-                accounts: 'remote', // Override defaults accounts for impersonation
-                ...fujiBaseConfig,
-            }),
             ...(isArbitrumSepoliaFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 ...arbitrumSepoliaBaseConfig,
@@ -185,14 +164,6 @@ const config: HardhatUserConfig = {
             // force-sealing disabled, deployment gets stuck if gasPrice is
             // not manually set. Other approaches might be considered here.
             gasPrice: 8_000_000_000, // 8 Gwei
-        },
-        avalancheFujiTestnet: {
-            url:
-                process.env.FUJI_RPC_URL || // Used in local development
-                process.env.RPC_URL || // Defined in Github Actions environments
-                'https://api.avax-test.network/ext/bc/C/rpc',
-            accounts: _getPrivateKeys(),
-            ...fujiBaseConfig,
         },
         arbitrum: {
             url:
@@ -227,7 +198,6 @@ const config: HardhatUserConfig = {
         // TODO migrate to Etherscan V2 API and use process.env.EXPLORER_API_KEY
         apiKey: {
             arbitrumOne: process.env.ARBISCAN_API_KEY || '', // This name is required by the plugin.
-            avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
             arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
         },
@@ -322,9 +292,6 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     try {
         if (process.env.ARBITRUM_SEPOLIA_FORK === 'true') {
             networkName = 'arbitrumSepolia';
-            deploymentsCopied = await copyDeployments(networkName);
-        } else if (process.env.FUJI_FORK === 'true') {
-            networkName = 'avalancheFujiTestnet';
             deploymentsCopied = await copyDeployments(networkName);
         }
         await runSuper(taskArgs);
