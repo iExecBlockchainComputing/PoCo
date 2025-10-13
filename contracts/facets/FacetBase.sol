@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
-import "../libs/PocoStorageLib.sol";
-import "../interfaces/IOwnable.sol";
+import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 // TODO use LibDiamond.contractOwner() when migrating all contracts to v8.
 
@@ -36,7 +36,7 @@ abstract contract FacetBase {
 
     function owner() internal view returns (address) {
         // TODO use LibDiamond.contractOwner() instead of an external call when migrating all contracts to v8.
-        return IOwnable(address(this)).owner();
+        return IERC5313(address(this)).owner();
     }
 
     function _msgSender() internal view returns (address) {

@@ -1,18 +1,14 @@
-// SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
-import "@iexec/interface/contracts/IexecHub.sol";
-import "@iexec/solidity/contracts/Libs/SafeMathExtended.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
+import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
+import {IexecLibCore_v5} from "./IexecLibCore_v5.sol";
+import {IRegistry} from "../registries/IRegistry.sol";
+import {IexecHubInterface} from "../interfaces/IexecHubInterface.sol";
 
-import "./IexecLibCore_v5.sol";
-import "./IexecLibOrders_v5.sol";
-import "./../registries/apps/App.sol";
-import "./../registries/datasets/Dataset.sol";
-import "./../registries/workerpools/Workerpool.sol";
-import "./../registries/IRegistry.sol";
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
  *                                                                          *
@@ -79,11 +75,14 @@ library PocoStorageLib {
         // Modified in IexecConfigurationFacet.configure
         IexecHubInterface m_v3_iexecHub;
         mapping(address /* worker */ => bool) m_v3_scoreImported;
+        // /!\ New storage variables not present in v6 store.
+        // A mapping to store PoCo Boost deals.
+        mapping(bytes32 /* dealId */ => IexecLibCore_v5.DealBoost) m_dealsBoost;
     }
 
     function getPocoStorage() internal pure returns (PocoStorage storage $) {
-        assembly {
-            $_slot := POCO_STORAGE_LOCATION
+        assembly ("memory-safe") {
+            $.slot := POCO_STORAGE_LOCATION
         }
     }
 }
