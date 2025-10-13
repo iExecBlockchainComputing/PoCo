@@ -48,6 +48,7 @@ jobs:
 
       - name: Set callback gas on ${{ inputs.network }}
         env:
+          # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
