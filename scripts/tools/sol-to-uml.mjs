@@ -21,14 +21,9 @@ await generateClassDiagramOfContracts(
 )
 
 await generateClassDiagramOfContracts(
-    [
-        'IexecEscrowNativeFacet',
-        'IexecEscrowTokenFacet',
-        'IexecEscrowTokenSwapFacet',
-        'IexecEscrow',
-    ],
+    ['IexecEscrowNativeFacet', 'IexecEscrowTokenFacet', 'IexecEscrow'],
     'IexecEscrows',
-)
+);
 
 await generateClassDiagramOfContracts(
     ['IexecPocoBoostFacet'],

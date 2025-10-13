@@ -96,7 +96,6 @@ export default async function deploy() {
         new IexecConfigurationFacet__factory(iexecLibOrders),
         new IexecERC20Facet__factory(),
         isTokenMode ? new IexecEscrowTokenFacet__factory() : new IexecEscrowNativeFacet__factory(),
-        // new IexecEscrowTokenSwapFacet__factory(), not deployed.
         new IexecOrderManagementFacet__factory(iexecLibOrders),
         new IexecPoco1Facet__factory(iexecLibOrders),
         new IexecPoco2Facet__factory(),
