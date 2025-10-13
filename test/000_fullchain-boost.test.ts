@@ -7,8 +7,8 @@ import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
 import hre from 'hardhat';
 import {
-    IexecAccessors,
-    IexecAccessors__factory,
+    IexecInterfaceNative,
+    IexecInterfaceNative__factory,
     IexecOrderManagement__factory,
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet,
@@ -17,6 +17,7 @@ import {
     WorkerpoolInterface__factory,
 } from '../typechain';
 import * as constants from '../utils/constants';
+import { TAG_TEE } from '../utils/constants';
 import {
     OrdersActors,
     OrdersAssets,
@@ -39,7 +40,6 @@ import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
 import { randomAddress } from './utils/utils';
 
-const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const taskIndex = 0n;
 const volume = taskIndex + 1n;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
@@ -50,7 +50,7 @@ const workerpoolPrice = 1_000_000_000n;
 describe('IexecPocoBoostFacet (IT)', function () {
     let domain: TypedDataDomain;
     let proxyAddress: string;
-    let iexecInstance: IexecAccessors;
+    let iexecInstance: IexecInterfaceNative;
     let iexecPocoBoostInstance: IexecPocoBoostFacet;
     let iexecWrapper: IexecWrapper;
     let appAddress = '';
@@ -88,7 +88,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
             requester: requester,
         };
         iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, owner);
-        iexecInstance = IexecAccessors__factory.connect(proxyAddress, anyone);
+        iexecInstance = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         domain = {
             name: 'iExecODB',
             version: '5.0.0',
@@ -135,7 +135,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 prices: ordersPrices,
                 callback: callbackAddress,
             });
@@ -175,7 +175,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
-                    teeDealTag,
+                    TAG_TEE,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -234,7 +234,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             }).toObject();
             await iexecOrderManagementInstance.connect(appProvider).manageAppOrder({
                 order: appOrder,
@@ -273,7 +273,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
-                    teeDealTag,
+                    TAG_TEE,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -294,7 +294,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
                 assets: ordersAssets,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 prices: ordersPrices,
                 callback: callbackAddress,
             });
@@ -337,7 +337,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
                     appAddress,
                     datasetAddress,
                     requestOrder.category,
-                    teeDealTag,
+                    TAG_TEE,
                     requestOrder.params,
                     beneficiary.address,
                 )
@@ -398,7 +398,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
             });
             const { appOrder, datasetOrder, workerpoolOrder, requestOrder } = orders.toObject();
             const oracleConsumerInstance = await new TestClient__factory()
@@ -455,7 +455,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 prices: ordersPrices,
                 volume: volume,
             });
@@ -615,7 +615,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 prices: ordersPrices,
                 volume: expectedVolume,
             });
@@ -697,7 +697,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
             const orders = buildOrders({
                 assets: ordersAssets,
                 requester: requester.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 prices: ordersPrices,
                 volume: expectedVolume,
             });

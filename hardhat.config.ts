@@ -9,13 +9,13 @@ import {
     defaultHardhatNetworkParams,
     defaultLocalhostNetworkParams,
 } from 'hardhat/internal/core/config/default-config';
+import * as path from 'path';
 import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
 
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = process.env.LOCAL_FORK == 'true';
-const isFujiFork = process.env.FUJI_FORK == 'true';
 const isArbitrumSepoliaFork = process.env.ARBITRUM_SEPOLIA_FORK == 'true';
 const isArbitrumFork = process.env.ARBITRUM_FORK == 'true';
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
@@ -31,13 +31,6 @@ const bellecourBaseConfig = {
     hardfork: 'berlin', // No EIP-1559 before London fork
     gasPrice: 0,
     blockGasLimit: 6_700_000,
-};
-
-// Avalanche Fuji specific configuration
-const fujiBaseConfig = {
-    gasPrice: 25_000_000_000, // 25 Gwei default
-    blockGasLimit: 8_000_000,
-    chainId: 43113,
 };
 
 // Arbitrum Sepolia specific configuration
@@ -88,6 +81,20 @@ const config: HardhatUserConfig = {
             { version: '0.4.11', settings }, // RLC contracts
         ],
     },
+    namedAccounts: {
+        deployer: {
+            default: 0,
+            bellecour: chainConfig.chains['134'].deployer,
+            arbitrum: chainConfig.chains['42161'].deployer,
+            arbitrumSepolia: chainConfig.chains['421614'].deployer,
+        },
+        owner: {
+            default: 0, // TODO change this to 1 and update admin tests.
+            bellecour: chainConfig.chains['134'].owner,
+            arbitrum: chainConfig.chains['42161'].owner,
+            arbitrumSepolia: chainConfig.chains['421614'].owner,
+        },
+    },
     networks: {
         hardhat: {
             accounts: {
@@ -99,15 +106,6 @@ const config: HardhatUserConfig = {
                     url: 'https://bellecour.iex.ec',
                 },
                 chainId: 134,
-            }),
-            ...(isFujiFork && {
-                forking: {
-                    url: process.env.FUJI_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc',
-                    blockNumber: process.env.FUJI_BLOCK_NUMBER
-                        ? parseInt(process.env.FUJI_BLOCK_NUMBER)
-                        : undefined,
-                },
-                ...fujiBaseConfig,
             }),
             ...(isArbitrumSepoliaFork && {
                 forking: {
@@ -123,12 +121,7 @@ const config: HardhatUserConfig = {
 
             ...(isArbitrumFork && {
                 forking: {
-                    url:
-                        process.env.ARBITRUM_RPC_URL ||
-                        'https://lb.drpc.org/arbitrum/AhEPbH3buE5zjj_dDMs3E2hIUihFGTAR8J88ThukG97E',
-                    blockNumber: process.env.ARBITRUM_BLOCK_NUMBER
-                        ? parseInt(process.env.ARBITRUM_BLOCK_NUMBER)
-                        : undefined,
+                    url: process.env.ARBITRUM_RPC_URL || 'https://arbitrum.gateway.tenderly.co',
                 },
                 ...arbitrumBaseConfig,
             }),
@@ -143,10 +136,6 @@ const config: HardhatUserConfig = {
             ...(isLocalFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 chainId: 134,
-            }),
-            ...(isFujiFork && {
-                accounts: 'remote', // Override defaults accounts for impersonation
-                ...fujiBaseConfig,
             }),
             ...(isArbitrumSepoliaFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
@@ -176,26 +165,12 @@ const config: HardhatUserConfig = {
             // not manually set. Other approaches might be considered here.
             gasPrice: 8_000_000_000, // 8 Gwei
         },
-        avalancheFujiTestnet: {
-            url:
-                process.env.FUJI_RPC_URL || // Used in local development
-                process.env.RPC_URL || // Defined in Github Actions environments
-                'https://api.avax-test.network/ext/bc/C/rpc',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY ||
-                    '0x0000000000000000000000000000000000000000000000000000000000000000',
-            ],
-            ...fujiBaseConfig,
-        },
         arbitrum: {
             url:
                 process.env.ARBITRUM_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://arbitrum.gateway.tenderly.co',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY ||
-                    '0x0000000000000000000000000000000000000000000000000000000000000000',
-            ],
+            accounts: _getPrivateKeys(),
             ...arbitrumBaseConfig,
         },
         arbitrumSepolia: {
@@ -203,19 +178,13 @@ const config: HardhatUserConfig = {
                 process.env.ARBITRUM_SEPOLIA_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
                 'https://sepolia-rollup.arbitrum.io/rpc',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY ||
-                    '0x0000000000000000000000000000000000000000000000000000000000000000',
-            ],
+            accounts: _getPrivateKeys(),
             ...arbitrumSepoliaBaseConfig,
         },
         bellecour: {
             chainId: 134,
             url: 'https://bellecour.iex.ec',
-            accounts: [
-                process.env.DEPLOYER_PRIVATE_KEY ||
-                    '0x0000000000000000000000000000000000000000000000000000000000000000',
-            ],
+            accounts: _getPrivateKeys(),
             ...bellecourBaseConfig,
             verify: {
                 etherscan: {
@@ -229,7 +198,6 @@ const config: HardhatUserConfig = {
         // TODO migrate to Etherscan V2 API and use process.env.EXPLORER_API_KEY
         apiKey: {
             arbitrumOne: process.env.ARBISCAN_API_KEY || '', // This name is required by the plugin.
-            avalancheFujiTestnet: 'nothing', // a non-empty string is needed by the plugin.
             arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
             bellecour: 'nothing', // a non-empty string is needed by the plugin.
         },
@@ -289,7 +257,6 @@ const config: HardhatUserConfig = {
             'facets/SignatureVerifier.sol', // contains only internal/private
             'facets/SignatureVerifier.v8.sol',
             'interfaces', // interesting for events but too much doc duplication if enabled
-            'registries', // ignore them for now
             'tools',
             'Diamond.sol', // not relevant
             'IexecInterfaceNativeABILegacy.sol', // not relevant
@@ -326,9 +293,6 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
         if (process.env.ARBITRUM_SEPOLIA_FORK === 'true') {
             networkName = 'arbitrumSepolia';
             deploymentsCopied = await copyDeployments(networkName);
-        } else if (process.env.FUJI_FORK === 'true') {
-            networkName = 'avalancheFujiTestnet';
-            deploymentsCopied = await copyDeployments(networkName);
         }
         await runSuper(taskArgs);
     } finally {
@@ -337,5 +301,43 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
         }
     }
 });
+
+// Automatically update ABIs after compiling contracts.
+task('compile').setAction(async (taskArgs: any, hre, runSuper) => {
+    await runSuper(taskArgs);
+    await hre.run('abis');
+});
+
+task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
+    const abisDir = './abis';
+    // Remove old ABIs folder if it exists.
+    if (fs.existsSync(abisDir)) {
+        fs.rmSync(abisDir, { recursive: true, force: true });
+    }
+    fs.mkdirSync(abisDir);
+    const contracts = (await hre.artifacts.getAllFullyQualifiedNames())
+        // Keep only "contracts/" folder
+        .filter((name) => name.startsWith('contracts/'))
+        // Remove non relevant contracts
+        // !!! Update package.json#files if this is updated.
+        .filter((name) => !name.startsWith('contracts/tools/testing'))
+        .filter((name) => !name.startsWith('contracts/tools/diagrams'))
+        .filter((name) => !name.startsWith('contracts/tools/TimelockController'));
+    for (const contractFile of contracts) {
+        const artifact = await hre.artifacts.readArtifact(contractFile);
+        const abiFileDir = `${abisDir}/${path.dirname(contractFile)}`;
+        const abiFile = `${abiFileDir}/${artifact.contractName}.json`;
+        fs.mkdirSync(abiFileDir, { recursive: true });
+        fs.writeFileSync(abiFile, JSON.stringify(artifact.abi, null, 2));
+    }
+    console.log(`Saved ${contracts.length} ABI files to ${abisDir} folder`);
+});
+
+function _getPrivateKeys() {
+    const ZERO_PRIVATE_KEY = '0x0000000000000000000000000000000000000000000000000000000000000000';
+    const deployerKey = process.env.DEPLOYER_PRIVATE_KEY || ZERO_PRIVATE_KEY;
+    const adminKey = process.env.ADMIN_PRIVATE_KEY || ZERO_PRIVATE_KEY;
+    return [deployerKey, adminKey];
+}
 
 export default config;

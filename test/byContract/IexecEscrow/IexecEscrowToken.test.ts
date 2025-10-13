@@ -304,7 +304,7 @@ describe('IexecEscrowToken', () => {
                 .to.emit(rlcInstance, 'Transfer')
                 .withArgs(proxyAddress, accountA.address, 0);
         });
-        it('Should not withdraw native tokens with empty balance', async () => {
+        it('Should not withdraw tokens with empty balance', async () => {
             await expect(iexecPocoAsAccountA.withdraw(amount)).to.be.revertedWithoutReason();
         });
         it('Should not withdraw tokens with insufficient balance', async () => {

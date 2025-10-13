@@ -11,6 +11,7 @@ import {
 } from '../../typechain';
 import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
 import config from '../../utils/config';
+import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
 import {
     encodeModuleProxyUpdate,
     printBlockTime,
@@ -32,8 +33,8 @@ import {
     const iexecPocoBoostAccessorsFacetAddress = (
         await deployments.get('IexecPocoBoostAccessorsFacet')
     ).address; // Bellecour: 0x56185a2b0dc8b556BBfBAFB702BC971Ed75e868C
-    const [account] = await ethers.getSigners();
-    const timelockAddress = await Ownable__factory.connect(diamondProxyAddress, account).owner(); // Bellecour: 0x4611B943AA1d656Fc669623b5DA08756A7e288E9
+    const { owner } = await getDeployerAndOwnerSigners();
+    const timelockAddress = await Ownable__factory.connect(diamondProxyAddress, owner).owner(); // Bellecour: 0x4611B943AA1d656Fc669623b5DA08756A7e288E9
 
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
@@ -60,7 +61,7 @@ import {
     ] as [string[], bigint[], BytesLike[], BytesLike, BytesLike];
     console.log('Scheduling proxy update..');
     await printBlockTime();
-    const timelockInstance = TimelockController__factory.connect(timelockAddress, account);
+    const timelockInstance = TimelockController__factory.connect(timelockAddress, owner);
     const timelockAdminAddress = await timelockInstance.getRoleMember(
         await timelockInstance.PROPOSER_ROLE(),
         0,

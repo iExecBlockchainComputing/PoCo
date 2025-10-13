@@ -5,12 +5,8 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
-    IexecPocoAccessors,
-    IexecPocoAccessors__factory,
-} from '../typechain';
+import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
+import { TAG_STANDARD } from '../utils/constants';
 import {
     IexecOrders,
     OrdersActors,
@@ -28,7 +24,6 @@ import { maxBigInt, minBigInt } from '../utils/tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
 
-const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice1 = 1_000_000_015n;
@@ -37,7 +32,6 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
 let iexecPoco: IexecInterfaceNative;
-let iexecPocoAccessors: IexecPocoAccessors; // To use `computeDealVolume()`
 let iexecWrapper: IexecWrapper;
 let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
 let [requester, appProvider, datasetProvider, scheduler, anyone, worker1]: SignerWithAddress[] = [];
@@ -58,8 +52,7 @@ describe('Integration tests', function () {
         ({ requester, appProvider, datasetProvider, scheduler, anyone, worker1 } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
-        iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);
+        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -100,7 +93,7 @@ describe('Integration tests', function () {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: standardDealTag,
+            tag: TAG_STANDARD,
             volume,
         }).toObject();
         // Create 2 different orders for the same workerpool.
@@ -124,7 +117,7 @@ describe('Integration tests', function () {
             workerpoolOrder2,
             requestOrder,
         ).toArray();
-        expect(await iexecPocoAccessors.computeDealVolume(...dealOrders1)).to.equal(dealVolume1);
+        expect(await iexecPoco.computeDealVolume(...dealOrders1)).to.equal(dealVolume1);
         const {
             dealId: dealId1,
             taskIndex: taskIndex1,
@@ -135,7 +128,7 @@ describe('Integration tests', function () {
             workerpoolOrder1,
             requestOrder,
         ); // First task index is 0.
-        expect(await iexecPocoAccessors.computeDealVolume(...dealOrders2)).to.equal(dealVolume2);
+        expect(await iexecPoco.computeDealVolume(...dealOrders2)).to.equal(dealVolume2);
         const {
             dealId: dealId2,
             taskIndex: taskIndex2,

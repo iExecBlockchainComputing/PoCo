@@ -1,0 +1,29 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "changelog-path": "CHANGELOG.md",
+      "include-v-in-tag": true,
+      "draft-pull-request": true
+    }
+  },
+  "changelog-sections": [
+    { "type": "feat", "section": "🚀 Added", "hidden": false },
+    { "type": "change", "section": "✍️ Changed", "hidden": false },
+    { "type": "deprecate", "section": "✍️ Changed", "hidden": false },
+    { "type": "remove", "section": "✍️ Changed", "hidden": false },
+    { "type": "fix", "section": "✍️ Changed", "hidden": false },
+    { "type": "revert", "section": "✍️ Changed", "hidden": false },
+    { "type": "security", "section": "✍️ Changed", "hidden": false },
+    { "type": "perf", "section": "✍️ Changed", "hidden": false },
+    { "type": "refactor", "section": "✍️ Changed", "hidden": false },
+    { "type": "style", "section": "✍️ Changed", "hidden": false },
+    { "type": "build", "section": "📋 Misc", "hidden": false },
+    { "type": "chore", "section": "📋 Misc", "hidden": false },
+    { "type": "deps", "section": "📋 Misc", "hidden": true },
+    { "type": "ci", "section": "📋 Misc", "hidden": true },
+    { "type": "test", "section": "📋 Misc", "hidden": false },
+    { "type": "docs", "section": "📋 Misc", "hidden": true }
+  ],
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+}

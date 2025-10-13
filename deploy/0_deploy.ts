@@ -14,8 +14,6 @@ import {
     DiamondLoupeFacet__factory,
     Diamond__factory,
     IexecAccessorsABILegacyFacet__factory,
-    IexecAccessorsFacet__factory,
-    IexecAccessors__factory,
     IexecCategoryManagerFacet__factory,
     IexecCategoryManager__factory,
     IexecConfigurationExtraFacet__factory,
@@ -28,6 +26,7 @@ import {
     IexecPoco1Facet__factory,
     IexecPoco2Facet__factory,
     IexecPocoAccessorsFacet__factory,
+    IexecPocoAccessors__factory,
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet__factory,
     IexecRelayFacet__factory,
@@ -39,6 +38,7 @@ import { DiamondArgsStruct } from '../typechain/contracts/Diamond';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
+import { getDeployerAndOwnerSigners } from '../utils/deploy-tools';
 import { getFunctionSelectors, linkContractToProxy } from '../utils/proxy-tools';
 import { getLibDiamondConfigOrEmpty } from '../utils/tools';
 
@@ -50,13 +50,11 @@ export default async function deploy() {
     console.log('Deploying PoCo..');
     const network = await ethers.provider.getNetwork();
     const chainId = network.chainId;
-    const [deployer] = await ethers.getSigners();
+    const { deployer } = await getDeployerAndOwnerSigners();
     console.log(`Deployer: ${deployer.address}`);
     console.log(`Network: ${network.name} (${chainId})`);
-    const deploymentOptions = config.getChainConfigOrDefault(chainId);
-    // TODO: remove the fallback on deployer address to avoid deployement
-    // misconfiguration.
-    const ownerAddress = deploymentOptions.owner || deployer.address;
+    const deploymentOptions = config.getChainConfig(chainId);
+    const ownerAddress = deploymentOptions.owner;
     factoryDeployer = new FactoryDeployer(deployer, chainId);
     // Deploy RLC
     const isTokenMode = !config.isNativeChain(deploymentOptions);
@@ -93,7 +91,6 @@ export default async function deploy() {
     const isArbitrumMainnet = (await ethers.provider.getNetwork()).chainId === 42161n;
     const facets = [
         new IexecAccessorsABILegacyFacet__factory(),
-        new IexecAccessorsFacet__factory(),
         new IexecCategoryManagerFacet__factory(),
         new IexecConfigurationExtraFacet__factory(),
         new IexecConfigurationFacet__factory(iexecLibOrders),
@@ -188,7 +185,10 @@ export default async function deploy() {
     }
 
     // Set main configuration
-    const iexecAccessorsInstance = IexecAccessors__factory.connect(diamondProxyAddress, deployer);
+    const iexecAccessorsInstance = IexecPocoAccessors__factory.connect(
+        diamondProxyAddress,
+        deployer,
+    );
     const iexecInitialized = (await iexecAccessorsInstance.eip712domain_separator()) != ZeroHash;
     if (!iexecInitialized) {
         // TODO replace this with DiamondInit.init().
@@ -231,7 +231,12 @@ export default async function deploy() {
         deployer,
         ownerAddress,
     );
-    if (network.name !== 'hardhat' && network.name !== 'localhost') {
+    // Verify contracts if not on a development network.
+    if (
+        !['hardhat', 'localhost', 'external-hardhat', 'dev-native', 'dev-token'].includes(
+            network.name,
+        )
+    ) {
         console.log('Waiting for block explorer to index the contracts...');
         await new Promise((resolve) => setTimeout(resolve, 60000));
         await import('../scripts/verify').then((module) => module.default());

@@ -11,7 +11,7 @@ export function compactSignature(signature: string): string {
 }
 
 export function bigintToAddress(bigint: bigint) {
-    return ethers.getAddress(ethers.toBeHex(bigint));
+    return ethers.getAddress(ethers.toBeHex(bigint, 20));
 }
 
 export function minBigInt(a: bigint, b: bigint) {

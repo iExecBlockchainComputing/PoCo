@@ -10,7 +10,8 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
-import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
+import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
+import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
@@ -26,13 +27,7 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is
-    IexecPoco1,
-    FacetBase,
-    IexecEscrow,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
@@ -63,6 +58,73 @@ contract IexecPoco1Facet is
         bytes calldata _signature
     ) external view override returns (bool) {
         return _verifySignatureOrPresignature(_identity, _hash, _signature);
+    }
+
+    /**
+     * @notice Public view function to check if a dataset order is compatible with a deal.
+     * This function performs all the necessary checks to verify dataset order compatibility with a deal.
+     * Reverts with `IncompatibleDatasetOrder(reason)` if the dataset order is not compatible with the deal, does
+     * nothing otherwise.
+     *
+     * @dev This function is mainly consumed by offchain clients. It should be carefully inspected if
+     * used in on-chain code.
+     * @dev This function should not be used in `matchOrders` since it does not check the same requirements.
+     * @dev The choice of reverting instead of returning true/false is motivated by the Java middleware
+     * requirements.
+     *
+     * @param dealId The deal ID to check against
+     * @param datasetOrder The dataset order to verify
+     */
+    function assertDatasetDealCompatibility(
+        IexecLibOrders_v5.DatasetOrder calldata datasetOrder,
+        bytes32 dealId
+    ) external view override {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
+        // Check if dataset order is not revoked or fully consumed.
+        // Note: This should be the first check because it is the most important
+        // and the most likely to occur (users revoking their dataset orders).
+        if ($.m_consumed[datasetOrderHash] >= datasetOrder.volume) {
+            revert IncompatibleDatasetOrder("Dataset order is revoked or fully consumed");
+        }
+        // Check dataset order signature (including presign and ERC-1271).
+        address datasetOwner = IERC5313(datasetOrder.dataset).owner();
+        if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
+            revert IncompatibleDatasetOrder("Invalid dataset order signature");
+        }
+        // The deal should exist.
+        IexecLibCore_v5.Deal storage deal = $.m_deals[dealId];
+        if (deal.requester == address(0)) {
+            revert IncompatibleDatasetOrder("Deal not found");
+        }
+        // The deal should not have a dataset.
+        if (deal.dataset.pointer != address(0)) {
+            revert IncompatibleDatasetOrder("Deal already has a dataset");
+        }
+        // The deal's app should be allowed by order restriction.
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.app.pointer)) {
+            revert IncompatibleDatasetOrder("App restriction not satisfied");
+        }
+        // The deal's workerpool should be allowed by order restriction.
+        if (
+            !_isAccountAuthorizedByRestriction(
+                datasetOrder.workerpoolrestrict,
+                deal.workerpool.pointer
+            )
+        ) {
+            revert IncompatibleDatasetOrder("Workerpool restriction not satisfied");
+        }
+        // The deal's requester should be allowed by order restriction.
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
+            revert IncompatibleDatasetOrder("Requester restriction not satisfied");
+        }
+        // The deal's tag should include all tag bits of the dataset order.
+        // Deal: 0b0101, Dataset: 0b0101 => ok
+        // Deal: 0b0101, Dataset: 0b0001 => ok
+        // Deal: 0b0101, Dataset: 0b0010 => !ok
+        if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
+            revert IncompatibleDatasetOrder("Tag compatibility not satisfied");
+        }
     }
 
     /***************************************************************************
@@ -151,7 +213,6 @@ contract IexecPoco1Facet is
          */
 
         // computation environment & allowed enough funds
-        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
         require(_requestorder.category == _workerpoolorder.category, "iExecV5-matchOrders-0x00");
         require(_requestorder.category < $.m_categories.length, "iExecV5-matchOrders-0x01");
         require(_requestorder.trust <= _workerpoolorder.trust, "iExecV5-matchOrders-0x02");
@@ -164,6 +225,8 @@ contract IexecPoco1Facet is
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
             "iExecV5-matchOrders-0x05"
         );
+        // The workerpool tag should include all tag bits of dataset, app, and requester orders.
+        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
         require(tag & ~_workerpoolorder.tag == 0x0, "iExecV5-matchOrders-0x06");
         require((tag ^ _apporder.tag)[31] & 0x01 == 0x0, "iExecV5-matchOrders-0x07");
 

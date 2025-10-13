@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ContractFactory } from 'ethers';
-import { deployments } from 'hardhat';
+import { deployments, ethers, getNamedAccounts } from 'hardhat';
 
 /**
  * Deploy a contract and save its deployment.
@@ -46,4 +46,18 @@ export async function deploy(
 export function getBaseNameFromContractFactory(contractFactory: any) {
     const name = contractFactory.constructor.name;
     return name.replace('__factory', '');
+}
+
+/**
+ * Get deployer and owner signers from named accounts.
+ * @returns An object containing deployer and owner signers
+ */
+export async function getDeployerAndOwnerSigners(): Promise<{
+    deployer: SignerWithAddress;
+    owner: SignerWithAddress;
+}> {
+    const { deployer: deployerAddress, owner: ownerAddress } = await getNamedAccounts();
+    const deployer = await ethers.getSigner(deployerAddress);
+    const owner = await ethers.getSigner(ownerAddress);
+    return { deployer, owner };
 }

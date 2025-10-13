@@ -1,21 +1,23 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "./interfaces/IOwnable.sol";
-import "./interfaces/IexecAccessors.sol";
-import "./interfaces/IexecCategoryManager.sol";
-import "./interfaces/IexecERC20.sol";
-import "./interfaces/IexecEscrowToken.sol";
-import "./interfaces/IexecEscrowTokenSwap.sol";
-import "./interfaces/IexecConfiguration.sol";
-import "./interfaces/IexecOrderManagement.sol";
-import "./interfaces/IexecPoco1.sol";
-import "./interfaces/IexecPoco2.sol";
-import "./interfaces/IexecRelay.sol";
-import "./interfaces/IexecTokenSpender.sol";
+import {IexecAccessorsABILegacy} from "./interfaces/IexecAccessorsABILegacy.sol";
+import {IexecCategoryManager} from "./interfaces/IexecCategoryManager.sol";
+import {IexecConfiguration} from "./interfaces/IexecConfiguration.sol";
+import {IexecConfigurationExtra} from "./interfaces/IexecConfigurationExtra.sol";
+import {IexecERC20} from "./interfaces/IexecERC20.sol";
+import {IexecERC20Common} from "./interfaces/IexecERC20Common.sol";
+import {IexecEscrowToken} from "./interfaces/IexecEscrowToken.sol";
+import {IexecOrderManagement} from "./interfaces/IexecOrderManagement.sol";
+import {IexecPoco1} from "./interfaces/IexecPoco1.sol";
+import {IexecPoco1Errors} from "./interfaces/IexecPoco1Errors.sol";
+import {IexecPoco2} from "./interfaces/IexecPoco2.sol";
+import {IexecPocoAccessors} from "./interfaces/IexecPocoAccessors.sol";
+import {IexecRelay} from "./interfaces/IexecRelay.sol";
+import {IexecTokenSpender} from "./interfaces/IexecTokenSpender.sol";
+import {IOwnable} from "./interfaces/IOwnable.sol";
 
 /**
  * A global interface that aggregates all the interfaces needed to interact with
@@ -24,19 +26,21 @@ import "./interfaces/IexecTokenSpender.sol";
  * Changing the name or the path would cause a breaking change in the SDK.
  */
 interface IexecInterfaceToken is
-    IOwnable,
-    IexecAccessors,
+    // TODO Remove this interface when it's not used in the middelware anymore.
+    // https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
+    IexecAccessorsABILegacy,
     IexecCategoryManager,
-    IexecERC20,
-    IexecEscrowToken,
-    IexecEscrowTokenSwap,
     IexecConfiguration,
+    IexecConfigurationExtra,
+    IexecERC20,
+    IexecERC20Common,
+    IexecEscrowToken,
     IexecOrderManagement,
     IexecPoco1,
+    IexecPoco1Errors,
     IexecPoco2,
+    IexecPocoAccessors,
     IexecRelay,
-    IexecTokenSpender
-{
-    receive() external payable override(IexecEscrowToken, IexecEscrowTokenSwap);
-    fallback() external payable override(IexecEscrowToken, IexecEscrowTokenSwap);
-}
+    IexecTokenSpender,
+    IOwnable
+{}

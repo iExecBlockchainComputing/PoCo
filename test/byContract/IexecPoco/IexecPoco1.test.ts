@@ -16,8 +16,7 @@ import {
     IexecPocoAccessors__factory,
     OwnableMock__factory,
 } from '../../../typechain';
-import { IexecPoco1 } from '../../../typechain/contracts/interfaces/IexecPoco1.v8.sol/IexecPoco1';
-import { IexecPoco1__factory } from '../../../typechain/factories/contracts/interfaces/IexecPoco1.v8.sol/IexecPoco1__factory';
+import { TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 import {
     IexecOrders,
     OrdersActors,
@@ -46,8 +45,6 @@ import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deploy
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
-const standardDealTag = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const teeDealTag = '0x0000000000000000000000000000000000000000000000000000000000000001';
 const volume = 1n;
 const botVolume = 321n;
 const someMessage = 'some-message';
@@ -60,9 +57,7 @@ const someWallet = Wallet.createRandom();
 describe('IexecPoco1', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
-    let iexecPocoAsSponsor: IexecPoco1; // Sponsor function not available yet in IexecInterfaceNative.
-    // TODO use iexecPoco when IexecInterfaceNative is up-to-date
-    // and contains the function `computeDealVolume`.
+    let iexecPocoAsSponsor: IexecInterfaceNative;
     let iexecPocoAccessors: IexecPocoAccessors;
     let iexecPocoContract: Contract;
     let iexecWrapper: IexecWrapper;
@@ -110,9 +105,9 @@ describe('IexecPoco1', () => {
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
-        iexecPocoAsSponsor = IexecPoco1__factory.connect(proxyAddress, sponsor);
+        iexecPocoAsSponsor = iexecPoco.connect(sponsor);
         iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);
-        iexecPocoContract = iexecPoco as Contract;
+        iexecPocoContract = iexecPoco as unknown as Contract;
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -133,7 +128,7 @@ describe('IexecPoco1', () => {
             assets: ordersAssets,
             prices: ordersPrices,
             requester: requester.address,
-            tag: teeDealTag,
+            tag: TAG_TEE,
             volume: volume,
         });
         const randomWallet = ethers.Wallet.createRandom();
@@ -330,7 +325,7 @@ describe('IexecPoco1', () => {
 
                     it(`Should fail to ${verifyPresignatureFunction} for an unknown messageHash for ${asset}`, async () => {
                         const { providerAddress } = orderManagement[asset];
-                        const unknownMessageHash = ethers.keccak256(ethers.toUtf8Bytes('unknown'));
+                        const unknownMessageHash = ethers.id('unknown');
 
                         const args = [
                             providerAddress,
@@ -358,7 +353,7 @@ describe('IexecPoco1', () => {
                 prices: ordersPrices,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: teeDealTag,
+                tag: TAG_TEE,
                 volume: botVolume,
                 callback: randomAddress,
                 trust: trust,
@@ -439,7 +434,7 @@ describe('IexecPoco1', () => {
             expect(deal.workerpool.price).to.equal(workerpoolPrice);
             expect(deal.trust).to.equal(trust);
             expect(deal.category).to.equal(category);
-            expect(deal.tag).to.equal(teeDealTag);
+            expect(deal.tag).to.equal(TAG_TEE);
             expect(deal.requester).to.equal(requester.address);
             expect(deal.beneficiary).to.equal(beneficiary.address);
             expect(deal.callback).to.equal(randomAddress);
@@ -462,7 +457,7 @@ describe('IexecPoco1', () => {
                 prices: ordersPrices,
                 requester: requester.address,
                 beneficiary: beneficiary.address,
-                tag: standardDealTag,
+                tag: TAG_STANDARD,
                 volume: botVolume,
                 callback: randomAddress,
                 trust: trust,
@@ -491,7 +486,7 @@ describe('IexecPoco1', () => {
             expect(deal.workerpool.price).to.equal(workerpoolPrice);
             expect(deal.trust).to.equal(trust);
             expect(deal.category).to.equal(category);
-            expect(deal.tag).to.equal(standardDealTag);
+            expect(deal.tag).to.equal(TAG_STANDARD);
             expect(deal.requester).to.equal(requester.address);
             expect(deal.beneficiary).to.equal(beneficiary.address);
             expect(deal.callback).to.equal(randomAddress);
@@ -1072,6 +1067,207 @@ describe('IexecPoco1', () => {
             await expect(
                 iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray()),
             ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+        });
+    });
+
+    describe('assertDatasetDealCompatibility', () => {
+        let dealIdWithoutDataset: string;
+        let compatibleDatasetOrder: IexecLibOrders_v5.DatasetOrderStruct;
+
+        beforeEach('Create a deal without dataset and dataset orders', async () => {
+            // Create a deal without dataset
+            const ordersWithoutDataset = buildOrders({
+                assets: { ...ordersAssets, dataset: ZeroAddress },
+                prices: ordersPrices,
+                requester: requester.address,
+                tag: TAG_TEE,
+                volume: volume,
+            });
+            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
+            await signOrders(iexecWrapper.getDomain(), ordersWithoutDataset, ordersActors);
+            dealIdWithoutDataset = getDealId(
+                iexecWrapper.getDomain(),
+                ordersWithoutDataset.requester,
+            );
+            await iexecPocoAsRequester.matchOrders(...ordersWithoutDataset.toArray());
+
+            // Create a compatible dataset order (same restrictions as the deal)
+            compatibleDatasetOrder = {
+                dataset: datasetAddress,
+                datasetprice: datasetPrice,
+                volume: volume,
+                tag: TAG_TEE,
+                apprestrict: ordersWithoutDataset.app.app,
+                workerpoolrestrict: ordersWithoutDataset.workerpool.workerpool,
+                requesterrestrict: ordersWithoutDataset.requester.requester,
+                salt: ethers.id('compatible-salt'),
+                sign: '0x',
+            };
+            await signOrder(iexecWrapper.getDomain(), compatibleDatasetOrder, datasetProvider);
+        });
+
+        it('Should not revert when dataset order is compatible with deal', async () => {
+            await expect(
+                iexecPoco.assertDatasetDealCompatibility(
+                    compatibleDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            ).to.not.be.reverted;
+        });
+
+        it('Should revert when the dataset order is revoked or fully consumed', async () => {
+            await signOrder(iexecWrapper.getDomain(), compatibleDatasetOrder, datasetProvider);
+            // Revoke order on-chain.
+            await iexecPoco
+                .connect(datasetProvider)
+                .manageDatasetOrder(
+                    createOrderOperation(compatibleDatasetOrder, OrderOperationEnum.CLOSE),
+                );
+            expect(
+                await iexecPoco.viewConsumed(iexecWrapper.hashOrder(compatibleDatasetOrder)),
+            ).equal(compatibleDatasetOrder.volume);
+
+            await expect(
+                iexecPoco.assertDatasetDealCompatibility(
+                    compatibleDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('Dataset order is revoked or fully consumed');
+        });
+
+        it('Should revert when dataset order signature is invalid', async () => {
+            // Create dataset order with invalid signature
+            const invalidSignatureDatasetOrder = {
+                ...compatibleDatasetOrder,
+                sign: randomSignature, // Invalid signature
+            };
+
+            await expect(
+                iexecPoco.assertDatasetDealCompatibility(
+                    invalidSignatureDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('Invalid dataset order signature');
+        });
+
+        it('Should revert when the deal is not found', async () => {
+            const nonExistentDealId = ethers.id('non-existent-deal');
+            await expect(
+                iexecPoco.assertDatasetDealCompatibility(compatibleDatasetOrder, nonExistentDealId),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('Deal not found');
+        });
+
+        it('Should revert when the deal already has a dataset', async () => {
+            // Use the original orders that include a dataset to create a deal with dataset
+            const ordersWithDataset = buildOrders({
+                assets: ordersAssets, // This includes the dataset
+                prices: ordersPrices,
+                requester: requester.address,
+                tag: TAG_TEE,
+                volume: volume,
+            });
+
+            // Use fresh salts to avoid order consumption conflicts
+            ordersWithDataset.app.salt = ethers.id('fresh-app-salt');
+            ordersWithDataset.dataset.salt = ethers.id('fresh-dataset-salt');
+            ordersWithDataset.workerpool.salt = ethers.id('fresh-workerpool-salt');
+            ordersWithDataset.requester.salt = ethers.id('fresh-requester-salt');
+
+            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
+            await signOrders(iexecWrapper.getDomain(), ordersWithDataset, ordersActors);
+            const dealIdWithDataset = getDealId(
+                iexecWrapper.getDomain(),
+                ordersWithDataset.requester,
+            );
+            await iexecPocoAsRequester.matchOrders(...ordersWithDataset.toArray());
+
+            await expect(
+                iexecPoco.assertDatasetDealCompatibility(compatibleDatasetOrder, dealIdWithDataset),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('Deal already has a dataset');
+        });
+
+        it('Should revert when app restriction is not satisfied', async () => {
+            // Create dataset order with incompatible app restriction
+            const incompatibleAppDatasetOrder = {
+                ...compatibleDatasetOrder,
+                apprestrict: randomAddress, // Different app restriction
+            };
+            await signOrder(iexecWrapper.getDomain(), incompatibleAppDatasetOrder, datasetProvider);
+            await expect(
+                iexecPoco.assertDatasetDealCompatibility(
+                    incompatibleAppDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('App restriction not satisfied');
+        });
+
+        it('Should revert when workerpool restriction is not satisfied', async () => {
+            // Create dataset order with incompatible workerpool restriction
+            const incompatibleWorkerpoolDatasetOrder = {
+                ...compatibleDatasetOrder,
+                workerpoolrestrict: randomAddress, // Different workerpool restriction
+            };
+            await signOrder(
+                iexecWrapper.getDomain(),
+                incompatibleWorkerpoolDatasetOrder,
+                datasetProvider,
+            );
+            await expect(
+                iexecPoco.assertDatasetDealCompatibility(
+                    incompatibleWorkerpoolDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('Workerpool restriction not satisfied');
+        });
+
+        it('Should revert when requester restriction is not satisfied', async () => {
+            // Create dataset order with incompatible requester restriction
+            const incompatibleRequesterDatasetOrder = {
+                ...compatibleDatasetOrder,
+                requesterrestrict: randomAddress, // Different requester restriction
+            };
+            await signOrder(
+                iexecWrapper.getDomain(),
+                incompatibleRequesterDatasetOrder,
+                datasetProvider,
+            );
+            await expect(
+                iexecPoco.assertDatasetDealCompatibility(
+                    incompatibleRequesterDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('Requester restriction not satisfied');
+        });
+
+        it('Should revert when tag compatibility is not satisfied', async () => {
+            // Create dataset order with incompatible tag
+            const incompatibleTagDatasetOrder = {
+                ...compatibleDatasetOrder,
+                tag: '0x0000000000000000000000000000000000000000000000000000000000000010', // Different tag
+            };
+            await signOrder(iexecWrapper.getDomain(), incompatibleTagDatasetOrder, datasetProvider);
+            await expect(
+                iexecPoco.assertDatasetDealCompatibility(
+                    incompatibleTagDatasetOrder,
+                    dealIdWithoutDataset,
+                ),
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
+                .withArgs('Tag compatibility not satisfied');
         });
     });
 
