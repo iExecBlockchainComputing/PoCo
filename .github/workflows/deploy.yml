@@ -50,7 +50,9 @@ jobs:
 
       - name: Deploy contracts
         env:
+          # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
           ARBISCAN_API_KEY: ${{ secrets.ARBISCAN_API_KEY }}
           # TODO: Use Etherscan V2 API
@@ -61,7 +63,9 @@ jobs:
       - name: Update config.json with Diamond address
         if: inputs.network != 'hardhat'
         env:
-          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }} # Fixes hardhat issue.
+          # Note: it is required to define both private key env variables when calling Hardhat.
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
         run: npx hardhat run scripts/tools/update-config.ts --network ${{ inputs.network }}
 
       - name: Save deployment artifacts and updated config
