@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
-import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
-import {FacetBase} from "./FacetBase.v8.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {FacetBase} from "./FacetBase.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.

@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
-import {IRegistry} from "../libs/PocoStorageLib.v8.sol";
+import {IRegistry} from "../libs/PocoStorageLib.sol";
 
 interface IexecPocoAccessors {
     // ========= Deal and Task Accessors =========

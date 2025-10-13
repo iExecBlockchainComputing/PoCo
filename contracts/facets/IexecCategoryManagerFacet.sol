@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "./FacetBase.sol";
+import {FacetBase} from "./FacetBase.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import "../interfaces/IexecCategoryManager.sol";
+import {IexecCategoryManager} from "../interfaces/IexecCategoryManager.sol";
+import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 
 contract IexecCategoryManagerFacet is IexecCategoryManager, FacetBase {
     /**

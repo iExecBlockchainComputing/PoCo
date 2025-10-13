@@ -1,15 +1,18 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "@iexec/solidity/contracts/ERC734/IERC734.sol";
-import "@iexec/solidity/contracts/ERC1271/IERC1271.sol";
-import "@iexec/solidity/contracts/ERC1654/IERC1654.sol";
+import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
+import {FacetBase} from "./FacetBase.sol";
+import {IERC734} from "../external/interfaces/IERC734.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import "./FacetBase.sol";
+// import "@iexec/solidity/contracts/ERC1654/IERC1654.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {FacetBase} from "./FacetBase.sol";
 
+// TODO uncomment and fix file
 contract SignatureVerifier is FacetBase {
     /**
      * Prepare message/structure predicat used for signing
@@ -79,7 +82,7 @@ contract SignatureVerifier is FacetBase {
      * Address to bytes32 casting to ERC734
      */
     function _addrToKey(address _addr) internal pure returns (bytes32) {
-        return bytes32(uint256(_addr));
+        return bytes32(uint256(uint160(_addr)));
     }
 
     /**
@@ -106,9 +109,9 @@ contract SignatureVerifier is FacetBase {
         bytes memory _signature
     ) internal view returns (bool) {
         if (_isContract(_identity)) {
-            try IERC1654(_identity).isValidSignature(_hash, _signature) returns (bytes4 value) {
-                return value == IERC1654(0).isValidSignature.selector;
-            } catch (bytes memory /*lowLevelData*/) {}
+            // try address(0)(_identity).isValidSignature(_hash, _signature) returns (bytes4 value) {
+            //     return value == address(0)(address(0)).isValidSignature.selector;
+            // } catch (bytes memory /*lowLevelData*/) {}
 
             return false;
         } else {
@@ -122,15 +125,15 @@ contract SignatureVerifier is FacetBase {
         bytes memory _signature
     ) internal view returns (bool) {
         if (_isContract(_identity)) {
-            try IERC1271(_identity).isValidSignature(_predicat, _signature) returns (bytes4 value) {
-                return value == IERC1271(0).isValidSignature.selector;
-            } catch (bytes memory /*lowLevelData*/) {}
+            // try IERC1271(_identity).isValidSignature(_predicat, _signature) returns (bytes4 value) {
+            //     return value == IERC1271(address(0)).isValidSignature.selector;
+            // } catch (bytes memory /*lowLevelData*/) {}
 
-            try IERC1654(_identity).isValidSignature(keccak256(_predicat), _signature) returns (
-                bytes4 value
-            ) {
-                return value == IERC1654(0).isValidSignature.selector;
-            } catch (bytes memory /*lowLevelData*/) {}
+            // try IERC1654(_identity).isValidSignature(keccak256(_predicat), _signature) returns (
+            //     bytes4 value
+            // ) {
+            //     return value == IERC1654(0).isValidSignature.selector;
+            // } catch (bytes memory /*lowLevelData*/) {}
 
             return false;
         } else {

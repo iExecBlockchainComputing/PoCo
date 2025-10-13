@@ -1,17 +1,16 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
-import "./FacetBase.sol";
-import "../interfaces/IexecConfiguration.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {IERC20} from "@openzeppelin/contracts-v5/token/ERC20/IERC20.sol";
+import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
+import {FacetBase} from "./FacetBase.sol";
+import {IexecConfiguration} from "../interfaces/IexecConfiguration.sol";
+import {PocoStorageLib, IRegistry, IexecHubInterface} from "../libs/PocoStorageLib.sol";
+import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
-    using SafeMathExtended for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.EIP712Domain;
 
     // TODO move this to DiamondInit.init().
@@ -52,7 +51,8 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
     function importScore(address _worker) external override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require(!$.m_v3_scoreImported[_worker], "score-already-imported");
-        $.m_workerScores[_worker] = $.m_workerScores[_worker].max(
+        $.m_workerScores[_worker] = Math.max(
+            $.m_workerScores[_worker],
             $.m_v3_iexecHub.viewScore(_worker)
         );
         $.m_v3_scoreImported[_worker] = true;
@@ -68,7 +68,7 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
         $.m_callbackgas = _callbackgas;
     }
 
-    function _chainId() internal pure returns (uint256 id) {
+    function _chainId() internal view returns (uint256 id) {
         assembly {
             id := chainid()
         }
