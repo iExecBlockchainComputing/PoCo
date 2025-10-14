@@ -7,7 +7,7 @@ import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
 import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
 import {IexecLibCore_v5} from "./IexecLibCore_v5.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
-import {IexecHubInterface} from "../interfaces/IexecHubInterface.sol";
+import {IexecHubV3Interface} from "../interfaces/IexecHubV3Interface.sol";
 
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *
@@ -73,7 +73,7 @@ library PocoStorageLib {
         IexecLibCore_v5.Category[] m_categories;
         // Backward compatibility
         // Modified in IexecConfigurationFacet.configure
-        IexecHubInterface m_v3_iexecHub;
+        IexecHubV3Interface m_v3_iexecHub;
         mapping(address /* worker */ => bool) m_v3_scoreImported;
         // /!\ New storage variables not present in v6 store.
         // A mapping to store PoCo Boost deals.

@@ -6,6 +6,6 @@ pragma solidity ^0.8.0;
 /**
  * iExec PoCo v3 interface.
  */
-interface IexecHubInterface {
+interface IexecHubV3Interface {
     function viewScore(address worker) external returns (uint256);
 }

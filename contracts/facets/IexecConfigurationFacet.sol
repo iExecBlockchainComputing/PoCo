@@ -7,7 +7,9 @@ import {IERC20} from "@openzeppelin/contracts-v5/token/ERC20/IERC20.sol";
 import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
 import {FacetBase} from "./FacetBase.sol";
 import {IexecConfiguration} from "../interfaces/IexecConfiguration.sol";
-import {PocoStorageLib, IRegistry, IexecHubInterface} from "../libs/PocoStorageLib.sol";
+import {IexecHubV3Interface} from "../interfaces/IexecHubV3Interface.sol";
+import {IRegistry} from "../registries/IRegistry.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
@@ -34,7 +36,7 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
         $.m_appregistry = IRegistry(_appregistryAddress);
         $.m_datasetregistry = IRegistry(_datasetregistryAddress);
         $.m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
-        $.m_v3_iexecHub = IexecHubInterface(_v3_iexecHubAddress);
+        $.m_v3_iexecHub = IexecHubV3Interface(_v3_iexecHubAddress);
         $.m_callbackgas = 100000;
     }
 

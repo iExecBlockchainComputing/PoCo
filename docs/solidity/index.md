@@ -1302,7 +1302,7 @@ struct PocoStorage {
   address m_teebroker;
   uint256 m_callbackgas;
   struct IexecLibCore_v5.Category[] m_categories;
-  contract IexecHubInterface m_v3_iexecHub;
+  contract IexecHubV3Interface m_v3_iexecHub;
   mapping(address => bool) m_v3_scoreImported;
 }
 ```
