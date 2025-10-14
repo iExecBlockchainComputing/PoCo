@@ -70,7 +70,6 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
     function _mintCreate(address _owner, bytes memory _args) internal returns (address) {
         // Create entry (proxy)
         address entry = Create2.deploy(0, keccak256(abi.encodePacked(_args, _owner)), proxyCode);
-        // Initialize entry (casting to address payable is a pain in ^0.5.0)
         InitializableUpgradeabilityProxy(payable(entry)).initialize(master, _args);
         // Mint corresponding token
         _mint(_owner, uint256(uint160(entry)));
