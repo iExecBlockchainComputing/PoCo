@@ -1,6 +1,14 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.2;
+/**
+ * Copied and adapted from:
+ * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.2.0/contracts/utils/Address.sol
+ *
+ * Changes:
+ * - Bump pragma solidity from 0.6.2 to 0.8.0;
+ */
+
+pragma solidity ^0.8.0;
 
 /**
  * @dev Collection of functions related to the address type
