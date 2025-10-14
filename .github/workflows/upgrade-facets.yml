@@ -1,0 +1,133 @@
+name: Upgrade PoCo Facets
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Network'
+        required: true
+        type: choice
+        options:
+          - arbitrumSepolia
+          - arbitrum
+        default: 'arbitrumSepolia'
+      dry_run:
+        description: 'Dry Run (fork test only, no actual deployment)'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  # Build and test before upgrading.
+  build-and-test:
+    uses: ./.github/workflows/main.yml
+
+  upgrade:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.network }} # Use the selected environment
+    permissions:
+      contents: write # Required to commit artifacts.
+      pull-requests: write # Required to create pull requests.
+    env:
+      # For commit action
+      COMMIT_MESSAGE: 'chore: Save upgrade artifacts - ${{ inputs.network }} (runId:${{ github.run_id }})'
+      GHA_BOT_NAME: 'GitHub Actions Bot'
+      GHA_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # Cache dependencies
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run fork test (dry run)
+        if: inputs.dry_run == true
+        env:
+          # Note: it is required to define both private key env variables when calling Hardhat.
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+        run: |
+          echo "Running upgrade in fork test mode (dry run)..."
+          if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+            export ARBITRUM_SEPOLIA_FORK=true
+          elif [ "${{ inputs.network }}" == "arbitrum" ]; then
+            export ARBITRUM_FORK=true
+          fi
+          npx hardhat run scripts/upgrades/deploy-and-update-some-facet.ts --network hardhat
+
+      - name: Execute upgrade on live network
+        if: inputs.dry_run == false
+        env:
+          # Note: it is required to define both private key env variables when calling Hardhat.
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+          ARBISCAN_API_KEY: ${{ secrets.ARBISCAN_API_KEY }}
+          # TODO: Use Etherscan V2 API
+          # EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
+          # IS_VERIFICATION_API_V2: ${{ vars.IS_VERIFICATION_API_V2 }}
+        run: |
+          npx hardhat run scripts/upgrades/deploy-and-update-some-facet.ts --network ${{ inputs.network }}
+
+      - name: Push artifacts to the current branch
+        if: inputs.dry_run == false && github.ref != 'refs/heads/main'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          file_pattern: |
+            deployments/${{ inputs.network }}/
+          commit_message: ${{ env.COMMIT_MESSAGE }}
+          commit_user_name: ${{ env.GHA_BOT_NAME }}
+          commit_user_email: ${{ env.GHA_BOT_EMAIL }}
+          commit_author: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
+
+      # Since the `main` branch is protected, create a PR to push artifacts.
+      - name: Push artifacts through a pull request
+        if: inputs.dry_run == false && github.ref == 'refs/heads/main'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: |
+            deployments/${{ inputs.network }}/
+          commit-message: ${{ env.COMMIT_MESSAGE }}
+          committer: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
+          author: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
+          branch: chore/save-upgrade-artifacts-${{ inputs.network }}-${{ github.run_id }}
+          title: ${{ env.COMMIT_MESSAGE }}
+          body: 'PR created by "Create Pull Request" GitHub Action for upgrade artifacts.'
+          draft: true
+
+      - name: Create upgrade summary
+        if: inputs.dry_run == false
+        run: |
+          echo "## Upgrade Summary 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Network**: ${{ inputs.network }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Upgrade Script**: \`scripts/upgrades/deploy-and-update-some-facet.ts\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Run ID**: ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered By**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Upgrade completed successfully!" >> $GITHUB_STEP_SUMMARY
+
+      - name: Create dry run summary
+        if: inputs.dry_run == true
+        run: |
+          echo "## Dry Run Summary 🧪" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Network**: ${{ inputs.network }} (fork)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Upgrade Script**: \`scripts/upgrades/deploy-and-update-some-facet.ts\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Mode**: Dry Run (No live deployment)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Fork test completed successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "ℹ️ To apply this upgrade on the live network, re-run with dry_run=false" >> $GITHUB_STEP_SUMMARY
