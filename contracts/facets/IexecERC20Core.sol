@@ -13,7 +13,7 @@ contract IexecERC20Core is IexecERC20Common, FacetBase {
         require(recipient != address(0), "ERC20: transfer to the zero address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_balances[sender] = $.m_balances[sender] - amount;
-        $.m_balances[recipient] = $.m_balances[recipient] - amount;
+        $.m_balances[recipient] = $.m_balances[recipient] + amount;
         emit Transfer(sender, recipient, amount);
     }
 
