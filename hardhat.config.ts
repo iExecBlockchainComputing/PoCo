@@ -195,12 +195,8 @@ const config: HardhatUserConfig = {
         },
     },
     etherscan: {
-        // TODO migrate to Etherscan V2 API and use process.env.EXPLORER_API_KEY
-        apiKey: {
-            arbitrumOne: process.env.ARBISCAN_API_KEY || '', // This name is required by the plugin.
-            arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
-            bellecour: 'nothing', // a non-empty string is needed by the plugin.
-        },
+        // Using Etherscan V2 API for unified multichain support
+        apiKey: process.env.ETHERSCAN_API_KEY || '',
         customChains: [
             {
                 network: 'viviani',
