@@ -14,7 +14,7 @@ import {
     IexecPocoBoostFacet,
     IexecPocoBoostFacet__factory,
     TestClient__factory,
-    WorkerpoolInterface__factory,
+    IWorkerpool__factory,
 } from '../typechain';
 import * as constants from '../utils/constants';
 import { TAG_TEE } from '../utils/constants';
@@ -204,7 +204,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
             expect(deal.workerpoolOwner).to.be.equal(scheduler.address);
             expect(deal.workerpoolPrice).to.be.equal(workerpoolPrice);
             expect(deal.requester).to.be.equal(requester.address);
-            const schedulerRewardRatio = await WorkerpoolInterface__factory.connect(
+            const schedulerRewardRatio = await IWorkerpool__factory.connect(
                 workerpoolAddress,
                 anyone,
             ).m_schedulerRewardRatioPolicy();
@@ -369,7 +369,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
             expect(deal.workerpoolPrice).to.be.equal(workerpoolPrice);
             expect(deal.requester).to.be.equal(requester.address);
             expect(deal.sponsor).to.be.equal(sponsor.address);
-            const schedulerRewardRatio = await WorkerpoolInterface__factory.connect(
+            const schedulerRewardRatio = await IWorkerpool__factory.connect(
                 workerpoolAddress,
                 anyone,
             ).m_schedulerRewardRatioPolicy();
