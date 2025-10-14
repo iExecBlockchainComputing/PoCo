@@ -97,7 +97,12 @@ jobs:
           commit-message: ${{ env.COMMIT_MESSAGE }}
           committer: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
           author: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
-          branch: chore/save-artifacts
+          branch: chore/save-artifacts-${{ inputs.network }}
           title: ${{ env.COMMIT_MESSAGE }}
-          body: 'PR created by "Create Pull Request" GitHub Action.'
           draft: true
+          body: |
+            🤖 This is an automated pull request to save deployment artifacts.
+            * Network: `${{ inputs.network }}`
+            * Job: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            **Note**: Verify deployment before merging this PR.
