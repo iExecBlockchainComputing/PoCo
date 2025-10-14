@@ -305,13 +305,13 @@ describe('IexecEscrowToken', () => {
                 .withArgs(proxyAddress, accountA.address, 0);
         });
         it('Should not withdraw tokens with empty balance', async () => {
-            await expect(iexecPocoAsAccountA.withdraw(amount)).to.be.revertedWithoutReason();
+            await expect(iexecPocoAsAccountA.withdraw(amount)).to.be.revertedWithPanic(0x11);
         });
         it('Should not withdraw tokens with insufficient balance', async () => {
             await rlcInstanceAsAccountA.approve(proxyAddress, amount).then((tx) => tx.wait());
             await iexecPocoAsAccountA.deposit(amount).then((tx) => tx.wait());
 
-            await expect(iexecPocoAsAccountA.withdraw(amount + 1n)).to.be.revertedWithoutReason();
+            await expect(iexecPocoAsAccountA.withdraw(amount + 1n)).to.be.revertedWithPanic(0x11);
         });
     });
 
@@ -366,7 +366,7 @@ describe('IexecEscrowToken', () => {
         it('Should not withdraw to another address with empty balance', async () => {
             await expect(
                 iexecPocoAsAccountA.withdrawTo(amount, accountB.address),
-            ).to.be.revertedWithoutReason();
+            ).to.be.revertedWithPanic(0x11);
         });
         it('Should not withdraw to another address with insufficient balance', async () => {
             await rlcInstanceAsAccountA.approve(proxyAddress, amount).then((tx) => tx.wait());
@@ -374,7 +374,7 @@ describe('IexecEscrowToken', () => {
 
             await expect(
                 iexecPocoAsAccountA.withdrawTo(amount + 1n, accountB.address),
-            ).to.be.revertedWithoutReason();
+            ).to.be.revertedWithPanic(0x11);
         });
     });
 
