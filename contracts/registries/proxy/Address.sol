@@ -11,6 +11,7 @@
 
 pragma solidity ^0.8.0;
 
+// TODO refactor this with SignatureVerifier._isContract
 library Address {
     /**
      * @dev Returns true if `account` is a contract.

@@ -5,7 +5,8 @@ pragma solidity ^0.8.0;
 
 import {FacetBase } from "./FacetBase.sol";
 import {IexecConfigurationExtra} from "../interfaces/IexecConfigurationExtra.sol";
-import {PocoStorageLib, IRegistry} from "../libs/PocoStorageLib.sol";
+import {IRegistry} from "../registries/Registry.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecConfigurationExtraFacet is IexecConfigurationExtra, FacetBase {
     function changeRegistries(

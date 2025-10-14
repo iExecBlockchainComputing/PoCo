@@ -1,13 +1,12 @@
-// SPDX-FileCopyrightText: 2023-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
 
+import {IexecHubV3Interface} from "../interfaces/IexecHubV3Interface.sol";
 import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
-import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
 import {IexecLibCore_v5} from "./IexecLibCore_v5.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
-import {IexecHubV3Interface} from "../interfaces/IexecHubV3Interface.sol";
 
 /****************************************************************************
  * WARNING: Be carefull when editing this file.                             *

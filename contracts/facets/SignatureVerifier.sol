@@ -3,14 +3,12 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
-import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
-import {FacetBase} from "./FacetBase.sol";
 import {IERC734} from "../external/interfaces/IERC734.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
 // import "@iexec/solidity/contracts/ERC1654/IERC1654.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {FacetBase} from "./FacetBase.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
 
 // TODO uncomment and fix file
 contract SignatureVerifier is FacetBase {
@@ -65,6 +63,7 @@ contract SignatureVerifier is FacetBase {
     /**
      * Check if contract exist, otherwize assumed to be EOA
      */
+    // TODO refactor this with Address library.
     function _isContract(address account) internal view returns (bool) {
         // According to EIP-1052, 0x0 is the value returned for not-yet created accounts
         // and 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470 is returned

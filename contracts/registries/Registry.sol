@@ -3,12 +3,12 @@
 
 pragma solidity ^0.8.0;
 
-import "./upgradeability/InitializableUpgradeabilityProxy.sol";
+import "./proxy/InitializableUpgradeabilityProxy.sol";
 import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
 import {ERC721} from "@openzeppelin/contracts-v5/token/ERC721/ERC721.sol";
-import {ERC721Enumerable} from "@openzeppelin/contracts-v5/token/ERC721/extensions/ERC721Enumerable.sol";
 import {Create2} from "@openzeppelin/contracts-v5/utils/Create2.sol";
 import {IRegistry} from "./IRegistry.sol";
+import {ERC721Enumerable} from "@openzeppelin/contracts-v5/token/ERC721/extensions/ERC721Enumerable.sol";
 
 abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
     address public master;
