@@ -22,9 +22,15 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Required for saving deployment
     environment: ${{ inputs.network }} # Use the selected environment
+    permissions:
+      contents: write # Required to commit artifacts.
+      pull-requests: write # Required to create pull requests.
+    env:
+      # For commit action
+      COMMIT_MESSAGE: 'chore: Save artifacts - ${{ inputs.network }} (runId:${{ github.run_id }})'
+      GHA_BOT_NAME: 'GitHub Actions Bot'
+      GHA_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,12 +74,35 @@ jobs:
           ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
         run: npx hardhat run scripts/tools/update-config.ts --network ${{ inputs.network }}
 
-      - name: Save deployment artifacts and updated config
-        if: inputs.network != 'hardhat'
+      - name: Push artifacts to the current branch
+        if: inputs.network != 'hardhat' && github.ref != 'refs/heads/main'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'chore: Save deployment artifacts for ${{ inputs.network }} (run_id: ${{ github.run_id }})'
-          file_pattern: 'deployments/${{ inputs.network }}/* config/config.json'
-          commit_user_name: 'GitHub Actions Bot'
-          commit_user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_author: 'GitHub Actions Bot <github-actions[bot]@users.noreply.github.com>'
+          file_pattern: |
+            config/config.json
+            deployments/${{ inputs.network }}/
+          commit_message: ${{ env.COMMIT_MESSAGE }}
+          commit_user_name: ${{ env.GHA_BOT_NAME }}
+          commit_user_email: ${{ env.GHA_BOT_EMAIL }}
+          commit_author: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
+
+      # Since the `main` branch is protected, create a PR to push artifacts.
+      - name: Push artifacts through a pull request
+        if: inputs.network != 'hardhat' && github.ref == 'refs/heads/main'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: |
+            config/config.json
+            deployments/${{ inputs.network }}/
+          commit-message: ${{ env.COMMIT_MESSAGE }}
+          committer: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
+          author: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
+          branch: chore/save-artifacts-${{ inputs.network }}
+          title: ${{ env.COMMIT_MESSAGE }}
+          draft: true
+          body: |
+            🤖 This is an automated pull request to save deployment artifacts.
+            * Network: `${{ inputs.network }}`
+            * Job: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            **Note**: Verify deployment before merging this PR.
