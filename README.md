@@ -1,6 +1,7 @@
 # iExec PoCo Smart Contracts
 
 [![codecov](https://codecov.io/github/iExecBlockchainComputing/PoCo/graph/badge.svg)](https://codecov.io/github/iExecBlockchainComputing/PoCo)
+[![npm version](https://img.shields.io/npm/v/@iexec/poco.svg)](https://www.npmjs.com/package/@iexec/poco)
 
 # Introduction
 
