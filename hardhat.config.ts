@@ -199,14 +199,6 @@ const config: HardhatUserConfig = {
         apiKey: process.env.EXPLORER_API_KEY || '',
         customChains: [
             {
-                network: 'viviani',
-                chainId: 133,
-                urls: {
-                    apiURL: 'https://blockscout.viviani.iex.ec/api',
-                    browserURL: 'https://blockscout.viviani.iex.ec/',
-                },
-            },
-            {
                 network: 'bellecour',
                 chainId: 134,
                 urls: {
