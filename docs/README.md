@@ -37,7 +37,7 @@ This project uses trunk-based development workflow with automatic release manage
 
 ### Build
 
-The PoCo smart contracts are in the `contracts/` folder. Json artifacts, containing the contracts bytecode and ABI can be found in the `artifacts/` folder. In case you need to regenerate them, you can use the following command:
+The PoCo smart contracts are in the `contracts/` folder. JSON artifacts, containing the contracts bytecode and ABI can be found in the `artifacts/` folder. In case you need to regenerate them, you can use the following command:
 ```
 npm install
 npm run build
@@ -71,7 +71,7 @@ The automatic testing command uses the Hardhat network by default to run the tes
     - Or run any other blockchain client.
 2. **[Optional]** Update the configuration
 
-    If your blockchain listen to a port that is not 8545, or if the blockchain is on a different node, update the `hardhat.config.ts` configuration (network ports, accounts with mnemonic, ..) accordingly to the [Hardhat Configuration](https://hardhat.org/hardhat-runner/docs/config) documentation.
+    If your blockchain listens to a port that is not 8545, or if the blockchain is on a different node, update the `hardhat.config.ts` configuration (network ports, accounts with mnemonic, ..) accordingly to the [Hardhat Configuration](https://hardhat.org/hardhat-runner/docs/config) documentation.
 3. Run tests
 ```
 npm run test -- --network <networkUrl>
@@ -95,7 +95,7 @@ It contains:
 - A list of categories created during the deployment process. Additional categories can be created by the contract administrator using the `createCategory` function.
 - For each chain id, a quick configuration:
     - **"asset":** can be "Token" or "Native", select which escrow to use.
-    - **"token":** the address of the token to use. If asset is set to token, and no token address is provided, a mock will be deployed on the fly.
+    - **"token":** the address of the token to use. If asset is set to `Token`, and no token address is provided, a mock will be deployed on the fly.
     - **"v3":** a list of resources from a previous (v3) deployment. This allows previous resources to be automatically available. It also enables score transfer from v3 to v5. [optional]
     - **"v5":** deployment parameters for the new version. If factory address is set, and no salt is provided, `bytes32(0)` will be used by default.
 
@@ -114,17 +114,16 @@ If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the
 Environment variable can be used to alter the configuration of a deployment:
 - **SALT**: if set, the `SALT` env var will overwrite the salt parameter from the config. This can be useful to distinguish different deployments without modifying the config.
 
+> **Warning:** Changing the `SALT` value will result in different contract addresses being derived. If you rely on deterministic deployment addresses for integrations or other purposes, ensure you understand the consequences before modifying the salt. Unintended changes may break existing integrations or expectations.
+
 Additionally, the migration process will look for some smart contracts before deploying new instances. This is true of the application, dataset and workerpool registries. Thus, if different marketplaces are deployed to the same network, they will share these registries.
 
 ##### Run the deployment script
 
-You can deploy the smart contracts according to the [deploy/0_deploy.ts](./deploy/0_deploy.ts) content. This will automatically save addresses of the deployed artifacts to `deployments/` folder.
+You can deploy the smart contracts according to the [deploy/0_deploy.ts](./deploy/0_deploy.ts) content.
+This will automatically save addresses of the deployed artifacts to `deployments/<network>` folder.
 
 To deploy using the CLI:
-
-1. Make sure you followed the "Configure a deployment" section above
-2. Enter
-3. Run the deployment using:
 
 ```
 npm run deploy -- --network <your network name>

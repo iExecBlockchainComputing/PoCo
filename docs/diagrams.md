@@ -14,7 +14,7 @@ Possible workflows:
 flowchart TB
     UNSET --> |if deadline and claim| FAILED
     UNSET --> |if matchOrder and initialize| ACTIVE
-    ACTIVE["ACTIVE <br> (waiting for contributions)"] --> |if weigh of contributions > requested trust| REVEALING
+    ACTIVE["ACTIVE <br> (waiting for contributions)"] --> |if weight of contributions > requested trust| REVEALING
     ACTIVE --> |if deadline and claim| FAILED
     REVEALING["REVEALING <br> (waiting for reveals)"] --> |if deadline and claim| FAILED
     REVEALING --> |if deadline and claim| FAILED

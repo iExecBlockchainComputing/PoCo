@@ -22,7 +22,7 @@ This repository contains the smart contract implementation of iExec's Proof of C
 
 - [iExec technical documentation](https://docs.iex.ec/)
 - [Protocol specific documentation](https://docs.iex.ec/protocol/proof-of-contribution)
-- [Solidity contracts API](./docs/README.md#solidity-contracts-API)
+- [Solidity contracts API](./docs/README.md#solidity-contracts-api)
 - [Technical README](./docs/README.md)
 
 ## Resources
