@@ -73,10 +73,7 @@ jobs:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
-          ARBISCAN_API_KEY: ${{ secrets.ARBISCAN_API_KEY }}
-          # TODO: Use Etherscan V2 API
-          # EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
-          # IS_VERIFICATION_API_V2: ${{ vars.IS_VERIFICATION_API_V2 }}
+          EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
         run: |
           npx hardhat run scripts/upgrades/deploy-and-update-some-facet.ts --network ${{ inputs.network }}
 
@@ -105,29 +102,3 @@ jobs:
           title: ${{ env.COMMIT_MESSAGE }}
           body: 'PR created by "Create Pull Request" GitHub Action for upgrade artifacts.'
           draft: true
-
-      - name: Create upgrade summary
-        if: inputs.dry_run == false
-        run: |
-          echo "## Upgrade Summary 🚀" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Network**: ${{ inputs.network }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Upgrade Script**: \`scripts/upgrades/deploy-and-update-some-facet.ts\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Run ID**: ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Triggered By**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Timestamp**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Upgrade completed successfully!" >> $GITHUB_STEP_SUMMARY
-
-      - name: Create dry run summary
-        if: inputs.dry_run == true
-        run: |
-          echo "## Dry Run Summary 🧪" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Network**: ${{ inputs.network }} (fork)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Upgrade Script**: \`scripts/upgrades/deploy-and-update-some-facet.ts\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Mode**: Dry Run (No live deployment)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Fork test completed successfully!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "ℹ️ To apply this upgrade on the live network, re-run with dry_run=false" >> $GITHUB_STEP_SUMMARY
