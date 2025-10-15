@@ -60,7 +60,6 @@ jobs:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
-          # TODO: Use Etherscan V2 API
           EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
         run: npm run deploy -- --network ${{ inputs.network }}
 
