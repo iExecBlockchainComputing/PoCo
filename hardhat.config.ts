@@ -196,7 +196,7 @@ const config: HardhatUserConfig = {
     },
     etherscan: {
         // Using Etherscan V2 API for unified multichain support
-        apiKey: process.env.ETHERSCAN_API_KEY || '',
+        apiKey: process.env.EXPLORER_API_KEY || '',
         customChains: [
             {
                 network: 'viviani',
