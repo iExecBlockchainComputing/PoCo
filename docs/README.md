@@ -154,7 +154,15 @@ Format a specific file or files in a directory:
 npm run format <filePath|folderPath>
 ```
 
-### Render UML diagrams
+### Update documentation
+
+#### Solidity contracts API
+
+```
+npm run doc
+```
+
+#### UML diagrams rendering
 
 To render all UML diagrams:
 ```
