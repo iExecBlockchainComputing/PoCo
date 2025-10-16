@@ -26,10 +26,11 @@ This repository contains the smart contract implementation of iExec's Proof of C
 - [Technical README](./docs/README.md)
 
 ## Resources
-- **NPM Package**: [@iexec/poco](https://www.npmjs.com/package/@iexec/poco) bundles all contracts' source code and ABIs, along with deployment artifacts.
-- **ABIs**: available in the `abis/` directory of this repository and the published NPM package.
-<br>Note: ⚠️ `artifacts/` folder is deprecated and will be removed in future versions, use `abis/` instead.
+- **NPM Package**: [@iexec/poco](https://www.npmjs.com/package/@iexec/poco) includes all smart contract source code, ABIs, and deployment artifacts.
+- **ABIs**: available in the `abis/` directory of this repository and the published NPM package.<br>
+    Note: ⚠️ `artifacts/` folder is deprecated and will be removed in future versions.
 - **Deployment addresses**: available in the `deployments/` folder of this repository and the published NPM package.
+- **Subgraph**: the Subgraph indexing the Arbitrum deployment is available on [The Graph Explorer](https://thegraph.com/explorer/subgraphs/B1comLe9SANBLrjdnoNTJSubbeC7cY7EoNu6zD82HeKy?view=Query&chain=arbitrum-one).
 
 ## Audits
 
