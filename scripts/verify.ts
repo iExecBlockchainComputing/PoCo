@@ -69,7 +69,7 @@ async function verify(contracts?: ContractToVerify[]): Promise<void> {
  *
  * @param contracts - Optional array of specific contracts to verify.
  */
-async function tryVerify(contracts?: ContractToVerify[]): Promise<void> {
+export async function tryVerify(contracts?: ContractToVerify[]): Promise<void> {
     try {
         await verify(contracts);
     } catch (error) {
@@ -112,5 +112,3 @@ if (require.main === module) {
             process.exit(1);
         });
 }
-
-export default tryVerify;
