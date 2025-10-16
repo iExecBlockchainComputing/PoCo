@@ -12,33 +12,6 @@ export interface ContractToVerify {
 }
 
 /**
- * Gets contracts to verify from deployments directory.
- */
-async function getContractsFromDeployments(): Promise<ContractToVerify[]> {
-    const jsonExtension = '.json';
-    const contractNames = fs
-        .readdirSync(path.resolve(__dirname, `../deployments/${hre.network.name}`))
-        .filter((file) => file.endsWith(jsonExtension))
-        .map((filePath) => filePath.replace(jsonExtension, ''));
-
-    if (contractNames.length === 0) {
-        console.log(`\nNo contracts to verify on network: ${hre.network.name}`);
-        return [];
-    }
-
-    const contracts: ContractToVerify[] = [];
-    for (const contractName of contractNames) {
-        const deployment = await deployments.get(contractName);
-        contracts.push({
-            name: contractName,
-            address: deployment.address,
-            constructorArguments: deployment.args || [],
-        });
-    }
-    return contracts;
-}
-
-/**
  * Attempts to verify contracts without throwing errors.
  * This is useful when verification is optional and should not break the deployment process.
  *
@@ -60,6 +33,33 @@ async function tryVerify(contracts?: ContractToVerify[]): Promise<void> {
  *                    will verify all contracts from the deployments/{network} directory.
  */
 async function verify(contracts?: ContractToVerify[]): Promise<void> {
+    /**
+     * Gets contracts to verify from deployments directory.
+     */
+    async function getContractsFromDeployments(): Promise<ContractToVerify[]> {
+        const jsonExtension = '.json';
+        const contractNames = fs
+            .readdirSync(path.resolve(__dirname, `../deployments/${hre.network.name}`))
+            .filter((file) => file.endsWith(jsonExtension))
+            .map((filePath) => filePath.replace(jsonExtension, ''));
+
+        if (contractNames.length === 0) {
+            console.log(`\nNo contracts to verify on network: ${hre.network.name}`);
+            return [];
+        }
+
+        const contracts: ContractToVerify[] = [];
+        for (const contractName of contractNames) {
+            const deployment = await deployments.get(contractName);
+            contracts.push({
+                name: contractName,
+                address: deployment.address,
+                constructorArguments: deployment.args || [],
+            });
+        }
+        return contracts;
+    }
+
     const skippedNetworks: string[] = [
         'hardhat',
         'localhost',
