@@ -19,7 +19,7 @@ import { linkContractToProxy } from '../../utils/proxy-tools';
 import { tryVerify } from '../verify';
 import { printFunctions } from './upgrade-helper';
 
-(async () => {
+async function main() {
     console.log('Deploying and updating IexecPocoAccessorsFacet & IexecPoco1Facet...');
 
     const { deployer, owner } = await getDeployerAndOwnerSigners();
@@ -173,4 +173,11 @@ import { printFunctions } from './upgrade-helper';
             constructorArguments: [],
         },
     ]);
-})();
+}
+
+if (require.main === module) {
+    main().catch((error) => {
+        console.error(error);
+        process.exitCode = 1;
+    });
+}
