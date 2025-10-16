@@ -77,7 +77,6 @@ jobs:
           EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
         run: |
           npx hardhat run scripts/upgrades/apply-v6.1.0-upgrade.ts --network ${{ inputs.network }}
-          echo "✅ Upgrade completed successfully on ${{ inputs.network }}"
 
       - name: Push artifacts to the current branch
         if: inputs.dry_run == false && github.ref != 'refs/heads/main'
