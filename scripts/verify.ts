@@ -105,7 +105,7 @@ async function getContractsFromDeployments(): Promise<ContractToVerify[]> {
 }
 
 if (require.main === module) {
-    verify()
+    tryVerify()
         .then(() => process.exit(0))
         .catch((error) => {
             console.error(error);
@@ -113,5 +113,4 @@ if (require.main === module) {
         });
 }
 
-export default verify;
-export { tryVerify };
+export default tryVerify;
