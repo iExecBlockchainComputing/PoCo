@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
-import verify from '../scripts/verify';
+import { tryVerify } from '../scripts/verify';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
@@ -233,7 +233,7 @@ export default async function deploy() {
         ownerAddress,
     );
     // Verify contracts if not on a development network.
-    await verify();
+    await tryVerify();
 }
 
 async function getOrDeployRlc(

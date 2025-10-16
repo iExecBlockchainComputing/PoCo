@@ -39,6 +39,20 @@ async function getContractsFromDeployments(): Promise<ContractToVerify[]> {
 }
 
 /**
+ * Attempts to verify contracts without throwing errors.
+ * This is useful when verification is optional and should not break the deployment process.
+ *
+ * @param contracts - Optional array of specific contracts to verify.
+ */
+async function tryVerify(contracts?: ContractToVerify[]): Promise<void> {
+    try {
+        await verify(contracts);
+    } catch (error) {
+        console.error('Verification failed, but continuing with deployment:', error);
+    }
+}
+
+/**
  * Verifies contracts on block explorer (e.g., Etherscan, Arbiscan).
  * Can verify either specific contracts or all contracts from deployments directory.
  *
@@ -46,14 +60,14 @@ async function getContractsFromDeployments(): Promise<ContractToVerify[]> {
  *                    will verify all contracts from the deployments/{network} directory.
  */
 async function verify(contracts?: ContractToVerify[]): Promise<void> {
-    const skipNetworks: string[] = [
+    const skippedNetworks: string[] = [
         'hardhat',
         'localhost',
         'external-hardhat',
         'dev-native',
         'dev-token',
     ];
-    if (skipNetworks.includes(hre.network.name)) {
+    if (skippedNetworks.includes(hre.network.name)) {
         console.log(`\nSkipping verification on development network: ${hre.network.name}`);
         return;
     }
@@ -100,3 +114,4 @@ if (require.main === module) {
 }
 
 export default verify;
+export { tryVerify };
