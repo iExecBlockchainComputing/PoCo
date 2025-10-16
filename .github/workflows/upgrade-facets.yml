@@ -1,6 +1,6 @@
 # This is a template workflow for upgrading PoCo facets.
 # Update the script path and workflow name for each specific upgrade,
-# or use this as-is for ad-hoc facet upgrades via the deploy-and-update-some-facet.ts script.
+# or use this as-is for ad-hoc facet upgrades via the apply-v6.1.0-upgrade.ts script.
 name: Upgrade PoCo Facets
 
 on:
@@ -67,7 +67,7 @@ jobs:
           elif [ "${{ inputs.network }}" == "arbitrum" ]; then
             export ARBITRUM_FORK=true
           fi
-          npx hardhat run scripts/upgrades/deploy-and-update-some-facet.ts --network hardhat
+          npx hardhat run scripts/upgrades/apply-v6.1.0-upgrade.ts --network hardhat
 
       - name: Execute upgrade on live network
         if: inputs.dry_run == false
@@ -78,7 +78,7 @@ jobs:
           RPC_URL: ${{ secrets.RPC_URL }}
           EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
         run: |
-          npx hardhat run scripts/upgrades/deploy-and-update-some-facet.ts --network ${{ inputs.network }}
+          npx hardhat run scripts/upgrades/apply-v6.1.0-upgrade.ts --network ${{ inputs.network }}
 
       - name: Push artifacts to the current branch
         if: inputs.dry_run == false && github.ref != 'refs/heads/main'
