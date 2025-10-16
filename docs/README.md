@@ -1,5 +1,8 @@
 # Developer documentation
 
+> **Note:** <br>
+> For detailed explanations of all technical concepts, please refer to https://protocol.docs.iex.ec.
+
 ## Solidity contracts API
 
 The detailed API documentation for each Solidity contract — including their functions, events, and data structures — can be found [here](./solidity/index.md).
