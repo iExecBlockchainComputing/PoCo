@@ -195,21 +195,9 @@ const config: HardhatUserConfig = {
         },
     },
     etherscan: {
-        // TODO migrate to Etherscan V2 API and use process.env.EXPLORER_API_KEY
-        apiKey: {
-            arbitrumOne: process.env.ARBISCAN_API_KEY || '', // This name is required by the plugin.
-            arbitrumSepolia: process.env.ARBISCAN_API_KEY || '',
-            bellecour: 'nothing', // a non-empty string is needed by the plugin.
-        },
+        // Using Etherscan V2 API for unified multichain support
+        apiKey: process.env.EXPLORER_API_KEY || '',
         customChains: [
-            {
-                network: 'viviani',
-                chainId: 133,
-                urls: {
-                    apiURL: 'https://blockscout.viviani.iex.ec/api',
-                    browserURL: 'https://blockscout.viviani.iex.ec/',
-                },
-            },
             {
                 network: 'bellecour',
                 chainId: 134,
