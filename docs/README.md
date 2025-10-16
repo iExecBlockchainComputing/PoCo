@@ -1,26 +1,191 @@
-# UMLs
+# Developer documentation
 
-## Contracts and Actors Architecture
-[![Contracts and Actors Architecture](https://tinyurl.com/2l3942fk)](https://tinyurl.com/2l3942fk)<!--![Contracts and Actors Architecture](./uml/architecture-ODB.puml)-->
+> **Note:** <br>
+> For detailed explanations of all technical concepts, please refer to https://protocol.docs.iex.ec.
 
-## Workflows
+## Solidity contracts API
 
-### Nominal
-[![Nominal workflow sequence](https://tinyurl.com/2nb5oau3)](https://tinyurl.com/2nb5oau3)<!--![Nominal workflow sequence](./uml/nominalworkflow-ODB.puml)-->
+The detailed API documentation for each Solidity contract — including their functions, events, and data structures — can be found [here](./solidity/index.md).
 
-### Nominal+TEE
-[![Nominal workflow sequence w/ TEE](https://tinyurl.com/2jwzqrgx)](https://tinyurl.com/2jwzqrgx)<!--![Nominal workflow sequence w/ TEE](./uml/nominalworkflow-ODB+TEE.puml)-->
+## Diagrams
 
-### Boost
-[![Boost workflow sequence](https://tinyurl.com/2oofk7yf)](https://tinyurl.com/2oofk7yf)<!--![Boost workflow sequence](./uml/boost-workflow-ODB.puml)-->
+### UML diagrams
 
-### Nominal vs Boost vs Nominal TEE: From Match to Finalize
+- [Actors diagram](./diagrams.md#actors-diagram)
+- [Task statuses](./diagrams.md#task-statuses)
+- [Contribution statuses](./diagrams.md#contribution-statuses)
+- [Nominal workflow sequence](./diagrams.md#nominal)
+- [Nominal workflow sequence with TEE](./diagrams.md#nominaltee)
+- [Boost workflow sequence](./diagrams.md#boost)
+- UML class diagrams related to:
+    - [IexecPoco1Facet & IexecPoco2Facet](./uml/class-uml-IexecPocoFacets.svg)
+    - [IexecPocoBoostFacet](./uml/class-uml-IexecPocoBoostFacet.svg)
+    - [IexecEscrows](./uml/class-uml-IexecEscrows.svg)
+    - [iExec PoCo registries](./uml/class-uml-dir-registries.svg)
+    - [iExec PoCo libraries](./uml/class-uml-dir-libs.svg)
+    - [iExec PoCo modules (facets)](./uml/class-uml-dir-facets.svg)
 
-* Nominal
-[![Nominal](https://tinyurl.com/2o4xu745)](https://tinyurl.com/2o4xu745)<!--![Nominal](./uml/workflow-ODB-2a-match2finalize-nominal.puml)-->
+### Storage diagrams
 
-* Boost
-[![Boost](https://tinyurl.com/2mmsokrr)](https://tinyurl.com/2mmsokrr)<!--![Boost](./uml/workflow-ODB-2b-match2finalize-boost.puml)-->
+- [Diamond storage](./uml/storage-diagram-diamond.svg)
+- [PoCo storage](./uml/storage-diagram-poco.svg)
 
-* Nominal TEE
-[![Nominal TEE](https://tinyurl.com/2zubyfvw)](https://tinyurl.com/2zubyfvw)<!--![Nominal TEE](./uml/workflow-ODB-2c-match2finalize-nominal-tee.puml)-->
+## Development
+
+This project uses trunk-based development workflow with automatic release management. It means that:
+- Only squash merge commits are accepted.
+- When merging a PR, its title is used as the commit message (configured in GitHub).
+- A check is added to enforce using the correct format for PR titles (feat:..., fix:..., ...).
+- Release please is used to manage Github releases.
+
+### Build
+
+The PoCo smart contracts are in the `contracts/` folder. JSON artifacts, containing the contracts bytecode and ABI can be found in the `artifacts/` folder. In case you need to regenerate them, you can use the following command:
+```
+npm install
+npm run build
+```
+
+### Test
+
+#### Automatic testing
+
+PoCo smart contracts come with a test suite in the `./test` folder. You can startup a sandbox blockchain and run the tests using the following command:
+
+```
+npm install
+npm run test
+```
+
+Additionally, you can produce a coverage report using the following command:
+```
+npm run coverage
+```
+
+The automatic testing command uses the Hardhat network by default to run the tests.
+
+#### Testing on a custom blockchain
+
+1. Start a blockchain
+    -   You can either use the Hardhat CLI with the following command:
+    ```
+    npx hardhat node [<any additional arguments>]
+    ```
+    - Or run any other blockchain client.
+2. **[Optional]** Update the configuration
+
+    If your blockchain listens to a port that is not 8545, or if the blockchain is on a different node, update the `hardhat.config.ts` configuration (network ports, accounts with mnemonic, ..) accordingly to the [Hardhat Configuration](https://hardhat.org/hardhat-runner/docs/config) documentation.
+3. Run tests
+```
+npm run test -- --network <networkUrl>
+```
+
+### Deploy
+
+#### Automated deployment
+
+This is the recommended approach for production deployments. GitHub Actions should be used to deploy all contracts.
+
+#### Command line deployment
+
+##### [Optional] Configure a new deployment
+
+Starting from version 5, the PoCo uses a modular design based on [ERC-2535](https://eips.ethereum.org/EIPS/eip-2535). Tests and deployment scripts will use different modules (facets) and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated Sidechains (Native token based RLC).
+
+The configuration file is located in `./config/config.json`.
+
+It contains:
+- A list of categories created during the deployment process. Additional categories can be created by the contract administrator using the `createCategory` function.
+- For each chain id, a quick configuration:
+    - **"asset":** can be "Token" or "Native", select which escrow to use.
+    - **"token":** the address of the token to use. If asset is set to `Token`, and no token address is provided, a mock will be deployed on the fly.
+    - **"v3":** a list of resources from a previous (v3) deployment. This allows previous resources to be automatically available. It also enables score transfer from v3 to v5. [optional]
+    - **"v5":** deployment parameters for the new version. If factory address is set, and no salt is provided, `bytes32(0)` will be used by default.
+
+If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the recommended process is to:
+
+0. Edit the `./config/config.json` file as follows:
+1. Create a new entry under "chains" with your chain id;
+2. Set the asset type depending on your blockchain;
+3. If you are using `"asset": "Token"`, provide the address of the token you want to use;
+4. Unless you know what you are doing, leave all `"v3"` resources to `Null`;
+5. Use the factory with the same salt as the other blockchains, and use the same wallet as previous deployments to have the same deployment address on this new blockchain.
+6. Add the target network config in `hardhat.config.ts`.
+
+##### [Optional] Additional configuration & environment variables
+
+Environment variable can be used to alter the configuration of a deployment:
+- **SALT**: if set, the `SALT` env var will overwrite the salt parameter from the config. This can be useful to distinguish different deployments without modifying the config.
+
+> **Warning:** Changing the `SALT` value will result in different contract addresses being derived. If you rely on deterministic deployment addresses for integrations or other purposes, ensure you understand the consequences before modifying the salt. Unintended changes may break existing integrations or expectations.
+
+Additionally, the migration process will look for some smart contracts before deploying new instances. This is true of the application, dataset and workerpool registries. Thus, if different marketplaces are deployed to the same network, they will share these registries.
+
+##### Run the deployment script
+
+You can deploy the smart contracts according to the [deploy/0_deploy.ts](./deploy/0_deploy.ts) content.
+This will automatically save addresses of the deployed artifacts to `deployments/<network>` folder.
+
+To deploy using the CLI:
+
+```
+npm run deploy -- --network <your network name>
+```
+
+Example with custom salt:
+
+```
+SALT=0x0000000000000000000000000000000000000000000000000000000000000001 npx hardhat deploy --network hardhat
+```
+
+
+#### Contract verification
+
+To verify contracts:
+
+```
+npm run verify:all -- --network <your network name> # e.g. arbitrum
+```
+
+This script automatically reads all deployed contract addresses and their constructor arguments from the deployment artifacts and verifies them on the relevant block explorer.
+
+
+### Formatting
+
+Format a specific file or files in a directory:
+```
+npm run format <filePath|folderPath>
+```
+
+### Update documentation
+
+#### Solidity contracts API
+
+```
+npm run doc
+```
+
+#### UML diagrams rendering
+
+To render all UML diagrams:
+```
+npm run uml
+```
+
+To render only class diagrams:
+
+```
+npm run sol-to-uml
+```
+
+To render only .puml files:
+
+```
+npm run puml-to-links
+```
+
+To render only storage diagrams:
+
+```
+npm run storage-to-diagrams
+```
