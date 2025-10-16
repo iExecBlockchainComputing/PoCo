@@ -30,7 +30,9 @@ This repository contains the smart contract implementation of iExec's Proof of C
 - **ABIs**: available in the `abis/` directory of this repository and the published NPM package.<br>
     Note: ⚠️ `artifacts/` folder is deprecated and will be removed in future versions.
 - **Deployment addresses**: available in the `deployments/` folder of this repository and the published NPM package.
-- **Subgraph**: the Subgraph indexing the Arbitrum deployment is available on [The Graph Explorer](https://thegraph.com/explorer/subgraphs/B1comLe9SANBLrjdnoNTJSubbeC7cY7EoNu6zD82HeKy?view=Query&chain=arbitrum-one).
+- **Subgraph**: the Subgraph indexing Arbitrum deployments is available on [The Graph Explorer](https://thegraph.com/explorer/):
+    - [Arbitrum Mainnet](https://thegraph.com/explorer/subgraphs/B1comLe9SANBLrjdnoNTJSubbeC7cY7EoNu6zD82HeKy?view=Query&chain=arbitrum-one)
+    - [Arbitrum Sepolia Testnet](https://thegraph.com/explorer/subgraphs/2GCj8gzLCihsiEDq8cYvC5nUgK6VfwZ6hm3Wj8A3kcxz?view=Query&chain=arbitrum-one)
 
 ## Audits
 
