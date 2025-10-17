@@ -1,4 +1,6 @@
-name: Deploy PoCo Contracts
+# This is a template workflow for upgrading PoCo facets.
+# Update the script path for each specific upgrade.
+name: Upgrade PoCo Facets
 
 on:
   workflow_dispatch:
@@ -8,18 +10,21 @@ on:
         required: true
         type: choice
         options:
-          - hardhat
           - arbitrumSepolia
           - arbitrum
-          - bellecour
-        default: 'hardhat'
+        default: 'arbitrumSepolia'
+      dry_run:
+        description: 'Dry Run (fork test only, no actual deployment)'
+        required: false
+        type: boolean
+        default: true
 
 jobs:
-  # Build and test before deploying.
+  # Build and test before upgrading.
   build-and-test:
     uses: ./.github/workflows/main.yml
 
-  deploy:
+  upgrade:
     needs: build-and-test
     runs-on: ubuntu-latest
     environment: ${{ inputs.network }} # Use the selected environment
@@ -28,7 +33,7 @@ jobs:
       pull-requests: write # Required to create pull requests.
     env:
       # For commit action
-      COMMIT_MESSAGE: 'chore: Save artifacts - ${{ inputs.network }} (runId:${{ github.run_id }})'
+      COMMIT_MESSAGE: 'chore: Save upgrade artifacts - ${{ inputs.network }} (runId:${{ github.run_id }})'
       GHA_BOT_NAME: 'GitHub Actions Bot'
       GHA_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
     steps:
@@ -47,36 +52,37 @@ jobs:
       - name: Build
         run: npm run build
 
-      # TODO activate later.
-      # - name: Run fork tests
-      #   run: |
-      #     if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
-      #       npm run test:arbitrumSepolia
-      #     fi
+      - name: Run fork test (dry run)
+        if: inputs.dry_run == true
+        env:
+          # Note: it is required to define both private key env variables when calling Hardhat.
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
+        run: |
+          echo "Running upgrade in fork test mode (dry run)..."
+          if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+            export ARBITRUM_SEPOLIA_FORK=true
+          elif [ "${{ inputs.network }}" == "arbitrum" ]; then
+            export ARBITRUM_FORK=true
+          fi
+          npx hardhat run scripts/upgrades/apply-v6.1.0-upgrade.ts --network hardhat
 
-      - name: Deploy contracts
+      - name: Execute upgrade on live network
+        if: inputs.dry_run == false
         env:
           # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
           EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
-        run: npm run deploy -- --network ${{ inputs.network }}
-
-      - name: Update config.json with Diamond address
-        if: inputs.network != 'hardhat'
-        env:
-          # Note: it is required to define both private key env variables when calling Hardhat.
-          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
-        run: npx hardhat run scripts/tools/update-config.ts --network ${{ inputs.network }}
+        run: |
+          npx hardhat run scripts/upgrades/apply-v6.1.0-upgrade.ts --network ${{ inputs.network }}
 
       - name: Push artifacts to the current branch
-        if: inputs.network != 'hardhat' && github.ref != 'refs/heads/main'
+        if: inputs.dry_run == false && github.ref != 'refs/heads/main'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: |
-            config/config.json
             deployments/${{ inputs.network }}/
           commit_message: ${{ env.COMMIT_MESSAGE }}
           commit_user_name: ${{ env.GHA_BOT_NAME }}
@@ -85,21 +91,15 @@ jobs:
 
       # Since the `main` branch is protected, create a PR to push artifacts.
       - name: Push artifacts through a pull request
-        if: inputs.network != 'hardhat' && github.ref == 'refs/heads/main'
+        if: inputs.dry_run == false && github.ref == 'refs/heads/main'
         uses: peter-evans/create-pull-request@v7
         with:
           add-paths: |
-            config/config.json
             deployments/${{ inputs.network }}/
           commit-message: ${{ env.COMMIT_MESSAGE }}
           committer: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
           author: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
-          branch: chore/save-artifacts-${{ inputs.network }}
+          branch: chore/save-upgrade-artifacts-${{ inputs.network }}-${{ github.run_id }}
           title: ${{ env.COMMIT_MESSAGE }}
+          body: 'PR created by "Create Pull Request" GitHub Action for upgrade artifacts.'
           draft: true
-          body: |
-            🤖 This is an automated pull request to save deployment artifacts.
-            * Network: `${{ inputs.network }}`
-            * Job: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-            **Note**: Verify deployment before merging this PR.

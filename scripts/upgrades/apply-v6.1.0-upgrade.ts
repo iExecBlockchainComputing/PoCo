@@ -16,6 +16,7 @@ import { FactoryDeployer } from '../../utils/FactoryDeployer';
 import config from '../../utils/config';
 import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
 import { linkContractToProxy } from '../../utils/proxy-tools';
+import { tryVerify } from '../verify';
 import { printFunctions } from './upgrade-helper';
 
 (async () => {
@@ -160,4 +161,16 @@ import { printFunctions } from './upgrade-helper';
     console.log('\nUpgrade completed successfully!');
     console.log(`New IexecPocoAccessorsFacet deployed at: ${iexecPocoAccessorsFacet}`);
     console.log(`New IexecPoco1Facet deployed at: ${newIexecPoco1Facet}`);
+    await tryVerify([
+        {
+            name: 'IexecPocoAccessorsFacet',
+            address: iexecPocoAccessorsFacet,
+            constructorArguments: [],
+        },
+        {
+            name: 'IexecPoco1Facet',
+            address: newIexecPoco1Facet,
+            constructorArguments: [],
+        },
+    ]);
 })();
