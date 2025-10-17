@@ -84,6 +84,18 @@ async function printFunctions(diamondProxyAddress: string) {
         IexecPocoDepositAndMatchTokenFacet__factory.createInterface(),
         IexecRelayFacet__factory.createInterface(),
     ];
+    const selectorToName = new Map<string, string>();
+    for (const iface of allInterfaces) {
+        for (const fragment of iface.fragments) {
+            if (fragment.type === 'function') {
+                const signature = fragment.format();
+                const funcFragment = iface.getFunction(signature);
+                if (funcFragment) {
+                    selectorToName.set(funcFragment.selector, funcFragment.name);
+                }
+            }
+        }
+    }
 
     let totalFunctions = 0;
     facets.forEach((facet) => {
@@ -102,17 +114,9 @@ async function printFunctions(diamondProxyAddress: string) {
             } else if (selector === '0xffffffff') {
                 functionName = 'fallback()';
             } else {
-                // Try to find the function in any of the interfaces
-                for (const iface of allInterfaces) {
-                    try {
-                        const fragment = iface.getFunction(selector);
-                        if (fragment) {
-                            functionName = fragment.name;
-                            break;
-                        }
-                    } catch (error) {
-                        // Continue searching in other interfaces
-                    }
+                const name = selectorToName.get(selector);
+                if (name) {
+                    functionName = name;
                 }
             }
             console.log(`[${functionIndex}] ${facet.facetAddress} ${functionName}`);
