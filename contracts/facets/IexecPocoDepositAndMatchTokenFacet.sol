@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
+// SPDX-FileCopyrightText: 2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
@@ -87,64 +87,6 @@ contract IexecPocoDepositAndMatchTokenFacet is
             _requestorder
         );
 
-        return dealId;
-    }
-
-    /**
-     * @notice Deposit RLC tokens and sponsor match orders for another requester
-     * @dev The caller (msg.sender) will be the depositor and sponsor, while the requester is specified in the request order
-     * @param _apporder The app order
-     * @param _datasetorder The dataset order
-     * @param _workerpoolorder The workerpool order
-     * @param _requestorder The request order
-     * @return dealId The ID of the created deal
-     */
-    function depositAndSponsorMatchOrders(
-        IexecLibOrders_v5.AppOrder calldata _apporder,
-        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
-        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
-        IexecLibOrders_v5.RequestOrder calldata _requestorder
-    ) external override returns (bytes32 dealId) {
-        // Calculate required deal cost - use the same logic as the original matchOrders
-        bool hasDataset = _datasetorder.dataset != address(0);
-        uint256 taskPrice = _apporder.appprice +
-            (hasDataset ? _datasetorder.datasetprice : 0) +
-            _workerpoolorder.workerpoolprice;
-        uint256 volume = _computeDealVolume(
-            _apporder.volume,
-            _toTypedDataHash(_apporder.hash()),
-            hasDataset,
-            _datasetorder.volume,
-            _toTypedDataHash(_datasetorder.hash()),
-            _workerpoolorder.volume,
-            _toTypedDataHash(_workerpoolorder.hash()),
-            _requestorder.volume,
-            _toTypedDataHash(_requestorder.hash())
-        );
-        uint256 dealCost = taskPrice * volume;
-
-        // Check current balance of the sponsor (msg.sender, not the requester)
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 currentBalance = $.m_balances[msg.sender];
-
-        // Calculate how much we need to deposit
-        uint256 depositedAmount = 0;
-        if (currentBalance < dealCost) {
-            uint256 requiredDeposit = dealCost - currentBalance;
-            // Perform the token deposit for the exact amount needed
-            _depositTokens(msg.sender, requiredDeposit);
-            depositedAmount = requiredDeposit;
-        }
-
-        // Match the orders with the caller as sponsor
-        dealId = IexecPoco1(address(this)).sponsorMatchOrders(
-            _apporder,
-            _datasetorder,
-            _workerpoolorder,
-            _requestorder
-        );
-
-        emit DepositAndMatch(msg.sender, depositedAmount, dealId);
         return dealId;
     }
 
