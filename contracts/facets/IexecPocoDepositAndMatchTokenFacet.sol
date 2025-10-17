@@ -65,15 +65,12 @@ contract IexecPocoDepositAndMatchTokenFacet is
         );
         uint256 dealCost = taskPrice * volume;
 
-        // Check current balance
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         uint256 currentBalance = $.m_balances[msg.sender];
 
-        // Calculate how much we need to deposit
         uint256 depositedAmount = 0;
         if (currentBalance < dealCost) {
             uint256 requiredDeposit = dealCost - currentBalance;
-            // Perform the token deposit for the exact amount needed
             _depositTokens(msg.sender, requiredDeposit);
             depositedAmount = requiredDeposit;
         }
@@ -87,6 +84,8 @@ contract IexecPocoDepositAndMatchTokenFacet is
             _requestorder
         );
 
+        emit DepositAndMatch(msg.sender, depositedAmount, dealId);
+
         return dealId;
     }
 
@@ -98,18 +97,12 @@ contract IexecPocoDepositAndMatchTokenFacet is
      */
     function _depositTokens(address depositor, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-
-        // Transfer RLC tokens from depositor to this contract
         require(
             $.m_baseToken.transferFrom(depositor, address(this), amount),
             "DepositAndMatch: Token transfer failed"
         );
-
-        // Mint equivalent PoCo tokens to depositor
         $.m_balances[depositor] += amount;
         $.m_totalSupply += amount;
-
-        // Emit transfer event for ERC20 compatibility
         emit Transfer(address(0), depositor, amount);
     }
 }
