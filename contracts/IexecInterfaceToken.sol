@@ -15,6 +15,7 @@ import {IexecPoco1} from "./interfaces/IexecPoco1.sol";
 import {IexecPoco1Errors} from "./interfaces/IexecPoco1Errors.sol";
 import {IexecPoco2} from "./interfaces/IexecPoco2.sol";
 import {IexecPocoAccessors} from "./interfaces/IexecPocoAccessors.sol";
+import {IexecPocoDepositAndMatch} from "./interfaces/IexecPocoDepositAndMatchToken.sol";
 import {IexecRelay} from "./interfaces/IexecRelay.sol";
 import {IexecTokenSpender} from "./interfaces/IexecTokenSpender.sol";
 import {IOwnable} from "./interfaces/IOwnable.sol";
@@ -25,9 +26,9 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
  * @dev Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
  * Changing the name or the path would cause a breaking change in the SDK.
  */
+// TODO Remove this interface when it's not used in the middelware anymore.
+// https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
 interface IexecInterfaceToken is
-    // TODO Remove this interface when it's not used in the middelware anymore.
-    // https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
     IexecAccessorsABILegacy,
     IexecCategoryManager,
     IexecConfiguration,
@@ -40,6 +41,7 @@ interface IexecInterfaceToken is
     IexecPoco1Errors,
     IexecPoco2,
     IexecPocoAccessors,
+    IexecPocoDepositAndMatch,
     IexecRelay,
     IexecTokenSpender,
     IOwnable
