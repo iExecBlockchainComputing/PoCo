@@ -194,7 +194,6 @@ describe('IexecPocoDepositAndMatchTokenFacet', () => {
         await rlcInstanceAsRequester.approve(proxyAddress, dealCost).then((tx) => tx.wait());
         await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
 
-        // Get order hashes for event verification
         const { appOrderHash, workerpoolOrderHash, requestOrderHash } =
             iexecWrapper.hashOrders(ordersWithoutDataset);
 
@@ -215,8 +214,6 @@ describe('IexecPocoDepositAndMatchTokenFacet', () => {
             .to.emit(iexecPoco, 'Transfer')
             .withArgs(AddressZero, requester.address, dealCost);
 
-        // Verify matchOrders was called correctly by checking events
-        // Note: datasetOrderHash is bytes32(0) when there's no dataset
         const dealId = getDealId(iexecWrapper.getDomain(), ordersWithoutDataset.requester);
         await expect(tx)
             .to.emit(iexecPoco, 'DepositAndMatch')
@@ -351,7 +348,6 @@ describe('IexecPocoDepositAndMatchTokenFacet', () => {
         await signAndPrepareOrders(orders1);
         await signAndPrepareOrders(orders2);
 
-        // Get order hashes for event verification
         const orderHashes1 = iexecWrapper.hashOrders(orders1);
         const orderHashes2 = iexecWrapper.hashOrders(orders2);
 
