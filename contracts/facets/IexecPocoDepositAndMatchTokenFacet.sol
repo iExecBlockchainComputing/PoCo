@@ -4,8 +4,8 @@
 pragma solidity ^0.8.0;
 
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
-import {IexecPocoDepositAndMatch} from "../interfaces/IexecPocoDepositAndMatchToken.v8.sol";
-import {IexecPoco1} from "../interfaces/IexecPoco1.v8.sol";
+import {IexecPocoDepositAndMatch} from "../interfaces/IexecPocoDepositAndMatchToken.sol";
+import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
