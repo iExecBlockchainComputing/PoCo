@@ -21,7 +21,6 @@ import {
     IexecPocoAccessorsFacet__factory,
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet__factory,
-    IexecPocoDepositAndMatchTokenFacet__factory,
     IexecRelayFacet__factory,
     OwnershipFacet__factory,
 } from '../../typechain';
@@ -81,7 +80,6 @@ async function printFunctions(diamondProxyAddress: string) {
         IexecPocoAccessorsFacet__factory.createInterface(),
         IexecPocoBoostAccessorsFacet__factory.createInterface(),
         IexecPocoBoostFacet__factory.createInterface(),
-        IexecPocoDepositAndMatchTokenFacet__factory.createInterface(),
         IexecRelayFacet__factory.createInterface(),
     ];
     const selectorToName = new Map<string, string>();
