@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "./FacetBase.sol";
-import "../interfaces/IexecAccessorsABILegacy.sol";
+import {FacetBase} from "./FacetBase.sol";
+import {IexecAccessorsABILegacy} from "../interfaces/IexecAccessorsABILegacy.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 
 contract IexecAccessorsABILegacyFacet is IexecAccessorsABILegacy, FacetBase {
     function viewDealABILegacy_pt1(

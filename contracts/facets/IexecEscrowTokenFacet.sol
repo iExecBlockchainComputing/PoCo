@@ -1,17 +1,15 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "./IexecERC20Core.sol";
-import "./FacetBase.sol";
-import "../interfaces/IexecEscrowToken.sol";
-import "../interfaces/IexecTokenSpender.sol";
+import {IexecERC20Core} from "./IexecERC20Core.sol";
+import {FacetBase} from "./FacetBase.sol";
+import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
+import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
-    using SafeMathExtended for uint256;
 
     /***************************************************************************
      *                         Escrow methods: public                          *
@@ -62,7 +60,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
 
     function recover() external override onlyOwner returns (uint256) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 delta = $.m_baseToken.balanceOf(address(this)).sub($.m_totalSupply);
+        uint256 delta = $.m_baseToken.balanceOf(address(this)) - $.m_totalSupply;
         _mint(owner(), delta);
         return delta;
     }
