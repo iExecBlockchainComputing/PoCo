@@ -19,6 +19,9 @@ import {IexecRelay} from "./interfaces/IexecRelay.sol";
 import {IexecTokenSpender} from "./interfaces/IexecTokenSpender.sol";
 import {IOwnable} from "./interfaces/IOwnable.sol";
 
+// TODO see if Diamond interfaces should be added here ??
+// IDiamond, IDiamondLoupe, IDiamondCut, IERC165, IERC173 (ownership)
+
 /**
  * A global interface that aggregates all the interfaces needed to interact with
  * the PoCo contracts in token mode.
