@@ -3,8 +3,10 @@ name: Publish NPM Package
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - '*'
+    # tags:
+    #   - 'v*'
 
 # permissions:
 #   id-token: write # Required for OIDC
