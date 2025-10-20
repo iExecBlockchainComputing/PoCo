@@ -5,23 +5,14 @@ on:
   push:
     branches:
       - '*'
-    # tags:
-    #   - 'v*'
-
-# permissions:
-#   id-token: write # Required for OIDC
-#   packages: write
-#   contents: read
-#   security-events: write # Required for uploading SARIF files
 
 jobs:
   build-and-test:
     uses: ./.github/workflows/main.yml
 
-  # publish:
-  #   needs: build-and-test
-  #   permissions:
-  #     id-token: write # Required for OIDC
-  #     packages: write
-  #     contents: read
-  #   uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/publish-npm.yml@publish-npm-v1.6.0
+  publish:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Test Publish Step 2'
+        run: echo "This is a test publish step 2."
