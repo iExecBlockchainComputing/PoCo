@@ -40,8 +40,6 @@ async function main() {
     const proxyOwnerAddress = await Ownable__factory.connect(diamondProxyAddress, owner).owner();
     console.log(`Diamond proxy owner: ${proxyOwnerAddress}`);
 
-    await printOnchainProxyFunctions(diamondProxyAddress);
-
     // Use impersonated signer only for fork testing, otherwise use owner signer
     const proxyOwnerSigner =
         process.env.ARBITRUM_FORK === 'true' || process.env.ARBITRUM_SEPOLIA_FORK === 'true'
