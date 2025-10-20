@@ -10,6 +10,7 @@ permissions:
   id-token: write # Required for OIDC
   packages: write
   contents: read
+  security-events: write # Required for uploading SARIF files
 
 jobs:
   build-and-test:
