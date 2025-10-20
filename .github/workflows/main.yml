@@ -11,10 +11,6 @@ concurrency:
   group: ${{ github.ref }}-ci
   cancel-in-progress: true
 
-permissions:
-  contents: none
-  security-events: none # Required for uploading SARIF files
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
