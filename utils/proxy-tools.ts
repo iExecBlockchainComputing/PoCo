@@ -111,7 +111,7 @@ export function getFunctionSelectors(contractFactory: ContractFactory): string[]
 
 export function getAllLocalFacetFunctions(): Map<string, string> {
     // TODO update this when new facets are added.
-    // TODO read facets folder to avoid manual updates.
+    // TODO read `contracts/facets` folder to avoid manual updates.
     const allInterfaces: Interface[] = [
         DiamondCutFacet__factory.createInterface(),
         DiamondLoupeFacet__factory.createInterface(),
@@ -148,19 +148,19 @@ export function getAllLocalFacetFunctions(): Map<string, string> {
 
 export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
     const selectorToName = getAllLocalFacetFunctions();
-    const facets = await DiamondLoupeFacet__factory.connect(
+    const facetsOnchain = await DiamondLoupeFacet__factory.connect(
         diamondProxyAddress,
         ethers.provider,
     ).facets();
-
     let totalFunctions = 0;
-    facets.forEach((facet) => {
+    facetsOnchain.forEach((facet) => {
         totalFunctions += facet.functionSelectors.length;
     });
-    console.log(`Diamond proxy supports ${totalFunctions} functions:`);
-
+    console.log(
+        `Onchain diamond proxy has ${facetsOnchain.length} facets and ${totalFunctions} total functions:`,
+    );
     let i = 0;
-    for (const facet of facets) {
+    for (const facet of facetsOnchain) {
         for (const selector of facet.functionSelectors) {
             // Fallback to the selector if the name is not found.
             const functionName = selectorToName.get(selector) ?? selector;

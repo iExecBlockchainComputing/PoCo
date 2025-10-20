@@ -45,5 +45,5 @@ interface IexecInterfaceToken is
     IexecPocoAccessors,
     IexecRelay,
     IexecTokenSpender,
-    IOwnable // TODO replace with
+    IOwnable
 {}
