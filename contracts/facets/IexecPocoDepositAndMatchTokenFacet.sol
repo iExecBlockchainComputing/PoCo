@@ -70,11 +70,21 @@ contract IexecPocoDepositAndMatchTokenFacet is
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         uint256 currentBalance = $.m_balances[msg.sender];
 
-        uint256 depositedAmount = 0;
+        uint256 depositedAmount;
         if (currentBalance < dealCost) {
-            uint256 requiredDeposit = dealCost - currentBalance;
-            _depositTokens(msg.sender, requiredDeposit);
-            depositedAmount = requiredDeposit;
+            unchecked {
+                // Safe: currentBalance < dealCost, so dealCost - currentBalance cannot underflow
+                depositedAmount = dealCost - currentBalance;
+            }
+            if (!$.m_baseToken.transferFrom(msg.sender, address(this), depositedAmount)) {
+                revert DepositAndMatch_TokenTransferFailed();
+            }
+            // Safe: adding to balance cannot realistically overflow
+            unchecked {
+                $.m_balances[msg.sender] = currentBalance + depositedAmount;
+                $.m_totalSupply += depositedAmount;
+            }
+            emit Transfer(address(0), msg.sender, depositedAmount);
         }
 
         // Match the orders with the requester as sponsor
@@ -89,21 +99,5 @@ contract IexecPocoDepositAndMatchTokenFacet is
         emit DepositAndMatch(msg.sender, depositedAmount, dealId);
 
         return dealId;
-    }
-
-    /**
-     * @notice Internal function to handle token deposits
-     * @dev This function handles the RLC token transfer and minting
-     * @param depositor The account making the deposit
-     * @param amount The amount to deposit
-     */
-    function _depositTokens(address depositor, uint256 amount) internal {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        if (!$.m_baseToken.transferFrom(depositor, address(this), amount)) {
-            revert DepositAndMatch_TokenTransferFailed();
-        }
-        $.m_balances[depositor] += amount;
-        $.m_totalSupply += amount;
-        emit Transfer(address(0), depositor, amount);
     }
 }
