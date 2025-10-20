@@ -48,6 +48,7 @@ jobs:
         run: npm run build
 
       # TODO activate later.
+      # Checks of initial state fails (e.g., balanceOf(proxyAddress) !== 0).
       # - name: Run fork tests
       #   run: |
       #     if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
