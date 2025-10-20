@@ -5,6 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ZeroAddress, ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
+import { tryVerify } from '../scripts/verify';
 import {
     AppRegistry__factory,
     DatasetRegistry__factory,
@@ -231,15 +232,7 @@ export default async function deploy() {
         ownerAddress,
     );
     // Verify contracts if not on a development network.
-    if (
-        !['hardhat', 'localhost', 'external-hardhat', 'dev-native', 'dev-token'].includes(
-            network.name,
-        )
-    ) {
-        console.log('Waiting for block explorer to index the contracts...');
-        await new Promise((resolve) => setTimeout(resolve, 60000));
-        await import('../scripts/verify').then((module) => module.default());
-    }
+    await tryVerify();
 }
 
 async function getOrDeployRlc(
