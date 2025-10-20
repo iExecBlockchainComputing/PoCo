@@ -13,7 +13,7 @@ concurrency:
 
 permissions:
   contents: read
-  security-events: write # Required for uploading SARIF files
+  # security-events: write # Required for uploading SARIF files
 
 jobs:
   build-and-test:
