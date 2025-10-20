@@ -7,6 +7,16 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 interface IexecPocoDepositAndMatch {
     /**
+     * @notice Thrown when the caller is not the requester in the request order
+     */
+    error DepositAndMatch_CallerMustBeRequester();
+
+    /**
+     * @notice Thrown when the token transfer fails during deposit
+     */
+    error DepositAndMatch_TokenTransferFailed();
+
+    /**
      * @notice Deposit RLC token in your iexec account and match orders in a single transaction
      * @dev This function allows builders to deposit the required amount and match orders atomically,
      *      improving UX by eliminating the need for separate deposit transactions

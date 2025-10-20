@@ -419,7 +419,7 @@ describe('IexecPocoDepositAndMatchTokenFacet', () => {
                 orders.workerpool,
                 orders.requester,
             ),
-        ).to.be.revertedWith('DepositAndMatch: Caller must be requester');
+        ).to.be.revertedWithCustomError(iexecPoco, 'DepositAndMatch_CallerMustBeRequester');
     });
 
     it('Should fail when RLC approval is insufficient', async () => {

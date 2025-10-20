@@ -45,7 +45,9 @@ contract IexecPocoDepositAndMatchTokenFacet is
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) external override returns (bytes32 dealId) {
-        require(_requestorder.requester == msg.sender, "DepositAndMatch: Caller must be requester");
+        if (_requestorder.requester != msg.sender) {
+            revert DepositAndMatch_CallerMustBeRequester();
+        }
 
         // Calculate required deal cost
         bool hasDataset = _datasetorder.dataset != address(0);
@@ -97,10 +99,9 @@ contract IexecPocoDepositAndMatchTokenFacet is
      */
     function _depositTokens(address depositor, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require(
-            $.m_baseToken.transferFrom(depositor, address(this), amount),
-            "DepositAndMatch: Token transfer failed"
-        );
+        if (!$.m_baseToken.transferFrom(depositor, address(this), amount)) {
+            revert DepositAndMatch_TokenTransferFailed();
+        }
         $.m_balances[depositor] += amount;
         $.m_totalSupply += amount;
         emit Transfer(address(0), depositor, amount);
