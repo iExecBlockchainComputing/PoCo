@@ -202,4 +202,6 @@ npm run storage-to-diagrams
     - Create a new commit with the version bump.
     - Generate the corresponding Git tag.
 
-    There is no need to create a full GitHub release for prerelease versions, a Git tag is sufficient.
+    Running this command ensures that the version in package.json matches the Git tag. This alignment is required for correct package publication and to automatically determine the appropriate npm dist tag (see [publish.yml](../.github/workflows/publish.yml)).
+
+    > Note: There is no need to create a full GitHub release for prerelease versions, a Git tag is sufficient.
