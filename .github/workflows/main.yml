@@ -26,21 +26,21 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
-      # - name: Check storage layout
-      #   run: npm run check-storage-layout
-      # - name: Test deployment
-      #   run: npm run deploy
-      # - name: Test Timelock deployment
-      #   run: npm run deploy:timelock
-      # - name: Run coverage
-      #   run: npm run coverage
-      # - name: Run partial native tests
-      #   run: npm run test:native
-      # - name: Upload coverage reports to Codecov
-      #   uses: codecov/codecov-action@v4.0.1
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     slug: iExecBlockchainComputing/PoCo
+      - name: Check storage layout
+        run: npm run check-storage-layout
+      - name: Test deployment
+        run: npm run deploy
+      - name: Test Timelock deployment
+        run: npm run deploy:timelock
+      - name: Run coverage
+        run: npm run coverage
+      - name: Run partial native tests
+        run: npm run test:native
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: iExecBlockchainComputing/PoCo
       - name: Run static analysis with Slither
         uses: crytic/slither-action@v0.4.0
         with:
