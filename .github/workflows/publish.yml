@@ -1,4 +1,5 @@
 # ⚠️ THIS WORKFLOW IS THE TRUSTED PUBLISHER CONFIGURED ON NPMJS.COM, DO NOT RENAME OR DELETE THIS FILE ⚠️
+
 name: Publish NPM Package
 
 on:
@@ -10,10 +11,27 @@ jobs:
   build-and-test:
     uses: ./.github/workflows/main.yml
 
-  publish:
+  determine-dist-tag:
     needs: build-and-test
+    runs-on: ubuntu-latest
+    outputs:
+      TAG: ${{ steps.set-dist-tag.outputs.TAG }}
+    steps:
+      - name: Determine package dist tag
+        id: set-dist-tag
+        run: |
+          if [[ "${GITHUB_REF#refs/tags/}" == *"-rc"* ]]; then
+            echo "TAG=rc" >> $GITHUB_OUTPUT
+          else
+            echo "TAG=latest" >> $GITHUB_OUTPUT
+          fi
+
+  publish:
+    needs: determine-dist-tag
     permissions:
       id-token: write # Required for OIDC
       packages: write
       contents: read
     uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/publish-npm.yml@publish-npm-v1.6.0
+    with:
+      tag: ${{ needs.determine-dist-tag.outputs.TAG }}
