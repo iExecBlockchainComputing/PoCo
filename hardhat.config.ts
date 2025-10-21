@@ -15,9 +15,9 @@ import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deploy
 import chainConfig from './utils/config';
 
 const isNativeChainType = chainConfig.isNativeChain();
-const isLocalFork = process.env.LOCAL_FORK == 'true';
-const isArbitrumSepoliaFork = process.env.ARBITRUM_SEPOLIA_FORK == 'true';
-const isArbitrumFork = process.env.ARBITRUM_FORK == 'true';
+const isLocalFork = chainConfig.isLocalFork();
+const isArbitrumSepoliaFork = chainConfig.isArbitrumSepoliaFork();
+const isArbitrumFork = chainConfig.isArbitrumFork();
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
 
 /**
@@ -278,7 +278,7 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     let deploymentsCopied = false;
     let networkName = '';
     try {
-        if (process.env.ARBITRUM_SEPOLIA_FORK === 'true') {
+        if (isArbitrumSepoliaFork) {
             networkName = 'arbitrumSepolia';
             deploymentsCopied = await copyDeployments(networkName);
         }

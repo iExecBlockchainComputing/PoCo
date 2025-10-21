@@ -3,7 +3,7 @@ import { Category } from './poco-tools';
 
 const config = json as Config;
 
-function isNativeChain(chain?: ChainConfig) {
+export function isNativeChain(chain?: ChainConfig) {
     if (process.env.IS_NATIVE_CHAIN) {
         return process.env.IS_NATIVE_CHAIN === 'true';
     }
@@ -11,6 +11,18 @@ function isNativeChain(chain?: ChainConfig) {
         return chain.asset === 'Native';
     }
     return false;
+}
+
+export function isLocalFork() {
+    return process.env.LOCAL_FORK === 'true';
+}
+
+export function isArbitrumSepoliaFork() {
+    return process.env.ARBITRUM_SEPOLIA_FORK === 'true';
+}
+
+export function isArbitrumFork() {
+    return process.env.ARBITRUM_FORK === 'true';
 }
 
 /**
@@ -73,5 +85,8 @@ type ChainConfig = {
 export default {
     ...config,
     isNativeChain,
+    isLocalFork,
+    isArbitrumSepoliaFork,
+    isArbitrumFork,
     getChainConfig,
 };

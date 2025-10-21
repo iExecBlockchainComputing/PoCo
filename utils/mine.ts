@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { mine } from '@nomicfoundation/hardhat-network-helpers';
+import { isLocalFork } from './config';
 
 /**
  * This function is used to mine one bock if we are on a local fork
  */
 
 export async function mineBlockIfOnLocalFork() {
-    if (process.env.LOCAL_FORK == 'true') {
+    if (isLocalFork()) {
         /**
          * This fixes following issue when deploying to a local Bellecour fork:
          * `ProviderError: No known hardfork for execution on historical block [...] in chain with id 134.`
