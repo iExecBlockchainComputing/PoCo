@@ -21,12 +21,11 @@ on:
         default: true
 
 jobs:
-  # Build and test before upgrading.
-  build-and-test:
+  pre-upgrade:
     uses: ./.github/workflows/main.yml
 
   upgrade:
-    needs: build-and-test
+    needs: pre-upgrade
     runs-on: ubuntu-latest
     environment: ${{ inputs.network }} # Use the selected environment
     permissions:

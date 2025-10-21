@@ -8,11 +8,11 @@ on:
       - 'v*'
 
 jobs:
-  build-and-test:
+  pre-publish:
     uses: ./.github/workflows/main.yml
 
   determine-dist-tag:
-    needs: build-and-test
+    needs: pre-publish
     runs-on: ubuntu-latest
     outputs:
       TAG: ${{ steps.set-dist-tag.outputs.TAG }}
