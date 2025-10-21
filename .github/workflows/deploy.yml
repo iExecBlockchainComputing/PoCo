@@ -15,12 +15,11 @@ on:
         default: 'hardhat'
 
 jobs:
-  # Build and test before deploying.
-  build-and-test:
+  pre-deploy:
     uses: ./.github/workflows/main.yml
 
   deploy:
-    needs: build-and-test
+    needs: pre-deploy
     runs-on: ubuntu-latest
     environment: ${{ inputs.network }} # Use the selected environment
     permissions:
