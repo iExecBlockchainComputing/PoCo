@@ -1,6 +1,6 @@
 {
   "name": "@iexec/poco",
-  "version": "6.1.0-rc4",
+  "version": "6.1.0-rc.5",
   "description": "iExec Proof of Contribution protocol smart contracts",
   "author": "iExec",
   "license": "Apache-2.0",
@@ -24,7 +24,8 @@
     "sol-to-uml": "npx zx scripts/tools/sol-to-uml.mjs",
     "puml-to-links": "npx zx scripts/tools/puml-to-links.mjs",
     "storage-to-diagrams": "bash scripts/tools/storage-to-diagrams.sh",
-    "doc": "npx hardhat docgen"
+    "doc": "npx hardhat docgen",
+    "prerelease": "npm version prerelease --preid=rc -m 'chore: v%s'"
   },
   "files": [
     "/abis",

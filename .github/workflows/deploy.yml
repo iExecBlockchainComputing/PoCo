@@ -15,12 +15,11 @@ on:
         default: 'hardhat'
 
 jobs:
-  # Build and test before deploying.
-  build-and-test:
+  pre-deploy:
     uses: ./.github/workflows/main.yml
 
   deploy:
-    needs: build-and-test
+    needs: pre-deploy
     runs-on: ubuntu-latest
     environment: ${{ inputs.network }} # Use the selected environment
     permissions:
@@ -48,6 +47,7 @@ jobs:
         run: npm run build
 
       # TODO activate later.
+      # Checks of initial state fails (e.g., balanceOf(proxyAddress) !== 0).
       # - name: Run fork tests
       #   run: |
       #     if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then

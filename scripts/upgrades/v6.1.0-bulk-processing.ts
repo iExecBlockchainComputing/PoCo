@@ -16,9 +16,8 @@ import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/
 import { FactoryDeployer } from '../../utils/FactoryDeployer';
 import config from '../../utils/config';
 import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
-import { linkContractToProxy } from '../../utils/proxy-tools';
+import { linkContractToProxy, printOnchainProxyFunctions } from '../../utils/proxy-tools';
 import { tryVerify } from '../verify';
-import { printFunctions } from './upgrade-helper';
 
 async function main() {
     console.log('Deploying and updating IexecPocoAccessorsFacet & IexecPoco1Facet...');
@@ -122,7 +121,7 @@ async function removeOldFacetsFromDiamond(diamondProxyAsOwner: DiamondCutFacet, 
     });
 
     console.log('Diamond functions before upgrade:');
-    await printFunctions(diamondProxyAddress);
+    await printOnchainProxyFunctions(diamondProxyAddress);
 
     const removalCuts: IDiamond.FacetCutStruct[] = [];
 
@@ -182,7 +181,7 @@ async function removeOldFacetsFromDiamond(diamondProxyAsOwner: DiamondCutFacet, 
         await removeTx.wait();
         console.log(`Transaction hash: ${removeTx.hash}`);
         console.log('Diamond functions after removing old facets:');
-        await printFunctions(diamondProxyAddress);
+        await printOnchainProxyFunctions(diamondProxyAddress);
     }
 }
 
@@ -208,7 +207,7 @@ async function linkNewFacetsToDiamond(
     console.log('New IexecPoco1Facet with assertDatasetDealCompatibility added successfully');
 
     console.log('Diamond functions after adding new facets:');
-    await printFunctions(diamondProxyAddress);
+    await printOnchainProxyFunctions(diamondProxyAddress);
 
     console.log('\nUpgrade completed successfully!');
     console.log(`New IexecPocoAccessorsFacet deployed at: ${iexecPocoAccessorsFacet}`);

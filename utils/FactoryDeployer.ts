@@ -33,6 +33,7 @@ export class FactoryDeployer {
         call?: string,
     ): Promise<string> {
         await this.initFactory();
+        // TODO merge common parts of both deployment methods.
         if (this.factoryType === 'createx') {
             return await this.deployWithCreateX(contractFactory, constructorArgs, call);
         }
