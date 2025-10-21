@@ -12,58 +12,30 @@ import {
     IexecPoco1Facet__factory,
     IexecPocoAccessorsFacet__factory,
 } from '../../typechain';
-import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
 import { FactoryDeployer } from '../../utils/FactoryDeployer';
-import config from '../../utils/config';
-import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
 import { linkContractToProxy, printOnchainProxyFunctions } from '../../utils/proxy-tools';
 import { tryVerify } from '../verify';
+import { getUpgradeContext } from './upgrade-helper';
+import { isArbitrumFork } from '../../utils/config';
 
 async function main() {
-    console.log('Deploying and updating IexecPocoAccessorsFacet & IexecPoco1Facet...');
-
-    const { deployer, owner } = await getDeployerAndOwnerSigners();
-    const chainId = (await ethers.provider.getNetwork()).chainId;
-    const deploymentOptions = config.getChainConfig(chainId).v5;
-
-    if (!deploymentOptions.IexecLibOrders_v5) {
-        throw new Error('IexecLibOrders_v5 is required');
-    }
-    if (!deploymentOptions.DiamondProxy) {
-        throw new Error('DiamondProxy is required');
-    }
-
-    const diamondProxyAddress = deploymentOptions.DiamondProxy;
-    console.log(`Network: ${chainId}`);
-    console.log(`Diamond proxy address: ${diamondProxyAddress}`);
-
-    const proxyOwnerAddress = await Ownable__factory.connect(diamondProxyAddress, owner).owner();
-    console.log(`Diamond proxy owner: ${proxyOwnerAddress}`);
-
-    // Use impersonated signer only for fork testing, otherwise use owner signer
-    const proxyOwnerSigner =
-        process.env.ARBITRUM_FORK === 'true' || process.env.ARBITRUM_SEPOLIA_FORK === 'true'
-            ? await ethers.getImpersonatedSigner(proxyOwnerAddress)
-            : owner;
-    const diamondProxyAsOwner = DiamondCutFacet__factory.connect(
-        diamondProxyAddress,
-        proxyOwnerSigner,
-    );
+    console.log('Starting bulk processing upgrade...');
+    const { deployer, chainId, proxyAsOwner, iexecLibOrdersAddress } = await getUpgradeContext();
+    console.log('Facets: IexecPocoAccessorsFacet & IexecPoco1Facet');
 
     const { iexecPocoAccessorsFacet, newIexecPoco1Facet } = await deployNewFacets(
         deployer,
         chainId,
-        deploymentOptions.IexecLibOrders_v5,
+        iexecLibOrdersAddress,
     );
     const iexecLibOrders = {
-        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
-            deploymentOptions.IexecLibOrders_v5,
+        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
     const iexecPocoAccessorsFacetFactory = new IexecPocoAccessorsFacet__factory(iexecLibOrders);
     const newIexecPoco1FacetFactory = new IexecPoco1Facet__factory(iexecLibOrders);
-    await removeOldFacetsFromDiamond(diamondProxyAsOwner, chainId);
+    await removeOldFacetsFromDiamond(proxyAsOwner, chainId);
     await linkNewFacetsToDiamond(
-        diamondProxyAsOwner,
+        proxyAsOwner,
         iexecPocoAccessorsFacet,
         newIexecPoco1Facet,
         iexecPocoAccessorsFacetFactory,
@@ -126,7 +98,7 @@ async function removeOldFacetsFromDiamond(diamondProxyAsOwner: DiamondCutFacet, 
     const removalCuts: IDiamond.FacetCutStruct[] = [];
 
     // constant functions are deployed within IexecAccessorsFacet on arbitrum sepolia
-    if (process.env.ARBITRUM_FORK === 'true' || chainId == 42161n) {
+    if (isArbitrumFork() || chainId == 42161n) {
         const constantFunctionSignatures = [
             'CONTRIBUTION_DEADLINE_RATIO()',
             'FINAL_DEADLINE_RATIO()',
