@@ -150,7 +150,7 @@ npm run verify:all -- --network <your network name> # e.g. arbitrum
 This script automatically reads all deployed contract addresses and their constructor arguments from the deployment artifacts and verifies them on the relevant block explorer.
 
 
-### Formatting
+### Format
 
 Format a specific file or files in a directory:
 ```
@@ -189,3 +189,17 @@ To render only storage diagrams:
 ```
 npm run storage-to-diagrams
 ```
+
+### Release
+
+- **Final releases** are automated using [Release Please](https://github.com/googleapis/release-please). Major, minor, and patch versions should be published through the corresponding GitHub Actions workflows.
+- **Prereleases** (`vX.Y.Z-rc.*`) should be created manually using:
+    ```
+    npm run prerelease
+    ```
+    This command will:
+    - Bump the RC version in `package.json` and `package-lock.json` files.
+    - Create a new commit with the version bump.
+    - Generate the corresponding Git tag.
+
+    There is no need to create a full GitHub release for prerelease versions, a Git tag is sufficient.
