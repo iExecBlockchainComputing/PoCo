@@ -94,6 +94,7 @@ export default async function deploy() {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
     const isArbitrumMainnet = (await ethers.provider.getNetwork()).chainId === 42161n;
+    const isArbitrumSepolia = (await ethers.provider.getNetwork()).chainId === 421614n;
     const facets = [
         new IexecAccessorsABILegacyFacet__factory(),
         new IexecCategoryManagerFacet__factory(),
@@ -106,7 +107,7 @@ export default async function deploy() {
         new IexecPoco1Facet__factory(iexecLibOrders),
         new IexecPoco2Facet__factory(),
         new IexecPocoAccessorsFacet__factory(iexecLibOrders),
-        ...(!isArbitrumMainnet
+        ...(!isArbitrumMainnet && !isArbitrumSepolia
             ? [
                   new IexecPocoBoostFacet__factory(iexecLibOrders), // not deployed on Arbitrum mainnet
                   new IexecPocoBoostAccessorsFacet__factory(), // not deployed on Arbitrum mainnet
