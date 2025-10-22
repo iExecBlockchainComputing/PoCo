@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { FunctionFragment } from 'ethers';
 import { IexecPoco1Facet__factory, IexecPocoAccessorsFacet__factory } from '../../typechain';
 import {
     deployFacets,
-    linkNewFacetsToDiamond,
+    linkFacetsToDiamond,
     printOnchainProxyFunctions,
     removeFacetsFromDiamond,
     removeFunctionsFromDiamond,
@@ -69,23 +70,24 @@ async function main() {
     await deployFacets(deployer, chainId, facetsToAdd);
     await removeFacetsFromDiamond(proxyAddress, proxyOwner, facetsToRemove);
     await printOnchainProxyFunctions(proxyAddress);
-    await linkNewFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
+    await linkFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
     await printOnchainProxyFunctions(proxyAddress);
 
     if (isArbitrumFork() || chainId == 42161n) {
-        // Remove these functions from Arbitrum Mainnet.
+        // Remove these functions from Arbitrum Mainnet, they were
+        // deployed in the facet IexecAccessorsABILegacyFacet.
         // The same functions are deployed within IexecAccessorsFacet
         // on Arbitrum Sepolia so they are automatically removed in
         // `removeFacetsFromDiamond`.
         const functionSignatures = [
-            'CONTRIBUTION_DEADLINE_RATIO()',
-            'FINAL_DEADLINE_RATIO()',
-            'GROUPMEMBER_PURPOSE()',
-            'KITTY_ADDRESS()',
-            'KITTY_MIN()',
-            'KITTY_RATIO()',
-            'REVEAL_DEADLINE_RATIO()',
-            'WORKERPOOL_STAKE_RATIO()',
+            FunctionFragment.from('function CONTRIBUTION_DEADLINE_RATIO() view returns (uint256)'),
+            FunctionFragment.from('function FINAL_DEADLINE_RATIO() view returns (uint256)'),
+            FunctionFragment.from('function GROUPMEMBER_PURPOSE() view returns (uint256)'),
+            FunctionFragment.from('function KITTY_ADDRESS() view returns (address)'),
+            FunctionFragment.from('function KITTY_MIN() view returns (uint256)'),
+            FunctionFragment.from('function KITTY_RATIO() view returns (uint256)'),
+            FunctionFragment.from('function REVEAL_DEADLINE_RATIO() view returns (uint256)'),
+            FunctionFragment.from('function WORKERPOOL_STAKE_RATIO() view returns (uint256)'),
         ];
         await removeFunctionsFromDiamond(proxyAddress, proxyOwner, functionSignatures);
         await printOnchainProxyFunctions(proxyAddress);

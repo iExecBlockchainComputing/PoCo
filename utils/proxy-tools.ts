@@ -124,9 +124,16 @@ export function getFunctionSelectors(contractFactory: ContractFactory): string[]
     );
 }
 
+/**
+ * Gets a mapping of all local facet function selectors to their names.
+ * Note: local facets are not necessarily the ones deployed on-chain
+ * until an upgrade is performed.
+ * Note: This requires manual updates when new facets are added.
+ * TODO update this when new facets are added.
+ * TODO read `contracts/facets` folder to avoid manual updates.
+ * @returns A map of function selectors to their names.
+ */
 export function getAllLocalFacetFunctions(): Map<string, string> {
-    // TODO update this when new facets are added.
-    // TODO read `contracts/facets` folder to avoid manual updates.
     const allInterfaces: Interface[] = [
         DiamondCutFacet__factory.createInterface(),
         DiamondLoupeFacet__factory.createInterface(),
@@ -161,6 +168,10 @@ export function getAllLocalFacetFunctions(): Map<string, string> {
     return selectorToName;
 }
 
+/**
+ * Prints the functions supported by an on-chain diamond proxy.
+ * @param diamondProxyAddress The address of the diamond proxy.
+ */
 export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
     const selectorToName = getAllLocalFacetFunctions();
     const facetsOnchain = await DiamondLoupeFacet__factory.connect(
@@ -185,6 +196,10 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
     }
 }
 
+/**
+ * Get the context needed for performing a diamond upgrade.
+ * @returns (chainId, deployer, proxyAddress, proxyOwner, iexecLibOrders).
+ */
 export async function getUpgradeContext() {
     const { chainId, name: networkName } = await ethers.provider.getNetwork();
     console.log(`Network: ${networkName} (${chainId})`);
@@ -221,26 +236,44 @@ export async function getUpgradeContext() {
     };
 }
 
+/**
+ * Deploys facets and updates their addresses in the provided facet details.
+ * @param deployer deployer signer
+ * @param chainId chain ID
+ * @param facets facets to deploy, must contain factories to deploy
+ */
 export async function deployFacets(
     deployer: SignerWithAddress,
     chainId: bigint,
-    facetDetails: FacetDetails[],
-) {
+    facets: FacetDetails[],
+): Promise<void> {
     console.log('\n=== Deploying new facets ===');
+    if (!facets || facets.length === 0) {
+        throw new Error('No facets to deploy');
+    }
     const factoryDeployer = new FactoryDeployer(deployer, chainId);
-    for (const facet of facetDetails) {
+    for (const facet of facets) {
         const facetAddress = await factoryDeployer.deployContract(facet.factory!);
         facet.address = facetAddress;
     }
-    return facetDetails;
+    console.log('Facets deployed successfully!');
 }
 
+/**
+ * Removes whole facets from a diamond proxy.
+ * @param proxyAddress address of the diamond proxy
+ * @param proxyOwner owner signer of the diamond proxy
+ * @param facets facets to remove, must contain their addresses
+ */
 export async function removeFacetsFromDiamond(
     proxyAddress: string,
     proxyOwner: SignerWithAddress,
     facets: FacetDetails[],
-) {
+): Promise<void> {
     console.log('\n=== Removing whole facets from diamond ===');
+    if (!facets || facets.length === 0) {
+        throw new Error('No facets to remove');
+    }
     const diamondLoupe = DiamondLoupeFacet__factory.connect(proxyAddress, ethers.provider);
     const diamondCutAsOwner = DiamondCutFacet__factory.connect(proxyAddress, proxyOwner);
     const facetCuts: IDiamond.FacetCutStruct[] = [];
@@ -260,7 +293,7 @@ export async function removeFacetsFromDiamond(
         }
     }
     if (facetCuts.length === 0) {
-        throw new Error('No facets to remove');
+        throw new Error('All facets are empty, nothing to remove');
     }
     console.log(`Executing diamond cut to remove ${facetCuts.length} facets`);
     const tx = await diamondCutAsOwner.diamondCut(facetCuts, ZeroAddress, '0x');
@@ -269,12 +302,21 @@ export async function removeFacetsFromDiamond(
     console.log('Facets removed successfully!');
 }
 
-export async function linkNewFacetsToDiamond(
+/**
+ * Links facets to a diamond proxy.
+ * @param proxyAddress address of the diamond proxy
+ * @param proxyOwner owner signer
+ * @param facets facets to link, must contains their addresses and factories
+ */
+export async function linkFacetsToDiamond(
     proxyAddress: string,
     proxyOwner: SignerWithAddress,
     facets: FacetDetails[],
-) {
+): Promise<void> {
     console.log('\n=== Linking facets to diamond proxy ===');
+    if (!facets || facets.length === 0) {
+        throw new Error('No facets to link');
+    }
     const diamondCutAsOwner = DiamondCutFacet__factory.connect(proxyAddress, proxyOwner);
     for (const facet of facets) {
         if (!facet.address || !facet.factory) {
@@ -285,22 +327,32 @@ export async function linkNewFacetsToDiamond(
     console.log('Facets linked successfully!');
 }
 
+/**
+ * Removes specific functions from a diamond proxy without removing whole facets.
+ * @param proxyAddress address of the diamond proxy
+ * @param proxyOwner owner signer
+ * @param functionFragments list of formatted function signatures to remove
+ */
 export async function removeFunctionsFromDiamond(
     proxyAddress: string,
     proxyOwner: SignerWithAddress,
-    functionSignatures: string[],
-) {
+    functionFragments: FunctionFragment[],
+): Promise<void> {
     console.log('\n=== Removing specific functions from diamond ===');
+    if (!functionFragments || functionFragments.length === 0) {
+        throw new Error('No functions to remove');
+    }
+    console.log(`Removing ${functionFragments.length} functions:`);
+    functionFragments.forEach((fragment) => console.log(`  - ${fragment.format()}`));
+    const functionSelectors = functionFragments.map((fragment) => fragment.selector);
+    const facetCuts: IDiamond.FacetCutStruct[] = [
+        {
+            facetAddress: ZeroAddress,
+            action: FacetCutAction.Remove,
+            functionSelectors: functionSelectors,
+        },
+    ];
     const diamondCutAsOwner = DiamondCutFacet__factory.connect(proxyAddress, proxyOwner);
-    console.log(`Removing ${functionSignatures.length} functions:`);
-    functionSignatures.forEach((signature) => console.log(`  - ${signature}`));
-    const functionSelectors = functionSignatures.map((sig) => ethers.id(sig).slice(0, 10));
-    const facetCuts: IDiamond.FacetCutStruct[] = [];
-    facetCuts.push({
-        facetAddress: ZeroAddress,
-        action: FacetCutAction.Remove,
-        functionSelectors: functionSelectors,
-    });
     const tx = await diamondCutAsOwner.diamondCut(facetCuts, ZeroAddress, '0x');
     console.log(`Transaction hash: ${tx.hash}`);
     await tx.wait();
