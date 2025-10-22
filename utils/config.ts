@@ -13,6 +13,11 @@ export function isNativeChain(chain?: ChainConfig) {
     return false;
 }
 
+export function isFork() {
+    return isLocalFork() || isArbitrumSepoliaFork() || isArbitrumFork();
+}
+
+// TODO remove or rename this function.
 export function isLocalFork() {
     return process.env.LOCAL_FORK === 'true';
 }
