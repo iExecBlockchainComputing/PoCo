@@ -154,8 +154,8 @@ export function getAllLocalFacetFunctions(): Map<string, string> {
         .map((fragment) => fragment as FunctionFragment)
         .map((fragment) => [fragment.selector, fragment.name] as [string, string])
         .concat([
-            ['receive', '0x00000000'], // fragment.type is 'fallback'
-            ['fallback', '0xffffffff'], // fragment.type is 'fallback'
+            ['0x00000000', 'receive'], // fragment.type is 'fallback'
+            ['0xffffffff', 'fallback'], // fragment.type is 'fallback'
         ]);
     const selectorToName = new Map<string, string>(fragments);
     return selectorToName;
