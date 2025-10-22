@@ -77,6 +77,7 @@ async function main() {
         await removeFunctionsFromDiamond(proxyAddress, proxyOwner, functionSignatures);
         await printOnchainProxyFunctions(proxyAddress);
     }
+    console.log('Upgrade applied successfully!');
 
     // await tryVerify([
     //     {
@@ -140,7 +141,7 @@ async function removeFacetsFromDiamond(
     const tx = await diamondCutAsOwner.diamondCut(facetCuts, ZeroAddress, '0x');
     console.log(`Transaction hash: ${tx.hash}`);
     await tx.wait();
-    console.log('Facets removed successfully');
+    console.log('Facets removed successfully!');
 }
 
 async function linkNewFacetsToDiamond(
@@ -156,7 +157,7 @@ async function linkNewFacetsToDiamond(
         }
         await linkContractToProxy(diamondCutAsOwner, facet.address, facet.factory);
     }
-    console.log('Facets linked successfully');
+    console.log('Facets linked successfully!');
 }
 
 async function removeFunctionsFromDiamond(
@@ -178,7 +179,7 @@ async function removeFunctionsFromDiamond(
     const tx = await diamondCutAsOwner.diamondCut(facetCuts, ZeroAddress, '0x');
     console.log(`Transaction hash: ${tx.hash}`);
     await tx.wait();
-    console.log('Functions removed successfully');
+    console.log('Functions removed successfully!');
 }
 
 if (require.main === module) {
