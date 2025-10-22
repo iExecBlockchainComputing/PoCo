@@ -5,7 +5,7 @@ import { mine } from '@nomicfoundation/hardhat-network-helpers';
 import { isLocalFork } from './config';
 
 /**
- * This function is used to mine one bock if we are on a local fork
+ * This function is used to mine one block if we are on a local fork
  */
 
 export async function mineBlockIfOnLocalFork() {
