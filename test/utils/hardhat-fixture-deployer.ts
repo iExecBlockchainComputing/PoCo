@@ -5,7 +5,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployments, ethers } from 'hardhat';
 import deploy from '../../deploy/0_deploy';
 import { RLC__factory } from '../../typechain';
-import config from '../../utils/config';
+import config, { isArbitrumSepoliaFork, isLocalFork } from '../../utils/config';
 import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixture-helpers';
 
 /**
@@ -67,10 +67,10 @@ async function setUpLocalForkInTokenMode() {
  * @returns proxy address
  */
 export const loadHardhatFixtureDeployment = async () => {
-    if (process.env.LOCAL_FORK == 'true') {
+    if (isLocalFork()) {
         return await loadFixture(setUpLocalForkInNativeMode);
     }
-    if (process.env.ARBITRUM_SEPOLIA_FORK == 'true') {
+    if (isArbitrumSepoliaFork()) {
         return await loadFixture(setUpLocalForkInTokenMode);
     }
     return await loadFixture(deployAll);
