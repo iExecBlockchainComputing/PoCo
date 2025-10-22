@@ -94,19 +94,8 @@ async function main() {
     }
     // TODO remove boost from Arbitrum Sepolia
     console.log('Upgrade applied successfully!');
-
-    // await tryVerify([
-    //     {
-    //         name: 'IexecPocoAccessorsFacet',
-    //         address: iexecPocoAccessorsFacet,
-    //         constructorArguments: [],
-    //     },
-    //     {
-    //         name: 'IexecPoco1Facet',
-    //         address: newIexecPoco1Facet,
-    //         constructorArguments: [],
-    //     },
-    // ]);
+    // TODO pass only name as argument and get address from deployments.
+    await tryVerify(facetsToAdd as { name: string; address: string }[]);
 }
 
 if (require.main === module) {
