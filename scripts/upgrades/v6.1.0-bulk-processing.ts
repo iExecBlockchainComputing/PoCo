@@ -34,7 +34,6 @@ async function main() {
             IexecPoco1Facet: '0x46b555fE117DFd8D4eAC2470FA2d739c6c3a0152',
         },
     };
-
     const facetsToRemove: FacetDetails[] = [
         {
             name: 'IexecAccessorsFacet',
@@ -65,7 +64,6 @@ async function main() {
             factory: new IexecPocoAccessorsFacet__factory(iexecLibOrders),
         },
     ];
-
     await printOnchainProxyFunctions(proxyAddress);
     // This function adds the address of each deployed facet to `facetsToAdd` array.
     await deployFacets(deployer, chainId, facetsToAdd);
@@ -94,6 +92,7 @@ async function main() {
         await removeFunctionsFromDiamond(proxyAddress, proxyOwner, functionSignatures);
         await printOnchainProxyFunctions(proxyAddress);
     }
+    // TODO remove boost from Arbitrum Sepolia
     console.log('Upgrade applied successfully!');
 
     // await tryVerify([
