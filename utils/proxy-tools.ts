@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ContractFactory, FunctionFragment, Interface, ZeroAddress } from 'ethers';
-import { ethers } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import type { IDiamond } from '../typechain';
 import {
@@ -291,6 +291,10 @@ export async function removeFacetsFromDiamond(
     const tx = await diamondCutAsOwner.diamondCut(facetCuts, ZeroAddress, '0x');
     console.log(`Transaction hash: ${tx.hash}`);
     await tx.wait();
+    for (const facet of facets) {
+        console.log(`Removing deployment artifact of ${facet.name}`);
+        await deployments.delete(facet.name);
+    }
     console.log('Facets removed successfully!');
 }
 
