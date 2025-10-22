@@ -1,9 +1,12 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ContractFactory, FunctionFragment, Interface, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
+import type { IDiamond } from '../typechain';
+
 import {
     DiamondCutFacet,
     DiamondCutFacet__factory,
@@ -24,10 +27,22 @@ import {
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet__factory,
     IexecRelayFacet__factory,
+    Ownable__factory,
 } from '../typechain';
-import { getBaseNameFromContractFactory } from '../utils/deploy-tools';
+import { getBaseNameFromContractFactory, getDeployerAndOwnerSigners } from '../utils/deploy-tools';
+import config, { isArbitrumFork, isArbitrumSepoliaFork } from './config';
+import { FactoryDeployer } from './FactoryDeployer';
 
 const POCO_STORAGE_LOCATION = '0x5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00';
+
+/**
+ * A type representing details of a facet used in diamond upgrades.
+ */
+export type FacetDetails = {
+    name: string;
+    address: string | null;
+    factory: ContractFactory | null;
+};
 
 /**
  * Get the slot location of a storage variable in the `PocoStorage` struct.
@@ -168,4 +183,126 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
             i++;
         }
     }
+}
+
+export async function getUpgradeContext() {
+    const { chainId, name: networkName } = await ethers.provider.getNetwork();
+    console.log(`Network: ${networkName} (${chainId})`);
+    const { deployer, owner } = await getDeployerAndOwnerSigners();
+    console.log('Deployer:', deployer.address);
+    console.log('Owner:', owner.address);
+    const deploymentOptions = config.getChainConfig(chainId).v5;
+    if (!deploymentOptions.IexecLibOrders_v5) {
+        throw new Error('IexecLibOrders_v5 is required');
+    }
+    const iexecLibOrdersAddress = deploymentOptions.IexecLibOrders_v5;
+    console.log(`IexecLibOrders_v5 address: ${iexecLibOrdersAddress}`);
+    const iexecLibOrders = {
+        ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
+    };
+    if (!deploymentOptions.DiamondProxy) {
+        throw new Error('DiamondProxy is required');
+    }
+    const proxyAddress = deploymentOptions.DiamondProxy;
+    console.log(`Diamond proxy address: ${proxyAddress}`);
+    const proxyOnchainOwner = await Ownable__factory.connect(proxyAddress, owner).owner();
+    console.log(`Diamond proxy onchain owner: ${proxyOnchainOwner}`);
+    // Use impersonated signer for forked chains, otherwise use the real owner signer.
+    const proxyOwner =
+        isArbitrumSepoliaFork() || isArbitrumFork()
+            ? await ethers.getImpersonatedSigner(proxyOnchainOwner)
+            : owner;
+    return {
+        chainId,
+        deployer,
+        proxyAddress,
+        proxyOwner,
+        iexecLibOrders,
+    };
+}
+
+export async function deployFacets(
+    deployer: SignerWithAddress,
+    chainId: bigint,
+    facetDetails: FacetDetails[],
+) {
+    console.log('\n=== Deploying new facets ===');
+    const factoryDeployer = new FactoryDeployer(deployer, chainId);
+    for (const facet of facetDetails) {
+        const facetAddress = await factoryDeployer.deployContract(facet.factory!);
+        facet.address = facetAddress;
+    }
+    return facetDetails;
+}
+
+export async function removeFacetsFromDiamond(
+    proxyAddress: string,
+    proxyOwner: SignerWithAddress,
+    facets: FacetDetails[],
+) {
+    console.log('\n=== Removing whole facets from diamond ===');
+    const diamondLoupe = DiamondLoupeFacet__factory.connect(proxyAddress, ethers.provider);
+    const diamondCutAsOwner = DiamondCutFacet__factory.connect(proxyAddress, proxyOwner);
+    const facetCuts: IDiamond.FacetCutStruct[] = [];
+    for (const facet of facets) {
+        const selectors = await diamondLoupe.facetFunctionSelectors(facet.address!);
+        if (selectors.length > 0) {
+            console.log(
+                `Will remove the whole facet ${facet.name} [address: ${facet.address}, functions:${selectors.length}]`,
+            );
+            facetCuts.push({
+                facetAddress: ZeroAddress,
+                action: FacetCutAction.Remove,
+                functionSelectors: [...selectors],
+            });
+        } else {
+            console.log(`Skipping empty facet ${facet.name} [address: ${facet.address}]`);
+        }
+    }
+    if (facetCuts.length === 0) {
+        throw new Error('No facets to remove');
+    }
+    console.log(`Executing diamond cut to remove ${facetCuts.length} facets`);
+    const tx = await diamondCutAsOwner.diamondCut(facetCuts, ZeroAddress, '0x');
+    console.log(`Transaction hash: ${tx.hash}`);
+    await tx.wait();
+    console.log('Facets removed successfully!');
+}
+
+export async function linkNewFacetsToDiamond(
+    proxyAddress: string,
+    proxyOwner: SignerWithAddress,
+    facets: FacetDetails[],
+) {
+    console.log('\n=== Linking facets to diamond proxy ===');
+    const diamondCutAsOwner = DiamondCutFacet__factory.connect(proxyAddress, proxyOwner);
+    for (const facet of facets) {
+        if (!facet.address || !facet.factory) {
+            throw new Error(`Cannot link facet ${facet.name} with null address or factory`);
+        }
+        await linkContractToProxy(diamondCutAsOwner, facet.address, facet.factory);
+    }
+    console.log('Facets linked successfully!');
+}
+
+export async function removeFunctionsFromDiamond(
+    proxyAddress: string,
+    proxyOwner: SignerWithAddress,
+    functionSignatures: string[],
+) {
+    console.log('\n=== Removing specific functions from diamond ===');
+    const diamondCutAsOwner = DiamondCutFacet__factory.connect(proxyAddress, proxyOwner);
+    console.log(`Removing ${functionSignatures.length} functions:`);
+    functionSignatures.forEach((signature) => console.log(`  - ${signature}`));
+    const functionSelectors = functionSignatures.map((sig) => ethers.id(sig).slice(0, 10));
+    const facetCuts: IDiamond.FacetCutStruct[] = [];
+    facetCuts.push({
+        facetAddress: ZeroAddress,
+        action: FacetCutAction.Remove,
+        functionSelectors: functionSelectors,
+    });
+    const tx = await diamondCutAsOwner.diamondCut(facetCuts, ZeroAddress, '0x');
+    console.log(`Transaction hash: ${tx.hash}`);
+    await tx.wait();
+    console.log('Functions removed successfully!');
 }
