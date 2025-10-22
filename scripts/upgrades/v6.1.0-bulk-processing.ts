@@ -20,6 +20,7 @@ async function main() {
     const { chainId, deployer, proxyOwner, proxyAddress, iexecLibOrders } =
         await getUpgradeContext();
 
+    // TODO read addresses from deployments.
     const facetAddressesPerChain: { [key: string]: { [key: string]: string } } = {
         // Arbitrum sepolia
         '421614': {

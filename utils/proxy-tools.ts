@@ -6,7 +6,6 @@ import { ContractFactory, FunctionFragment, Interface, ZeroAddress } from 'ether
 import { ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import type { IDiamond } from '../typechain';
-
 import {
     DiamondCutFacet,
     DiamondCutFacet__factory,

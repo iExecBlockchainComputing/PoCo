@@ -36,7 +36,6 @@ const bellecourBaseConfig = {
 // Arbitrum Sepolia specific configuration
 const arbitrumSepoliaBaseConfig = {
     chainId: 421614,
-    // https://docs.arbitrum.io/build-decentralized-apps/arbitrum-vs-ethereum/block-numbers-and-time#block-gas-limit
     blockGasLimit: 32_000_000,
 };
 
