@@ -50,7 +50,7 @@ export async function linkContractToProxy(
     contractFactory: ContractFactory,
 ) {
     const contractName = getBaseNameFromContractFactory(contractFactory);
-    console.log(`Linking ${contractName} to proxy`);
+    console.log(`Linking facet ${contractName} to diamond proxy`);
     // Fetch existing selectors from the proxy.
     const existingSelectors = await DiamondLoupeFacet__factory.connect(
         await proxy.getAddress(),
