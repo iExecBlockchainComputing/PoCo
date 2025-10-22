@@ -23,20 +23,35 @@ async function main() {
     const { chainId, deployer, proxyOwner, proxyAddress, iexecLibOrders } =
         await getUpgradeContext();
 
+    const facetAddressesPerChain: { [key: string]: { [key: string]: string } } = {
+        // Arbitrum sepolia
+        '421614': {
+            IexecAccessorsFacet: '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b',
+            IexecPocoAccessorsFacet: '0x6C56FFFd001939d03779929702B2722C904a34da',
+            IexecPoco1Facet: '0xB670bf6165f1Df353CeA45AFB622dd91EA973AB9',
+        },
+        // Arbitrum mainnet
+        '42161': {
+            IexecAccessorsFacet: '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b',
+            IexecPocoAccessorsFacet: '0xeb40697b275413241d9b31dE568C98B3EA12FFF0',
+            IexecPoco1Facet: '0x46b555fE117DFd8D4eAC2470FA2d739c6c3a0152',
+        },
+    };
+
     const facetsToRemove: FacetDetails[] = [
         {
             name: 'IexecAccessorsFacet',
-            address: '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b',
+            address: facetAddressesPerChain[chainId.toString()]['IexecAccessorsFacet'],
             factory: null,
         },
         {
             name: 'IexecPocoAccessorsFacet',
-            address: '0xeb40697b275413241d9b31dE568C98B3EA12FFF0',
+            address: facetAddressesPerChain[chainId.toString()]['IexecPocoAccessorsFacet'],
             factory: null,
         },
         {
             name: 'IexecPoco1Facet',
-            address: '0x46b555fE117DFd8D4eAC2470FA2d739c6c3a0152',
+            address: facetAddressesPerChain[chainId.toString()]['IexecPoco1Facet'],
             factory: null,
         },
     ];
