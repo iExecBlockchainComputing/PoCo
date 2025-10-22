@@ -70,9 +70,6 @@ async function main() {
     await deployFacets(deployer, chainId, facetsToAdd);
     await removeFacetsFromDiamond(proxyAddress, proxyOwner, facetsToRemove);
     await printOnchainProxyFunctions(proxyAddress);
-    await linkFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
-    await printOnchainProxyFunctions(proxyAddress);
-
     if (isArbitrumFork() || chainId == 42161n) {
         // Remove these functions from Arbitrum Mainnet without removing
         // their facet completely.
@@ -94,7 +91,9 @@ async function main() {
         await printOnchainProxyFunctions(proxyAddress);
     }
     // TODO remove boost from Arbitrum Sepolia
-    console.log('Upgrade applied successfully!');
+    await linkFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
+    await printOnchainProxyFunctions(proxyAddress);
+    console.log('Upgrade performed successfully!');
     // TODO pass only name as argument and get address from deployments.
     await tryVerify(facetsToAdd as { name: string; address: string }[]);
 }
