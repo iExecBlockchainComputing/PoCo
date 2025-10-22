@@ -67,7 +67,6 @@ async function main() {
             },
         );
     }
-
     const facetsToAdd: FacetDetails[] = [
         {
             name: 'IexecPoco1Facet',
@@ -104,8 +103,7 @@ async function main() {
     await linkFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
     await printOnchainProxyFunctions(proxyAddress);
     console.log('Upgrade performed successfully!');
-    // TODO pass only name as argument and get address from deployments.
-    await tryVerify(facetsToAdd as { name: string; address: string }[]);
+    await tryVerify(facetsToAdd.map((facet) => facet.name));
 }
 
 if (require.main === module) {
