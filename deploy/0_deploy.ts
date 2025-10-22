@@ -40,7 +40,11 @@ import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config from '../utils/config';
 import { getDeployerAndOwnerSigners } from '../utils/deploy-tools';
-import { getFunctionSelectors, linkContractToProxy } from '../utils/proxy-tools';
+import {
+    getFunctionSelectors,
+    linkContractToProxy,
+    printOnchainProxyFunctions,
+} from '../utils/proxy-tools';
 import { getLibDiamondConfigOrEmpty } from '../utils/tools';
 
 let factoryDeployer: FactoryDeployer;
@@ -123,12 +127,7 @@ export default async function deploy() {
     const functionCount = diamondFacets
         .map((facet) => facet.functionSelectors.length)
         .reduce((acc, curr) => acc + curr, 0);
-    console.log(`The deployed Diamond Proxy now supports ${functionCount} functions:`);
-    // TODO
-    // for (let i = 0; i < Number(functionCount); i++) {
-    //     const [method, , contract] = await diamondLoupeFacetInstance.functionByIndex(i);
-    //     console.log(`[${i}] ${contract} ${method}`);
-    // }
+    await printOnchainProxyFunctions(diamondProxyAddress);
     /**
      * Deploy registries and link them to the proxy.
      */
