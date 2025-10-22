@@ -28,7 +28,7 @@ export function isArbitrumFork() {
 /**
  * Get the config of the current chain or throw if it is not defined.
  */
-function getChainConfig(chainId: bigint): ChainConfig {
+export function getChainConfig(chainId: bigint): ChainConfig {
     const chainConfig = config.chains[chainId.toString()];
     if (!chainConfig) {
         throw new Error(`Chain config undefined for chain ${chainId}`);

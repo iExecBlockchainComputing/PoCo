@@ -4,7 +4,7 @@
 import { ContractFactory, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
-import { DiamondCutFacet__factory, Ownable__factory } from '../../typechain';
+import { DiamondCutFacet__factory } from '../../typechain';
 import { getFunctionSelectors } from '../../utils/proxy-tools';
 
 // TODO remove this module.

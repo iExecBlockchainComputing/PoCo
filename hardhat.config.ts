@@ -35,15 +35,16 @@ const bellecourBaseConfig = {
 
 // Arbitrum Sepolia specific configuration
 const arbitrumSepoliaBaseConfig = {
-    gasPrice: 100_000_000, // 0.1 Gwei default (Arbitrum has lower gas prices)
-    blockGasLimit: 30_000_000, // Arbitrum has higher block gas limits
     chainId: 421614,
+    // https://docs.arbitrum.io/build-decentralized-apps/arbitrum-vs-ethereum/block-numbers-and-time#block-gas-limit
+    blockGasLimit: 32_000_000,
 };
 
 // Arbitrum specific configuration
 const arbitrumBaseConfig = {
-    blockGasLimit: 30_000_000,
     chainId: 42161,
+    // https://docs.arbitrum.io/build-decentralized-apps/arbitrum-vs-ethereum/block-numbers-and-time#block-gas-limit
+    blockGasLimit: 32_000_000,
 };
 
 const settings = {
@@ -117,6 +118,7 @@ const config: HardhatUserConfig = {
                         : undefined,
                 },
                 ...arbitrumSepoliaBaseConfig,
+                gasPrice: 100_000_000, // 0.1 Gwei
             }),
 
             ...(isArbitrumFork && {
@@ -124,6 +126,7 @@ const config: HardhatUserConfig = {
                     url: process.env.ARBITRUM_RPC_URL || 'https://arbitrum.gateway.tenderly.co',
                 },
                 ...arbitrumBaseConfig,
+                gasPrice: 100_000_000, // 0.1 Gwei
             }),
         },
         'external-hardhat': {

@@ -30,7 +30,7 @@ import {
     Ownable__factory,
 } from '../typechain';
 import { getBaseNameFromContractFactory, getDeployerAndOwnerSigners } from '../utils/deploy-tools';
-import config, { isArbitrumFork, isArbitrumSepoliaFork } from './config';
+import { getChainConfig, isArbitrumFork, isArbitrumSepoliaFork } from './config';
 import { FactoryDeployer } from './FactoryDeployer';
 
 const POCO_STORAGE_LOCATION = '0x5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00';
@@ -169,7 +169,7 @@ export function getAllLocalFacetFunctions(): Map<string, string> {
 }
 
 /**
- * Prints the functions supported by an on-chain diamond proxy.
+ * Prints all functions supported by the on-chain diamond proxy.
  * @param diamondProxyAddress The address of the diamond proxy.
  */
 export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
@@ -206,7 +206,7 @@ export async function getUpgradeContext() {
     const { deployer, owner } = await getDeployerAndOwnerSigners();
     console.log('Deployer:', deployer.address);
     console.log('Owner:', owner.address);
-    const deploymentOptions = config.getChainConfig(chainId).v5;
+    const deploymentOptions = getChainConfig(chainId).v5;
     if (!deploymentOptions.IexecLibOrders_v5) {
         throw new Error('IexecLibOrders_v5 is required');
     }
@@ -279,21 +279,17 @@ export async function removeFacetsFromDiamond(
     const facetCuts: IDiamond.FacetCutStruct[] = [];
     for (const facet of facets) {
         const selectors = await diamondLoupe.facetFunctionSelectors(facet.address!);
-        if (selectors.length > 0) {
-            console.log(
-                `Will remove the whole facet ${facet.name} [address: ${facet.address}, functions:${selectors.length}]`,
-            );
-            facetCuts.push({
-                facetAddress: ZeroAddress,
-                action: FacetCutAction.Remove,
-                functionSelectors: [...selectors],
-            });
-        } else {
-            console.log(`Skipping empty facet ${facet.name} [address: ${facet.address}]`);
+        if (!selectors || selectors.length === 0) {
+            throw new Error(`Facet ${facet.name} is empty or does not exist on-chain`);
         }
-    }
-    if (facetCuts.length === 0) {
-        throw new Error('All facets are empty, nothing to remove');
+        console.log(
+            `Will remove the whole facet ${facet.name} [address: ${facet.address}, functions:${selectors.length}]`,
+        );
+        facetCuts.push({
+            facetAddress: ZeroAddress,
+            action: FacetCutAction.Remove,
+            functionSelectors: [...selectors],
+        });
     }
     console.log(`Executing diamond cut to remove ${facetCuts.length} facets`);
     const tx = await diamondCutAsOwner.diamondCut(facetCuts, ZeroAddress, '0x');
@@ -328,10 +324,10 @@ export async function linkFacetsToDiamond(
 }
 
 /**
- * Removes specific functions from a diamond proxy without removing whole facets.
+ * Removes specific functions from a diamond proxy without removing the whole facet.
  * @param proxyAddress address of the diamond proxy
  * @param proxyOwner owner signer
- * @param functionFragments list of formatted function signatures to remove
+ * @param functionFragments list of fragments of functions to remove
  */
 export async function removeFunctionsFromDiamond(
     proxyAddress: string,

@@ -5,17 +5,18 @@ import { FunctionFragment } from 'ethers';
 import { IexecPoco1Facet__factory, IexecPocoAccessorsFacet__factory } from '../../typechain';
 import {
     deployFacets,
+    FacetDetails,
+    getUpgradeContext,
     linkFacetsToDiamond,
     printOnchainProxyFunctions,
     removeFacetsFromDiamond,
     removeFunctionsFromDiamond,
 } from '../../utils/proxy-tools';
 import { tryVerify } from '../verify';
-import { FacetDetails, getUpgradeContext } from '../../utils/proxy-tools';
 import { isArbitrumFork } from '../../utils/config';
 
 async function main() {
-    console.log('Starting bulk processing upgrade...');
+    console.log('Performing bulk processing upgrade...');
     const { chainId, deployer, proxyOwner, proxyAddress, iexecLibOrders } =
         await getUpgradeContext();
 
@@ -41,32 +42,32 @@ async function main() {
             factory: null,
         },
         {
-            name: 'IexecPocoAccessorsFacet',
-            address: facetAddressesPerChain[chainId.toString()]['IexecPocoAccessorsFacet'],
+            name: 'IexecPoco1Facet',
+            address: facetAddressesPerChain[chainId.toString()]['IexecPoco1Facet'],
             factory: null,
         },
         {
-            name: 'IexecPoco1Facet',
-            address: facetAddressesPerChain[chainId.toString()]['IexecPoco1Facet'],
+            name: 'IexecPocoAccessorsFacet',
+            address: facetAddressesPerChain[chainId.toString()]['IexecPocoAccessorsFacet'],
             factory: null,
         },
     ];
 
     const facetsToAdd: FacetDetails[] = [
         {
-            name: 'IexecPocoAccessorsFacet',
-            address: null,
-            factory: new IexecPocoAccessorsFacet__factory(iexecLibOrders),
-        },
-        {
             name: 'IexecPoco1Facet',
             address: null,
             factory: new IexecPoco1Facet__factory(iexecLibOrders),
         },
+        {
+            name: 'IexecPocoAccessorsFacet',
+            address: null,
+            factory: new IexecPocoAccessorsFacet__factory(iexecLibOrders),
+        },
     ];
 
-    // This will add the address of each deployed facet to `facetsToAdd` array.
     await printOnchainProxyFunctions(proxyAddress);
+    // This function adds the address of each deployed facet to `facetsToAdd` array.
     await deployFacets(deployer, chainId, facetsToAdd);
     await removeFacetsFromDiamond(proxyAddress, proxyOwner, facetsToRemove);
     await printOnchainProxyFunctions(proxyAddress);
@@ -74,10 +75,11 @@ async function main() {
     await printOnchainProxyFunctions(proxyAddress);
 
     if (isArbitrumFork() || chainId == 42161n) {
-        // Remove these functions from Arbitrum Mainnet, they were
-        // deployed in the facet IexecAccessorsABILegacyFacet.
-        // The same functions are deployed within IexecAccessorsFacet
-        // on Arbitrum Sepolia so they are automatically removed in
+        // Remove these functions from Arbitrum Mainnet without removing
+        // their facet completely.
+        // On Arbitrum Mainnet, they were deployed in `IexecAccessorsABILegacyFacet`.
+        // On Arbitrum Sepolia, they were deployed in `IexecAccessorsFacet` so no need
+        // to remove them manually since they are automatically removed when executing
         // `removeFacetsFromDiamond`.
         const functionSignatures = [
             FunctionFragment.from('function CONTRIBUTION_DEADLINE_RATIO() view returns (uint256)'),
