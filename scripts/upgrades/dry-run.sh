@@ -22,10 +22,10 @@ rm -rf deployments/hardhat
 cp -r deployments/${DEPLOYMENTS_FOLDER} deployments/hardhat
 # Stage the old deployments to have a clean diff after the upgrade script run.
 cp .gitignore .gitignore.bak
-sed -i '' '/deployments\/hardhat/d' .gitignore
+sed -i.bak '/deployments\/hardhat/d' .gitignore
 git add deployments/hardhat
 # Run the upgrade and print the git diff.
 npx hardhat run scripts/upgrades/${UPGRADE_SCRIPT} --network hardhat
-echo "=== Upgrade diff ==="
+echo "\n=== Upgrade diff ==="
 git --no-pager diff --name-status
 mv .gitignore.bak .gitignore
