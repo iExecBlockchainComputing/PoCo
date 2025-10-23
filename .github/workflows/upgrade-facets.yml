@@ -14,7 +14,7 @@ on:
           - arbitrumSepolia
           - arbitrum
         default: 'arbitrumSepolia'
-      dry_run:
+      dry-run:
         description: 'Dry Run (fork test only, no actual deployment)'
         required: false
         type: boolean
@@ -54,7 +54,7 @@ jobs:
         run: npm run build
 
       - name: Run fork test (dry run)
-        if: inputs.dry_run == true
+        if: inputs.dry-run == true
         env:
           # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
@@ -69,7 +69,7 @@ jobs:
           npx hardhat run scripts/upgrades/${{ env.UPGRADE_SCRIPT }} --network hardhat
 
       - name: Execute upgrade on live network
-        if: inputs.dry_run == false
+        if: inputs.dry-run == false
         env:
           # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
@@ -80,7 +80,7 @@ jobs:
           npx hardhat run scripts/upgrades/${{ env.UPGRADE_SCRIPT }} --network ${{ inputs.network }}
 
       - name: Push artifacts to the current branch
-        if: inputs.dry_run == false && github.ref != 'refs/heads/main'
+        if: inputs.dry-run == false && github.ref != 'refs/heads/main'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: |
@@ -92,7 +92,7 @@ jobs:
 
       # Since the `main` branch is protected, create a PR to push artifacts.
       - name: Push artifacts through a pull request
-        if: inputs.dry_run == false && github.ref == 'refs/heads/main'
+        if: inputs.dry-run == false && github.ref == 'refs/heads/main'
         uses: peter-evans/create-pull-request@v7
         with:
           add-paths: |
