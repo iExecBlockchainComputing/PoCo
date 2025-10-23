@@ -66,7 +66,7 @@ jobs:
           elif [ "${{ inputs.network }}" == "arbitrum" ]; then
             export ARBITRUM_FORK=true
           fi
-          npx hardhat run scripts/upgrades/${{ env.UPGRADE_SCRIPT }} --network hardhat
+          UPGRADE_SCRIPT=${{ env.UPGRADE_SCRIPT }} bash ./scripts/upgrades/dry-run.sh
 
       - name: Execute upgrade on live network
         if: inputs.dry-run == false
