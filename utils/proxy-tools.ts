@@ -168,11 +168,26 @@ export function getAllLocalFacetFunctions(): Map<string, string> {
 }
 
 /**
+ * Gets all deployed contract addresses and their names.
+ * This is useful to print human-readable names instead of addresses.
+ * @returns A mapping of contract addresses to their names.
+ */
+export async function getAllDeployedContractsAddressesAndNames() {
+    const allDeployments = await deployments.all();
+    const addressesToNames: { [key: string]: string } = {};
+    for (const [name, deployment] of Object.entries(allDeployments)) {
+        addressesToNames[deployment.address] = name;
+    }
+    return addressesToNames;
+}
+
+/**
  * Prints all functions supported by the on-chain diamond proxy.
  * @param diamondProxyAddress The address of the diamond proxy.
  */
 export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
-    const selectorToName = getAllLocalFacetFunctions();
+    const selectorsToNames = getAllLocalFacetFunctions();
+    const addressesToNames = await getAllDeployedContractsAddressesAndNames();
     const facetsOnchain = await DiamondLoupeFacet__factory.connect(
         diamondProxyAddress,
         ethers.provider,
@@ -188,8 +203,9 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
     for (const facet of facetsOnchain) {
         for (const selector of facet.functionSelectors) {
             // Fallback to the selector if the name is not found.
-            const functionName = selectorToName.get(selector) ?? selector;
-            console.log(`[${i}] ${facet.facetAddress} ${functionName}`);
+            const functionNameOrSelector = selectorsToNames.get(selector) ?? selector;
+            const facetNameOrAddress = addressesToNames[facet.facetAddress] ?? facet.facetAddress;
+            console.log(`[${i}] ${facetNameOrAddress} ${functionNameOrSelector}`);
             i++;
         }
     }
