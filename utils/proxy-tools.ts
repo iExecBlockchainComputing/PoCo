@@ -29,7 +29,7 @@ import {
     Ownable__factory,
 } from '../typechain';
 import { getBaseNameFromContractFactory, getDeployerAndOwnerSigners } from '../utils/deploy-tools';
-import { getChainConfig, isArbitrumFork, isArbitrumSepoliaFork } from './config';
+import { getChainConfig, isFork } from './config';
 import { FactoryDeployer } from './FactoryDeployer';
 
 const POCO_STORAGE_LOCATION = '0x5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00';
@@ -182,7 +182,7 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
         totalFunctions += facet.functionSelectors.length;
     });
     console.log(
-        `Onchain diamond proxy has ${facetsOnchain.length} facets and ${totalFunctions} total functions:`,
+        `\nOnchain diamond proxy has ${facetsOnchain.length} facets and ${totalFunctions} total functions:`,
     );
     let i = 0;
     for (const facet of facetsOnchain) {
@@ -201,7 +201,7 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
  */
 export async function getUpgradeContext() {
     const { chainId, name: networkName } = await ethers.provider.getNetwork();
-    console.log(`Network: ${networkName} (${chainId})`);
+    console.log(`Network: ${networkName} (${chainId}) (isFork: ${isFork()})`);
     const { deployer, owner } = await getDeployerAndOwnerSigners();
     console.log('Deployer:', deployer.address);
     console.log('Owner:', owner.address);
@@ -222,10 +222,7 @@ export async function getUpgradeContext() {
     const proxyOnchainOwner = await Ownable__factory.connect(proxyAddress, owner).owner();
     console.log(`Diamond proxy onchain owner: ${proxyOnchainOwner}`);
     // Use impersonated signer for forked chains, otherwise use the real owner signer.
-    const proxyOwner =
-        isArbitrumSepoliaFork() || isArbitrumFork()
-            ? await ethers.getImpersonatedSigner(proxyOnchainOwner)
-            : owner;
+    const proxyOwner = isFork() ? await ethers.getImpersonatedSigner(proxyOnchainOwner) : owner;
     return {
         chainId,
         deployer,

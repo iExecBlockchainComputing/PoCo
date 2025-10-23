@@ -13,7 +13,7 @@ import {
     removeFunctionsFromDiamond,
 } from '../../utils/proxy-tools';
 import { tryVerify } from '../verify';
-import { isArbitrumFork } from '../../utils/config';
+import { isArbitrumChainId, isArbitrumSepoliaChainId } from '../../utils/config';
 
 async function main() {
     console.log('Performing bulk processing upgrade...');
@@ -52,7 +52,21 @@ async function main() {
             factory: null,
         },
     ];
-
+    if (isArbitrumSepoliaChainId(chainId)) {
+        // Remove Boost facets on Arbitrum Sepolia.
+        facetsToRemove.push(
+            {
+                name: 'IexecPocoBoostAccessorsFacet',
+                address: '0xa23ABb680ecc9D2A51a0CcDE88604552340786Ae',
+                factory: null,
+            },
+            {
+                name: 'IexecPocoBoostFacet',
+                address: '0x248df8EFE953B39f965e5C7272283096d20f5956',
+                factory: null,
+            },
+        );
+    }
     const facetsToAdd: FacetDetails[] = [
         {
             name: 'IexecPoco1Facet',
@@ -65,18 +79,14 @@ async function main() {
             factory: new IexecPocoAccessorsFacet__factory(iexecLibOrders),
         },
     ];
+    await deployFacets(deployer, chainId, facetsToAdd); // Adds deployed addresses to `facetsToAdd`.
     await printOnchainProxyFunctions(proxyAddress);
-    // This function adds the address of each deployed facet to `facetsToAdd` array.
-    await deployFacets(deployer, chainId, facetsToAdd);
     await removeFacetsFromDiamond(proxyAddress, proxyOwner, facetsToRemove);
-    await printOnchainProxyFunctions(proxyAddress);
-    if (isArbitrumFork() || chainId == 42161n) {
-        // Remove these functions from Arbitrum Mainnet without removing
-        // their facet completely.
+    if (isArbitrumChainId(chainId)) {
+        // Remove these functions from Arbitrum Mainnet without completely removing their facet.
         // On Arbitrum Mainnet, they were deployed in `IexecAccessorsABILegacyFacet`.
         // On Arbitrum Sepolia, they were deployed in `IexecAccessorsFacet` so no need
-        // to remove them manually since they are automatically removed when executing
-        // `removeFacetsFromDiamond`.
+        // to remove them manually since the facet is removed in `removeFacetsFromDiamond`.
         const functionSignatures = [
             FunctionFragment.from('function CONTRIBUTION_DEADLINE_RATIO() view returns (uint256)'),
             FunctionFragment.from('function FINAL_DEADLINE_RATIO() view returns (uint256)'),
@@ -88,14 +98,12 @@ async function main() {
             FunctionFragment.from('function WORKERPOOL_STAKE_RATIO() view returns (uint256)'),
         ];
         await removeFunctionsFromDiamond(proxyAddress, proxyOwner, functionSignatures);
-        await printOnchainProxyFunctions(proxyAddress);
     }
-    // TODO remove boost from Arbitrum Sepolia
+    await printOnchainProxyFunctions(proxyAddress);
     await linkFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
     await printOnchainProxyFunctions(proxyAddress);
     console.log('Upgrade performed successfully!');
-    // TODO pass only name as argument and get address from deployments.
-    await tryVerify(facetsToAdd as { name: string; address: string }[]);
+    await tryVerify(facetsToAdd.map((facet) => facet.name));
 }
 
 if (require.main === module) {

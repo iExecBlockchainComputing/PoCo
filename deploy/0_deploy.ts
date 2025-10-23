@@ -38,7 +38,7 @@ import {
 import { DiamondArgsStruct } from '../typechain/contracts/Diamond';
 import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
-import config from '../utils/config';
+import config, { isArbitrumChainId, isArbitrumSepoliaChainId } from '../utils/config';
 import { getDeployerAndOwnerSigners } from '../utils/deploy-tools';
 import {
     getFunctionSelectors,
@@ -93,7 +93,8 @@ export default async function deploy() {
     const iexecLibOrders = {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
-    const isArbitrumMainnet = (await ethers.provider.getNetwork()).chainId === 42161n;
+    const isArbitrumMainnetOrSepolia =
+        isArbitrumChainId(chainId) || isArbitrumSepoliaChainId(chainId);
     const facets = [
         new IexecAccessorsABILegacyFacet__factory(),
         new IexecCategoryManagerFacet__factory(),
@@ -106,7 +107,7 @@ export default async function deploy() {
         new IexecPoco1Facet__factory(iexecLibOrders),
         new IexecPoco2Facet__factory(),
         new IexecPocoAccessorsFacet__factory(iexecLibOrders),
-        ...(!isArbitrumMainnet
+        ...(!isArbitrumMainnetOrSepolia
             ? [
                   new IexecPocoBoostFacet__factory(iexecLibOrders), // not deployed on Arbitrum mainnet
                   new IexecPocoBoostAccessorsFacet__factory(), // not deployed on Arbitrum mainnet
