@@ -217,7 +217,7 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
         `\nOnchain diamond proxy has ${facetsOnchain.length} facets and ${functions.length} total functions:`,
     );
     for (const func of functions) {
-        console.log(`- ${func.name} (${func.facetAddress.slice(0, 10)}...): ${func.facet}`);
+        console.log(`- ${func.name} (${func.facet}:${func.facetAddress.slice(0, 10)}...)`);
     }
 }
 
