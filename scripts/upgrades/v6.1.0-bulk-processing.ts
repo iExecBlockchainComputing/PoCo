@@ -80,8 +80,8 @@ async function main() {
             factory: new IexecPocoAccessorsFacet__factory(iexecLibOrders),
         },
     ];
-    await deployFacets(deployer, chainId, facetsToAdd); // Adds deployed addresses to `facetsToAdd`.
     await printOnchainProxyFunctions(proxyAddress);
+    await deployFacets(deployer, chainId, facetsToAdd); // Adds deployed addresses to `facetsToAdd`.
     await removeFacetsFromDiamond(proxyAddress, proxyOwner, facetsToRemove);
     if (isArbitrumChainId(chainId)) {
         // Remove these functions from Arbitrum Mainnet without completely removing their facet.

@@ -192,22 +192,32 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
         diamondProxyAddress,
         ethers.provider,
     ).facets();
-    let totalFunctions = 0;
-    facetsOnchain.forEach((facet) => {
-        totalFunctions += facet.functionSelectors.length;
-    });
-    console.log(
-        `\nOnchain diamond proxy has ${facetsOnchain.length} facets and ${totalFunctions} total functions:`,
-    );
-    let i = 0;
+    const functions: { facet: string; name: string; facetAddress: string }[] = [];
     for (const facet of facetsOnchain) {
         for (const selector of facet.functionSelectors) {
             // Fallback to the selector if the name is not found.
             const functionNameOrSelector = selectorsToNames.get(selector) ?? selector;
             const facetNameOrAddress = addressesToNames[facet.facetAddress] ?? facet.facetAddress;
-            console.log(`[${i}] ${facetNameOrAddress} ${functionNameOrSelector}`);
-            i++;
+            functions.push({
+                facet: facetNameOrAddress,
+                name: functionNameOrSelector,
+                facetAddress: facet.facetAddress,
+            });
         }
+    }
+    // Sort by function name, then facet name
+    functions.sort((f1, f2) => {
+        // Sort by function name first
+        const compare = f1.name.localeCompare(f2.name);
+        if (compare !== 0) return compare;
+        // If function names are equal, sort by facet name
+        return f1.facet.localeCompare(f2.facet);
+    });
+    console.log(
+        `\nOnchain diamond proxy has ${facetsOnchain.length} facets and ${functions.length} total functions:`,
+    );
+    for (const func of functions) {
+        console.log(`- ${func.name} (${func.facetAddress.slice(0, 10)}...): ${func.facet}`);
     }
 }
 
