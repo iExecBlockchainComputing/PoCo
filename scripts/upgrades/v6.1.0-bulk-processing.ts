@@ -9,6 +9,7 @@ import {
     getUpgradeContext,
     linkFacetsToDiamond,
     printOnchainProxyFunctions,
+    removeDanglingFacetDeploymentArtifacts,
     removeFacetsFromDiamond,
     removeFunctionsFromDiamond,
 } from '../../utils/proxy-tools';
@@ -103,6 +104,7 @@ async function main() {
     await linkFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
     await printOnchainProxyFunctions(proxyAddress);
     console.log('Upgrade performed successfully!');
+    await removeDanglingFacetDeploymentArtifacts(proxyAddress);
     await tryVerify(facetsToAdd.map((facet) => facet.name));
 }
 
