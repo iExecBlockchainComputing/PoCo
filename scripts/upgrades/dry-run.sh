@@ -13,12 +13,16 @@ if [ "${ARBITRUM_SEPOLIA_FORK}" == "true" ]; then
 elif [ "${ARBITRUM_FORK}" == "true" ]; then
     DEPLOYMENTS_FOLDER=arbitrum
 fi
+if [ -z "${DEPLOYMENTS_FOLDER}" ]; then
+    echo "Error: You must set either ARBITRUM_SEPOLIA_FORK=true or ARBITRUM_FORK=true."
+    exit 1
+fi
 # Copy the forked network deployments to the hardhat network folder.
 rm -rf deployments/hardhat
 cp -r deployments/${DEPLOYMENTS_FOLDER} deployments/hardhat
 # Stage the old deployments to have a clean diff after the upgrade script run.
 cp .gitignore .gitignore.bak
-sed -i '/deployments\/hardhat/d' .gitignore
+sed -i '' '/deployments\/hardhat/d' .gitignore
 git add deployments/hardhat
 # Run the upgrade and print the git diff.
 npx hardhat run scripts/upgrades/${UPGRADE_SCRIPT} --network hardhat
