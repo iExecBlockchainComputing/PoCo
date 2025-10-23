@@ -27,6 +27,8 @@ jobs:
 
   upgrade:
     needs: pre-upgrade
+    # Proceed if pre-upgrade succeeded or was skipped (in case of dry-run).
+    if: needs.pre-upgrade.result == 'success' || needs.pre-upgrade.result == 'skipped'
     runs-on: ubuntu-latest
     environment: ${{ inputs.network }}
     permissions:
