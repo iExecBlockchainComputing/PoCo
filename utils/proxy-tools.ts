@@ -192,7 +192,8 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
         diamondProxyAddress,
         ethers.provider,
     ).facets();
-    const functions: { facet: string; name: string; facetAddress: string }[] = [];
+    // Get the list of all functions with their facet names and addresses.
+    const functions: { name: string; facet: string; facetAddress: string }[] = [];
     for (const facet of facetsOnchain) {
         for (const selector of facet.functionSelectors) {
             // Fallback to the selector if the name is not found.
@@ -205,7 +206,7 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
             });
         }
     }
-    // Sort by function name, then facet name
+    // Sort functions by function name, then facet name
     functions.sort((f1, f2) => {
         // Sort by function name first
         const compare = f1.name.localeCompare(f2.name);
@@ -213,12 +214,22 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
         // If function names are equal, sort by facet name
         return f1.facet.localeCompare(f2.facet);
     });
-    console.log(
-        `\nOnchain diamond proxy has ${facetsOnchain.length} facets and ${functions.length} total functions:`,
+    // Extract facet names and addresses (Map preserves insertion order)
+    const facets = new Map(functions.map((f) => [f.facet, f.facetAddress]));
+    // Construct log message
+    const logMessage = [];
+    logMessage.push(
+        `\n💎 Diamond proxy has ${facets.size} facets with ${functions.length} total functions.`,
     );
-    for (const func of functions) {
-        console.log(`- ${func.name} (${func.facet}:${func.facetAddress.slice(0, 10)}...)`);
+    logMessage.push('\nFacets:');
+    for (const [name, address] of facets) {
+        logMessage.push(`   - ${name}: ${address}`);
     }
+    logMessage.push('\nFunctions:');
+    for (const func of functions) {
+        logMessage.push(`   - ${func.name} -> ${func.facet}`);
+    }
+    console.log(logMessage.join('\n'));
 }
 
 /**
