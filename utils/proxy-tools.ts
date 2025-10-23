@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ContractFactory, FunctionFragment, Interface, ZeroAddress } from 'ethers';
-import { ethers } from 'hardhat';
+import { deployments, ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import type { IDiamond } from '../typechain';
 import {
@@ -279,7 +279,7 @@ export async function removeFacetsFromDiamond(
             throw new Error(`Facet ${facet.name} is empty or does not exist on-chain`);
         }
         console.log(
-            `Will remove the whole facet ${facet.name} [address: ${facet.address}, functions:${selectors.length}]`,
+            `Will remove facet [name:${facet.name}, address: ${facet.address}, functions:${selectors.length}]`,
         );
         facetCuts.push({
             facetAddress: ZeroAddress,
@@ -349,4 +349,26 @@ export async function removeFunctionsFromDiamond(
     console.log(`Transaction hash: ${tx.hash}`);
     await tx.wait();
     console.log('Functions removed successfully!');
+}
+
+/**
+ * Removes dangling deployment artifacts for facets that are no longer linked to the diamond proxy.
+ * This is not done automatically in `removeFacetsFromDiamond` because we deploy new facets first,
+ * then remove old facets, which sometimes overwrites the existing ones.
+ * @param proxyAddress address of the diamond proxy
+ */
+export async function removeDanglingFacetDeploymentArtifacts(proxyAddress: string) {
+    console.log('\n=== Removing dangling deployment artifacts ===');
+    const allDeployments = await deployments.all();
+    const diamondLoupe = DiamondLoupeFacet__factory.connect(proxyAddress, ethers.provider);
+    const onchainFacets = await diamondLoupe.facetAddresses();
+    for (const deploymentName of Object.keys(allDeployments)) {
+        const deploymentAddress = allDeployments[deploymentName].address;
+        if (deploymentName.endsWith('Facet') && !onchainFacets.includes(deploymentAddress)) {
+            console.log(
+                `Deleting dangling facet artifact [name:${deploymentName}, address:${deploymentAddress}]`,
+            );
+            await deployments.delete(deploymentName);
+        }
+    }
 }
