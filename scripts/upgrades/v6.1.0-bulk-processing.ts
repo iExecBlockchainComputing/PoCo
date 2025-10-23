@@ -13,7 +13,7 @@ import {
     removeFunctionsFromDiamond,
 } from '../../utils/proxy-tools';
 import { tryVerify } from '../verify';
-import { isArbitrumFork, isArbitrumSepoliaFork } from '../../utils/config';
+import { isArbitrumChainId, isArbitrumSepoliaChainId } from '../../utils/config';
 
 async function main() {
     console.log('Performing bulk processing upgrade...');
@@ -52,8 +52,8 @@ async function main() {
             factory: null,
         },
     ];
-    if (isArbitrumSepoliaFork() || chainId == 421614n) {
-        // On Arbitrum Sepolia, also remove Boost facets.
+    if (isArbitrumSepoliaChainId(chainId)) {
+        // Remove Boost facets on Arbitrum Sepolia.
         facetsToRemove.push(
             {
                 name: 'IexecPocoBoostAccessorsFacet',
@@ -82,7 +82,7 @@ async function main() {
     await deployFacets(deployer, chainId, facetsToAdd); // Adds deployed addresses to `facetsToAdd`.
     await printOnchainProxyFunctions(proxyAddress);
     await removeFacetsFromDiamond(proxyAddress, proxyOwner, facetsToRemove);
-    if (isArbitrumFork() || chainId == 42161n) {
+    if (isArbitrumChainId(chainId)) {
         // Remove these functions from Arbitrum Mainnet without completely removing their facet.
         // On Arbitrum Mainnet, they were deployed in `IexecAccessorsABILegacyFacet`.
         // On Arbitrum Sepolia, they were deployed in `IexecAccessorsFacet` so no need
