@@ -214,15 +214,18 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
         // If function names are equal, sort by facet name
         return f1.facet.localeCompare(f2.facet);
     });
-    // Extract facet names and addresses (Map preserves insertion order)
-    const facets = new Map(functions.map((f) => [f.facet, f.facetAddress]));
+    // Extract unique facet names and addresses and sort them.
+    const facetsMap = new Map(functions.map((f) => [f.facet, f.facetAddress])); // unique
+    const facets = [...facetsMap]
+        .map(([name, address]) => ({ name, address }))
+        .sort((a, b) => a.name.localeCompare(b.name));
     // Construct log message
     const logMessage = [];
     logMessage.push(
-        `\n💎 Diamond proxy has ${facets.size} facets with ${functions.length} total functions.`,
+        `\n💎 Diamond proxy has ${facets.length} facets with ${functions.length} total functions.`,
     );
     logMessage.push('\nFacets:');
-    for (const [name, address] of facets) {
+    for (const { name, address } of facets) {
         logMessage.push(`   - ${name}: ${address}`);
     }
     logMessage.push('\nFunctions:');
