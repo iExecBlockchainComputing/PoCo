@@ -22,7 +22,6 @@ on:
 
 jobs:
   pre-upgrade:
-    if: inputs.dry-run == false
     uses: ./.github/workflows/main.yml
 
   upgrade:
