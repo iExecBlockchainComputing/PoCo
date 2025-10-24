@@ -13,7 +13,7 @@ import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/
 import config from '../../utils/config';
 import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
 import { encodeModuleProxyUpdate, printBlockTime } from '../upgrades/upgrade-helper';
-import { printOnchainProxyDescription } from '../../utils/proxy-tools';
+import { printOnchainDiamondDescription } from '../../utils/proxy-tools';
 
 (async () => {
     const chainId = (await ethers.provider.getNetwork()).chainId;
@@ -75,7 +75,7 @@ import { printOnchainProxyDescription } from '../../utils/proxy-tools';
     await time.increase(delay);
     console.log('Time traveling..');
     await printBlockTime();
-    await printOnchainProxyDescription(diamondProxyAddress);
+    await printOnchainDiamondDescription(diamondProxyAddress);
     console.log('Executing proxy update..');
     await timelockInstance
         .connect(timelockAdminSigner)
@@ -84,5 +84,5 @@ import { printOnchainProxyDescription } from '../../utils/proxy-tools';
             console.log(tx);
             tx.wait();
         });
-    await printOnchainProxyDescription(diamondProxyAddress);
+    await printOnchainDiamondDescription(diamondProxyAddress);
 })();

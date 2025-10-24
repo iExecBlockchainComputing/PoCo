@@ -187,7 +187,7 @@ export async function getAllDeployedContractsAddressesAndNames() {
  * @param diamondProxyAddress The address of the diamond proxy.
  * @returns An array of log messages.
  */
-export async function getOnchainProxyDescription(diamondProxyAddress: string) {
+export async function getOnchainDiamondDescription(diamondProxyAddress: string) {
     const selectorsToNames = getAllLocalFacetFunctions();
     const addressesToNames = await getAllDeployedContractsAddressesAndNames();
     const facetsOnchain = await DiamondLoupeFacet__factory.connect(
@@ -242,8 +242,8 @@ export async function getOnchainProxyDescription(diamondProxyAddress: string) {
  * to stdout.
  * @param diamondProxyAddress The address of the diamond proxy.
  */
-export async function printOnchainProxyDescription(diamondProxyAddress: string) {
-    const logs = await getOnchainProxyDescription(diamondProxyAddress);
+export async function printOnchainDiamondDescription(diamondProxyAddress: string) {
+    const logs = await getOnchainDiamondDescription(diamondProxyAddress);
     console.log(logs.join('\n'));
 }
 
@@ -252,12 +252,12 @@ export async function printOnchainProxyDescription(diamondProxyAddress: string) 
  * @param diamondProxyAddress proxy address
  * @param networkName network name
  */
-export async function saveOnchainProxyDescription(
+export async function saveOnchainDiamondDescription(
     diamondProxyAddress: string,
     networkName: string,
 ) {
     const path = `deployments/${networkName}/.diamond.log`;
-    const logs = await getOnchainProxyDescription(diamondProxyAddress);
+    const logs = await getOnchainDiamondDescription(diamondProxyAddress);
     try {
         fs.writeFileSync(path, logs.join('\n') + '\n');
         console.log(`Saved diamond proxy description to ${path}`);

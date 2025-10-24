@@ -8,11 +8,11 @@ import {
     FacetDetails,
     getUpgradeContext,
     linkFacetsToDiamond,
-    printOnchainProxyDescription,
+    printOnchainDiamondDescription,
     removeDanglingFacetDeploymentArtifacts,
     removeFacetsFromDiamond,
     removeFunctionsFromDiamond,
-    saveOnchainProxyDescription,
+    saveOnchainDiamondDescription,
 } from '../../utils/proxy-tools';
 import { tryVerify } from '../verify';
 import { isArbitrumChainId, isArbitrumSepoliaChainId } from '../../utils/config';
@@ -81,7 +81,9 @@ async function main() {
             factory: new IexecPocoAccessorsFacet__factory(iexecLibOrders),
         },
     ];
-    await printOnchainProxyDescription(proxyAddress);
+    // @dev Print diamond description before deploying new facets
+    // to have the before / after comparison.
+    await printOnchainDiamondDescription(proxyAddress);
     await deployFacets(deployer, chainId, facetsToAdd); // Adds deployed addresses to `facetsToAdd`.
     await removeFacetsFromDiamond(proxyAddress, proxyOwner, facetsToRemove);
     if (isArbitrumChainId(chainId)) {
@@ -101,11 +103,11 @@ async function main() {
         ];
         await removeFunctionsFromDiamond(proxyAddress, proxyOwner, functionSignatures);
     }
-    await printOnchainProxyDescription(proxyAddress);
+    await printOnchainDiamondDescription(proxyAddress);
     await linkFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
-    await printOnchainProxyDescription(proxyAddress);
+    await printOnchainDiamondDescription(proxyAddress);
     console.log('Upgrade performed successfully!');
-    await saveOnchainProxyDescription(proxyAddress, networkName);
+    await saveOnchainDiamondDescription(proxyAddress, networkName);
     await removeDanglingFacetDeploymentArtifacts(proxyAddress);
     await tryVerify(facetsToAdd.map((facet) => facet.name));
 }
