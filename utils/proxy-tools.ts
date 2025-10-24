@@ -259,7 +259,7 @@ export async function saveOnchainProxyDescription(
     const path = `deployments/${networkName}/.diamond.log`;
     const logs = await getOnchainProxyDescription(diamondProxyAddress);
     try {
-        fs.writeFileSync(path, logs.join('\n'));
+        fs.writeFileSync(path, logs.join('\n') + '\n');
         console.log(`Saved diamond proxy description to ${path}`);
     } catch (error) {
         console.error(`Failed to save diamond proxy description to ${path}:`, error);
