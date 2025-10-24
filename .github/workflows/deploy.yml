@@ -100,7 +100,7 @@ jobs:
             🤖 This is an automated pull request created by `${{ github.workflow }}` GitHub Actions
             workflow to save deployment artifacts.
             * Network: `${{ inputs.network }}`
-            * Job: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            * Run: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
             **Note**: Verify deployment before merging this PR.
           draft: true
