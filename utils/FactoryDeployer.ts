@@ -33,6 +33,7 @@ export class FactoryDeployer {
         call?: string,
     ): Promise<string> {
         await this.initFactory();
+        // TODO merge common parts of both deployment methods.
         if (this.factoryType === 'createx') {
             return await this.deployWithCreateX(contractFactory, constructorArgs, call);
         }
@@ -59,7 +60,8 @@ export class FactoryDeployer {
             saltHash,
             initCodeHash,
         );
-        console.log(`Deploying at ${contractAddress}`);
+        const contractName = getBaseNameFromContractFactory(contractFactory);
+        console.log(`Deploying ${contractName} at ${contractAddress}`);
         const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
         if (!previouslyDeployed) {
             await (

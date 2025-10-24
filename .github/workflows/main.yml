@@ -3,7 +3,7 @@ name: PoCo Contracts CI
 on:
   push:
     branches:
-      - main
+      - main # To trigger coverage updates of `main` on Codecov
   pull_request:
   workflow_call:
 

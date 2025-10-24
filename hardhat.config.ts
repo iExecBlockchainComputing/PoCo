@@ -15,9 +15,9 @@ import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deploy
 import chainConfig from './utils/config';
 
 const isNativeChainType = chainConfig.isNativeChain();
-const isLocalFork = process.env.LOCAL_FORK == 'true';
-const isArbitrumSepoliaFork = process.env.ARBITRUM_SEPOLIA_FORK == 'true';
-const isArbitrumFork = process.env.ARBITRUM_FORK == 'true';
+const isLocalFork = chainConfig.isLocalFork();
+const isArbitrumSepoliaFork = chainConfig.isArbitrumSepoliaFork();
+const isArbitrumFork = chainConfig.isArbitrumFork();
 const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
 
 /**
@@ -35,15 +35,15 @@ const bellecourBaseConfig = {
 
 // Arbitrum Sepolia specific configuration
 const arbitrumSepoliaBaseConfig = {
-    gasPrice: 100_000_000, // 0.1 Gwei default (Arbitrum has lower gas prices)
-    blockGasLimit: 30_000_000, // Arbitrum has higher block gas limits
     chainId: 421614,
+    blockGasLimit: 32_000_000,
 };
 
 // Arbitrum specific configuration
 const arbitrumBaseConfig = {
-    blockGasLimit: 30_000_000,
     chainId: 42161,
+    // https://docs.arbitrum.io/build-decentralized-apps/arbitrum-vs-ethereum/block-numbers-and-time#block-gas-limit
+    blockGasLimit: 32_000_000,
 };
 
 const settings = {
@@ -117,6 +117,7 @@ const config: HardhatUserConfig = {
                         : undefined,
                 },
                 ...arbitrumSepoliaBaseConfig,
+                gasPrice: 100_000_000, // 0.1 Gwei
             }),
 
             ...(isArbitrumFork && {
@@ -124,6 +125,7 @@ const config: HardhatUserConfig = {
                     url: process.env.ARBITRUM_RPC_URL || 'https://arbitrum.gateway.tenderly.co',
                 },
                 ...arbitrumBaseConfig,
+                gasPrice: 100_000_000, // 0.1 Gwei
             }),
         },
         'external-hardhat': {
@@ -275,7 +277,7 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     let deploymentsCopied = false;
     let networkName = '';
     try {
-        if (process.env.ARBITRUM_SEPOLIA_FORK === 'true') {
+        if (isArbitrumSepoliaFork) {
             networkName = 'arbitrumSepolia';
             deploymentsCopied = await copyDeployments(networkName);
         }
