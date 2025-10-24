@@ -27,7 +27,7 @@ jobs:
       pull-requests: write # Required to create pull requests.
     env:
       # For commit action
-      COMMIT_MESSAGE: 'chore: Save artifacts - ${{ inputs.network }} (runId:${{ github.run_id }})'
+      COMMIT_MESSAGE: 'chore: Save deployment artifacts - ${{ inputs.network }} (runId:${{ github.run_id }})'
       GHA_BOT_NAME: 'GitHub Actions Bot'
       GHA_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
     steps:
@@ -94,12 +94,13 @@ jobs:
           commit-message: ${{ env.COMMIT_MESSAGE }}
           committer: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
           author: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
-          branch: chore/save-artifacts-${{ inputs.network }}
+          branch: chore/save-deploy-artifacts-${{ inputs.network }}-${{ github.run_id }}
           title: ${{ env.COMMIT_MESSAGE }}
-          draft: true
           body: |
-            🤖 This is an automated pull request to save deployment artifacts.
+            🤖 This is an automated pull request created by `${{ github.workflow }}` GitHub Actions
+            workflow to save deployment artifacts.
             * Network: `${{ inputs.network }}`
-            * Job: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            * Job: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
             **Note**: Verify deployment before merging this PR.
+          draft: true

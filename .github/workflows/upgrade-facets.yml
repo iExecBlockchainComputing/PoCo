@@ -101,5 +101,11 @@ jobs:
           author: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
           branch: chore/save-upgrade-artifacts-${{ inputs.network }}-${{ github.run_id }}
           title: ${{ env.COMMIT_MESSAGE }}
-          body: 'PR created by "Create Pull Request" GitHub Action for upgrade artifacts.'
+          body: |
+            🤖 This is an automated pull request created by `${{ github.workflow }}` GitHub Actions
+            workflow to save upgrade artifacts.
+            * Network: `${{ inputs.network }}`
+            * Job: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            **Note**: Verify deployment before merging this PR.
           draft: true
