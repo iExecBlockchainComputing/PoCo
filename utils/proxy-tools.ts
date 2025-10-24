@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import fs from 'fs';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ContractFactory, FunctionFragment, Interface, ZeroAddress } from 'ethers';
 import { deployments, ethers } from 'hardhat';
@@ -131,7 +132,7 @@ export function getFunctionSelectors(contractFactory: ContractFactory): string[]
  * TODO read `contracts/facets` folder to avoid manual updates.
  * @returns A map of function selectors to their names.
  */
-export function getAllLocalFacetFunctions(): Map<string, string> {
+function getAllLocalFacetFunctions(): Map<string, string> {
     const allInterfaces: Interface[] = [
         DiamondCutFacet__factory.createInterface(),
         DiamondLoupeFacet__factory.createInterface(),
@@ -166,30 +167,100 @@ export function getAllLocalFacetFunctions(): Map<string, string> {
 }
 
 /**
- * Prints all functions supported by the on-chain diamond proxy.
- * @param diamondProxyAddress The address of the diamond proxy.
+ * Gets all deployed contract addresses and their names.
+ * This is useful to print human-readable names instead of addresses.
+ * @returns A mapping of contract addresses to their names.
  */
-export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
-    const selectorToName = getAllLocalFacetFunctions();
+async function getAllDeployedContractsAddressesAndNames() {
+    const allDeployments = await deployments.all();
+    const addressesToNames: { [key: string]: string } = {};
+    for (const [name, deployment] of Object.entries(allDeployments)) {
+        addressesToNames[deployment.address] = name;
+    }
+    return addressesToNames;
+}
+
+/**
+ * Gets log messages describing the facets and functions of the on-chain diamond proxy.
+ * @param diamondProxyAddress The address of the diamond proxy.
+ * @returns An array of log messages.
+ */
+async function getOnchainDiamondDescription(diamondProxyAddress: string) {
+    const selectorsToNames = getAllLocalFacetFunctions();
+    const addressesToNames = await getAllDeployedContractsAddressesAndNames();
     const facetsOnchain = await DiamondLoupeFacet__factory.connect(
         diamondProxyAddress,
         ethers.provider,
     ).facets();
-    let totalFunctions = 0;
-    facetsOnchain.forEach((facet) => {
-        totalFunctions += facet.functionSelectors.length;
-    });
-    console.log(
-        `\nOnchain diamond proxy has ${facetsOnchain.length} facets and ${totalFunctions} total functions:`,
-    );
-    let i = 0;
+    // Get the list of all functions with their facet names and addresses.
+    const functions: { name: string; facet: string; facetAddress: string }[] = [];
     for (const facet of facetsOnchain) {
         for (const selector of facet.functionSelectors) {
             // Fallback to the selector if the name is not found.
-            const functionName = selectorToName.get(selector) ?? selector;
-            console.log(`[${i}] ${facet.facetAddress} ${functionName}`);
-            i++;
+            const functionNameOrSelector = selectorsToNames.get(selector) ?? selector;
+            const facetNameOrAddress = addressesToNames[facet.facetAddress] ?? facet.facetAddress;
+            functions.push({
+                facet: facetNameOrAddress,
+                name: functionNameOrSelector,
+                facetAddress: facet.facetAddress,
+            });
         }
+    }
+    // Sort functions by function name, then facet name
+    functions.sort((f1, f2) => {
+        // Sort by function name first
+        const compare = f1.name.localeCompare(f2.name);
+        if (compare !== 0) return compare;
+        // If function names are equal, sort by facet name
+        return f1.facet.localeCompare(f2.facet);
+    });
+    // Extract unique facet names and addresses and sort them.
+    const facetsMap = new Map(functions.map((f) => [f.facet, f.facetAddress])); // unique
+    const facets = [...facetsMap]
+        .map(([name, address]) => ({ name, address }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    // Construct log message
+    const logMessage = [];
+    logMessage.push(
+        `\n💎 Diamond proxy has ${facets.length} facets with ${functions.length} total functions.`,
+    );
+    logMessage.push('Facets:');
+    for (const { name, address } of facets) {
+        logMessage.push(`   - ${name}: ${address}`);
+    }
+    logMessage.push('Functions:');
+    for (const func of functions) {
+        logMessage.push(`   - ${func.name} -> ${func.facet}`);
+    }
+    return logMessage;
+}
+
+/**
+ * Prints log messages describing the facets and functions of the on-chain diamond proxy
+ * to stdout.
+ * @param diamondProxyAddress The address of the diamond proxy.
+ */
+export async function printOnchainDiamondDescription(diamondProxyAddress: string) {
+    const logs = await getOnchainDiamondDescription(diamondProxyAddress);
+    console.log(logs.join('\n'));
+}
+
+/**
+ * Saves the on-chain diamond proxy description to a log file.
+ * @param diamondProxyAddress proxy address
+ * @param networkName network name
+ */
+export async function saveOnchainDiamondDescription(
+    diamondProxyAddress: string,
+    networkName: string,
+) {
+    const path = `deployments/${networkName}/.diamond.log`;
+    const logs = await getOnchainDiamondDescription(diamondProxyAddress);
+    try {
+        fs.writeFileSync(path, logs.join('\n') + '\n');
+        console.log(`Saved diamond proxy description to ${path}`);
+    } catch (error) {
+        console.error(`Failed to save diamond proxy description to ${path}:`, error);
     }
 }
 
@@ -223,6 +294,7 @@ export async function getUpgradeContext() {
     const proxyOwner = isFork() ? await ethers.getImpersonatedSigner(proxyOnchainOwner) : owner;
     return {
         chainId,
+        networkName,
         deployer,
         proxyAddress,
         proxyOwner,

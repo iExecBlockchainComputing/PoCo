@@ -8,17 +8,18 @@ import {
     FacetDetails,
     getUpgradeContext,
     linkFacetsToDiamond,
-    printOnchainProxyFunctions,
+    printOnchainDiamondDescription,
     removeDanglingFacetDeploymentArtifacts,
     removeFacetsFromDiamond,
     removeFunctionsFromDiamond,
+    saveOnchainDiamondDescription,
 } from '../../utils/proxy-tools';
 import { tryVerify } from '../verify';
 import { isArbitrumChainId, isArbitrumSepoliaChainId } from '../../utils/config';
 
 async function main() {
     console.log('Performing bulk processing upgrade...');
-    const { chainId, deployer, proxyOwner, proxyAddress, iexecLibOrders } =
+    const { chainId, networkName, deployer, proxyOwner, proxyAddress, iexecLibOrders } =
         await getUpgradeContext();
 
     // TODO read addresses from deployments.
@@ -80,8 +81,10 @@ async function main() {
             factory: new IexecPocoAccessorsFacet__factory(iexecLibOrders),
         },
     ];
+    // @dev Print diamond description before deploying new facets
+    // to have the before / after comparison.
+    await printOnchainDiamondDescription(proxyAddress);
     await deployFacets(deployer, chainId, facetsToAdd); // Adds deployed addresses to `facetsToAdd`.
-    await printOnchainProxyFunctions(proxyAddress);
     await removeFacetsFromDiamond(proxyAddress, proxyOwner, facetsToRemove);
     if (isArbitrumChainId(chainId)) {
         // Remove these functions from Arbitrum Mainnet without completely removing their facet.
@@ -100,10 +103,11 @@ async function main() {
         ];
         await removeFunctionsFromDiamond(proxyAddress, proxyOwner, functionSignatures);
     }
-    await printOnchainProxyFunctions(proxyAddress);
+    await printOnchainDiamondDescription(proxyAddress);
     await linkFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
-    await printOnchainProxyFunctions(proxyAddress);
+    await printOnchainDiamondDescription(proxyAddress);
     console.log('Upgrade performed successfully!');
+    await saveOnchainDiamondDescription(proxyAddress, networkName);
     await removeDanglingFacetDeploymentArtifacts(proxyAddress);
     await tryVerify(facetsToAdd.map((facet) => facet.name));
 }

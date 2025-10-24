@@ -26,6 +26,6 @@ sed -i.bak '/deployments\/hardhat/d' .gitignore
 git add deployments/hardhat
 # Run the upgrade and print the git diff.
 npx hardhat run scripts/upgrades/${UPGRADE_SCRIPT} --network hardhat
-echo "\n=== Upgrade diff ==="
+echo -e "\n=== Upgrade diff ==="
 git --no-pager diff --name-status
 mv .gitignore.bak .gitignore
