@@ -43,7 +43,7 @@ import { getDeployerAndOwnerSigners } from '../utils/deploy-tools';
 import {
     getFunctionSelectors,
     linkContractToProxy,
-    printOnchainProxyFunctions,
+    printOnchainDiamondDescription,
 } from '../utils/proxy-tools';
 import { getLibDiamondConfigOrEmpty } from '../utils/tools';
 
@@ -128,7 +128,7 @@ export default async function deploy() {
     const functionCount = diamondFacets
         .map((facet) => facet.functionSelectors.length)
         .reduce((acc, curr) => acc + curr, 0);
-    await printOnchainProxyFunctions(diamondProxyAddress);
+    await printOnchainDiamondDescription(diamondProxyAddress);
     /**
      * Deploy registries and link them to the proxy.
      */

@@ -14,7 +14,7 @@ import {
 } from '../../typechain';
 import config from '../../utils/config';
 import { encodeModuleProxyUpdate, printBlockTime } from '../upgrades/upgrade-helper';
-import { printOnchainProxyFunctions } from '../../utils/proxy-tools';
+import { printOnchainDiamondDescription } from '../../utils/proxy-tools';
 
 if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
     (async () => {
@@ -39,7 +39,7 @@ export async function addModulesToProxy() {
     const iexecPoco2FacetAddress = (await hre.deployments.get('IexecPoco2Facet')).address;
     const iexecPocoAccessorsFacetAddress = (await hre.deployments.get('IexecPocoAccessorsFacet'))
         .address;
-    await printOnchainProxyFunctions(diamondProxyAddress);
+    await printOnchainDiamondDescription(diamondProxyAddress);
 
     console.log('Functions about to be added to proxy:');
     const timelockAddress = await Ownable__factory.connect(
@@ -123,7 +123,7 @@ export async function addModulesToProxy() {
 
     async function executeUpgrade() {
         await printBlockTime();
-        await printOnchainProxyFunctions(diamondProxyAddress);
+        await printOnchainDiamondDescription(diamondProxyAddress);
         console.log('Executing proxy update..');
         await timelockInstance
             .connect(timelockAdminSigner)
@@ -132,6 +132,6 @@ export async function addModulesToProxy() {
                 console.log(x);
                 return x.wait();
             });
-        await printOnchainProxyFunctions(diamondProxyAddress);
+        await printOnchainDiamondDescription(diamondProxyAddress);
     }
 }
