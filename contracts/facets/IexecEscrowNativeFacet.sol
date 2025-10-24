@@ -1,16 +1,14 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "./IexecERC20Core.sol";
-import "./FacetBase.sol";
-import "../interfaces/IexecEscrowNative.sol";
+import {IexecERC20Core} from "./IexecERC20Core.sol";
+import {FacetBase} from "./FacetBase.sol";
+import {IexecEscrowNative} from "../interfaces/IexecEscrowNative.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core {
-    using SafeMathExtended for uint256;
 
     uint256 internal constant nRLCtoWei = 10 ** 9;
     /***************************************************************************
@@ -42,7 +40,7 @@ contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core 
         uint256 remaining = msg.value;
         for (uint i = 0; i < amounts.length; ++i) {
             _mint(targets[i], amounts[i]);
-            remaining = remaining.sub(amounts[i].mul(nRLCtoWei));
+            remaining = remaining - amounts[i] * nRLCtoWei;
         }
         _withdraw(_msgSender(), remaining);
         return true;
@@ -50,26 +48,26 @@ contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core 
 
     function withdraw(uint256 amount) external override returns (bool) {
         _burn(_msgSender(), amount);
-        _withdraw(_msgSender(), amount.mul(nRLCtoWei));
+        _withdraw(_msgSender(), amount * nRLCtoWei);
         return true;
     }
 
     function withdrawTo(uint256 amount, address target) external override returns (bool) {
         _burn(_msgSender(), amount);
-        _withdraw(target, amount.mul(nRLCtoWei));
+        _withdraw(target, amount * nRLCtoWei);
         return true;
     }
 
     function recover() external override onlyOwner returns (uint256) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 delta = address(this).balance.div(nRLCtoWei).sub($.m_totalSupply);
+        uint256 delta = address(this).balance / nRLCtoWei - $.m_totalSupply;
         _mint(owner(), delta);
         return delta;
     }
 
     function _deposit(address target) internal {
-        _mint(target, msg.value.div(nRLCtoWei));
-        _withdraw(_msgSender(), msg.value.mod(nRLCtoWei));
+        _mint(target, msg.value / nRLCtoWei);
+        _withdraw(_msgSender(), msg.value % nRLCtoWei);
     }
 
     function _withdraw(address to, uint256 value) internal {

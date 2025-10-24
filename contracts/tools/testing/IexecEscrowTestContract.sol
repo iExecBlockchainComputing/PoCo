@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {IexecEscrow} from "../../facets/IexecEscrow.v8.sol";
-import {PocoStorageLib} from "../../libs/PocoStorageLib.v8.sol";
+import {PocoStorageLib} from "../../libs/PocoStorageLib.sol";
 
 /**
  * @notice a wrapper contract to make internal functions of

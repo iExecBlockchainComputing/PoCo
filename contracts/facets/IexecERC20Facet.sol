@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "./IexecERC20Core.sol";
-import "./FacetBase.sol";
-import "../interfaces/IexecERC20.sol";
-import "../interfaces/IexecTokenSpender.sol";
+import {IexecERC20Core} from "./IexecERC20Core.sol";
+import {FacetBase} from "./FacetBase.sol";
+import {IexecERC20} from "../interfaces/IexecERC20.sol";
+import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
@@ -46,7 +45,7 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()].sub(amount));
+        _approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()] - amount);
         return true;
     }
 
@@ -55,7 +54,7 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         uint256 addedValue
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender].add(addedValue));
+        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender] + addedValue);
         return true;
     }
 
@@ -64,7 +63,7 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         uint256 subtractedValue
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender].sub(subtractedValue));
+        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender] - subtractedValue);
         return true;
     }
 }

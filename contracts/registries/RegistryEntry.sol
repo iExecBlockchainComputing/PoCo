@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
 import "./Registry.sol";
 
@@ -18,7 +18,7 @@ abstract contract RegistryEntry {
     }
 
     function owner() public view returns (address) {
-        return registry.ownerOf(uint256(address(this)));
+        return registry.ownerOf(uint256(uint160(address(this))));
     }
 
     /**
