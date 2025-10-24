@@ -226,11 +226,11 @@ export async function getOnchainProxyDescription(diamondProxyAddress: string) {
     logMessage.push(
         `\n💎 Diamond proxy has ${facets.length} facets with ${functions.length} total functions.`,
     );
-    logMessage.push('\nFacets:');
+    logMessage.push('Facets:');
     for (const { name, address } of facets) {
         logMessage.push(`   - ${name}: ${address}`);
     }
-    logMessage.push('\nFunctions:');
+    logMessage.push('Functions:');
     for (const func of functions) {
         logMessage.push(`   - ${func.name} -> ${func.facet}`);
     }
