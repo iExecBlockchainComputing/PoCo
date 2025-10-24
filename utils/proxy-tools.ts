@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
+import fs from 'fs';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ContractFactory, FunctionFragment, Interface, ZeroAddress } from 'ethers';
 import { deployments, ethers } from 'hardhat';
@@ -182,10 +183,11 @@ export async function getAllDeployedContractsAddressesAndNames() {
 }
 
 /**
- * Prints all functions supported by the on-chain diamond proxy.
+ * Gets log messages describing the facets and functions of the on-chain diamond proxy.
  * @param diamondProxyAddress The address of the diamond proxy.
+ * @returns An array of log messages.
  */
-export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
+export async function getOnchainProxyDescription(diamondProxyAddress: string) {
     const selectorsToNames = getAllLocalFacetFunctions();
     const addressesToNames = await getAllDeployedContractsAddressesAndNames();
     const facetsOnchain = await DiamondLoupeFacet__factory.connect(
@@ -232,7 +234,36 @@ export async function printOnchainProxyFunctions(diamondProxyAddress: string) {
     for (const func of functions) {
         logMessage.push(`   - ${func.name} -> ${func.facet}`);
     }
-    console.log(logMessage.join('\n'));
+    return logMessage;
+}
+
+/**
+ * Prints log messages describing the facets and functions of the on-chain diamond proxy
+ * to stdout.
+ * @param diamondProxyAddress The address of the diamond proxy.
+ */
+export async function printOnchainProxyDescription(diamondProxyAddress: string) {
+    const logs = await getOnchainProxyDescription(diamondProxyAddress);
+    console.log(logs.join('\n'));
+}
+
+/**
+ * Saves the on-chain diamond proxy description to a log file.
+ * @param diamondProxyAddress proxy address
+ * @param networkName network name
+ */
+export async function saveOnchainProxyDescription(
+    diamondProxyAddress: string,
+    networkName: string,
+) {
+    const path = `deployments/${networkName}/.diamond.log`;
+    const logs = await getOnchainProxyDescription(diamondProxyAddress);
+    try {
+        fs.writeFileSync(path, logs.join('\n'));
+        console.log(`Saved diamond proxy description to ${path}`);
+    } catch (error) {
+        console.error(`Failed to save diamond proxy description to ${path}:`, error);
+    }
 }
 
 /**
@@ -265,6 +296,7 @@ export async function getUpgradeContext() {
     const proxyOwner = isFork() ? await ethers.getImpersonatedSigner(proxyOnchainOwner) : owner;
     return {
         chainId,
+        networkName,
         deployer,
         proxyAddress,
         proxyOwner,
