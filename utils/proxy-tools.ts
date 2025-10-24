@@ -133,7 +133,7 @@ export function getFunctionSelectors(contractFactory: ContractFactory): string[]
  * TODO read `contracts/facets` folder to avoid manual updates.
  * @returns A map of function selectors to their names.
  */
-export function getAllLocalFacetFunctions(): Map<string, string> {
+function getAllLocalFacetFunctions(): Map<string, string> {
     const allInterfaces: Interface[] = [
         DiamondCutFacet__factory.createInterface(),
         DiamondLoupeFacet__factory.createInterface(),
@@ -173,7 +173,7 @@ export function getAllLocalFacetFunctions(): Map<string, string> {
  * This is useful to print human-readable names instead of addresses.
  * @returns A mapping of contract addresses to their names.
  */
-export async function getAllDeployedContractsAddressesAndNames() {
+async function getAllDeployedContractsAddressesAndNames() {
     const allDeployments = await deployments.all();
     const addressesToNames: { [key: string]: string } = {};
     for (const [name, deployment] of Object.entries(allDeployments)) {
@@ -187,7 +187,7 @@ export async function getAllDeployedContractsAddressesAndNames() {
  * @param diamondProxyAddress The address of the diamond proxy.
  * @returns An array of log messages.
  */
-export async function getOnchainDiamondDescription(diamondProxyAddress: string) {
+async function getOnchainDiamondDescription(diamondProxyAddress: string) {
     const selectorsToNames = getAllLocalFacetFunctions();
     const addressesToNames = await getAllDeployedContractsAddressesAndNames();
     const facetsOnchain = await DiamondLoupeFacet__factory.connect(
