@@ -5,7 +5,7 @@ import { ethers } from 'hardhat';
 import {
     DiamondCutFacet__factory,
     DiamondLoupeFacet__factory,
-    IexecPocoDepositAndMatchTokenFacet__factory,
+    IexecDepositAndMatchOrdersFacet__factory,
 } from '../../typechain';
 import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
 import { FactoryDeployer } from '../../utils/FactoryDeployer';
@@ -55,14 +55,14 @@ async function main() {
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']:
             deploymentOptions.IexecLibOrders_v5,
     };
-    const depositAndMatchFactory = new IexecPocoDepositAndMatchTokenFacet__factory(iexecLibOrders);
+    const depositAndMatchFactory = new IexecDepositAndMatchOrdersFacet__factory(iexecLibOrders);
 
     await checkDiamondState(diamondProxyAddress);
     await linkNewFacetToDiamond(diamondProxyAsOwner, depositAndMatchFacet, depositAndMatchFactory);
 
     await tryVerify([
         {
-            name: 'IexecPocoDepositAndMatchTokenFacet',
+            name: 'IexecDepositAndMatchOrdersFacet',
             address: depositAndMatchFacet,
             constructorArguments: [],
         },
@@ -76,11 +76,11 @@ async function deployNewFacet(deployer: any, chainId: bigint, iexecLibOrdersAddr
         ['contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5']: iexecLibOrdersAddress,
     };
 
-    console.log('Deploying IexecPocoDepositAndMatchTokenFacet...');
-    const depositAndMatchFactory = new IexecPocoDepositAndMatchTokenFacet__factory(iexecLibOrders);
+    console.log('Deploying IexecDepositAndMatchOrdersFacet...');
+    const depositAndMatchFactory = new IexecDepositAndMatchOrdersFacet__factory(iexecLibOrders);
     const depositAndMatchFacet = await factoryDeployer.deployContract(depositAndMatchFactory);
 
-    console.log(`IexecPocoDepositAndMatchTokenFacet deployed at: ${depositAndMatchFacet}`);
+    console.log(`IexecDepositAndMatchOrdersFacet deployed at: ${depositAndMatchFacet}`);
     return depositAndMatchFacet;
 }
 
@@ -101,20 +101,20 @@ async function checkDiamondState(diamondProxyAddress: string) {
 async function linkNewFacetToDiamond(
     diamondProxyAsOwner: any,
     depositAndMatchFacet: string,
-    depositAndMatchFactory: IexecPocoDepositAndMatchTokenFacet__factory,
+    depositAndMatchFactory: IexecDepositAndMatchOrdersFacet__factory,
 ) {
     const diamondProxyAddress = await diamondProxyAsOwner.getAddress();
     console.log('\n=== Step 3: Adding DepositAndMatchOrders facet to diamond ===');
 
-    console.log('Adding new IexecPocoDepositAndMatchTokenFacet...');
+    console.log('Adding new IexecDepositAndMatchOrdersFacet...');
     await linkContractToProxy(diamondProxyAsOwner, depositAndMatchFacet, depositAndMatchFactory);
-    console.log('New IexecPocoDepositAndMatchTokenFacet added successfully');
+    console.log('New IexecDepositAndMatchOrdersFacet added successfully');
 
     console.log('\nDiamond functions after upgrade:');
     await printFunctions(diamondProxyAddress);
 
     console.log('\nUpgrade completed successfully!');
-    console.log(`New IexecPocoDepositAndMatchTokenFacet deployed at: ${depositAndMatchFacet}`);
+    console.log(`New IexecDepositAndMatchOrdersFacet deployed at: ${depositAndMatchFacet}`);
 }
 
 if (require.main === module) {

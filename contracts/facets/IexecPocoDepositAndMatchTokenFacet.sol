@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
-import {IexecPocoDepositAndMatch} from "../interfaces/IexecPocoDepositAndMatchToken.sol";
+import {IexecDepositAndMatchOrders} from "../interfaces/IexecDepositAndMatchOrders.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
@@ -13,13 +13,13 @@ import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 
 /**
- * @title IexecPocoDepositAndMatchTokenFacet
+ * @title IexecDepositAndMatchOrdersFacet
  * @notice Facet that combines deposit and order matching for token-based PoCo deployments
  * @dev This facet allows builders to deposit RLC tokens and match orders in a single transaction,
  *      significantly improving the user experience by eliminating the need for separate approve+deposit+match transactions
  */
-contract IexecPocoDepositAndMatchTokenFacet is
-    IexecPocoDepositAndMatch,
+contract IexecDepositAndMatchOrdersFacet is
+    IexecDepositAndMatchOrders,
     FacetBase,
     IexecEscrow,
     SignatureVerifier,

@@ -15,7 +15,7 @@ import {IexecPoco1} from "./interfaces/IexecPoco1.sol";
 import {IexecPoco1Errors} from "./interfaces/IexecPoco1Errors.sol";
 import {IexecPoco2} from "./interfaces/IexecPoco2.sol";
 import {IexecPocoAccessors} from "./interfaces/IexecPocoAccessors.sol";
-import {IexecPocoDepositAndMatch} from "./interfaces/IexecPocoDepositAndMatchToken.sol";
+import {IexecDepositAndMatchOrders} from "./interfaces/IexecDepositAndMatchOrders.sol";
 import {IexecRelay} from "./interfaces/IexecRelay.sol";
 import {IexecTokenSpender} from "./interfaces/IexecTokenSpender.sol";
 import {IOwnable} from "./interfaces/IOwnable.sol";
@@ -44,7 +44,7 @@ interface IexecInterfaceToken is
     IexecPoco1Errors,
     IexecPoco2,
     IexecPocoAccessors,
-    IexecPocoDepositAndMatch,
+    IexecDepositAndMatchOrders,
     IexecRelay,
     IexecTokenSpender,
     IOwnable

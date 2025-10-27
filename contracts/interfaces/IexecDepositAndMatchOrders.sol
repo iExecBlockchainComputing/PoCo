@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
-interface IexecPocoDepositAndMatch {
+interface IexecDepositAndMatchOrders {
     /**
      * @notice Thrown when the caller is not the requester in the request order
      */
