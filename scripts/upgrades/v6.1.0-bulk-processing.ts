@@ -152,8 +152,8 @@ async function removeOldFacetsFromDiamond(diamondProxyAsOwner: DiamondCutFacet, 
 
     const oldFacets = [
         '0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b', //IexecAccessorsFacet
-        '0xeb40697b275413241d9b31dE568C98B3EA12FFF0', //IexecPocoAccessorsFacet
-        '0x46b555fE117DFd8D4eAC2470FA2d739c6c3a0152', //IexecPoco1Facet
+        '0x6C56FFFd001939d03779929702B2722C904a34da', //IexecPocoAccessorsFacet
+        '0xB670bf6165f1Df353CeA45AFB622dd91EA973AB9', //IexecPoco1Facet
     ];
     // Remove ALL functions from the old facets using diamondLoupe.facetFunctionSelectors() except of constant founctions
     for (const facetAddress of oldFacets) {

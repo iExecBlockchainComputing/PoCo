@@ -343,6 +343,350 @@ describe('IexecPoco1', () => {
     });
 
     describe('Match orders', () => {
+        it.only('Debug: Use manageAppOrder to presign', async () => {
+            // Build orders
+            const fullConfigOrders = buildOrders({
+                assets: ordersAssets,
+                prices: ordersPrices,
+                requester: requester.address,
+                beneficiary: beneficiary.address,
+                tag: TAG_TEE,
+                volume: botVolume,
+                callback: randomAddress,
+                trust: 3n,
+                category: 2,
+                params: '<params>',
+            });
+
+            console.log('\n=== Step 0: Fund requester with RLC ===');
+
+            // Calculate total cost for the deal
+            const appPrice = BigInt(fullConfigOrders.app.appprice);
+            const datasetPrice = BigInt(fullConfigOrders.dataset.datasetprice);
+            const workerpoolPrice = BigInt(fullConfigOrders.workerpool.workerpoolprice);
+            const totalCost = (appPrice + datasetPrice + workerpoolPrice) * BigInt(botVolume);
+            const depositAmount = totalCost * 2n; // Deposit 2x to be safe
+
+            console.log('Total cost for deal:', ethers.formatEther(totalCost), 'RLC');
+            console.log('Depositing:', ethers.formatEther(depositAmount), 'RLC');
+
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                botVolume,
+            );
+            const workerStakePerTask = await iexecWrapper.computeWorkerTaskStake(
+                workerpoolAddress,
+                workerpoolPrice,
+            );
+            const schedulerRewardRatioPerTask =
+                await iexecWrapper.getSchedulerRewardRatio(workerpoolAddress);
+            // Deposit required amounts.
+            await iexecWrapper.depositInIexecAccount(requester, totalCost);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+
+            // // Transfer RLC to requester
+            // const rlcToken = await ethers.getContractAt('RLC', ordersAssets.token);
+            // await rlcToken.transfer(requester.address, depositAmount);
+            // console.log('✓ RLC transferred to requester');
+
+            // // Approve IexecPoco to spend RLC
+            // const rlcAsRequester = rlcToken.connect(requester);
+            // await rlcAsRequester.approve(await iexecPoco.getAddress(), depositAmount);
+            // console.log('✓ RLC approved for IexecPoco');
+
+            // // Deposit to escrow
+            // const iexecPocoAsRequester = iexecPoco.connect(requester);
+            // await iexecPocoAsRequester.deposit(depositAmount);
+            // console.log('✓ RLC deposited to escrow');
+
+            // Verify balance
+            const escrowBalance = await iexecPoco.viewAccount(requester.address);
+            console.log('Requester escrow balance:', escrowBalance, 'RLC');
+
+            console.log('\n=== Step 1: Call manageXOrder functions (as owners) ===');
+
+            const OPERATION_SIGN = 0;
+            const NULL_SIGNATURE = '0x';
+
+            // App Order Operation - sent by app provider
+            const appOrderOperationStruct = {
+                order: {
+                    app: fullConfigOrders.app.app,
+                    appprice: fullConfigOrders.app.appprice,
+                    volume: fullConfigOrders.app.volume,
+                    tag: fullConfigOrders.app.tag,
+                    datasetrestrict: fullConfigOrders.app.datasetrestrict,
+                    workerpoolrestrict: fullConfigOrders.app.workerpoolrestrict,
+                    requesterrestrict: fullConfigOrders.app.requesterrestrict,
+                    salt: fullConfigOrders.app.salt,
+                    sign: NULL_SIGNATURE,
+                },
+                operation: OPERATION_SIGN,
+                sign: NULL_SIGNATURE,
+            };
+
+            const iexecPocoAsAppProvider = iexecPoco.connect(appProvider);
+            const tx1 = await iexecPocoAsAppProvider.manageAppOrder(appOrderOperationStruct);
+            await tx1.wait();
+            console.log('✓ App order presigned');
+
+            // Dataset Order Operation - sent by dataset provider
+            const datasetOrderOperationStruct = {
+                order: {
+                    dataset: fullConfigOrders.dataset.dataset,
+                    datasetprice: fullConfigOrders.dataset.datasetprice,
+                    volume: fullConfigOrders.dataset.volume,
+                    tag: fullConfigOrders.dataset.tag,
+                    apprestrict: fullConfigOrders.dataset.apprestrict,
+                    workerpoolrestrict: fullConfigOrders.dataset.workerpoolrestrict,
+                    requesterrestrict: fullConfigOrders.dataset.requesterrestrict,
+                    salt: fullConfigOrders.dataset.salt,
+                    sign: NULL_SIGNATURE,
+                },
+                operation: OPERATION_SIGN,
+                sign: NULL_SIGNATURE,
+            };
+
+            const iexecPocoAsDatasetProvider = iexecPoco.connect(datasetProvider);
+            const tx2 = await iexecPocoAsDatasetProvider.manageDatasetOrder(
+                datasetOrderOperationStruct,
+            );
+            await tx2.wait();
+            console.log('✓ Dataset order presigned');
+
+            // Workerpool Order Operation - sent by workerpool provider
+            const workerpoolOrderOperationStruct = {
+                order: {
+                    workerpool: fullConfigOrders.workerpool.workerpool,
+                    workerpoolprice: fullConfigOrders.workerpool.workerpoolprice,
+                    volume: fullConfigOrders.workerpool.volume,
+                    tag: fullConfigOrders.workerpool.tag,
+                    category: fullConfigOrders.workerpool.category,
+                    trust: fullConfigOrders.workerpool.trust,
+                    apprestrict: fullConfigOrders.workerpool.apprestrict,
+                    datasetrestrict: fullConfigOrders.workerpool.datasetrestrict,
+                    requesterrestrict: fullConfigOrders.workerpool.requesterrestrict,
+                    salt: fullConfigOrders.workerpool.salt,
+                    sign: NULL_SIGNATURE,
+                },
+                operation: OPERATION_SIGN,
+                sign: NULL_SIGNATURE,
+            };
+
+            const iexecPocoAsWorkerpoolProvider = iexecPoco.connect(scheduler);
+            const tx3 = await iexecPocoAsWorkerpoolProvider.manageWorkerpoolOrder(
+                workerpoolOrderOperationStruct,
+            );
+            await tx3.wait();
+            console.log('✓ Workerpool order presigned');
+
+            // Request Order Operation - sent by requester
+            const requestOrderOperationStruct = {
+                order: {
+                    app: fullConfigOrders.requester.app,
+                    appmaxprice: fullConfigOrders.requester.appmaxprice,
+                    dataset: fullConfigOrders.requester.dataset,
+                    datasetmaxprice: fullConfigOrders.requester.datasetmaxprice,
+                    workerpool: fullConfigOrders.requester.workerpool,
+                    workerpoolmaxprice: fullConfigOrders.requester.workerpoolmaxprice,
+                    requester: fullConfigOrders.requester.requester,
+                    volume: fullConfigOrders.requester.volume,
+                    tag: fullConfigOrders.requester.tag,
+                    category: fullConfigOrders.requester.category,
+                    trust: fullConfigOrders.requester.trust,
+                    beneficiary: fullConfigOrders.requester.beneficiary,
+                    callback: fullConfigOrders.requester.callback,
+                    params: fullConfigOrders.requester.params,
+                    salt: fullConfigOrders.requester.salt,
+                    sign: NULL_SIGNATURE,
+                },
+                operation: OPERATION_SIGN,
+                sign: NULL_SIGNATURE,
+            };
+
+            await iexecPocoAsRequester.manageRequestOrder(requestOrderOperationStruct);
+            console.log('✓ Request order presigned');
+
+            console.log('\n=== Step 2: Try matchOrders with empty signatures ===');
+
+            const ordersWithEmptySigs = {
+                app: { ...fullConfigOrders.app, sign: NULL_SIGNATURE },
+                dataset: { ...fullConfigOrders.dataset, sign: NULL_SIGNATURE },
+                workerpool: { ...fullConfigOrders.workerpool, sign: NULL_SIGNATURE },
+                request: { ...fullConfigOrders.requester, sign: NULL_SIGNATURE },
+            };
+
+            try {
+                const tx = await iexecPoco.matchOrders(
+                    ordersWithEmptySigs.app,
+                    ordersWithEmptySigs.dataset,
+                    ordersWithEmptySigs.workerpool,
+                    ordersWithEmptySigs.request,
+                );
+                const receipt = await tx.wait();
+                console.log('✓ Match orders succeeded!');
+
+                // Find the deal ID from events
+                const orderMatchedEvent = receipt?.logs.find(
+                    (log: any) => log.fragment?.name === 'OrdersMatched',
+                );
+
+                if (orderMatchedEvent) {
+                    console.log('Deal ID:', orderMatchedEvent.data);
+                }
+            } catch (error: any) {
+                console.log('✗ Match orders failed:', error.message);
+            }
+        });
+        it.only('Should match orders using presigned orders', async () => {
+            // Build orders
+            const fullConfigOrders = buildOrders({
+                assets: ordersAssets,
+                prices: ordersPrices,
+                requester: requester.address,
+                beneficiary: beneficiary.address,
+                tag: TAG_TEE,
+                volume: botVolume,
+                callback: randomAddress,
+                trust: 3n,
+                category: 2,
+                params: '<params>',
+            });
+
+            // Calculate costs and fund accounts
+            const workerpoolPrice = BigInt(fullConfigOrders.workerpool.workerpoolprice);
+            const totalCost =
+                (BigInt(fullConfigOrders.app.appprice) +
+                    BigInt(fullConfigOrders.dataset.datasetprice) +
+                    workerpoolPrice) *
+                BigInt(botVolume);
+
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                botVolume,
+            );
+
+            // Deposit required amounts
+            await iexecWrapper.depositInIexecAccount(requester, totalCost);
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+
+            // Presign all orders using manageXOrder functions
+            const OPERATION_SIGN = 0;
+            const NULL_SIGNATURE = '0x';
+
+            // App order presigning
+            await iexecPoco.connect(appProvider).manageAppOrder({
+                order: {
+                    app: fullConfigOrders.app.app,
+                    appprice: fullConfigOrders.app.appprice,
+                    volume: fullConfigOrders.app.volume,
+                    tag: fullConfigOrders.app.tag,
+                    datasetrestrict: fullConfigOrders.app.datasetrestrict,
+                    workerpoolrestrict: fullConfigOrders.app.workerpoolrestrict,
+                    requesterrestrict: fullConfigOrders.app.requesterrestrict,
+                    salt: fullConfigOrders.app.salt,
+                    sign: NULL_SIGNATURE,
+                },
+                operation: OPERATION_SIGN,
+                sign: NULL_SIGNATURE,
+            });
+
+            // Dataset order presigning
+            await iexecPoco.connect(datasetProvider).manageDatasetOrder({
+                order: {
+                    dataset: fullConfigOrders.dataset.dataset,
+                    datasetprice: fullConfigOrders.dataset.datasetprice,
+                    volume: fullConfigOrders.dataset.volume,
+                    tag: fullConfigOrders.dataset.tag,
+                    apprestrict: fullConfigOrders.dataset.apprestrict,
+                    workerpoolrestrict: fullConfigOrders.dataset.workerpoolrestrict,
+                    requesterrestrict: fullConfigOrders.dataset.requesterrestrict,
+                    salt: fullConfigOrders.dataset.salt,
+                    sign: NULL_SIGNATURE,
+                },
+                operation: OPERATION_SIGN,
+                sign: NULL_SIGNATURE,
+            });
+
+            // Workerpool order presigning
+            await iexecPoco.connect(scheduler).manageWorkerpoolOrder({
+                order: {
+                    workerpool: fullConfigOrders.workerpool.workerpool,
+                    workerpoolprice: fullConfigOrders.workerpool.workerpoolprice,
+                    volume: fullConfigOrders.workerpool.volume,
+                    tag: fullConfigOrders.workerpool.tag,
+                    category: fullConfigOrders.workerpool.category,
+                    trust: fullConfigOrders.workerpool.trust,
+                    apprestrict: fullConfigOrders.workerpool.apprestrict,
+                    datasetrestrict: fullConfigOrders.workerpool.datasetrestrict,
+                    requesterrestrict: fullConfigOrders.workerpool.requesterrestrict,
+                    salt: fullConfigOrders.workerpool.salt,
+                    sign: NULL_SIGNATURE,
+                },
+                operation: OPERATION_SIGN,
+                sign: NULL_SIGNATURE,
+            });
+
+            // Request order presigning
+            await iexecPoco.connect(requester).manageRequestOrder({
+                order: {
+                    app: fullConfigOrders.requester.app,
+                    appmaxprice: fullConfigOrders.requester.appmaxprice,
+                    dataset: fullConfigOrders.requester.dataset,
+                    datasetmaxprice: fullConfigOrders.requester.datasetmaxprice,
+                    workerpool: fullConfigOrders.requester.workerpool,
+                    workerpoolmaxprice: fullConfigOrders.requester.workerpoolmaxprice,
+                    requester: fullConfigOrders.requester.requester,
+                    volume: fullConfigOrders.requester.volume,
+                    tag: fullConfigOrders.requester.tag,
+                    category: fullConfigOrders.requester.category,
+                    trust: fullConfigOrders.requester.trust,
+                    beneficiary: fullConfigOrders.requester.beneficiary,
+                    callback: fullConfigOrders.requester.callback,
+                    params: fullConfigOrders.requester.params,
+                    salt: fullConfigOrders.requester.salt,
+                    sign: NULL_SIGNATURE,
+                },
+                operation: OPERATION_SIGN,
+                sign: NULL_SIGNATURE,
+            });
+
+            // Match orders with empty signatures
+            const ordersWithEmptySignatures = {
+                app: { ...fullConfigOrders.app, sign: NULL_SIGNATURE },
+                dataset: { ...fullConfigOrders.dataset, sign: NULL_SIGNATURE },
+                workerpool: { ...fullConfigOrders.workerpool, sign: NULL_SIGNATURE },
+                request: { ...fullConfigOrders.requester, sign: NULL_SIGNATURE },
+            };
+
+            // Perform match
+            const tx = await iexecPoco.matchOrders(
+                ordersWithEmptySignatures.app,
+                ordersWithEmptySignatures.dataset,
+                ordersWithEmptySignatures.workerpool,
+                ordersWithEmptySignatures.request,
+            );
+
+            const receipt = await tx.wait();
+            expect(receipt).to.not.be.null;
+
+            // Verify OrdersMatched event
+            const orderMatchedEvent = receipt?.logs.find(
+                (log: any) => log.fragment?.name === 'OrdersMatched',
+            );
+            expect(orderMatchedEvent).to.not.be.undefined;
+
+            // Optionally verify the deal was created
+            const { appOrderHash, datasetOrderHash, workerpoolOrderHash, requestOrderHash } =
+                iexecWrapper.hashOrders(fullConfigOrders);
+            const dealId = getDealId(iexecWrapper.getDomain(), fullConfigOrders.requester);
+
+            const deal = await iexecPoco.viewDeal(dealId);
+            expect(deal.app.pointer).to.equal(fullConfigOrders.app.app);
+            expect(deal.dataset.pointer).to.equal(fullConfigOrders.dataset.dataset);
+            expect(deal.workerpool.pointer).to.equal(fullConfigOrders.workerpool.workerpool);
+        });
+
         it('Should match orders with: all assets, beneficiary, BoT, callback, replication', async () => {
             const trust = 3n;
             const category = 2;

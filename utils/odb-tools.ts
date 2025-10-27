@@ -13,7 +13,7 @@ interface Types {
     [key: string]: Array<TypedDataField>;
 }
 
-const TYPES: Types = {
+export const TYPES: Types = {
     EIP712Domain: [
         { type: 'string', name: 'name' },
         { type: 'string', name: 'version' },
@@ -102,6 +102,36 @@ function buildTypes(primaryType: string): Types {
     return types;
 }
 
+/**
+ * Remove the 'sign' field from message before signing.
+ * This is crucial because EIP-712 signature should not include the signature field itself.
+ */
+export function removeSignField(message: Record<string, any>): Record<string, any> {
+    const { sign, ...messageWithoutSign } = message;
+    return messageWithoutSign;
+}
+
+/**
+ * For nested order operations, we need to remove sign from the nested order
+ */
+function prepareMessageForSigning(
+    primaryType: string,
+    message: Record<string, any>,
+): Record<string, any> {
+    // If it's an OrderOperation type, we need to handle the nested order
+    if (primaryType.endsWith('Operation')) {
+        const messageWithoutSign = removeSignField(message);
+        if (messageWithoutSign.order) {
+            // Remove sign from nested order as well
+            messageWithoutSign.order = removeSignField(messageWithoutSign.order);
+        }
+        return messageWithoutSign;
+    }
+
+    // For regular orders, just remove the sign field
+    return removeSignField(message);
+}
+
 async function eth_signTypedData(
     primaryType: string,
     message: Record<string, any>,
@@ -117,13 +147,31 @@ async function eth_signTypedData(
         };
         const types = buildTypes(primaryType);
 
+        // CRITICAL FIX: Remove 'sign' field before signing
+        const messageToSign = prepareMessageForSigning(primaryType, message);
+
+        // Helper function to stringify with BigInt support
+        const stringifyWithBigInt = (obj: any) =>
+            JSON.stringify(
+                obj,
+                (key, value) => (typeof value === 'bigint' ? value.toString() : value),
+                2,
+            );
+
+        // Debug logging with BigInt support
+        console.log(`\n=== Signing ${primaryType} ===`);
+        console.log('Domain:', stringifyWithBigInt(typedDataDomain));
+        console.log('Message to sign:', stringifyWithBigInt(messageToSign));
+
         let signerPromise;
 
         if (wallet.privateKey) {
             const walletInstance = new ethers.Wallet(wallet.privateKey, hre.ethers.provider);
+            console.log('Signer address (from privateKey):', walletInstance.address);
             signerPromise = Promise.resolve(walletInstance);
         } else {
             if (wallet.address) {
+                console.log('Signer address:', wallet.address);
                 signerPromise = hre.ethers.getSigner(wallet.address);
             } else {
                 reject(new Error('Wallet address is undefined'));
@@ -132,9 +180,18 @@ async function eth_signTypedData(
         }
 
         signerPromise
-            .then((signer) => signer.signTypedData(typedDataDomain, types, message))
-            .then(resolve)
-            .catch(reject);
+            .then((signer) => {
+                console.log('About to sign with:', signer.address);
+                return signer.signTypedData(typedDataDomain, types, messageToSign);
+            })
+            .then((signature) => {
+                console.log('Signature produced:', signature);
+                resolve(signature);
+            })
+            .catch((error) => {
+                console.error('Signing error:', error);
+                reject(error);
+            });
     });
 }
 
@@ -165,5 +222,27 @@ export function hashStruct(
         [primaryType]: TYPES[primaryType],
     };
 
-    return TypedDataEncoder.hash(typedDataDomain, types, message);
+    // CRITICAL FIX: Remove 'sign' field before hashing
+    const messageToHash = removeSignField(message);
+
+    return TypedDataEncoder.hash(typedDataDomain, types, messageToHash);
+}
+
+export function hashTypedData(domain: TypedDataDomain, typeName: string, message: any): string {
+    const { TypedDataEncoder } = require('ethers');
+
+    // Get the struct hash
+    const structHash = TypedDataEncoder.hashStruct(
+        typeName,
+        { [typeName]: TYPES[typeName] },
+        message,
+    );
+
+    // Compute domain separator
+    const domainSeparator = TypedDataEncoder.hashDomain(domain);
+
+    // Compute the full EIP-712 digest: keccak256("\x19\x01" || domainSeparator || structHash)
+    const digest = ethers.keccak256(ethers.concat(['0x1901', domainSeparator, structHash]));
+
+    return digest;
 }

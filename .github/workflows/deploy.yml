@@ -13,6 +13,16 @@ on:
           - arbitrum
           - bellecour
         default: 'hardhat'
+      dry_run:
+        description: 'Dry Run (fork test only, no actual deployment)'
+        required: false
+        type: boolean
+        default: true
+      upgrade_script:
+        description: 'Upgrade script to run in fork mode (optional, e.g., v6.1.0-bulk-processing.ts)'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   pre-deploy:
@@ -46,15 +56,70 @@ jobs:
       - name: Build
         run: npm run build
 
-      # TODO activate later.
-      # Checks of initial state fails (e.g., balanceOf(proxyAddress) !== 0).
-      # - name: Run fork tests
-      #   run: |
-      #     if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
-      #       npm run test:arbitrumSepolia
-      #     fi
+      - name: Validate upgrade on fork (dry run)
+        if: inputs.dry_run == true && inputs.upgrade_script != '' && inputs.network != 'hardhat'
+        env:
+          # Note: it is required to define both private key env variables when calling Hardhat.
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
+        run: |
+          echo "================================================================================"
+          echo "🔧 VALIDATING UPGRADE ON FORKED NETWORK"
+          echo "================================================================================"
+          echo ""
+          echo "Network: ${{ inputs.network }}"
+          echo "Upgrade script: scripts/upgrades/${{ inputs.upgrade_script }}"
+          echo ""
+          echo "This will:"
+          echo "  1. Fork the live network to test against production state"
+          echo "  2. Run the upgrade script to validate it executes without errors"
+          echo "  3. Report success/failure (does NOT deploy to production)"
+          echo ""
+          echo "Note: Full test suite is NOT run because tests expect fresh deployment state."
+          echo "      The upgrade validation itself is the critical check."
+          echo ""
+          echo "================================================================================"
+          echo ""
+
+          # Set fork environment variable based on network
+          if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+            export ARBITRUM_SEPOLIA_FORK=true
+          elif [ "${{ inputs.network }}" == "arbitrum" ]; then
+            export ARBITRUM_FORK=true
+          elif [ "${{ inputs.network }}" == "bellecour" ]; then
+            export LOCAL_FORK=true
+          fi
+
+          # Run upgrade script on fork
+          npx hardhat run scripts/upgrades/${{ inputs.upgrade_script }} --network hardhat
+
+          echo ""
+          echo "================================================================================"
+          echo "✅ UPGRADE VALIDATION SUCCESSFUL"
+          echo "================================================================================"
+          echo ""
+          echo "The upgrade script executed successfully on the forked network."
+          echo "This validates that the upgrade logic works correctly with production state."
+          echo ""
+
+      - name: Run fork tests (dry run, no upgrade)
+        if: inputs.dry_run == true && inputs.upgrade_script == '' && inputs.network != 'hardhat'
+        env:
+          # Note: it is required to define both private key env variables when calling Hardhat.
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
+        run: |
+          echo "Running tests in fork mode without upgrade (dry run)..."
+          if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+            npm run test:arbitrumSepolia
+          elif [ "${{ inputs.network }}" == "arbitrum" ]; then
+            npm run test:arbitrum
+          elif [ "${{ inputs.network }}" == "bellecour" ]; then
+            npm run test:bellecour
+          fi
 
       - name: Deploy contracts
+        if: inputs.dry_run == false
         env:
           # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
@@ -64,7 +129,7 @@ jobs:
         run: npm run deploy -- --network ${{ inputs.network }}
 
       - name: Update config.json with Diamond address
-        if: inputs.network != 'hardhat'
+        if: inputs.dry_run == false && inputs.network != 'hardhat'
         env:
           # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
@@ -72,7 +137,7 @@ jobs:
         run: npx hardhat run scripts/tools/update-config.ts --network ${{ inputs.network }}
 
       - name: Push artifacts to the current branch
-        if: inputs.network != 'hardhat' && github.ref != 'refs/heads/main'
+        if: inputs.dry_run == false && inputs.network != 'hardhat' && github.ref != 'refs/heads/main'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: |
@@ -85,7 +150,7 @@ jobs:
 
       # Since the `main` branch is protected, create a PR to push artifacts.
       - name: Push artifacts through a pull request
-        if: inputs.network != 'hardhat' && github.ref == 'refs/heads/main'
+        if: inputs.dry_run == false && inputs.network != 'hardhat' && github.ref == 'refs/heads/main'
         uses: peter-evans/create-pull-request@v7
         with:
           add-paths: |

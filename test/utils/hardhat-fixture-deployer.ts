@@ -51,6 +51,16 @@ async function setUpLocalForkInTokenMode() {
     const proxyAddress = chainConfig.v5.DiamondProxy;
     if (proxyAddress) {
         console.log(`Using existing DiamondProxy at ${proxyAddress}`);
+
+        // Check if we need to run upgrade and reset
+        if (process.env.UPGRADE_SCRIPT) {
+            console.log(`\n🔧 UPGRADE_SCRIPT detected: ${process.env.UPGRADE_SCRIPT}`);
+            const { runUpgradeAndReset } = await import(
+                '../../scripts/tools/run-upgrade-and-reset'
+            );
+            await runUpgradeAndReset();
+        }
+
         return proxyAddress;
     } else {
         console.log('No existing DiamondProxy found, deploying new contracts');
