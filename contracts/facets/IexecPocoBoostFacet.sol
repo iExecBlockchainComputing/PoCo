@@ -20,6 +20,10 @@ import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
+//
+// Not deployed yet!
+//
+
 /**
  * @title PoCo Boost to reduce latency and increase throughput of deals.
  * @notice Works for deals with requested trust = 0.

@@ -7,6 +7,8 @@ import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import { DiamondCutFacet__factory } from '../../typechain';
 import { getFunctionSelectors } from '../../utils/proxy-tools';
 
+// TODO remove this module.
+
 function encodeModuleProxyUpdate(contractFactory: ContractFactory, moduleAddress: string) {
     // Get function selectors from the contract factory
     const functionSelectors = getFunctionSelectors(contractFactory);

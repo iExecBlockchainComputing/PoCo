@@ -1,15 +1,8 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import fs from 'fs';
 import hre, { deployments } from 'hardhat';
-import path from 'path';
-
-export interface ContractToVerify {
-    name: string;
-    address: string;
-    constructorArguments?: any[];
-}
+import { Deployment } from 'hardhat-deploy/dist/types';
 
 /**
  * Verifies contracts on block explorer (e.g., Etherscan, Arbiscan).
@@ -18,7 +11,7 @@ export interface ContractToVerify {
  * @param contracts - Optional array of specific contracts to verify. If not provided,
  *                    will verify all contracts from the deployments/{network} directory.
  */
-async function verify(contracts?: ContractToVerify[]): Promise<void> {
+async function verify(contractNames?: string[]): Promise<void> {
     const skippedNetworks: string[] = [
         'hardhat',
         'localhost',
@@ -30,34 +23,31 @@ async function verify(contracts?: ContractToVerify[]): Promise<void> {
         console.log(`\nSkipping verification on development network: ${hre.network.name}`);
         return;
     }
-
-    const contractsToVerify =
-        contracts && contracts.length > 0 ? contracts : await getContractsFromDeployments();
-
+    let contracts: { [name: string]: Deployment } = {};
+    if (contractNames) {
+        // Get deployments of the specified contract names.
+        for (const name of contractNames) {
+            contracts[name] = await deployments.get(name);
+        }
+    } else {
+        // If no specific contract names provided, verify all deployments.
+        contracts = await deployments.all();
+        contractNames = Object.keys(contracts);
+    }
     console.log('\n=== Verifying contracts on block explorer ===');
-    console.log(`Contracts to verify: ${contractsToVerify.map((c) => c.name).join(', ')}`);
+    console.log(`Contracts to verify: ${contractNames.join(', ')}`);
     console.log('Waiting for block explorer to index the contracts...');
-    await new Promise((resolve) => setTimeout(resolve, 60000));
-
-    for (const contract of contractsToVerify) {
+    await new Promise((resolve) => setTimeout(resolve, 60000)); // 60s
+    for (const name of contractNames) {
         try {
+            const contract = contracts[name];
             await hre.run('verify:verify', {
                 address: contract.address,
-                constructorArguments: contract.constructorArguments || [],
+                constructorArguments: contract.args,
             });
-            console.log(`${contract.name} verified successfully`);
+            console.log(`${name} verified successfully`);
         } catch (error: any) {
-            console.error(`Error verifying ${contract.name}:`, error.message || error);
-            if (
-                typeof error.message === 'string' &&
-                error.message.includes('has') &&
-                error.message.includes('parameters but') &&
-                error.message.includes('arguments were provided')
-            ) {
-                console.error(
-                    `${contract.name} requires constructor arguments. Please add them to the deployment artifact.`,
-                );
-            }
+            console.error(`Error verifying ${name}:`, error.message || error);
         }
     }
     console.log('\nVerification completed!');
@@ -69,46 +59,17 @@ async function verify(contracts?: ContractToVerify[]): Promise<void> {
  *
  * @param contracts - Optional array of specific contracts to verify.
  */
-export async function tryVerify(contracts?: ContractToVerify[]): Promise<void> {
+export async function tryVerify(contractNames?: string[]): Promise<void> {
     try {
-        await verify(contracts);
+        await verify(contractNames);
     } catch (error) {
         console.error('Verification failed, but continuing with deployment:', error);
     }
 }
 
-/**
- * Gets contracts to verify from deployments directory.
- */
-async function getContractsFromDeployments(): Promise<ContractToVerify[]> {
-    const jsonExtension = '.json';
-    const contractNames = fs
-        .readdirSync(path.resolve(__dirname, `../deployments/${hre.network.name}`))
-        .filter((file) => file.endsWith(jsonExtension))
-        .map((filePath) => filePath.replace(jsonExtension, ''));
-
-    if (contractNames.length === 0) {
-        console.log(`\nNo contracts to verify on network: ${hre.network.name}`);
-        return [];
-    }
-
-    const contracts: ContractToVerify[] = [];
-    for (const contractName of contractNames) {
-        const deployment = await deployments.get(contractName);
-        contracts.push({
-            name: contractName,
-            address: deployment.address,
-            constructorArguments: deployment.args || [],
-        });
-    }
-    return contracts;
-}
-
 if (require.main === module) {
-    verify()
-        .then(() => process.exit(0))
-        .catch((error) => {
-            console.error(error);
-            process.exit(1);
-        });
+    verify().catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
 }

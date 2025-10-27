@@ -60,7 +60,8 @@ export class FactoryDeployer {
             saltHash,
             initCodeHash,
         );
-        console.log(`Deploying at ${contractAddress}`);
+        const contractName = getBaseNameFromContractFactory(contractFactory);
+        console.log(`Deploying ${contractName} at ${contractAddress}`);
         const previouslyDeployed = (await ethers.provider.getCode(contractAddress)) !== '0x';
         if (!previouslyDeployed) {
             await (

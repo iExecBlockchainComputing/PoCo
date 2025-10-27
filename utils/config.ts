@@ -3,7 +3,7 @@ import { Category } from './poco-tools';
 
 const config = json as Config;
 
-function isNativeChain(chain?: ChainConfig) {
+export function isNativeChain(chain?: ChainConfig) {
     if (process.env.IS_NATIVE_CHAIN) {
         return process.env.IS_NATIVE_CHAIN === 'true';
     }
@@ -13,10 +13,43 @@ function isNativeChain(chain?: ChainConfig) {
     return false;
 }
 
+export function isFork() {
+    return isLocalFork() || isArbitrumSepoliaFork() || isArbitrumFork();
+}
+
+// TODO remove or rename this function.
+export function isLocalFork() {
+    return process.env.LOCAL_FORK === 'true';
+}
+
+export function isArbitrumSepoliaFork() {
+    return process.env.ARBITRUM_SEPOLIA_FORK === 'true';
+}
+
+/**
+ * Checks if the given chain ID is for the Arbitrum Sepolia network.
+ * It could be a fork or the actual network.
+ */
+export function isArbitrumSepoliaChainId(chainId: bigint) {
+    return chainId === 421614n;
+}
+
+export function isArbitrumFork() {
+    return process.env.ARBITRUM_FORK === 'true';
+}
+
+/**
+ * Checks if the given chain ID is for the Arbitrum mainnet network.
+ * It could be a fork or the actual network.
+ */
+export function isArbitrumChainId(chainId: bigint) {
+    return chainId === 42161n;
+}
+
 /**
  * Get the config of the current chain or throw if it is not defined.
  */
-function getChainConfig(chainId: bigint): ChainConfig {
+export function getChainConfig(chainId: bigint): ChainConfig {
     const chainConfig = config.chains[chainId.toString()];
     if (!chainConfig) {
         throw new Error(`Chain config undefined for chain ${chainId}`);
@@ -73,5 +106,8 @@ type ChainConfig = {
 export default {
     ...config,
     isNativeChain,
+    isLocalFork,
+    isArbitrumSepoliaFork,
+    isArbitrumFork,
     getChainConfig,
 };

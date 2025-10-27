@@ -14,7 +14,7 @@ on:
           - arbitrumSepolia
           - arbitrum
         default: 'arbitrumSepolia'
-      dry_run:
+      dry-run:
         description: 'Dry Run (fork test only, no actual deployment)'
         required: false
         type: boolean
@@ -27,13 +27,12 @@ jobs:
   upgrade:
     needs: pre-upgrade
     runs-on: ubuntu-latest
-    environment: ${{ inputs.network }} # Use the selected environment
+    environment: ${{ inputs.network }}
     permissions:
       contents: write # Required to commit artifacts.
       pull-requests: write # Required to create pull requests.
     env:
       UPGRADE_SCRIPT: 'v6.1.0-bulk-processing.ts' # Update this for each specific upgrade.
-      # For commit action
       COMMIT_MESSAGE: 'chore: Save upgrade artifacts - ${{ inputs.network }} (runId:${{ github.run_id }})'
       GHA_BOT_NAME: 'GitHub Actions Bot'
       GHA_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
@@ -54,7 +53,7 @@ jobs:
         run: npm run build
 
       - name: Run fork test (dry run)
-        if: inputs.dry_run == true
+        if: inputs.dry-run == true
         env:
           # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
@@ -66,10 +65,10 @@ jobs:
           elif [ "${{ inputs.network }}" == "arbitrum" ]; then
             export ARBITRUM_FORK=true
           fi
-          npx hardhat run scripts/upgrades/${{ env.UPGRADE_SCRIPT }} --network hardhat
+          UPGRADE_SCRIPT=${{ env.UPGRADE_SCRIPT }} bash ./scripts/upgrades/dry-run.sh
 
       - name: Execute upgrade on live network
-        if: inputs.dry_run == false
+        if: inputs.dry-run == false
         env:
           # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
@@ -80,7 +79,7 @@ jobs:
           npx hardhat run scripts/upgrades/${{ env.UPGRADE_SCRIPT }} --network ${{ inputs.network }}
 
       - name: Push artifacts to the current branch
-        if: inputs.dry_run == false && github.ref != 'refs/heads/main'
+        if: inputs.dry-run == false && github.ref != 'refs/heads/main'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: |
@@ -92,7 +91,7 @@ jobs:
 
       # Since the `main` branch is protected, create a PR to push artifacts.
       - name: Push artifacts through a pull request
-        if: inputs.dry_run == false && github.ref == 'refs/heads/main'
+        if: inputs.dry-run == false && github.ref == 'refs/heads/main'
         uses: peter-evans/create-pull-request@v7
         with:
           add-paths: |
@@ -102,5 +101,11 @@ jobs:
           author: '${{ env.GHA_BOT_NAME }} <${{ env.GHA_BOT_EMAIL }}>'
           branch: chore/save-upgrade-artifacts-${{ inputs.network }}-${{ github.run_id }}
           title: ${{ env.COMMIT_MESSAGE }}
-          body: 'PR created by "Create Pull Request" GitHub Action for upgrade artifacts.'
+          body: |
+            🤖 This is an automated pull request created by `${{ github.workflow }}` GitHub Actions
+            workflow to save upgrade artifacts.
+            * Network: `${{ inputs.network }}`
+            * Run: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            **Note**: Verify deployment before merging this PR.
           draft: true

@@ -8,6 +8,10 @@ import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecPocoBoostAccessors} from "../interfaces/IexecPocoBoostAccessors.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
+//
+// Not deployed yet!
+//
+
 /**
  * @title Getters contract for PoCo Boost facet.
  * @notice Access to PoCo Boost tasks must be done with PoCo Classic `IexecPocoAccessors`.
