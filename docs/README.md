@@ -7,6 +7,10 @@
 
 The detailed API documentation for each Solidity contract — including their functions, events, and data structures — can be found [here](./solidity/index.md).
 
+## Upgrades
+
+Reports of all PoCo upgrades are available in [scripts/upgrades/](../scripts/upgrades/)
+
 ## Diagrams
 
 ### UML diagrams
