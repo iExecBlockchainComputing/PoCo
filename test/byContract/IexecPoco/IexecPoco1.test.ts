@@ -343,7 +343,7 @@ describe('IexecPoco1', () => {
     });
 
     describe('Match orders', () => {
-        it.only('Debug: Use manageAppOrder to presign', async () => {
+        it('Debug: Use manageAppOrder to presign', async () => {
             // Build orders
             const fullConfigOrders = buildOrders({
                 assets: ordersAssets,
@@ -538,7 +538,7 @@ describe('IexecPoco1', () => {
                 console.log('✗ Match orders failed:', error.message);
             }
         });
-        it.only('Should match orders using presigned orders', async () => {
+        it('Should match orders using presigned orders', async () => {
             // Build orders
             const fullConfigOrders = buildOrders({
                 assets: ordersAssets,
