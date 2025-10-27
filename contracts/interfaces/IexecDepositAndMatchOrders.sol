@@ -9,12 +9,12 @@ interface IexecDepositAndMatchOrders {
     /**
      * @notice Thrown when the caller is not the requester in the request order
      */
-    error DepositAndMatch_CallerMustBeRequester();
+    error CallerMustBeRequester();
 
     /**
      * @notice Thrown when the token transfer fails during deposit
      */
-    error DepositAndMatch_TokenTransferFailed();
+    error TokenTransferFailed();
 
     /**
      * @notice Deposit RLC token in your iexec account and match orders in a single transaction

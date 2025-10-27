@@ -46,7 +46,7 @@ contract IexecDepositAndMatchOrdersFacet is
         IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) external override returns (bytes32 dealId) {
         if (_requestorder.requester != msg.sender) {
-            revert DepositAndMatch_CallerMustBeRequester();
+            revert CallerMustBeRequester();
         }
 
         // Calculate required deal cost
@@ -100,7 +100,7 @@ contract IexecDepositAndMatchOrdersFacet is
     function _depositTokens(address depositor, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         if (!$.m_baseToken.transferFrom(depositor, address(this), amount)) {
-            revert DepositAndMatch_TokenTransferFailed();
+            revert TokenTransferFailed();
         }
         $.m_balances[depositor] += amount;
         $.m_totalSupply += amount;

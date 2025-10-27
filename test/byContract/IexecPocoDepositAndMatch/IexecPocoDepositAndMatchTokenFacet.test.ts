@@ -419,7 +419,7 @@ describe('IexecDepositAndMatchOrdersFacet', () => {
                 orders.workerpool,
                 orders.requester,
             ),
-        ).to.be.revertedWithCustomError(iexecPoco, 'DepositAndMatch_CallerMustBeRequester');
+        ).to.be.revertedWithCustomError(iexecPoco, 'CallerMustBeRequester');
     });
 
     it('Should fail when RLC approval is insufficient', async () => {
