@@ -32,6 +32,4 @@ interface IexecDepositAndMatchOrders {
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
     ) external returns (bytes32 dealId);
-
-    event DepositAndMatch(address indexed depositor, uint256 depositedAmount, bytes32 dealId);
 }

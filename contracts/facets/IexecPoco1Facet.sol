@@ -93,8 +93,6 @@ contract IexecPoco1Facet is
         // Match the orders with the requester as sponsor
         dealId = this.matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder);
 
-        emit DepositAndMatch(msg.sender, depositedAmount, dealId);
-
         return dealId;
     }
 
