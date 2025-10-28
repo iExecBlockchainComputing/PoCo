@@ -52,32 +52,6 @@ event Reward(address owner, uint256 amount, bytes32 ref)
 event Seize(address owner, uint256 amount, bytes32 ref)
 ```
 
-## IexecOrderManagementFacet
-
-### manageAppOrder
-
-```solidity
-function manageAppOrder(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) external
-```
-
-### manageDatasetOrder
-
-```solidity
-function manageDatasetOrder(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) external
-```
-
-### manageWorkerpoolOrder
-
-```solidity
-function manageWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) external
-```
-
-### manageRequestOrder
-
-```solidity
-function manageRequestOrder(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) external
-```
-
 ## Matching
 
 ```solidity
@@ -94,6 +68,31 @@ struct Matching {
 ```
 
 ## IexecPoco1Facet
+
+### depositAndMatchOrders
+
+```solidity
+function depositAndMatchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) external returns (bytes32 dealId)
+```
+
+Deposit RLC tokens and match orders in a single transaction
+
+_The requester (msg.sender) will be both the depositor and the sponsor of the deal_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _apporder | struct IexecLibOrders_v5.AppOrder | The app order |
+| _datasetorder | struct IexecLibOrders_v5.DatasetOrder | The dataset order |
+| _workerpoolorder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order |
+| _requestorder | struct IexecLibOrders_v5.RequestOrder | The request order |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| dealId | bytes32 | The ID of the created deal |
 
 ### verifySignature
 
@@ -496,115 +495,6 @@ function groupmember_purpose() external pure returns (uint256)
 ```solidity
 function eip712domain_separator() external view returns (bytes32)
 ```
-
-## IexecPocoBoostAccessorsFacet
-
-Access to PoCo Boost tasks must be done with PoCo Classic `IexecPocoAccessors`.
-
-### viewDealBoost
-
-```solidity
-function viewDealBoost(bytes32 id) external view returns (struct IexecLibCore_v5.DealBoost deal)
-```
-
-Get a deal created by PoCo Boost facet.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| id | bytes32 | The ID of the deal. |
-
-## IexecPocoBoostFacet
-
-Works for deals with requested trust = 0.
-
-### matchOrdersBoost
-
-```solidity
-function matchOrdersBoost(struct IexecLibOrders_v5.AppOrder appOrder, struct IexecLibOrders_v5.DatasetOrder datasetOrder, struct IexecLibOrders_v5.WorkerpoolOrder workerpoolOrder, struct IexecLibOrders_v5.RequestOrder requestOrder) external returns (bytes32)
-```
-
-This boost match orders is only compatible with trust <= 1.
-The requester gets debited.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| appOrder | struct IexecLibOrders_v5.AppOrder | The order signed by the application developer. |
-| datasetOrder | struct IexecLibOrders_v5.DatasetOrder | The order signed by the dataset provider. |
-| workerpoolOrder | struct IexecLibOrders_v5.WorkerpoolOrder | The order signed by the workerpool manager. |
-| requestOrder | struct IexecLibOrders_v5.RequestOrder | The order signed by the requester. |
-
-#### Return Values
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| [0] | bytes32 | The ID of the deal. |
-
-### sponsorMatchOrdersBoost
-
-```solidity
-function sponsorMatchOrdersBoost(struct IexecLibOrders_v5.AppOrder appOrder, struct IexecLibOrders_v5.DatasetOrder datasetOrder, struct IexecLibOrders_v5.WorkerpoolOrder workerpoolOrder, struct IexecLibOrders_v5.RequestOrder requestOrder) external returns (bytes32)
-```
-
-Sponsor match orders boost for a requester.
-Unlike the standard `matchOrdersBoost(..)` hook where the requester pays for
-the deal, this current hook makes it possible for any `msg.sender` to pay for
-a third party requester.
-
-Be aware that anyone seeing a valid request order on the network
-(via an off-chain public marketplace, via a `sponsorMatchOrdersBoost(..)`
-pending transaction in the mempool or by any other means) might decide
-to call the standard `matchOrdersBoost(..)` hook which will result in the
-requester being debited instead. Therefore, such a front run would result
-in a loss of some of the requester funds deposited in the iExec account
-(a loss value equivalent to the price of the deal).
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| appOrder | struct IexecLibOrders_v5.AppOrder | The app order. |
-| datasetOrder | struct IexecLibOrders_v5.DatasetOrder | The dataset order. |
-| workerpoolOrder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order. |
-| requestOrder | struct IexecLibOrders_v5.RequestOrder | The requester order. |
-
-### pushResultBoost
-
-```solidity
-function pushResultBoost(bytes32 dealId, uint256 index, bytes results, bytes resultsCallback, bytes authorizationSign, address enclaveChallenge, bytes enclaveSign) external
-```
-
-Accept results of a task computed by a worker during Boost workflow.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| dealId | bytes32 | The id of the target deal. |
-| index | uint256 | The index of the target task of the deal. |
-| results | bytes | The results of the task computed by the worker. |
-| resultsCallback | bytes | The results of the task computed by the worker that will be forwarded as call data to the callback address set by the requester. |
-| authorizationSign | bytes | The authorization signed by the scheduler. authorizing the worker to push a result. |
-| enclaveChallenge | address | The enclave address which can produce enclave signature. |
-| enclaveSign | bytes | The signature generated from the enclave. |
-
-### claimBoost
-
-```solidity
-function claimBoost(bytes32 dealId, uint256 index) external
-```
-
-Claim task to get a refund if task is not completed after deadline.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| dealId | bytes32 | The ID of the deal. |
-| index | uint256 | The index of the task. |
 
 ## IexecLibCore_v5
 
@@ -1746,4 +1636,171 @@ function createWorkerpool(address _workerpoolOwner, string _workerpoolDescriptio
 ```solidity
 function predictWorkerpool(address _workerpoolOwner, string _workerpoolDescription) external view returns (contract Workerpool)
 ```
+
+## IexecPocoBoostAccessorsFacet
+
+Access to PoCo Boost tasks must be done with PoCo Classic `IexecPocoAccessors`.
+
+### viewDealBoost
+
+```solidity
+function viewDealBoost(bytes32 id) external view returns (struct IexecLibCore_v5.DealBoost deal)
+```
+
+Get a deal created by PoCo Boost facet.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| id | bytes32 | The ID of the deal. |
+
+## IexecPocoBoostFacet
+
+Works for deals with requested trust = 0.
+
+### matchOrdersBoost
+
+```solidity
+function matchOrdersBoost(struct IexecLibOrders_v5.AppOrder appOrder, struct IexecLibOrders_v5.DatasetOrder datasetOrder, struct IexecLibOrders_v5.WorkerpoolOrder workerpoolOrder, struct IexecLibOrders_v5.RequestOrder requestOrder) external returns (bytes32)
+```
+
+This boost match orders is only compatible with trust <= 1.
+The requester gets debited.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| appOrder | struct IexecLibOrders_v5.AppOrder | The order signed by the application developer. |
+| datasetOrder | struct IexecLibOrders_v5.DatasetOrder | The order signed by the dataset provider. |
+| workerpoolOrder | struct IexecLibOrders_v5.WorkerpoolOrder | The order signed by the workerpool manager. |
+| requestOrder | struct IexecLibOrders_v5.RequestOrder | The order signed by the requester. |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bytes32 | The ID of the deal. |
+
+### sponsorMatchOrdersBoost
+
+```solidity
+function sponsorMatchOrdersBoost(struct IexecLibOrders_v5.AppOrder appOrder, struct IexecLibOrders_v5.DatasetOrder datasetOrder, struct IexecLibOrders_v5.WorkerpoolOrder workerpoolOrder, struct IexecLibOrders_v5.RequestOrder requestOrder) external returns (bytes32)
+```
+
+Sponsor match orders boost for a requester.
+Unlike the standard `matchOrdersBoost(..)` hook where the requester pays for
+the deal, this current hook makes it possible for any `msg.sender` to pay for
+a third party requester.
+
+Be aware that anyone seeing a valid request order on the network
+(via an off-chain public marketplace, via a `sponsorMatchOrdersBoost(..)`
+pending transaction in the mempool or by any other means) might decide
+to call the standard `matchOrdersBoost(..)` hook which will result in the
+requester being debited instead. Therefore, such a front run would result
+in a loss of some of the requester funds deposited in the iExec account
+(a loss value equivalent to the price of the deal).
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| appOrder | struct IexecLibOrders_v5.AppOrder | The app order. |
+| datasetOrder | struct IexecLibOrders_v5.DatasetOrder | The dataset order. |
+| workerpoolOrder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order. |
+| requestOrder | struct IexecLibOrders_v5.RequestOrder | The requester order. |
+
+### pushResultBoost
+
+```solidity
+function pushResultBoost(bytes32 dealId, uint256 index, bytes results, bytes resultsCallback, bytes authorizationSign, address enclaveChallenge, bytes enclaveSign) external
+```
+
+Accept results of a task computed by a worker during Boost workflow.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| dealId | bytes32 | The id of the target deal. |
+| index | uint256 | The index of the target task of the deal. |
+| results | bytes | The results of the task computed by the worker. |
+| resultsCallback | bytes | The results of the task computed by the worker that will be forwarded as call data to the callback address set by the requester. |
+| authorizationSign | bytes | The authorization signed by the scheduler. authorizing the worker to push a result. |
+| enclaveChallenge | address | The enclave address which can produce enclave signature. |
+| enclaveSign | bytes | The signature generated from the enclave. |
+
+### claimBoost
+
+```solidity
+function claimBoost(bytes32 dealId, uint256 index) external
+```
+
+Claim task to get a refund if task is not completed after deadline.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| dealId | bytes32 | The ID of the deal. |
+| index | uint256 | The index of the task. |
+
+## IexecOrderManagementFacet
+
+### manageAppOrder
+
+```solidity
+function manageAppOrder(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) external
+```
+
+### manageDatasetOrder
+
+```solidity
+function manageDatasetOrder(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) external
+```
+
+### manageWorkerpoolOrder
+
+```solidity
+function manageWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) external
+```
+
+### manageRequestOrder
+
+```solidity
+function manageRequestOrder(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) external
+```
+
+## IexecDepositAndMatchOrdersFacet
+
+Facet that combines deposit and order matching for token-based PoCo deployments
+
+_This facet allows builders to deposit RLC tokens and match orders in a single transaction,
+     significantly improving the user experience by eliminating the need for separate approve+deposit+match transactions_
+
+### depositAndMatchOrders
+
+```solidity
+function depositAndMatchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) external returns (bytes32 dealId)
+```
+
+Deposit RLC tokens and match orders in a single transaction
+
+_The requester (msg.sender) will be both the depositor and the sponsor of the deal_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _apporder | struct IexecLibOrders_v5.AppOrder | The app order |
+| _datasetorder | struct IexecLibOrders_v5.DatasetOrder | The dataset order |
+| _workerpoolorder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order |
+| _requestorder | struct IexecLibOrders_v5.RequestOrder | The request order |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| dealId | bytes32 | The ID of the created deal |
 
