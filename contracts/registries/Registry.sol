@@ -37,11 +37,7 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
     }
 
     function initialize(address _previous) external onlyOwner {
-        // TEMPORARY MIGRATION FIX: Catch custom error and throw string error for backward compatibility
-        // TODO: Remove this in the next major version
-        if (initialized) {
-            revert();
-        }
+        require(!initialized);
         initialized = true;
         previous = IRegistry(_previous);
     }
