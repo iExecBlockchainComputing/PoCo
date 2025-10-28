@@ -236,15 +236,12 @@ export class IexecWrapper {
      * Otherwise the requester will be in charge of paying for the deal.
      */
     private async _signAndMatchOrders(orders: IexecOrders, withSponsor: boolean) {
-        console.log('this.domain:', this.domain);
-        console.log('orders:', orders);
         await signOrders(this.domain, orders, {
             appOwner: this.accounts.appProvider,
             datasetOwner: this.accounts.datasetProvider,
             workerpoolOwner: this.accounts.scheduler,
             requester: this.accounts.requester,
         });
-        console.log('Signed orders:', orders);
         const appOrder = orders.app;
         const datasetOrder = orders.dataset;
         const workerpoolOrder = orders.workerpool;
