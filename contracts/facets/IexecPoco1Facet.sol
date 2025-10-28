@@ -64,9 +64,6 @@ contract IexecPoco1Facet is
 
         // Calculate required deal cost
         bool hasDataset = _datasetorder.dataset != address(0);
-        uint256 taskPrice = _apporder.appprice +
-            (hasDataset ? _datasetorder.datasetprice : 0) +
-            _workerpoolorder.workerpoolprice;
         uint256 volume = _computeDealVolume(
             _apporder.volume,
             _toTypedDataHash(_apporder.hash()),
@@ -78,7 +75,10 @@ contract IexecPoco1Facet is
             _requestorder.volume,
             _toTypedDataHash(_requestorder.hash())
         );
-        uint256 dealCost = taskPrice * volume;
+        uint256 dealCost = volume *
+            (_apporder.appprice +
+                (hasDataset ? _datasetorder.datasetprice : 0) +
+                _workerpoolorder.workerpoolprice);
 
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         uint256 currentBalance = $.m_balances[msg.sender];
