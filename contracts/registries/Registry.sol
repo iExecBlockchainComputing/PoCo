@@ -28,8 +28,20 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
         proxyCodeHash = keccak256(proxyCode);
     }
 
+    // TEMPORARY MIGRATION FIX: Override _checkOwner to catch custom errors and throw string errors for backward compatibility
+    // TODO: Remove this override in the next major version
+    function _checkOwner() internal view override {
+        if (owner() != _msgSender()) {
+            revert("Ownable: caller is not the owner");
+        }
+    }
+
     function initialize(address _previous) external onlyOwner {
-        require(!initialized);
+        // TEMPORARY MIGRATION FIX: Catch custom error and throw string error for backward compatibility
+        // TODO: Remove this in the next major version
+        if (initialized) {
+            revert();
+        }
         initialized = true;
         previous = IRegistry(_previous);
     }
@@ -62,7 +74,7 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
      * iExec SDK.
      */
     // TODO remove this function when Bellecour is deprecated.
-    function setName(address /* _ens */, string calldata /* _name */) external onlyOwner {
+    function setName(address /* _ens */, string calldata /* _name */) external {
         initialized = initialized; // Remove solidity state mutability warning.
         revert("Operation not supported on this chain");
     }

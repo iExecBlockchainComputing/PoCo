@@ -45,19 +45,22 @@ contract AppRegistry is Registry {
         bytes32 _appChecksum,
         bytes calldata _appMREnclave
     ) external returns (App) {
-        return
-            App(
-                _mintCreate(
-                    _appOwner,
-                    encodeInitializer(
-                        _appName,
-                        _appType,
-                        _appMultiaddr,
-                        _appChecksum,
-                        _appMREnclave
-                    )
-                )
-            );
+        // TEMPORARY MIGRATION FIX: Catch Create2 custom error and throw string error for backward compatibility
+        // TODO: Remove this in the next major version
+        try
+            this.internal_mintCreate(
+                _appOwner,
+                encodeInitializer(_appName, _appType, _appMultiaddr, _appChecksum, _appMREnclave)
+            )
+        returns (address entry) {
+            return App(entry);
+        } catch {
+            revert("Create2: Failed on deploy");
+        }
+    }
+
+    function internal_mintCreate(address _appOwner, bytes memory _args) external returns (address) {
+        return _mintCreate(_appOwner, _args);
     }
 
     function predictApp(

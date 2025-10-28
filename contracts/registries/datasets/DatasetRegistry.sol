@@ -41,13 +41,25 @@ contract DatasetRegistry is Registry {
         bytes calldata _datasetMultiaddr,
         bytes32 _datasetChecksum
     ) external returns (Dataset) {
-        return
-            Dataset(
-                _mintCreate(
-                    _datasetOwner,
-                    encodeInitializer(_datasetName, _datasetMultiaddr, _datasetChecksum)
-                )
-            );
+        // TEMPORARY MIGRATION FIX: Catch Create2 custom error and throw string error for backward compatibility
+        // TODO: Remove this in the next major version
+        try
+            this.internal_mintCreate(
+                _datasetOwner,
+                encodeInitializer(_datasetName, _datasetMultiaddr, _datasetChecksum)
+            )
+        returns (address entry) {
+            return Dataset(entry);
+        } catch {
+            revert("Create2: Failed on deploy");
+        }
+    }
+
+    function internal_mintCreate(
+        address _datasetOwner,
+        bytes memory _args
+    ) external returns (address) {
+        return _mintCreate(_datasetOwner, _args);
     }
 
     function predictDataset(
