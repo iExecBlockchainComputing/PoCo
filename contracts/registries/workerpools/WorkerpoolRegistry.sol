@@ -31,22 +31,17 @@ contract WorkerpoolRegistry is Registry {
         address _workerpoolOwner,
         string calldata _workerpoolDescription
     ) external returns (Workerpool) {
-        // TEMPORARY MIGRATION FIX: Catch Create2 custom error and throw string error for backward compatibility
+        bytes memory initializer = encodeInitializer(_workerpoolDescription);
+        address entry = _mintPredict(_workerpoolOwner, initializer);
+
+        // TEMPORARY MIGRATION FIX: Check if contract already exists to revert without custom error for backward compatibility
         // TODO: Remove this in the next major version
-        try
-            this.internal_mintCreate(_workerpoolOwner, encodeInitializer(_workerpoolDescription))
-        returns (address entry) {
-            return Workerpool(entry);
-        } catch {
+        if (entry.code.length > 0) {
             revert("Create2: Failed on deploy");
         }
-    }
 
-    function internal_mintCreate(
-        address _workerpoolOwner,
-        bytes memory _args
-    ) external returns (address) {
-        return _mintCreate(_workerpoolOwner, _args);
+        _mintCreate(_workerpoolOwner, initializer);
+        return Workerpool(entry);
     }
 
     function predictWorkerpool(
