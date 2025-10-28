@@ -19,7 +19,6 @@ import {
     IexecCategoryManager__factory,
     IexecConfigurationExtraFacet__factory,
     IexecConfigurationFacet__factory,
-    IexecDepositAndMatchOrdersFacet__factory,
     IexecERC20Facet__factory,
     IexecEscrowNativeFacet__factory,
     IexecEscrowTokenFacet__factory,
@@ -114,7 +113,6 @@ export default async function deploy() {
                   new IexecPocoBoostAccessorsFacet__factory(), // not deployed on Arbitrum mainnet
               ]
             : []),
-        new IexecDepositAndMatchOrdersFacet__factory(iexecLibOrders), // just to test
         new IexecRelayFacet__factory(),
     ];
     for (const facet of facets) {

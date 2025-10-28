@@ -30,7 +30,7 @@ const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 const volume = 1n;
 
-describe('IexecDepositAndMatchOrdersFacet', () => {
+describe('IexecPoco1-depositAndMatchOrders', () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceToken;
     let iexecPocoAsRequester: IexecInterfaceToken;

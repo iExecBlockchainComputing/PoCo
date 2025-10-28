@@ -15,7 +15,6 @@ import {
     IexecCategoryManagerFacet__factory,
     IexecConfigurationExtraFacet__factory,
     IexecConfigurationFacet__factory,
-    IexecDepositAndMatchOrdersFacet__factory,
     IexecERC20Facet__factory,
     IexecEscrowNativeFacet__factory,
     IexecEscrowTokenFacet__factory,
@@ -154,7 +153,6 @@ function getAllLocalFacetFunctions(): Map<string, string> {
         IexecPocoBoostAccessorsFacet__factory.createInterface(),
         IexecPocoBoostFacet__factory.createInterface(),
         IexecRelayFacet__factory.createInterface(),
-        IexecDepositAndMatchOrdersFacet__factory.createInterface(),
     ];
     // TODO update `getFunctionSelectors` and use it here to avoid duplication.
     const fragments: [string, string][] = allInterfaces

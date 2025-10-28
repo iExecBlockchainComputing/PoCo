@@ -11,6 +11,7 @@ import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
+import {IexecDepositAndMatchOrders} from "../interfaces/IexecDepositAndMatchOrders.sol";
 import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
@@ -27,12 +28,91 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
+contract IexecPoco1Facet is
+    IexecPoco1,
+    IexecDepositAndMatchOrders,
+    IexecPoco1Errors,
+    FacetBase,
+    IexecEscrow,
+    SignatureVerifier,
+    IexecPocoCommon
+{
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
+
+    /**
+     * @notice Deposit RLC tokens and match orders in a single transaction
+     * @dev The requester (msg.sender) will be both the depositor and the sponsor of the deal
+     * @param _apporder The app order
+     * @param _datasetorder The dataset order
+     * @param _workerpoolorder The workerpool order
+     * @param _requestorder The request order
+     * @return dealId The ID of the created deal
+     */
+    function depositAndMatchOrders(
+        IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
+        IexecLibOrders_v5.RequestOrder calldata _requestorder
+    ) external override returns (bytes32 dealId) {
+        if (_requestorder.requester != msg.sender) {
+            revert CallerMustBeRequester();
+        }
+
+        // Calculate required deal cost
+        bool hasDataset = _datasetorder.dataset != address(0);
+        uint256 taskPrice = _apporder.appprice +
+            (hasDataset ? _datasetorder.datasetprice : 0) +
+            _workerpoolorder.workerpoolprice;
+        uint256 volume = _computeDealVolume(
+            _apporder.volume,
+            _toTypedDataHash(_apporder.hash()),
+            hasDataset,
+            _datasetorder.volume,
+            _toTypedDataHash(_datasetorder.hash()),
+            _workerpoolorder.volume,
+            _toTypedDataHash(_workerpoolorder.hash()),
+            _requestorder.volume,
+            _toTypedDataHash(_requestorder.hash())
+        );
+        uint256 dealCost = taskPrice * volume;
+
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        uint256 currentBalance = $.m_balances[msg.sender];
+
+        uint256 depositedAmount = 0;
+        if (currentBalance < dealCost) {
+            uint256 requiredDeposit = dealCost - currentBalance;
+            _depositTokens(msg.sender, requiredDeposit);
+            depositedAmount = requiredDeposit;
+        }
+
+        // Match the orders with the requester as sponsor
+        dealId = this.matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder);
+
+        emit DepositAndMatch(msg.sender, depositedAmount, dealId);
+
+        return dealId;
+    }
+
+    /**
+     * @notice Internal function to handle token deposits
+     * @dev This function handles the RLC token transfer and minting
+     * @param depositor The account making the deposit
+     * @param amount The amount to deposit
+     */
+    function _depositTokens(address depositor, uint256 amount) internal {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        if (!$.m_baseToken.transferFrom(depositor, address(this), amount)) {
+            revert TokenTransferFailed();
+        }
+        $.m_balances[depositor] += amount;
+        $.m_totalSupply += amount;
+        emit Transfer(address(0), depositor, amount);
+    }
 
     /***************************************************************************
      *                           ODB order signature                           *
