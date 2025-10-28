@@ -37,6 +37,16 @@ contract IexecERC20Core is IexecERC20Common, FacetBase {
     function _burn(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: burn from the zero address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        // TEMPORARY MIGRATION FIX: Check balance to prevent underflow and revert without reason for backward compatibility
+        // TODO: Remove this in the next major version
+        if ($.m_balances[account] < amount) {
+            revert();
+        }
+        // TEMPORARY MIGRATION FIX: Check totalSupply to prevent underflow and revert without reason for backward compatibility
+        // TODO: Remove this in the next major version
+        if ($.m_totalSupply < amount) {
+            revert();
+        }
         $.m_totalSupply = $.m_totalSupply - amount;
         $.m_balances[account] = $.m_balances[account] - amount;
         emit Transfer(account, address(0), amount);
