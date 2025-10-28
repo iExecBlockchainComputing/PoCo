@@ -1,21 +1,5 @@
 # Solidity API
 
-## IexecInterfaceNative
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in native mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-## IexecInterfaceToken
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in token mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
 ## FacetBase
 
 _Every facet must inherit from this contract._
@@ -1058,6 +1042,22 @@ function m_schedulerRewardRatioPolicy() external view returns (uint256)
 ```solidity
 function m_workerStakeRatioPolicy() external view returns (uint256)
 ```
+
+## IexecInterfaceNative
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in native mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+## IexecInterfaceToken
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in token mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
 
 ## IexecCategoryManagerFacet
 
