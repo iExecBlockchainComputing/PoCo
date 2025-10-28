@@ -70,7 +70,7 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
      * iExec SDK.
      */
     // TODO remove this function when Bellecour is deprecated.
-    function setName(address /* _ens */, string calldata /* _name */) external {
+    function setName(address /* _ens */, string calldata /* _name */) external onlyOwner {
         initialized = initialized; // Remove solidity state mutability warning.
         revert("Operation not supported on this chain");
     }
