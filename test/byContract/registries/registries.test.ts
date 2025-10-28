@@ -15,11 +15,13 @@ import {
     Dataset__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
-    InitializableUpgradeabilityProxy__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
     Workerpool__factory,
 } from '../../../typechain';
+//import the correct InitializableUpgradeabilityProxy__factory from the local registries proxy instead of @iexec/solidity
+//TODO: merge with the previous import this when @iexec/solidity will be removed
+import { InitializableUpgradeabilityProxy__factory } from '../../../typechain/factories/contracts/registries/proxy/InitializableUpgradeabilityProxy__factory';
 import config from '../../../utils/config';
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
