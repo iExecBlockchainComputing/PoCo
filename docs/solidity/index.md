@@ -53,31 +53,6 @@ struct Matching {
 
 ## IexecPoco1Facet
 
-### depositAndMatchOrders
-
-```solidity
-function depositAndMatchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) external returns (bytes32 dealId)
-```
-
-Deposit RLC tokens and match orders in a single transaction
-
-_The requester (msg.sender) will be both the depositor and the sponsor of the deal_
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _apporder | struct IexecLibOrders_v5.AppOrder | The app order |
-| _datasetorder | struct IexecLibOrders_v5.DatasetOrder | The dataset order |
-| _workerpoolorder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order |
-| _requestorder | struct IexecLibOrders_v5.RequestOrder | The request order |
-
-#### Return Values
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| dealId | bytes32 | The ID of the created deal |
-
 ### verifySignature
 
 ```solidity
@@ -164,6 +139,31 @@ in a loss of some of the requester funds deposited in the iExec account
 | _datasetorder | struct IexecLibOrders_v5.DatasetOrder | The dataset order. |
 | _workerpoolorder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order. |
 | _requestorder | struct IexecLibOrders_v5.RequestOrder | The requester order. |
+
+### depositAndMatchOrders
+
+```solidity
+function depositAndMatchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLibOrders_v5.DatasetOrder _datasetorder, struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder, struct IexecLibOrders_v5.RequestOrder _requestorder) external returns (bytes32 dealId)
+```
+
+Deposit RLC tokens and match orders in a single transaction
+
+_The requester (msg.sender) will be both the depositor and the sponsor of the deal_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _apporder | struct IexecLibOrders_v5.AppOrder | The app order |
+| _datasetorder | struct IexecLibOrders_v5.DatasetOrder | The dataset order |
+| _workerpoolorder | struct IexecLibOrders_v5.WorkerpoolOrder | The workerpool order |
+| _requestorder | struct IexecLibOrders_v5.RequestOrder | The request order |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| dealId | bytes32 | The ID of the created deal |
 
 ## IexecPoco2Facet
 
