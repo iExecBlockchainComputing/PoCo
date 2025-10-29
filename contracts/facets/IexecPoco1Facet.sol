@@ -450,4 +450,8 @@ contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow
 
         return dealid;
     }
+
+    function doIt(address app, address dataset) external override {
+        emit Called(app, dataset);
+    }
 }
