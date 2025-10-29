@@ -7,9 +7,32 @@ import {IexecERC20Core} from "./IexecERC20Core.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
+import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
+import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
+    /***************************************************************************
+     *                                 Events                                  *
+     ***************************************************************************/
+
+    /**
+     * @notice Emitted when approval is received and orders are matched
+     * @param sender The user who approved tokens
+     * @param amount Amount of tokens deposited
+     * @param dealId The ID of the created deal (bytes32(0) if no matching)
+     */
+    event ApprovalReceivedAndMatched(
+        address indexed sender,
+        uint256 amount,
+        bytes32 indexed dealId
+    );
+
+    /***************************************************************************
+     *                                 Errors                                  *
+     ***************************************************************************/
+    error CallerMustBeRequester();
+
     /***************************************************************************
      *                         Escrow methods: public                          *
      ***************************************************************************/
@@ -38,9 +61,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         address[] calldata targets
     ) external override returns (bool) {
         require(amounts.length == targets.length, "invalid-array-length");
-
-        // v0.8: Explicit type declaration for loop variable
-        for (uint256 i = 0; i < amounts.length; ++i) {
+        for (uint i = 0; i < amounts.length; ++i) {
             _deposit(_msgSender(), amounts[i]);
             _mint(targets[i], amounts[i]);
         }
@@ -61,35 +82,132 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
 
     function recover() external override onlyOwner returns (uint256) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 contractBalance = $.m_baseToken.balanceOf(address(this));
-        uint256 totalSupply = $.m_totalSupply;
-        uint256 delta = contractBalance - totalSupply;
+        uint256 delta = $.m_baseToken.balanceOf(address(this)) - $.m_totalSupply;
         _mint(owner(), delta);
         return delta;
     }
 
-    // Token Spender (endpoint for approveAndCallback calls to the proxy)
+    /***************************************************************************
+     *            Token Spender: Atomic Approve+Deposit+Match                  *
+     ***************************************************************************/
+
+    /**
+     * @notice Receives approval and optionally matches orders in one transaction
+     * @dev This is the magic function that enables approve+deposit+match atomicity
+     *
+     * Usage patterns:
+     * 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
+     * 2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedOrders)
+     *
+     * The `data` parameter should be ABI-encoded orders if matching is desired:
+     * abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+     *
+     *
+     * @param sender The address that approved tokens (must be requester if matching)
+     * @param amount Amount of tokens approved and to be deposited
+     * @param token Address of the token (must be RLC)
+     * @param data Optional: ABI-encoded orders for matching
+     * @return success True if operation succeeded
+     *
+     *
+     * @custom:example
+     * ```solidity
+     * // Encode orders
+     * bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder);
+     *
+     * // One transaction does it all
+     * RLC.approveAndCall(iexecProxy, dealCost, data);
+     * ```
+     */
     function receiveApproval(
         address sender,
         uint256 amount,
         address token,
-        bytes calldata
-    ) external override returns (bool) {
+        bytes calldata data
+    ) external returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require(token == address($.m_baseToken), "wrong-token");
         _deposit(sender, amount);
         _mint(sender, amount);
+        bytes32 dealId = bytes32(0);
+        if (data.length > 0) {
+            dealId = _matchOrdersAfterDeposit(sender, data);
+        }
+        emit ApprovalReceivedAndMatched(sender, amount, dealId);
         return true;
+    }
+
+    /***************************************************************************
+     *                         Internal Helper Functions                       *
+     ***************************************************************************/
+
+    /**
+     * @dev Internal function to match orders after deposit
+     * @param sender The user who deposited (must be the requester)
+     * @param data ABI-encoded orders
+     * @return dealId The ID of the matched deal
+     */
+    function _matchOrdersAfterDeposit(
+        address sender,
+        bytes calldata data
+    ) internal returns (bytes32 dealId) {
+        // Decode the orders from calldata
+        (
+            IexecLibOrders_v5.AppOrder memory apporder,
+            IexecLibOrders_v5.DatasetOrder memory datasetorder,
+            IexecLibOrders_v5.WorkerpoolOrder memory workerpoolorder,
+            IexecLibOrders_v5.RequestOrder memory requestorder
+        ) = abi.decode(
+                data,
+                (
+                    IexecLibOrders_v5.AppOrder,
+                    IexecLibOrders_v5.DatasetOrder,
+                    IexecLibOrders_v5.WorkerpoolOrder,
+                    IexecLibOrders_v5.RequestOrder
+                )
+            );
+
+        // Validate that sender is the requester
+        if (requestorder.requester != sender) revert CallerMustBeRequester();
+
+        // Call matchOrders on the IexecPoco1 facet through the diamond
+        // Using delegatecall pattern via address(this)
+        (bool success, bytes memory result) = address(this).call(
+            abi.encodeWithSelector(
+                IexecPoco1.matchOrders.selector,
+                apporder,
+                datasetorder,
+                workerpoolorder,
+                requestorder
+            )
+        );
+
+        // Handle failure and bubble up revert reason
+        if (!success) {
+            if (result.length > 0) {
+                // Decode and revert with the original error
+                assembly {
+                    let returndata_size := mload(result)
+                    revert(add(result, 32), returndata_size)
+                }
+            } else {
+                revert("receive-approval-failed");
+            }
+        }
+
+        // Decode the dealId from successful call
+        dealId = abi.decode(result, (bytes32));
+
+        return dealId;
     }
 
     function _deposit(address from, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require($.m_baseToken.transferFrom(from, address(this), amount), "failed-transferFrom");
+        require($.m_baseToken.transferFrom(from, address(this), amount), "failled-transferFrom");
     }
 
     function _withdraw(address to, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        bool success = $.m_baseToken.transfer(to, amount);
-        require(success, "failed-transfer");
+        $.m_baseToken.transfer(to, amount);
     }
 }
