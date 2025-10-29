@@ -46,4 +46,7 @@ interface IexecPoco1 {
         IexecLibOrders_v5.WorkerpoolOrder calldata,
         IexecLibOrders_v5.RequestOrder calldata
     ) external returns (bytes32);
+
+    event Called(address app, address dataset);
+    function doIt(address app, address dataset) external;
 }

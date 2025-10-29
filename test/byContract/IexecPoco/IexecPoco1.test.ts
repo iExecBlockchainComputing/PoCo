@@ -4,7 +4,13 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { Contract, ContractTransactionResponse, Wallet, ZeroAddress, ZeroHash } from 'ethers';
+import {
+    Contract,
+    ContractTransactionResponse,
+    Wallet,
+    ZeroAddress,
+    ZeroHash,
+} from 'ethers';
 import { ethers } from 'hardhat';
 import {
     ERC1271Mock__factory,
@@ -15,6 +21,7 @@ import {
     IexecPocoAccessors,
     IexecPocoAccessors__factory,
     OwnableMock__factory,
+    RLC__factory,
 } from '../../../typechain';
 import { TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 import {
@@ -37,6 +44,7 @@ import {
 import { compactSignature } from '../../../utils/tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { AddressZero } from '@ethersproject/constants';
 
 /*
  * TODO add Standard tests.
@@ -63,6 +71,7 @@ describe('IexecPoco1', () => {
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
+        iexecAdmin,
         requester,
         sponsor,
         beneficiary,
@@ -99,8 +108,16 @@ describe('IexecPoco1', () => {
 
     async function initFixture() {
         const accounts = await getIexecAccounts();
-        ({ requester, sponsor, beneficiary, appProvider, datasetProvider, scheduler, anyone } =
-            accounts);
+        ({
+            iexecAdmin,
+            requester,
+            sponsor,
+            beneficiary,
+            appProvider,
+            datasetProvider,
+            scheduler,
+            anyone,
+        } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
@@ -145,6 +162,68 @@ describe('IexecPoco1', () => {
             .then((contract) => contract.waitForDeployment())
             .then((deployedContract) => deployedContract.getAddress());
     }
+
+    describe('receiveApproval', () => {
+        it.only('Should receive approval, deposit tokens, and call the callback', async () => {
+            const rlcInstance = RLC__factory.connect(await iexecPoco.token(), anyone);
+            const amount = ethers.parseUnits('100', 9);
+            await rlcInstance
+                .connect(iexecAdmin)
+                .transfer(anyone.address, amount * 10n) //enough to cover tests.
+                .then((tx) => tx.wait());
+
+            const matchOrdersData = await getMatchOrdersData();
+            const tx = await rlcInstance
+                .connect(anyone)
+                .approveAndCall(proxyAddress, amount, matchOrdersData);
+            await expect(tx).to.changeTokenBalances(
+                rlcInstance,
+                [anyone, iexecPoco],
+                [-amount, amount],
+            );
+            await expect(tx).to.emit(rlcInstance, 'Transfer').withArgs(anyone, iexecPoco, amount);
+            await expect(tx).to.emit(iexecPoco, 'Transfer').withArgs(AddressZero, anyone, amount);
+            await expect(tx)
+                .to.emit(iexecPoco, 'Called')
+                .withArgs(orders.app.app, orders.dataset.dataset);
+            // await expect(tx)
+            //     .to.emit(iexecPoco, 'SchedulerNotice')
+            //     .to.emit(iexecPoco, 'OrdersMatched');
+        });
+
+        async function getMatchOrdersData() {
+            const orders = buildOrders({
+                assets: ordersAssets,
+                prices: ordersPrices,
+                requester: requester.address,
+                beneficiary: beneficiary.address,
+                tag: TAG_TEE,
+                volume: botVolume,
+                callback: randomAddress,
+                trust: 1n,
+                category: 0,
+                params: '',
+            });
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+            return (await iexecPocoAsRequester.matchOrders.populateTransaction(...orders.toArray()))
+                .data;
+            // ----------------------------------
+            // const iface = new ethers.Interface([
+            //     'function doIt(bytes32 taskId, uint256 value) external',
+            // ]);
+            // const data = iface.encodeFunctionData('doIt', [ethers.keccak256('0xabcd'), 5]);
+            // return data;
+            // ----------------------------------
+            // const iface = IexecInterfaceToken__factory.createInterface() as Interface;
+            // const data = iface.encodeFunctionData('matchOrders', [
+            //     orders.app,
+            //     orders.dataset,
+            //     orders.workerpool,
+            //     orders.requester,
+            // ]);
+            // return '0x' + data.slice(10); // remove function selector
+        }
+    });
 
     describe('Verify signature', () => {
         ['verifySignature', 'verifyPresignatureOrSignature'].forEach((verifySignatureFunction) => {
