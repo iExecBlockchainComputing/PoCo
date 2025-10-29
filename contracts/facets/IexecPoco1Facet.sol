@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
-import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
+import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
@@ -27,7 +27,14 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
+contract IexecPoco1Facet is
+    IexecPoco1,
+    IexecPoco1Errors,
+    FacetBase,
+    IexecEscrow,
+    SignatureVerifier,
+    IexecPocoCommon
+{
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
