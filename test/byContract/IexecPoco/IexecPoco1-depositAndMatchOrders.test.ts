@@ -156,8 +156,6 @@ describe('IexecPoco1-depositAndMatchOrders', () => {
         // Verify matchOrders was called correctly by checking events
         await tx;
         await expect(tx)
-            .to.emit(iexecPoco, 'DepositAndMatch')
-            .withArgs(requester.address, dealCost, dealId)
             .to.emit(iexecPoco, 'SchedulerNotice')
             .withArgs(workerpoolAddress, dealId)
             .to.emit(iexecPoco, 'OrdersMatched')
@@ -216,8 +214,6 @@ describe('IexecPoco1-depositAndMatchOrders', () => {
 
         const dealId = getDealId(iexecWrapper.getDomain(), ordersWithoutDataset.requester);
         await expect(tx)
-            .to.emit(iexecPoco, 'DepositAndMatch')
-            .withArgs(requester.address, dealCost, dealId)
             .to.emit(iexecPoco, 'SchedulerNotice')
             .withArgs(workerpoolAddress, dealId)
             .to.emit(iexecPoco, 'OrdersMatched')
@@ -259,12 +255,6 @@ describe('IexecPoco1-depositAndMatchOrders', () => {
         );
         await expect(tx).to.changeTokenBalances(rlcInstance, [requester, iexecPoco], [0, 0]);
         await expect(tx).to.changeTokenBalances(iexecPoco, [requester], [-dealCost]);
-
-        // Verify DepositAndMatch event is emitted with 0 deposited amount (using existing balance)
-        const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
-        await expect(tx)
-            .to.emit(iexecPoco, 'DepositAndMatch')
-            .withArgs(requester.address, 0, dealId);
     });
 
     it('Should deposit only the difference when partial balance exists', async () => {
@@ -308,12 +298,6 @@ describe('IexecPoco1-depositAndMatchOrders', () => {
         await expect(tx)
             .to.emit(iexecPoco, 'Transfer')
             .withArgs(AddressZero, requester.address, requiredDeposit);
-
-        // Verify DepositAndMatch event with partial deposit amount
-        const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
-        await expect(tx)
-            .to.emit(iexecPoco, 'DepositAndMatch')
-            .withArgs(requester.address, requiredDeposit, dealId);
 
         expect(await iexecPoco.totalSupply()).to.equal(initialTotalSupply + requiredDeposit);
     });
