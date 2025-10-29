@@ -43,75 +43,6 @@ contract IexecPoco1Facet is
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
-    /**
-     * @notice Deposit RLC tokens and match orders in a single transaction
-     * @dev The requester (msg.sender) will be both the depositor and the sponsor of the deal
-     * @param _apporder The app order
-     * @param _datasetorder The dataset order
-     * @param _workerpoolorder The workerpool order
-     * @param _requestorder The request order
-     * @return dealId The ID of the created deal
-     */
-    function depositAndMatchOrders(
-        IexecLibOrders_v5.AppOrder calldata _apporder,
-        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
-        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
-        IexecLibOrders_v5.RequestOrder calldata _requestorder
-    ) external override returns (bytes32 dealId) {
-        if (_requestorder.requester != msg.sender) {
-            revert CallerMustBeRequester();
-        }
-
-        // Calculate required deal cost
-        bool hasDataset = _datasetorder.dataset != address(0);
-        uint256 volume = _computeDealVolume(
-            _apporder.volume,
-            _toTypedDataHash(_apporder.hash()),
-            hasDataset,
-            _datasetorder.volume,
-            _toTypedDataHash(_datasetorder.hash()),
-            _workerpoolorder.volume,
-            _toTypedDataHash(_workerpoolorder.hash()),
-            _requestorder.volume,
-            _toTypedDataHash(_requestorder.hash())
-        );
-        uint256 dealCost = volume *
-            (_apporder.appprice +
-                (hasDataset ? _datasetorder.datasetprice : 0) +
-                _workerpoolorder.workerpoolprice);
-
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 currentBalance = $.m_balances[msg.sender];
-
-        uint256 depositedAmount = 0;
-        if (currentBalance < dealCost) {
-            uint256 requiredDeposit = dealCost - currentBalance;
-            _depositTokens(msg.sender, requiredDeposit);
-            depositedAmount = requiredDeposit;
-        }
-
-        // Match the orders with the requester as sponsor
-        dealId = this.matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder);
-
-        return dealId;
-    }
-
-    /**
-     * @notice Internal function to handle token deposits
-     * @dev This function handles the RLC token transfer and minting
-     * @param depositor The account making the deposit
-     * @param amount The amount to deposit
-     */
-    function _depositTokens(address depositor, uint256 amount) internal {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        if (!$.m_baseToken.transferFrom(depositor, address(this), amount)) {
-            revert TokenTransferFailed();
-        }
-        $.m_balances[depositor] += amount;
-        $.m_totalSupply += amount;
-        emit Transfer(address(0), depositor, amount);
-    }
-
     /***************************************************************************
      *                           ODB order signature                           *
      ***************************************************************************/
@@ -266,6 +197,59 @@ contract IexecPoco1Facet is
             sponsor
         );
         emit DealSponsored(dealId, sponsor);
+        return dealId;
+    }
+
+    /**
+     * @notice Deposit RLC tokens and match orders in a single transaction
+     * @dev The requester (msg.sender) will be both the depositor and the sponsor of the deal
+     * @param _apporder The app order
+     * @param _datasetorder The dataset order
+     * @param _workerpoolorder The workerpool order
+     * @param _requestorder The request order
+     * @return dealId The ID of the created deal
+     */
+    function depositAndMatchOrders(
+        IexecLibOrders_v5.AppOrder calldata _apporder,
+        IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
+        IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
+        IexecLibOrders_v5.RequestOrder calldata _requestorder
+    ) external override returns (bytes32 dealId) {
+        if (_requestorder.requester != msg.sender) {
+            revert CallerMustBeRequester();
+        }
+
+        // Calculate required deal cost
+        bool hasDataset = _datasetorder.dataset != address(0);
+        uint256 volume = _computeDealVolume(
+            _apporder.volume,
+            _toTypedDataHash(_apporder.hash()),
+            hasDataset,
+            _datasetorder.volume,
+            _toTypedDataHash(_datasetorder.hash()),
+            _workerpoolorder.volume,
+            _toTypedDataHash(_workerpoolorder.hash()),
+            _requestorder.volume,
+            _toTypedDataHash(_requestorder.hash())
+        );
+        uint256 dealCost = volume *
+            (_apporder.appprice +
+                (hasDataset ? _datasetorder.datasetprice : 0) +
+                _workerpoolorder.workerpoolprice);
+
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        uint256 currentBalance = $.m_balances[msg.sender];
+
+        uint256 depositedAmount = 0;
+        if (currentBalance < dealCost) {
+            uint256 requiredDeposit = dealCost - currentBalance;
+            _depositTokens(msg.sender, requiredDeposit);
+            depositedAmount = requiredDeposit;
+        }
+
+        // Match the orders with the requester as sponsor
+        dealId = this.matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder);
+
         return dealId;
     }
 
@@ -527,5 +511,21 @@ contract IexecPoco1Facet is
         );
 
         return dealid;
+    }
+
+    /**
+     * @notice Internal function to handle token deposits
+     * @dev This function handles the RLC token transfer and minting
+     * @param depositor The account making the deposit
+     * @param amount The amount to deposit
+     */
+    function _depositTokens(address depositor, uint256 amount) private {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        if (!$.m_baseToken.transferFrom(depositor, address(this), amount)) {
+            revert TokenTransferFailed();
+        }
+        $.m_balances[depositor] += amount;
+        $.m_totalSupply += amount;
+        emit Transfer(address(0), depositor, amount);
     }
 }
