@@ -28,6 +28,14 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
         proxyCodeHash = keccak256(proxyCode);
     }
 
+    // TEMPORARY MIGRATION FIX: Override _checkOwner to catch custom errors and throw string errors for backward compatibility
+    // TODO: Remove this override in the next major version
+    function _checkOwner() internal view override {
+        if (owner() != _msgSender()) {
+            revert("Ownable: caller is not the owner");
+        }
+    }
+
     function initialize(address _previous) external onlyOwner {
         require(!initialized);
         initialized = true;

@@ -45,6 +45,11 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         _transfer(sender, recipient, amount);
+        // TEMPORARY MIGRATION FIX: Check allowance to prevent underflow and revert without reason for backward compatibility
+        // TODO: Remove this in the next major version
+        if ($.m_allowances[sender][_msgSender()] < amount) {
+            revert();
+        }
         _approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()] - amount);
         return true;
     }
@@ -63,6 +68,11 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         uint256 subtractedValue
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        // TEMPORARY MIGRATION FIX: Check allowance to prevent underflow and revert without reason for backward compatibility
+        // TODO: Remove this in the next major version
+        if ($.m_allowances[_msgSender()][spender] < subtractedValue) {
+            revert();
+        }
         _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender] - subtractedValue);
         return true;
     }

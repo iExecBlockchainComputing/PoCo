@@ -7,6 +7,7 @@ import { expect } from 'chai';
 import { TypedDataDomain } from 'ethers';
 import hre from 'hardhat';
 import {
+    IWorkerpool__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecOrderManagement__factory,
@@ -14,7 +15,6 @@ import {
     IexecPocoBoostFacet,
     IexecPocoBoostFacet__factory,
     TestClient__factory,
-    IWorkerpool__factory,
 } from '../typechain';
 import * as constants from '../utils/constants';
 import { TAG_TEE } from '../utils/constants';

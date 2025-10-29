@@ -45,19 +45,23 @@ contract AppRegistry is Registry {
         bytes32 _appChecksum,
         bytes calldata _appMREnclave
     ) external returns (App) {
-        return
-            App(
-                _mintCreate(
-                    _appOwner,
-                    encodeInitializer(
-                        _appName,
-                        _appType,
-                        _appMultiaddr,
-                        _appChecksum,
-                        _appMREnclave
-                    )
-                )
-            );
+        bytes memory initializer = encodeInitializer(
+            _appName,
+            _appType,
+            _appMultiaddr,
+            _appChecksum,
+            _appMREnclave
+        );
+        address entry = _mintPredict(_appOwner, initializer);
+
+        // TEMPORARY MIGRATION FIX: Check if contract already exists to revert without custom error for backward compatibility
+        // TODO: Remove this in the next major version
+        if (entry.code.length > 0) {
+            revert("Create2: Failed on deploy");
+        }
+
+        _mintCreate(_appOwner, initializer);
+        return App(entry);
     }
 
     function predictApp(
