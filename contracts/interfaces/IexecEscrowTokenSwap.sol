@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
+pragma solidity >=0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
-import "../libs/IexecLibOrders_v5.sol";
+import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 // TODO add this to IexecInterfaceToken when the facet is deployed.
 interface IexecEscrowTokenSwap {

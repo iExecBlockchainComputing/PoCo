@@ -1,23 +1,25 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "./IexecERC20Core.sol";
-import "./SignatureVerifier.sol";
-import "./FacetBase.sol";
-import "../interfaces/IexecEscrowTokenSwap.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import "../interfaces/IexecPoco1.sol";
+import {IexecERC20Core} from "./IexecERC20Core.sol";
+import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
+import {FacetBase} from "./FacetBase.v8.sol";
+import {IexecEscrowTokenSwap} from "../interfaces/IexecEscrowTokenSwap.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
+import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
+import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
+import {IUniswapV2Router02} from "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 
 contract IexecEscrowTokenSwapFacet is
     IexecEscrowTokenSwap,
     FacetBase,
     IexecERC20Core,
-    SignatureVerifier
+    SignatureVerifier,
+    IexecPocoCommon
 {
-    using SafeMathExtended for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
@@ -36,20 +38,18 @@ contract IexecEscrowTokenSwapFacet is
     /***************************************************************************
      *                         Uniswap path - Internal                         *
      ***************************************************************************/
-    function _eth2token() internal view returns (address[] memory) {
+    function _eth2token() internal view returns (address[] memory path) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        address[] memory path = new address[](2);
+        path = new address[](2);
         path[0] = router.WETH();
         path[1] = address($.m_baseToken);
-        return path;
     }
 
-    function _token2eth() internal view returns (address[] memory) {
+    function _token2eth() internal view returns (address[] memory path) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        address[] memory path = new address[](2);
+        path = new address[](2);
         path[0] = address($.m_baseToken);
         path[1] = router.WETH();
-        return path;
     }
 
     /***************************************************************************
@@ -123,7 +123,7 @@ contract IexecEscrowTokenSwapFacet is
             minimum,
             _eth2token(),
             address(this),
-            now + 1
+            block.timestamp + 1
         );
         _mint(target, amounts[1]);
     }
@@ -133,12 +133,14 @@ contract IexecEscrowTokenSwapFacet is
             amount,
             _eth2token(),
             address(this),
-            now + 1
+            block.timestamp + 1
         );
         _mint(target, amounts[1]);
-        // Refund remaining ETH
-        (bool success, ) = _msgSender().call{value: value.sub(amounts[0])}("");
-        require(success, "native-transfer-failed");
+        uint256 refund = value - amounts[0];
+        if (refund > 0) {
+            (bool success, ) = _msgSender().call{value: refund}("");
+            require(success, "native-transfer-failed");
+        }
     }
 
     function _withdraw(address target, uint256 amount, uint256 minimum) internal {
@@ -149,7 +151,7 @@ contract IexecEscrowTokenSwapFacet is
             minimum,
             _token2eth(),
             target,
-            now + 1
+            block.timestamp + 1
         );
         _burn(_msgSender(), amounts[0]);
     }
@@ -163,46 +165,30 @@ contract IexecEscrowTokenSwapFacet is
         IexecLibOrders_v5.WorkerpoolOrder memory _workerpoolorder,
         IexecLibOrders_v5.RequestOrder memory _requestorder
     ) public payable override returns (bytes32) {
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 volume;
-        volume = _apporder.volume.sub(
-            $.m_consumed[keccak256(_toEthTypedStruct(_apporder.hash(), $.m_eip712DomainSeparator))]
+        // Calculate remaining volume for each order
+        // volume = min(appVolume, datasetVolume, workerpoolVolume, requestVolume)
+        bool hasDataset = _datasetorder.dataset != address(0);
+        uint256 volume = _computeDealVolume(
+            _apporder.volume,
+            _toTypedDataHash(_apporder.hash()),
+            hasDataset,
+            _datasetorder.volume,
+            _toTypedDataHash(_datasetorder.hash()),
+            _workerpoolorder.volume,
+            _toTypedDataHash(_workerpoolorder.hash()),
+            _requestorder.volume,
+            _toTypedDataHash(_requestorder.hash())
         );
-        if (_datasetorder.dataset != address(0))
-            volume = volume.min(
-                _datasetorder.volume.sub(
-                    $.m_consumed[
-                        keccak256(
-                            _toEthTypedStruct(_datasetorder.hash(), $.m_eip712DomainSeparator)
-                        )
-                    ]
-                )
-            );
-        volume = volume.min(
-            _workerpoolorder.volume.sub(
-                $.m_consumed[
-                    keccak256(_toEthTypedStruct(_workerpoolorder.hash(), $.m_eip712DomainSeparator))
-                ]
-            )
-        );
-        volume = volume.min(
-            _requestorder.volume.sub(
-                $.m_consumed[
-                    keccak256(_toEthTypedStruct(_requestorder.hash(), $.m_eip712DomainSeparator))
-                ]
-            )
-        );
+        // Calculate total cost
+        // cost = (appPrice + datasetPrice + workerpoolPrice) * volume
+        uint256 totalCost = (_apporder.appprice +
+            (hasDataset ? _datasetorder.datasetprice : 0) +
+            _workerpoolorder.workerpoolprice) * volume;
 
-        _request(
-            _requestorder.requester,
-            msg.value,
-            _apporder
-                .appprice
-                .add(_datasetorder.dataset != address(0) ? _datasetorder.datasetprice : 0)
-                .add(_workerpoolorder.workerpoolprice)
-                .mul(volume)
-        );
+        // Request exact tokens needed, refund excess ETH
+        _request(_requestorder.requester, msg.value, totalCost);
 
+        // Match orders using PoCo facet
         return
             IexecPoco1(address(this)).matchOrders(
                 _apporder,

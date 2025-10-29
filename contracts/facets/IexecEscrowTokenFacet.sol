@@ -1,18 +1,15 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "./IexecERC20Core.sol";
-import "./FacetBase.sol";
-import "../interfaces/IexecEscrowToken.sol";
-import "../interfaces/IexecTokenSpender.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {IexecERC20Core} from "./IexecERC20Core.sol";
+import {FacetBase} from "./FacetBase.v8.sol";
+import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
+import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
-    using SafeMathExtended for uint256;
-
     /***************************************************************************
      *                         Escrow methods: public                          *
      ***************************************************************************/
@@ -41,7 +38,9 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         address[] calldata targets
     ) external override returns (bool) {
         require(amounts.length == targets.length, "invalid-array-length");
-        for (uint i = 0; i < amounts.length; ++i) {
+
+        // v0.8: Explicit type declaration for loop variable
+        for (uint256 i = 0; i < amounts.length; ++i) {
             _deposit(_msgSender(), amounts[i]);
             _mint(targets[i], amounts[i]);
         }
@@ -62,7 +61,9 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
 
     function recover() external override onlyOwner returns (uint256) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 delta = $.m_baseToken.balanceOf(address(this)).sub($.m_totalSupply);
+        uint256 contractBalance = $.m_baseToken.balanceOf(address(this));
+        uint256 totalSupply = $.m_totalSupply;
+        uint256 delta = contractBalance - totalSupply;
         _mint(owner(), delta);
         return delta;
     }
@@ -83,11 +84,12 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
 
     function _deposit(address from, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require($.m_baseToken.transferFrom(from, address(this), amount), "failled-transferFrom");
+        require($.m_baseToken.transferFrom(from, address(this), amount), "failed-transferFrom");
     }
 
     function _withdraw(address to, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        $.m_baseToken.transfer(to, amount);
+        bool success = $.m_baseToken.transfer(to, amount);
+        require(success, "failed-transfer");
     }
 }
