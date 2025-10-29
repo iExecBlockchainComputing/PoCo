@@ -33,13 +33,11 @@ contract WorkerpoolRegistry is Registry {
     ) external returns (Workerpool) {
         bytes memory initializer = encodeInitializer(_workerpoolDescription);
         address entry = _mintPredict(_workerpoolOwner, initializer);
-
         // TEMPORARY MIGRATION FIX: Check if contract already exists to revert without custom error for backward compatibility
         // TODO: Remove this in the next major version
         if (entry.code.length > 0) {
             revert("Create2: Failed on deploy");
         }
-
         _mintCreate(_workerpoolOwner, initializer);
         return Workerpool(entry);
     }
