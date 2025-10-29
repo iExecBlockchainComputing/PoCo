@@ -47,10 +47,11 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         _transfer(sender, recipient, amount);
         // TEMPORARY MIGRATION FIX: Check allowance to prevent underflow and revert without reason for backward compatibility
         // TODO: Remove this in the next major version
-        if ($.m_allowances[sender][_msgSender()] < amount) {
+        uint256 currentAllowance = $.m_allowances[sender][_msgSender()]; // Read allowance once
+        if (currentAllowance < amount) {
             revert();
         }
-        _approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()] - amount);
+        _approve(sender, _msgSender(), currentAllowance - amount);
         return true;
     }
 
@@ -70,10 +71,11 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         // TEMPORARY MIGRATION FIX: Check allowance to prevent underflow and revert without reason for backward compatibility
         // TODO: Remove this in the next major version
-        if ($.m_allowances[_msgSender()][spender] < subtractedValue) {
+        uint256 currentAllowance = $.m_allowances[_msgSender()][spender]; // Read allowance once
+        if (currentAllowance < subtractedValue) {
             revert();
         }
-        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender] - subtractedValue);
+        _approve(_msgSender(), spender, currentAllowance - subtractedValue);
         return true;
     }
 }
