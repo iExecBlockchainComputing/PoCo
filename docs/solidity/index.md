@@ -1,21 +1,5 @@
 # Solidity API
 
-## IexecInterfaceNative
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in native mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-## IexecInterfaceToken
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in token mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
 ## IexecERC20Core
 
 ## IexecERC20Facet
@@ -54,6 +38,112 @@ function increaseAllowance(address spender, uint256 addedValue) external returns
 
 ```solidity
 function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
+```
+
+## IexecEscrowNativeFacet
+
+### receive
+
+```solidity
+receive() external payable
+```
+
+### fallback
+
+```solidity
+fallback() external payable
+```
+
+### deposit
+
+```solidity
+function deposit() external payable returns (bool)
+```
+
+### depositFor
+
+```solidity
+function depositFor(address target) external payable returns (bool)
+```
+
+### depositForArray
+
+```solidity
+function depositForArray(uint256[] amounts, address[] targets) external payable returns (bool)
+```
+
+### withdraw
+
+```solidity
+function withdraw(uint256 amount) external returns (bool)
+```
+
+### withdrawTo
+
+```solidity
+function withdrawTo(uint256 amount, address target) external returns (bool)
+```
+
+### recover
+
+```solidity
+function recover() external returns (uint256)
+```
+
+## IexecEscrowTokenFacet
+
+### receive
+
+```solidity
+receive() external payable
+```
+
+### fallback
+
+```solidity
+fallback() external payable
+```
+
+### deposit
+
+```solidity
+function deposit(uint256 amount) external returns (bool)
+```
+
+### depositFor
+
+```solidity
+function depositFor(uint256 amount, address target) external returns (bool)
+```
+
+### depositForArray
+
+```solidity
+function depositForArray(uint256[] amounts, address[] targets) external returns (bool)
+```
+
+### withdraw
+
+```solidity
+function withdraw(uint256 amount) external returns (bool)
+```
+
+### withdrawTo
+
+```solidity
+function withdrawTo(uint256 amount, address target) external returns (bool)
+```
+
+### recover
+
+```solidity
+function recover() external returns (uint256)
+```
+
+### receiveApproval
+
+```solidity
+function receiveApproval(address sender, uint256 amount, address token, bytes) external returns (bool)
 ```
 
 ## IexecLibCore_v5
@@ -243,6 +333,64 @@ struct Contribution {
   uint256 weight;
 }
 ```
+
+## PocoStorageLib
+
+### PocoStorage
+
+```solidity
+struct PocoStorage {
+  contract IRegistry m_appregistry;
+  contract IRegistry m_datasetregistry;
+  contract IRegistry m_workerpoolregistry;
+  contract IERC20 m_baseToken;
+  string m_name;
+  string m_symbol;
+  uint8 m_decimals;
+  uint256 m_totalSupply;
+  mapping(address => uint256) m_balances;
+  mapping(address => uint256) m_frozens;
+  mapping(address => mapping(address => uint256)) m_allowances;
+  bytes32 m_eip712DomainSeparator;
+  mapping(bytes32 => address) m_presigned;
+  mapping(bytes32 => uint256) m_consumed;
+  mapping(bytes32 => struct IexecLibCore_v5.Deal) m_deals;
+  mapping(bytes32 => struct IexecLibCore_v5.Task) m_tasks;
+  mapping(bytes32 => struct IexecLibCore_v5.Consensus) m_consensus;
+  mapping(bytes32 => mapping(address => struct IexecLibCore_v5.Contribution)) m_contributions;
+  mapping(address => uint256) m_workerScores;
+  address m_teebroker;
+  uint256 m_callbackgas;
+  struct IexecLibCore_v5.Category[] m_categories;
+  contract IexecHubV3Interface m_v3_iexecHub;
+  mapping(address => bool) m_v3_scoreImported;
+  mapping(bytes32 => struct IexecLibCore_v5.DealBoost) m_dealsBoost;
+}
+```
+
+## IRegistry
+
+### isRegistered
+
+```solidity
+function isRegistered(address _entry) external view returns (bool)
+```
+
+## IexecInterfaceNative
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in native mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+## IexecInterfaceToken
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in token mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
 
 ## IexecLibOrders_v5
 
@@ -487,48 +635,6 @@ function hash(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorder
 function hash(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) public pure returns (bytes32)
 ```
 
-## PocoStorageLib
-
-### PocoStorage
-
-```solidity
-struct PocoStorage {
-  contract IRegistry m_appregistry;
-  contract IRegistry m_datasetregistry;
-  contract IRegistry m_workerpoolregistry;
-  contract IERC20 m_baseToken;
-  string m_name;
-  string m_symbol;
-  uint8 m_decimals;
-  uint256 m_totalSupply;
-  mapping(address => uint256) m_balances;
-  mapping(address => uint256) m_frozens;
-  mapping(address => mapping(address => uint256)) m_allowances;
-  bytes32 m_eip712DomainSeparator;
-  mapping(bytes32 => address) m_presigned;
-  mapping(bytes32 => uint256) m_consumed;
-  mapping(bytes32 => struct IexecLibCore_v5.Deal) m_deals;
-  mapping(bytes32 => struct IexecLibCore_v5.Task) m_tasks;
-  mapping(bytes32 => struct IexecLibCore_v5.Consensus) m_consensus;
-  mapping(bytes32 => mapping(address => struct IexecLibCore_v5.Contribution)) m_contributions;
-  mapping(address => uint256) m_workerScores;
-  address m_teebroker;
-  uint256 m_callbackgas;
-  struct IexecLibCore_v5.Category[] m_categories;
-  contract IexecHubV3Interface m_v3_iexecHub;
-  mapping(address => bool) m_v3_scoreImported;
-  mapping(bytes32 => struct IexecLibCore_v5.DealBoost) m_dealsBoost;
-}
-```
-
-## IRegistry
-
-### isRegistered
-
-```solidity
-function isRegistered(address _entry) external view returns (bool)
-```
-
 ## IexecCategoryManagerFacet
 
 ### createCategory
@@ -615,112 +721,6 @@ event Reward(address owner, uint256 amount, bytes32 ref)
 
 ```solidity
 event Seize(address owner, uint256 amount, bytes32 ref)
-```
-
-## IexecEscrowNativeFacet
-
-### receive
-
-```solidity
-receive() external payable
-```
-
-### fallback
-
-```solidity
-fallback() external payable
-```
-
-### deposit
-
-```solidity
-function deposit() external payable returns (bool)
-```
-
-### depositFor
-
-```solidity
-function depositFor(address target) external payable returns (bool)
-```
-
-### depositForArray
-
-```solidity
-function depositForArray(uint256[] amounts, address[] targets) external payable returns (bool)
-```
-
-### withdraw
-
-```solidity
-function withdraw(uint256 amount) external returns (bool)
-```
-
-### withdrawTo
-
-```solidity
-function withdrawTo(uint256 amount, address target) external returns (bool)
-```
-
-### recover
-
-```solidity
-function recover() external returns (uint256)
-```
-
-## IexecEscrowTokenFacet
-
-### receive
-
-```solidity
-receive() external payable
-```
-
-### fallback
-
-```solidity
-fallback() external payable
-```
-
-### deposit
-
-```solidity
-function deposit(uint256 amount) external returns (bool)
-```
-
-### depositFor
-
-```solidity
-function depositFor(uint256 amount, address target) external returns (bool)
-```
-
-### depositForArray
-
-```solidity
-function depositForArray(uint256[] amounts, address[] targets) external returns (bool)
-```
-
-### withdraw
-
-```solidity
-function withdraw(uint256 amount) external returns (bool)
-```
-
-### withdrawTo
-
-```solidity
-function withdrawTo(uint256 amount, address target) external returns (bool)
-```
-
-### recover
-
-```solidity
-function recover() external returns (uint256)
-```
-
-### receiveApproval
-
-```solidity
-function receiveApproval(address sender, uint256 amount, address token, bytes) external returns (bool)
 ```
 
 ## IexecOrderManagementFacet
