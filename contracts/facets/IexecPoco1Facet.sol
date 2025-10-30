@@ -11,7 +11,6 @@ import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "./FacetBase.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
-import {IexecDepositAndMatchOrders} from "../interfaces/IexecDepositAndMatchOrders.sol";
 import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
@@ -30,7 +29,6 @@ struct Matching {
 
 contract IexecPoco1Facet is
     IexecPoco1,
-    IexecDepositAndMatchOrders,
     IexecPoco1Errors,
     FacetBase,
     IexecEscrow,
