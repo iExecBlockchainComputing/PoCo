@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity >=0.8.0;
-pragma experimental ABIEncoderV2;
-
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 interface IexecPoco1 {
