@@ -406,39 +406,7 @@ describe('IexecEscrowToken', () => {
             );
         });
     });
-
-    describe('receiveApproval', () => {
-        it('Should receive approval, deposit tokens, and call the callback', async () => {
-            const matchOrdersData = await getMatchOrdersData();
-            // const matchOrdersData = '0xabcd';
-            const tx = await rlcInstance
-                .connect(anyone)
-                .approveAndCall(proxyAddress, amount, matchOrdersData);
-            await expect(tx).to.changeTokenBalances(
-                rlcInstance,
-                [anyone, iexecPoco],
-                [-amount, amount],
-            );
-            await expect(tx).to.emit(rlcInstance, 'Transfer').withArgs(anyone, iexecPoco, amount);
-            await expect(tx).to.emit(iexecPoco, 'Transfer').withArgs(AddressZero, anyone, amount);
-            await expect(tx)
-                .to.emit(iexecPoco, 'DoItCalled')
-                .withArgs(ethers.keccak256('0xabcd'), 5);
-            // await expect(tx)
-            //     .to.emit(iexecPoco, 'SchedulerNotice')
-            //     .to.emit(iexecPoco, 'OrdersMatched');
-        });
-    });
 });
-
-/**
- * Returns sample encoded data for matchOrders call.
- */
-async function getMatchOrdersData() {
-    const iface = new ethers.Interface(['function doIt(bytes32 taskId, uint256 value) external']);
-    const data = iface.encodeFunctionData('doIt', [ethers.keccak256('0xabcd'), 5]);
-    return data;
-}
 
 function getTotalAmount(amounts: bigint[]) {
     return amounts.reduce((a, b) => a + b, 0n);

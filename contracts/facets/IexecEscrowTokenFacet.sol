@@ -8,11 +8,8 @@ import {FacetBase} from "./FacetBase.sol";
 import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
-import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
-
     /***************************************************************************
      *                         Escrow methods: public                          *
      ***************************************************************************/
@@ -72,54 +69,12 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         address sender,
         uint256 amount,
         address token,
-        bytes calldata data
-    ) external returns (bool) {
+        bytes calldata
+    ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require(token == address($.m_baseToken), "wrong-token");
         _deposit(sender, amount);
         _mint(sender, amount);
-        if (data.length > 0) {
-            // (bool success, bytes memory result) = address(this).call(data);
-            (
-                IexecLibOrders_v5.AppOrder memory apporder,
-                IexecLibOrders_v5.DatasetOrder memory datasetorder,
-                IexecLibOrders_v5.WorkerpoolOrder memory workerpoolorder,
-                IexecLibOrders_v5.RequestOrder memory requestorder
-            ) = abi.decode(
-                data,
-                (
-                    IexecLibOrders_v5.AppOrder,
-                    IexecLibOrders_v5.DatasetOrder,
-                    IexecLibOrders_v5.WorkerpoolOrder,
-                    IexecLibOrders_v5.RequestOrder
-                )
-            );
-            workerpoolorder;
-            requestorder;
-            emit IexecPoco1.Called(apporder.app, datasetorder.dataset);
-            // (bool success, bytes memory result) = address(this).call(
-            //     abi.encodeWithSelector(
-            //         IexecPoco1.matchOrders.selector,
-            //         apporder,
-            //         datasetorder,
-            //         workerpoolorder,
-            //         requestorder
-            //     )
-            // );
-            // // Bubble up the original revert reason if the call failed
-            // if (!success) {
-            //     if (result.length > 0) {
-            //         // Decode revert reason and revert with it
-            //         assembly {
-            //             let returndata_size := mload(result)
-            //             revert(add(result, 32), returndata_size)
-            //         }
-            //     } else {
-            //         revert("receive-approval-failed");
-            //     }
-            // }
-        }
-
         return true;
     }
 
