@@ -385,7 +385,7 @@ describe('Registries', () => {
 
             await expect(
                 datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs),
-            ).to.be.revertedWithCustomError(appRegistry, 'Create2FailedDeployment');
+            ).to.be.revertedWithCustomError(datasetRegistry, 'Create2FailedDeployment');
         });
     });
 
@@ -469,7 +469,7 @@ describe('Registries', () => {
 
             await expect(
                 workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs),
-            ).to.be.revertedWithCustomError(appRegistry, 'Create2FailedDeployment');
+            ).to.be.revertedWithCustomError(workerpoolRegistry, 'Create2FailedDeployment');
         });
     });
 
