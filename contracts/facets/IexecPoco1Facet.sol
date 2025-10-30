@@ -150,7 +150,7 @@ contract IexecPoco1Facet is
         IexecLibOrders_v5.DatasetOrder calldata _datasetorder,
         IexecLibOrders_v5.WorkerpoolOrder calldata _workerpoolorder,
         IexecLibOrders_v5.RequestOrder calldata _requestorder
-    ) external override returns (bytes32) {
+    ) public override returns (bytes32) {
         return
             _matchOrders(
                 _apporder,
@@ -246,7 +246,7 @@ contract IexecPoco1Facet is
         }
 
         // Match the orders with the requester as sponsor
-        dealId = this.matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder);
+        dealId = matchOrders(_apporder, _datasetorder, _workerpoolorder, _requestorder);
 
         return dealId;
     }
