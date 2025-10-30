@@ -11,7 +11,7 @@ import {IDataset} from "../registries/datasets/IDataset.v8.sol";
 import {IApp} from "../registries/apps/IApp.v8.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
-import {IRegistry} from "../registries/Registry.sol";
+import {IRegistry} from "../registries/IRegistry.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
 
