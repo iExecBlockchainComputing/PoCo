@@ -13,7 +13,7 @@ contract IexecERC20Core is FacetBase {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    function _transferUnchecked(address sender, address recipient, uint256 amount) internal {
+    function _transferUnchecked(address sender, address recipient, uint256 amount) public {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
@@ -34,7 +34,7 @@ contract IexecERC20Core is FacetBase {
         emit Transfer(address(0), account, amount);
     }
 
-    function _burn(address account, uint256 amount) internal {
+    function _burn(address account, uint256 amount) public {
         require(account != address(0), "ERC20: burn from the zero address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         $.m_totalSupply = $.m_totalSupply.sub(amount);

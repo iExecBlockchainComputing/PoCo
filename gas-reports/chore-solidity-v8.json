@@ -1,0 +1,555 @@
+[
+  {
+    "contract": "AppRegistry",
+    "method": "createApp",
+    "min": 646409,
+    "max": 668821,
+    "avg": 647331,
+    "calls": 680
+  },
+  {
+    "contract": "AppRegistry",
+    "method": "initialize",
+    "min": 47596,
+    "max": 47836,
+    "avg": 47756,
+    "calls": 6
+  },
+  {
+    "contract": "AppRegistry",
+    "method": "setBaseURI",
+    "min": 92012,
+    "max": 92012,
+    "avg": 92012,
+    "calls": 2
+  },
+  {
+    "contract": "AppRegistry",
+    "method": "transferFrom",
+    "min": 88239,
+    "max": 88239,
+    "avg": 88239,
+    "calls": 6
+  },
+  {
+    "contract": "AppRegistry",
+    "method": "transferOwnership",
+    "min": 27585,
+    "max": 27585,
+    "avg": 27585,
+    "calls": 2
+  },
+  {
+    "contract": "DatasetRegistry",
+    "method": "createDataset",
+    "min": 574044,
+    "max": 619097,
+    "avg": 575771,
+    "calls": 678
+  },
+  {
+    "contract": "DatasetRegistry",
+    "method": "initialize",
+    "min": 47596,
+    "max": 47836,
+    "avg": 47716,
+    "calls": 4
+  },
+  {
+    "contract": "DatasetRegistry",
+    "method": "setBaseURI",
+    "min": 92060,
+    "max": 92060,
+    "avg": 92060,
+    "calls": 2
+  },
+  {
+    "contract": "DatasetRegistry",
+    "method": "transferFrom",
+    "min": 88239,
+    "max": 88239,
+    "avg": 88239,
+    "calls": 6
+  },
+  {
+    "contract": "DatasetRegistry",
+    "method": "transferOwnership",
+    "min": 27567,
+    "max": 27567,
+    "avg": 27567,
+    "calls": 2
+  },
+  {
+    "contract": "DiamondCutFacet",
+    "method": "diamondCut",
+    "min": 77642,
+    "max": 1065570,
+    "avg": 264878,
+    "calls": 25
+  },
+  {
+    "contract": "ERC734Mock",
+    "method": "setKeyHasPurpose",
+    "min": 44365,
+    "max": 44365,
+    "avg": 44365,
+    "calls": 8
+  },
+  {
+    "contract": "IexecCategoryManagerFacet",
+    "method": "createCategory",
+    "min": 114943,
+    "max": 132055,
+    "avg": 117819,
+    "calls": 12
+  },
+  {
+    "contract": "IexecConfigurationExtraFacet",
+    "method": "changeRegistries",
+    "min": 53589,
+    "max": 53589,
+    "avg": 53589,
+    "calls": 2
+  },
+  {
+    "contract": "IexecConfigurationFacet",
+    "method": "configure",
+    "min": 134135,
+    "max": 253523,
+    "avg": 193829,
+    "calls": 4
+  },
+  {
+    "contract": "IexecConfigurationFacet",
+    "method": "setCallbackGas",
+    "min": 41137,
+    "max": 41137,
+    "avg": 41137,
+    "calls": 2
+  },
+  {
+    "contract": "IexecConfigurationFacet",
+    "method": "setTeeBroker",
+    "min": 38536,
+    "max": 58676,
+    "avg": 41536,
+    "calls": 94
+  },
+  {
+    "contract": "IexecConfigurationFacet",
+    "method": "updateDomainSeparator",
+    "min": 40426,
+    "max": 40426,
+    "avg": 40426,
+    "calls": 2
+  },
+  {
+    "contract": "IexecERC20Core",
+    "method": "_burn",
+    "min": 41047,
+    "max": 41047,
+    "avg": 41047,
+    "calls": 5
+  },
+  {
+    "contract": "IexecERC20Core",
+    "method": "_transferUnchecked",
+    "min": 42177,
+    "max": 59277,
+    "avg": 45597,
+    "calls": 5
+  },
+  {
+    "contract": "IexecERC20Facet",
+    "method": "approveAndCall",
+    "min": 60752,
+    "max": 60752,
+    "avg": 60752,
+    "calls": 3
+  },
+  {
+    "contract": "IexecERC20Facet",
+    "method": "decreaseAllowance",
+    "min": 36555,
+    "max": 36555,
+    "avg": 36555,
+    "calls": 2
+  },
+  {
+    "contract": "IexecERC20Facet",
+    "method": "increaseAllowance",
+    "min": 36478,
+    "max": 36478,
+    "avg": 36478,
+    "calls": 2
+  },
+  {
+    "contract": "IexecERC20Facet",
+    "method": "transfer",
+    "min": 36251,
+    "max": 58963,
+    "avg": 45850,
+    "calls": 11
+  },
+  {
+    "contract": "IexecEscrowNativeFacet",
+    "method": "depositForArray",
+    "min": 146115,
+    "max": 146115,
+    "avg": 146115,
+    "calls": 9
+  },
+  {
+    "contract": "IexecEscrowNativeFacet",
+    "method": "recover",
+    "min": 54984,
+    "max": 94784,
+    "avg": 74884,
+    "calls": 6
+  },
+  {
+    "contract": "IexecEscrowNativeFacet",
+    "method": "withdraw",
+    "min": 47536,
+    "max": 76483,
+    "avg": 53597,
+    "calls": 18
+  },
+  {
+    "contract": "IexecEscrowNativeFacet",
+    "method": "withdrawTo",
+    "min": 48825,
+    "max": 77137,
+    "avg": 59112,
+    "calls": 18
+  },
+  {
+    "contract": "IexecEscrowTestContract",
+    "method": "lock_",
+    "min": 72588,
+    "max": 77376,
+    "avg": 75248,
+    "calls": 9
+  },
+  {
+    "contract": "IexecEscrowTestContract",
+    "method": "reward_",
+    "min": 33347,
+    "max": 33347,
+    "avg": 33347,
+    "calls": 5
+  },
+  {
+    "contract": "IexecEscrowTestContract",
+    "method": "seize_",
+    "min": 29580,
+    "max": 29580,
+    "avg": 29580,
+    "calls": 4
+  },
+  {
+    "contract": "IexecEscrowTestContract",
+    "method": "setBalance",
+    "min": 44680,
+    "max": 44692,
+    "avg": 44686,
+    "calls": 4
+  },
+  {
+    "contract": "IexecEscrowTestContract",
+    "method": "unlock_",
+    "min": 60342,
+    "max": 60342,
+    "avg": 60342,
+    "calls": 5
+  },
+  {
+    "contract": "IexecEscrowTokenFacet",
+    "method": "deposit",
+    "min": 51089,
+    "max": 111637,
+    "avg": 93473,
+    "calls": 20
+  },
+  {
+    "contract": "IexecEscrowTokenFacet",
+    "method": "depositFor",
+    "min": 112048,
+    "max": 112048,
+    "avg": 112048,
+    "calls": 6
+  },
+  {
+    "contract": "IexecOrderManagementFacet",
+    "method": "manageAppOrder",
+    "min": 82463,
+    "max": 101589,
+    "avg": 86231,
+    "calls": 21
+  },
+  {
+    "contract": "IexecOrderManagementFacet",
+    "method": "manageDatasetOrder",
+    "min": 82136,
+    "max": 101186,
+    "avg": 86113,
+    "calls": 20
+  },
+  {
+    "contract": "IexecOrderManagementFacet",
+    "method": "manageRequestOrder",
+    "min": 71730,
+    "max": 96038,
+    "avg": 76877,
+    "calls": 19
+  },
+  {
+    "contract": "IexecOrderManagementFacet",
+    "method": "manageWorkerpoolOrder",
+    "min": 83434,
+    "max": 103195,
+    "avg": 87613,
+    "calls": 19
+  },
+  {
+    "contract": "IexecPoco1Facet",
+    "method": "matchOrders",
+    "min": 627553,
+    "max": 863535,
+    "avg": 756673,
+    "calls": 237
+  },
+  {
+    "contract": "IexecPoco1Facet",
+    "method": "sponsorMatchOrders",
+    "min": 726955,
+    "max": 827079,
+    "avg": 784550,
+    "calls": 17
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "claim",
+    "min": 154395,
+    "max": 228975,
+    "avg": 181527,
+    "calls": 33
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "claimArray",
+    "min": 225683,
+    "max": 225683,
+    "avg": 225683,
+    "calls": 5
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "contribute",
+    "min": 272176,
+    "max": 421643,
+    "avg": 346972,
+    "calls": 246
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "contributeAndFinalize",
+    "min": 496049,
+    "max": 687822,
+    "avg": 643085,
+    "calls": 32
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "finalize",
+    "min": 228906,
+    "max": 601866,
+    "avg": 403926,
+    "calls": 318
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "initialize",
+    "min": 222325,
+    "max": 242249,
+    "avg": 225505,
+    "calls": 201
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "initializeAndClaimArray",
+    "min": 298140,
+    "max": 684749,
+    "avg": 607427,
+    "calls": 10
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "initializeArray",
+    "min": 559262,
+    "max": 559262,
+    "avg": 559262,
+    "calls": 5
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "reopen",
+    "min": 76618,
+    "max": 93225,
+    "avg": 84922,
+    "calls": 4
+  },
+  {
+    "contract": "IexecPoco2Facet",
+    "method": "reveal",
+    "min": 56443,
+    "max": 93455,
+    "avg": 78542,
+    "calls": 134
+  },
+  {
+    "contract": "IexecPocoBoostFacet",
+    "method": "claimBoost",
+    "min": 88555,
+    "max": 136743,
+    "avg": 131562,
+    "calls": 45
+  },
+  {
+    "contract": "IexecPocoBoostFacet",
+    "method": "matchOrdersBoost",
+    "min": 420326,
+    "max": 528010,
+    "avg": 482689,
+    "calls": 90
+  },
+  {
+    "contract": "IexecPocoBoostFacet",
+    "method": "pushResultBoost",
+    "min": 115726,
+    "max": 337493,
+    "avg": 243058,
+    "calls": 53
+  },
+  {
+    "contract": "IexecPocoBoostFacet",
+    "method": "sponsorMatchOrdersBoost",
+    "min": 528866,
+    "max": 529370,
+    "avg": 529297,
+    "calls": 23
+  },
+  {
+    "contract": "IexecRelayFacet",
+    "method": "broadcastAppOrder",
+    "min": 37623,
+    "max": 37623,
+    "avg": 37623,
+    "calls": 2
+  },
+  {
+    "contract": "IexecRelayFacet",
+    "method": "broadcastDatasetOrder",
+    "min": 37583,
+    "max": 37583,
+    "avg": 37583,
+    "calls": 2
+  },
+  {
+    "contract": "IexecRelayFacet",
+    "method": "broadcastRequestOrder",
+    "min": 43143,
+    "max": 43143,
+    "avg": 43143,
+    "calls": 2
+  },
+  {
+    "contract": "IexecRelayFacet",
+    "method": "broadcastWorkerpoolOrder",
+    "min": 38761,
+    "max": 38761,
+    "avg": 38761,
+    "calls": 2
+  },
+  {
+    "contract": "OwnershipFacet",
+    "method": "transferOwnership",
+    "min": 31956,
+    "max": 31956,
+    "avg": 31956,
+    "calls": 2
+  },
+  { "contract": "RLC", "method": "approve", "min": 46064, "max": 46064, "avg": 46064, "calls": 22 },
+  {
+    "contract": "RLC",
+    "method": "approveAndCall",
+    "min": 56715,
+    "max": 114475,
+    "avg": 93384,
+    "calls": 884
+  },
+  {
+    "contract": "RLC",
+    "method": "transfer",
+    "min": 29179,
+    "max": 51951,
+    "avg": 50855,
+    "calls": 933
+  },
+  {
+    "contract": "RLC",
+    "method": "transferOwnership",
+    "min": 24641,
+    "max": 24641,
+    "avg": 24641,
+    "calls": 2
+  },
+  {
+    "contract": "Workerpool",
+    "method": "changePolicy",
+    "min": 49117,
+    "max": 49117,
+    "avg": 49117,
+    "calls": 1
+  },
+  {
+    "contract": "WorkerpoolRegistry",
+    "method": "createWorkerpool",
+    "min": 571128,
+    "max": 571236,
+    "avg": 571132,
+    "calls": 678
+  },
+  {
+    "contract": "WorkerpoolRegistry",
+    "method": "initialize",
+    "min": 47596,
+    "max": 47836,
+    "avg": 47716,
+    "calls": 4
+  },
+  {
+    "contract": "WorkerpoolRegistry",
+    "method": "setBaseURI",
+    "min": 92096,
+    "max": 92096,
+    "avg": 92096,
+    "calls": 2
+  },
+  {
+    "contract": "WorkerpoolRegistry",
+    "method": "transferFrom",
+    "min": 88261,
+    "max": 88261,
+    "avg": 88261,
+    "calls": 6
+  },
+  {
+    "contract": "WorkerpoolRegistry",
+    "method": "transferOwnership",
+    "min": 27585,
+    "max": 27585,
+    "avg": 27585,
+    "calls": 2
+  }
+]

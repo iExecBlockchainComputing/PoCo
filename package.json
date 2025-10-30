@@ -25,7 +25,10 @@
     "puml-to-links": "npx zx scripts/tools/puml-to-links.mjs",
     "storage-to-diagrams": "bash scripts/tools/storage-to-diagrams.sh",
     "doc": "npx hardhat docgen",
-    "prerelease": "npm version prerelease --preid=rc -m 'chore: v%s'"
+    "prerelease": "npm version prerelease --preid=rc -m 'chore: v%s'",
+    "gas:compare": "bash scripts/compare-gas-branches.sh",
+    "gas:collect": "npx tsc scripts/gas-comparison.ts --outDir scripts --module commonjs --target ES2020 --esModuleInterop --resolveJsonModule && node scripts/gas-comparison.js",
+    "gas:charts": "python3 scripts/generate-gas-charts.py"
   },
   "files": [
     "/abis",

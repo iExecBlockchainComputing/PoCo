@@ -273,4 +273,44 @@ describe('ERC20', async () => {
             );
         });
     });
+
+    describe('Gas reporting - _transferUnchecked', () => {
+        it('Should measure gas for transfer (calls _transferUnchecked)', async () => {
+            // Call transfer multiple times to get average gas usage in the report
+            await iexecPocoAsHolder.transfer(recipient.address, 10n);
+            await iexecWrapper.depositInIexecAccount(holder, 10n);
+            await iexecPocoAsHolder.transfer(recipient.address, 5n);
+            await iexecWrapper.depositInIexecAccount(holder, 10n);
+            await iexecPocoAsHolder.transfer(recipient.address, 15n);
+        });
+
+        it('Should measure gas for transferFrom (calls _transferUnchecked)', async () => {
+            // Setup allowance first (separate transaction)
+            await iexecPocoAsHolder.approve(spender.address, value);
+            // Call transferFrom multiple times to get average gas usage in the report
+            await iexecPocoAsSpender.transferFrom(holder.address, spender.address, 10n);
+            await iexecPocoAsSpender.transferFrom(holder.address, spender.address, 5n);
+            await iexecPocoAsSpender.transferFrom(holder.address, spender.address, 15n);
+        });
+    });
+
+    describe('Gas reporting - _burn', () => {
+        it('Should measure gas for withdraw (calls _burn)', async () => {
+            // Deposit more tokens for multiple withdrawals
+            await iexecWrapper.depositInIexecAccount(holder, value * 2n);
+            // Call withdraw multiple times to get average gas usage in the report
+            await iexecPocoAsHolder.withdraw(10n).then((tx) => tx.wait());
+            await iexecPocoAsHolder.withdraw(5n).then((tx) => tx.wait());
+            await iexecPocoAsHolder.withdraw(15n).then((tx) => tx.wait());
+        });
+
+        it('Should measure gas for withdrawTo (calls _burn)', async () => {
+            // Deposit more tokens for multiple withdrawals
+            await iexecWrapper.depositInIexecAccount(holder, value * 2n);
+            // Call withdrawTo multiple times to get average gas usage in the report
+            await iexecPocoAsHolder.withdrawTo(10n, recipient.address).then((tx) => tx.wait());
+            await iexecPocoAsHolder.withdrawTo(5n, recipient.address).then((tx) => tx.wait());
+            await iexecPocoAsHolder.withdrawTo(15n, recipient.address).then((tx) => tx.wait());
+        });
+    });
 });
