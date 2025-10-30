@@ -13,27 +13,6 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
     /***************************************************************************
-     *                                 Events                                  *
-     ***************************************************************************/
-
-    /**
-     * @notice Emitted when approval is received and orders are matched
-     * @param sender The user who approved tokens
-     * @param amount Amount of tokens deposited
-     * @param dealId The ID of the created deal (bytes32(0) if no matching)
-     */
-    event ApprovalReceivedAndMatched(
-        address indexed sender,
-        uint256 amount,
-        bytes32 indexed dealId
-    );
-
-    /***************************************************************************
-     *                                 Errors                                  *
-     ***************************************************************************/
-    error CallerMustBeRequester();
-
-    /***************************************************************************
      *                         Escrow methods: public                          *
      ***************************************************************************/
     receive() external payable override {
@@ -168,7 +147,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
             );
 
         // Validate that sender is the requester
-        if (requestorder.requester != sender) revert CallerMustBeRequester();
+        if (requestorder.requester != sender) revert("caller-must-be-requester");
 
         // Call matchOrders on the IexecPoco1 facet through the diamond
         // Using delegatecall pattern via address(this)

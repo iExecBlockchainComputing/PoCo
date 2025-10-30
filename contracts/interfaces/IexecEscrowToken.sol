@@ -7,7 +7,11 @@ pragma experimental ABIEncoderV2;
 interface IexecEscrowToken {
     receive() external payable;
     fallback() external payable;
-
+    event ApprovalReceivedAndMatched(
+        address indexed sender,
+        uint256 amount,
+        bytes32 indexed dealId
+    );
     function deposit(uint256) external returns (bool);
     function depositFor(uint256, address) external returns (bool);
     function depositForArray(uint256[] calldata, address[] calldata) external returns (bool);
