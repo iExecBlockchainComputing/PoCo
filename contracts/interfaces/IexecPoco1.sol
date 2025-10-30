@@ -1,9 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity >=0.6.0;
-pragma experimental ABIEncoderV2;
-
+pragma solidity >=0.8.0;
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 interface IexecPoco1 {
@@ -46,7 +44,4 @@ interface IexecPoco1 {
         IexecLibOrders_v5.WorkerpoolOrder calldata,
         IexecLibOrders_v5.RequestOrder calldata
     ) external returns (bytes32);
-
-    event Called(address app, address dataset);
-    function doIt(address app, address dataset) external;
 }

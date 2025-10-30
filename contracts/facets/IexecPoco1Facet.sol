@@ -457,8 +457,4 @@ contract IexecPoco1Facet is
 
         return dealid;
     }
-
-    function doIt(address app, address dataset) external override {
-        emit Called(app, dataset);
-    }
 }
