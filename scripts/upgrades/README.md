@@ -1,7 +1,7 @@
 # PoCo Smart Contracts Upgrade Guide
 
-This document explains the recommended steps for creating and applying a safe, traceable,
-and reproducible upgrade to the PoCo Diamond proxy.
+This document explains the recommended steps for creating and applying
+a safe, traceable, and reproducible upgrade to the PoCo Diamond proxy.
 
 ## Upgrade Steps
 
@@ -9,18 +9,22 @@ and reproducible upgrade to the PoCo Diamond proxy.
     Run the full test suite to make sure everything is working before starting an upgrade.
 
 1. **Create a new upgrade script**:<br>
-    Name the script using the version and upgrade name in the form `vX.Y.Z-upgrade-name.ts`
-    and implement the upgrade logic.
+    Name the script using the version and upgrade name format `vX.Y.Z-upgrade-name.ts` and
+    implement the upgrade logic.
 
 2. **Create a corresponding Markdown report**:<br>
-    Copy the template file `v0.0.0-template.md` and rename it to match the script's name
-    (`vX.Y.Z-upgrade-name.md`).
+    Copy the template file `v0.0.0-template.md` and rename it to match the script file name.
+    The name should be of the form `vX.Y.Z-upgrade-name.md`.
 
 3. **Test dry-runs locally**:<br>
     Use the script [./dry-run.sh](./dry-run.sh) and check the logs.
 
 4. **Update GitHub Actions**:<br>
-    Modify `upgrade-facets.yml` workflow to call the new upgrade script.
+    Modify `upgrade-facets.yml` workflow to call the new upgrade script.<br>
+    Note: to run the upgrade script manually (for testing), use:
+    ```
+    npx hardhat run scripts/upgrades/vX.Y.Z-upgrade-name.ts --network <network>
+    ```
 
 5. **Upgrade on Testnet**:
    - ⚠️ Always upgrade on the testnet first.
@@ -38,4 +42,4 @@ and reproducible upgrade to the PoCo Diamond proxy.
     Fill in all required information in `vX.Y.Z-upgrade-name.ts` (tx hashes, logs, ...).
 
 8. **Create a release**
-   - Use **Release Please** to tag the upgrade version and create the release on GitHub.
+   - Use **Release Please** to tag the upgraded version and create the release on GitHub.

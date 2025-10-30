@@ -1,5 +1,6 @@
-# This is a template workflow for upgrading PoCo facets.
-# Update the script path (UPGRADE_SCRIPT environment variable) for each specific upgrade.
+# This is a generic workflow that should be used to upgrade PoCo facets.
+# Change the environment variable `UPGRADE_SCRIPT` to point to the correct
+# script for each specific upgrade.
 
 name: Upgrade PoCo Facets
 
@@ -16,7 +17,7 @@ on:
         default: 'arbitrumSepolia'
       dry-run:
         description: 'Dry Run (fork test only, no actual deployment)'
-        required: false
+        required: true
         type: boolean
         default: true
 
