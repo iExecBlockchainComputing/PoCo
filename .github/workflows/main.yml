@@ -24,16 +24,39 @@ jobs:
         with:
           node-version: 20
           cache: 'npm' # Cache dependencies
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Clean build artifacts
-        run: npx hardhat clean
+        run: |
+          rm -rf artifacts cache
+          npx hardhat clean
       - name: Build
-        run: npm run build
+        run: npm run build -- --force
+      - name: Verify AST in build artifacts
+        run: |
+          # Install jq if not available (should be available on ubuntu-latest)
+          sudo apt-get update && sudo apt-get install -y jq || true
+          # Check that all build-info files have AST
+          if [ -d artifacts/build-info ]; then
+            missing_ast=$(find artifacts/build-info -name "*.json" -exec sh -c 'if ! jq -e ".output.sources | to_entries | map(select(.value.ast == null)) | length == 0" "{}" >/dev/null 2>&1; then echo "{}"; fi' \; | wc -l)
+            if [ "$missing_ast" -gt 0 ]; then
+              echo "⚠️ ERROR: Some build-info files are missing AST!"
+              find artifacts/build-info -name "*.json" -exec sh -c 'if ! jq -e ".output.sources | to_entries | map(select(.value.ast == null)) | length == 0" "{}" >/dev/null 2>&1; then echo "Missing AST: {}"; fi' \;
+              exit 1
+            fi
+            echo "✅ All build-info files have AST"
+          else
+            echo "⚠️ WARNING: artifacts/build-info directory not found"
+          fi
       - name: Check storage layout
         run: npm run check-storage-layout
       - name: Test deployment
-        run: npm run deploy
+        run: |
+          # Force recompilation to ensure AST is present
+          rm -rf artifacts cache
+          npx hardhat compile
+          npm run deploy
       # TODO: Timelock will be removed in a dedicated PR
       # - name: Test Timelock deployment
       #   run: npm run deploy:timelock

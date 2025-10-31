@@ -51,10 +51,12 @@ jobs:
         run: npm ci
 
       - name: Clean build artifacts
-        run: npx hardhat clean
+        run: |
+          rm -rf artifacts cache
+          npx hardhat clean
 
       - name: Build
-        run: npm run build
+        run: npm run build -- --force
 
       - name: Run fork test (dry run)
         if: inputs.dry-run == true

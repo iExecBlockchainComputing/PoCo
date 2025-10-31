@@ -44,10 +44,12 @@ jobs:
         run: npm ci
 
       - name: Clean build artifacts
-        run: npx hardhat clean
+        run: |
+          rm -rf artifacts cache
+          npx hardhat clean
 
       - name: Build
-        run: npm run build
+        run: npm run build -- --force
 
       # TODO activate later.
       # Checks of initial state fails (e.g., balanceOf(proxyAddress) !== 0).
@@ -64,7 +66,10 @@ jobs:
           ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
           EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
-        run: npm run deploy -- --network ${{ inputs.network }}
+        run: |
+          # Force recompilation right before deployment to ensure AST is present
+          npx hardhat compile
+          npm run deploy -- --network ${{ inputs.network }}
 
       - name: Update config.json with Diamond address
         if: inputs.network != 'hardhat'
