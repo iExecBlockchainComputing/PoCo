@@ -51,7 +51,6 @@ const settings = {
         enabled: true,
         runs: 200,
     },
-    outputSelection: { '*': { '*': ['storageLayout'] } },
 };
 
 const v8Settings = {
