@@ -65,8 +65,8 @@ export async function cleanupDeployments(networkName: string): Promise<boolean> 
     return false;
 }
 
-// When script is run directly
-if (require.main === module) {
+// When script is run directly (ESM compatible check)
+if (import.meta.url === `file://${process.argv[1]}`) {
     let sourceNetwork: string | undefined;
 
     if (process.argv.length > 2) {
