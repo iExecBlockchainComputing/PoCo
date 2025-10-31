@@ -256,7 +256,7 @@ const config: HardhatUserConfig = {
     abiExporter: [
         // ABIs of PoCo contracts for integration with other tools.
         {
-            path: './abis',
+            path: './abis/contracts',
             format: 'json',
             runOnCompile: true,
             clear: true,
@@ -268,7 +268,8 @@ const config: HardhatUserConfig = {
                 '^contracts/tools/diagrams/',
                 '^contracts/tools/TimelockController',
             ],
-            rename: (sourceName, contractName) => `${sourceName.replace('.sol', '')}`,
+            rename: (sourceName, contractName) =>
+                `${sourceName.replace('contracts/', '').replace('.sol', '')}`,
         },
         // ABIs of all contracts in a human readable format for easier upgrade debugging.
         {
