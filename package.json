@@ -32,6 +32,7 @@
     "/contracts",
     "!/contracts/tools/testing/**/*",
     "!/contracts/tools/diagrams/**/*",
+    "!/contracts/tools/TimelockController/**/*",
     "/deployments",
     "/artifacts/contracts",
     "!/artifacts/contracts/**/*.dbg.json"
@@ -49,7 +50,7 @@
     "@iexec/interface": "3.0.35-8",
     "@iexec/solidity": "^0.1.1",
     "@mudgen/diamond-1": "github:mudgen/diamond-1-hardhat#3da037b",
-    "@openzeppelin/contracts": "^5.4.0",
+    "@openzeppelin/contracts": "^5.0.2",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
     "createx": "github:pcaversaccio/createx#v1.0.0",
     "rlc-faucet-contract": "1.0.10"
