@@ -1,6 +1,7 @@
 {
   "name": "@iexec/poco",
   "version": "6.1.0-rc.5",
+  "type": "module",
   "description": "iExec Proof of Contribution protocol smart contracts",
   "author": "iExec",
   "license": "Apache-2.0",
@@ -61,10 +62,9 @@
   },
   "devDependencies": {
     "@amxx/factory": "^1.0.0",
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@openzeppelin/upgrades-core": "^1.37.1",
     "dotenv": "^16.5.0",
-    "hardhat": "^2.22.18",
+    "hardhat": "^3.0.10",
     "hardhat-dependency-compiler": "^1.2.1",
     "hardhat-deploy": "^0.11.43",
     "husky": "^9.1.6",
