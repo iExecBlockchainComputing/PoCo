@@ -1,12 +1,12 @@
 [
   {
     "inputs": [],
-    "name": "m_datasetChecksum",
+    "name": "m_schedulerRewardRatioPolicy",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -14,12 +14,12 @@
   },
   {
     "inputs": [],
-    "name": "m_datasetMultiaddr",
+    "name": "m_workerStakeRatioPolicy",
     "outputs": [
       {
-        "internalType": "bytes",
+        "internalType": "uint256",
         "name": "",
-        "type": "bytes"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -27,7 +27,7 @@
   },
   {
     "inputs": [],
-    "name": "m_datasetName",
+    "name": "m_workerpoolDescription",
     "outputs": [
       {
         "internalType": "string",

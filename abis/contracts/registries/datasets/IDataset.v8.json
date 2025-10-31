@@ -1,7 +1,7 @@
 [
   {
     "inputs": [],
-    "name": "m_appChecksum",
+    "name": "m_datasetChecksum",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -14,7 +14,7 @@
   },
   {
     "inputs": [],
-    "name": "m_appMREnclave",
+    "name": "m_datasetMultiaddr",
     "outputs": [
       {
         "internalType": "bytes",
@@ -27,33 +27,7 @@
   },
   {
     "inputs": [],
-    "name": "m_appMultiaddr",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "m_appName",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "m_appType",
+    "name": "m_datasetName",
     "outputs": [
       {
         "internalType": "string",

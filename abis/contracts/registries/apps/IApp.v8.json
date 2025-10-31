@@ -1,12 +1,12 @@
 [
   {
     "inputs": [],
-    "name": "m_schedulerRewardRatioPolicy",
+    "name": "m_appChecksum",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -14,12 +14,12 @@
   },
   {
     "inputs": [],
-    "name": "m_workerStakeRatioPolicy",
+    "name": "m_appMREnclave",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes",
         "name": "",
-        "type": "uint256"
+        "type": "bytes"
       }
     ],
     "stateMutability": "view",
@@ -27,7 +27,33 @@
   },
   {
     "inputs": [],
-    "name": "m_workerpoolDescription",
+    "name": "m_appMultiaddr",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "m_appName",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "m_appType",
     "outputs": [
       {
         "internalType": "string",
