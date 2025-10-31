@@ -78,7 +78,7 @@ const config: HardhatUserConfig = {
         compilers: [
             { version: '0.8.21', settings: v8Settings }, // PoCo Boost
             { version: '0.6.12', settings }, // PoCo contracts
-            { version: '0.4.11', settings }, // RLC contracts
+            { version: '0.4.24', settings }, // RLC contracts
         ],
     },
     namedAccounts: {
