@@ -4,9 +4,9 @@
 pragma solidity >=0.6.0;
 pragma experimental ABIEncoderV2;
 
-interface IexecERC20 {
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+import {IexecERC20Common} from "./IexecERC20Common.sol";
+
+interface IexecERC20 is IexecERC20Common {
 
     function transfer(address, uint256) external returns (bool);
     function approve(address, uint256) external returns (bool);
