@@ -12,8 +12,8 @@
 
 pragma solidity ^0.8.0;
 
-import './Address.sol';
-import './Proxy.sol';
+import {Address} from "./Address.sol";
+import {Proxy} from "./Proxy.sol";
 
 /**
  * @title BaseUpgradeabilityProxy
@@ -22,50 +22,54 @@ import './Proxy.sol';
  * Such a change is called an implementation upgrade.
  */
 contract BaseUpgradeabilityProxy is Proxy {
-  /**
-   * @dev Emitted when the implementation is upgraded.
-   * @param implementation Address of the new implementation.
-   */
-  event Upgraded(address indexed implementation);
+    /**
+     * @dev Emitted when the implementation is upgraded.
+     * @param implementation Address of the new implementation.
+     */
+    event Upgraded(address indexed implementation);
 
-  /**
-   * @dev Storage slot with the address of the current implementation.
-   * This is the keccak-256 hash of "org.zeppelinos.proxy.implementation", and is
-   * validated in the constructor.
-   */
-  bytes32 internal constant IMPLEMENTATION_SLOT = 0x7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3;
+    /**
+     * @dev Storage slot with the address of the current implementation.
+     * This is the keccak-256 hash of "org.zeppelinos.proxy.implementation", and is
+     * validated in the constructor.
+     */
+    bytes32 internal constant IMPLEMENTATION_SLOT =
+        0x7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3;
 
-  /**
-   * @dev Returns the current implementation.
-   * @return impl Address of the current implementation
-   */
-  function _implementation() internal override view returns (address impl) {
-    bytes32 slot = IMPLEMENTATION_SLOT;
-    assembly {
-      impl := sload(slot)
+    /**
+     * @dev Returns the current implementation.
+     * @return impl Address of the current implementation
+     */
+    function _implementation() internal view override returns (address impl) {
+        bytes32 slot = IMPLEMENTATION_SLOT;
+        assembly {
+            impl := sload(slot)
+        }
     }
-  }
 
-  /**
-   * @dev Upgrades the proxy to a new implementation.
-   * @param newImplementation Address of the new implementation.
-   */
-  function _upgradeTo(address newImplementation) internal {
-    _setImplementation(newImplementation);
-    emit Upgraded(newImplementation);
-  }
-
-  /**
-   * @dev Sets the implementation address of the proxy.
-   * @param newImplementation Address of the new implementation.
-   */
-  function _setImplementation(address newImplementation) internal {
-    require(Address.isContract(newImplementation), "Cannot set a proxy implementation to a non-contract address");
-
-    bytes32 slot = IMPLEMENTATION_SLOT;
-
-    assembly {
-      sstore(slot, newImplementation)
+    /**
+     * @dev Upgrades the proxy to a new implementation.
+     * @param newImplementation Address of the new implementation.
+     */
+    function _upgradeTo(address newImplementation) internal {
+        _setImplementation(newImplementation);
+        emit Upgraded(newImplementation);
     }
-  }
+
+    /**
+     * @dev Sets the implementation address of the proxy.
+     * @param newImplementation Address of the new implementation.
+     */
+    function _setImplementation(address newImplementation) internal {
+        require(
+            Address.isContract(newImplementation),
+            "Cannot set a proxy implementation to a non-contract address"
+        );
+
+        bytes32 slot = IMPLEMENTATION_SLOT;
+
+        assembly {
+            sstore(slot, newImplementation)
+        }
+    }
 }

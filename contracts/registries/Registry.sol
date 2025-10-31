@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "./proxy/InitializableUpgradeabilityProxy.sol";
+import {InitializableUpgradeabilityProxy} from "./proxy/InitializableUpgradeabilityProxy.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
