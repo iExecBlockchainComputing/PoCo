@@ -254,21 +254,31 @@ const config: HardhatUserConfig = {
         ],
     },
     mocha: { timeout: 300000 },
-    abiExporter: {
-        path: './abis',
-        runOnCompile: true,
-        clear: true,
-        format: 'json',
-        only: ['^contracts/'],
-        except: [
-            // !!! Update package.json#files if this is modified.
-            // TODO reorganize utility contracts.
-            '^contracts/tools/testing/',
-            '^contracts/tools/diagrams/',
-            '^contracts/tools/TimelockController',
-        ],
-        rename: (sourceName, contractName) => `${sourceName.replace('.sol', '')}`,
-    },
+    abiExporter: [
+        // ABIs of PoCo contracts for integration with other tools.
+        {
+            path: './abis',
+            format: 'json',
+            runOnCompile: true,
+            clear: true,
+            only: ['^contracts/'],
+            except: [
+                // !!! Update package.json#files if this is modified.
+                // TODO reorganize utility contracts.
+                '^contracts/tools/testing/',
+                '^contracts/tools/diagrams/',
+                '^contracts/tools/TimelockController',
+            ],
+            rename: (sourceName, contractName) => `${sourceName.replace('.sol', '')}`,
+        },
+        // ABIs of all contracts in a human readable format for easier upgrade debugging.
+        {
+            path: './abis/human-readable-abis',
+            format: 'minimal',
+            runOnCompile: true,
+            clear: true,
+        },
+    ],
 };
 
 /**

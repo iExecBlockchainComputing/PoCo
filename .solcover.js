@@ -21,5 +21,4 @@ module.exports = {
         'facets/SignatureVerifier.sol',
     ],
     istanbulFolder: './coverage',
-    abiOutputPath: 'abis/humanReadableAbis.json',
 };
