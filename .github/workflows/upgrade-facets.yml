@@ -50,6 +50,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Clean build artifacts
+        run: npx hardhat clean
+
       - name: Build
         run: npm run build
 

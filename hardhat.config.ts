@@ -51,6 +51,9 @@ const settings = {
         enabled: true,
         runs: 200,
     },
+    // Note: outputSelection removed to use Hardhat defaults which include AST (required for network provider)
+    // The previous restrictive config { '*': { '*': ['storageLayout'] } } excluded AST, causing test failures
+    // storageLayout is still included by default and needed for scripts/check-storage.ts
 };
 
 const v8Settings = {
