@@ -12,7 +12,7 @@ contract IexecERC20Core is IexecERC20Common, FacetBase {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 senderBalance = $.m_balances[sender]; // Read balance once
+        uint256 senderBalance = $.m_balances[sender];
         // TEMPORARY MIGRATION FIX: Check balance to prevent underflow and revert without reason for backward compatibility
         // TODO: Remove this in the next major version
         if (senderBalance < amount) {
@@ -38,13 +38,14 @@ contract IexecERC20Core is IexecERC20Common, FacetBase {
     function _burn(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: burn from the zero address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        uint256 accountBalance = $.m_balances[account];
         // TEMPORARY MIGRATION FIX: Check balance to prevent underflow and revert without reason for backward compatibility
         // TODO: Remove this in the next major version
-        if ($.m_balances[account] < amount) {
+        if (accountBalance < amount) {
             revert();
         }
         $.m_totalSupply = $.m_totalSupply - amount;
-        $.m_balances[account] = $.m_balances[account] - amount;
+        $.m_balances[account] = accountBalance - amount;
         emit Transfer(account, address(0), amount);
     }
 
