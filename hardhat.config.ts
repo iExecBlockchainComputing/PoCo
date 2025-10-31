@@ -51,9 +51,9 @@ const settings = {
         enabled: true,
         runs: 200,
     },
-    // Note: outputSelection removed to use Hardhat defaults which include AST (required for network provider)
-    // The previous restrictive config { '*': { '*': ['storageLayout'] } } excluded AST, causing test failures
-    // storageLayout is still included by default and needed for scripts/check-storage.ts
+    // Note: Using default outputSelection to ensure AST is included (required for Hardhat network provider)
+    // Solidity 0.4.11 generates legacyAST instead of ast, which Hardhat cannot use for provider initialization
+    // Build-info files from 0.4.11 are temporarily moved aside before deploy/test to avoid this issue
 };
 
 const v8Settings = {
@@ -80,7 +80,7 @@ const config: HardhatUserConfig = {
         compilers: [
             { version: '0.8.21', settings: v8Settings }, // PoCo Boost
             { version: '0.6.12', settings }, // PoCo contracts
-            { version: '0.4.11', settings }, // RLC contracts
+            { version: '0.4.11', settings }, // RLC contracts (generates legacyAST, not ast - moved aside before deploy/test)
         ],
     },
     namedAccounts: {

@@ -67,9 +67,14 @@ jobs:
           RPC_URL: ${{ secrets.RPC_URL }}
           EXPLORER_API_KEY: ${{ secrets.EXPLORER_API_KEY }}
         run: |
-          # Force recompilation right before deployment to ensure AST is present
-          npx hardhat compile
+          # Hardhat network provider cannot use Solidity 0.4.x build-info (only legacyAST, no ast)
+          # Temporarily move them to avoid Hardhat trying to load them during provider initialization
+          mkdir -p artifacts/build-info-0.4-backup || true
+          find artifacts/build-info -name "*.json" -exec sh -c 'if jq -e ".solcVersion == \"0.4.11\"" "{}" >/dev/null 2>&1; then mv "{}" artifacts/build-info-0.4-backup/; fi' \;
           npm run deploy -- --network ${{ inputs.network }}
+          # Restore for potential future use
+          mv artifacts/build-info-0.4-backup/* artifacts/build-info/ 2>/dev/null || true
+          rmdir artifacts/build-info-0.4-backup 2>/dev/null || true
 
       - name: Update config.json with Diamond address
         if: inputs.network != 'hardhat'
