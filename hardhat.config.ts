@@ -276,6 +276,10 @@ task('docgen').setAction(async (taskArgs, hre, runSuper) => {
     });
 });
 
+/**
+ * Override `test` task to copy deployments of Arbitrum Sepolia if running tests on
+ * a forked Arbitrum Sepolia network and clean them up afterwards.
+ */
 task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     let deploymentsCopied = false;
     let networkName = '';
@@ -292,12 +296,19 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     }
 });
 
-// Automatically update ABIs after compiling contracts.
+/**
+ * Override `compile` task to automatically update ABI files after compilation.
+ */
 task('compile').setAction(async (taskArgs: any, hre, runSuper) => {
     await runSuper(taskArgs);
     await hre.run('abis');
 });
 
+/**
+ * Removes all existing files and generates new ABIs of relevant contracts
+ * in the `./abis` folder.
+ * Should be updated when package.json#files is modified.
+ */
 task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
     const abisDir = './abis';
     // Remove old ABIs folder if it exists.
