@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../RegistryEntry.sol";
+import {RegistryEntry} from "../RegistryEntry.sol";
 
 /**
  * @dev Referenced in the SDK with the current path `contracts/registries/workerpools/Workerpool.sol`.

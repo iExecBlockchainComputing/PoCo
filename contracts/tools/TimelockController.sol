@@ -1,11 +1,9 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 /**
  * @dev Contract module which acts as a timelocked controller. When set as the
@@ -71,24 +69,24 @@ contract TimelockController is AccessControl {
         address[] memory administrators,
         address[] memory proposers,
         address[] memory executors
-    ) public {
+    ) {
         _setRoleAdmin(TIMELOCK_ADMIN_ROLE, TIMELOCK_ADMIN_ROLE);
         _setRoleAdmin(PROPOSER_ROLE, TIMELOCK_ADMIN_ROLE);
         _setRoleAdmin(EXECUTOR_ROLE, TIMELOCK_ADMIN_ROLE);
 
         // register administrators
         for (uint256 i = 0; i < administrators.length; ++i) {
-            _setupRole(TIMELOCK_ADMIN_ROLE, administrators[i]);
+            _grantRole(TIMELOCK_ADMIN_ROLE, administrators[i]);
         }
 
         // register proposers
         for (uint256 i = 0; i < proposers.length; ++i) {
-            _setupRole(PROPOSER_ROLE, proposers[i]);
+            _grantRole(PROPOSER_ROLE, proposers[i]);
         }
 
         // register executors
         for (uint256 i = 0; i < executors.length; ++i) {
-            _setupRole(EXECUTOR_ROLE, executors[i]);
+            _grantRole(EXECUTOR_ROLE, executors[i]);
         }
 
         _minDelay = minDelay;
@@ -101,7 +99,7 @@ contract TimelockController is AccessControl {
      * considered. Granting a role to `address(0)` is equivalent to enabling
      * this role for everyone.
      */
-    modifier onlyRole(bytes32 role) {
+    modifier onlyRoleOrOpenRole(bytes32 role) {
         require(
             hasRole(role, _msgSender()) || hasRole(role, address(0)),
             "TimelockController: sender requires permission"
@@ -195,7 +193,7 @@ contract TimelockController is AccessControl {
         bytes32 predecessor,
         bytes32 salt,
         uint256 delay
-    ) public virtual onlyRole(PROPOSER_ROLE) {
+    ) public virtual onlyRoleOrOpenRole(PROPOSER_ROLE) {
         bytes32 id = hashOperation(target, value, data, predecessor, salt);
         _schedule(id, delay);
         emit CallScheduled(id, 0, target, value, data, predecessor, delay);
@@ -217,7 +215,7 @@ contract TimelockController is AccessControl {
         bytes32 predecessor,
         bytes32 salt,
         uint256 delay
-    ) public virtual onlyRole(PROPOSER_ROLE) {
+    ) public virtual onlyRoleOrOpenRole(PROPOSER_ROLE) {
         require(targets.length == values.length, "TimelockController: length mismatch");
         require(targets.length == datas.length, "TimelockController: length mismatch");
 
@@ -235,7 +233,7 @@ contract TimelockController is AccessControl {
         require(_timestamps[id] == 0, "TimelockController: operation already scheduled");
         require(delay >= _minDelay, "TimelockController: insufficient delay");
         // solhint-disable-next-line not-rely-on-time
-        _timestamps[id] = SafeMath.add(block.timestamp, delay);
+        _timestamps[id] = block.timestamp + delay;
     }
 
     /**
@@ -245,7 +243,7 @@ contract TimelockController is AccessControl {
      *
      * - the caller must have the 'proposer' role.
      */
-    function cancel(bytes32 id) public virtual onlyRole(PROPOSER_ROLE) {
+    function cancel(bytes32 id) public virtual onlyRoleOrOpenRole(PROPOSER_ROLE) {
         require(isOperationPending(id), "TimelockController: operation cannot be cancelled");
         delete _timestamps[id];
 
@@ -267,7 +265,7 @@ contract TimelockController is AccessControl {
         bytes calldata data,
         bytes32 predecessor,
         bytes32 salt
-    ) public payable virtual onlyRole(EXECUTOR_ROLE) {
+    ) public payable virtual onlyRoleOrOpenRole(EXECUTOR_ROLE) {
         bytes32 id = hashOperation(target, value, data, predecessor, salt);
         _beforeCall(predecessor);
         _call(id, 0, target, value, data);
@@ -289,7 +287,7 @@ contract TimelockController is AccessControl {
         bytes[] calldata datas,
         bytes32 predecessor,
         bytes32 salt
-    ) public payable virtual onlyRole(EXECUTOR_ROLE) {
+    ) public payable virtual onlyRoleOrOpenRole(EXECUTOR_ROLE) {
         require(targets.length == values.length, "TimelockController: length mismatch");
         require(targets.length == datas.length, "TimelockController: length mismatch");
 

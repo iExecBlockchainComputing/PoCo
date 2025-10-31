@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
+import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
 
 // TODO use LibDiamond.contractOwner() when migrating all contracts to v8.
 

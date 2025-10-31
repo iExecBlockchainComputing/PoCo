@@ -32,8 +32,9 @@ jobs:
         run: npm run check-storage-layout
       - name: Test deployment
         run: npm run deploy
-      - name: Test Timelock deployment
-        run: npm run deploy:timelock
+      # TODO: Timelock will be removed in a dedicated PR
+      # - name: Test Timelock deployment
+      #   run: npm run deploy:timelock
       - name: Run coverage
         run: npm run coverage
       - name: Run partial native tests

@@ -4,11 +4,11 @@
 pragma solidity ^0.8.0;
 
 import {IERC734} from "../external/interfaces/IERC734.sol";
-import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
+import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 // import "@iexec/solidity/contracts/ERC1654/IERC1654.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {FacetBase} from "./FacetBase.sol";
-import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 // TODO uncomment and fix file
 contract SignatureVerifier is FacetBase {

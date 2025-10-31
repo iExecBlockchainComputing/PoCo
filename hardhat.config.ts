@@ -226,7 +226,7 @@ const config: HardhatUserConfig = {
             '@mudgen/diamond-1/contracts/libraries/LibDiamond.sol',
             '@mudgen/diamond-1/contracts/upgradeInitializers/DiamondInit.sol',
             // Used as mock or fake in UTs
-            '@openzeppelin/contracts-v5/interfaces/IERC1271.sol',
+            '@openzeppelin/contracts/interfaces/IERC1271.sol',
             // Used in deployment
             '@amxx/factory/contracts/v6/GenericFactory.sol',
             'createx/src/ICreateX.sol',

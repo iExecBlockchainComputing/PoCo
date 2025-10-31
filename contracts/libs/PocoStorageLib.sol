@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {IexecHubV3Interface} from "../interfaces/IexecHubV3Interface.sol";
-import {IERC20} from "@openzeppelin/contracts-v5/interfaces/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IexecLibCore_v5} from "./IexecLibCore_v5.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
 

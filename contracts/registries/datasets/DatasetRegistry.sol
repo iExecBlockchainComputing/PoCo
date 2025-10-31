@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../Registry.sol";
-import "./Dataset.sol";
+import {Registry} from "../Registry.sol";
+import {Dataset} from "./Dataset.sol";
 
 /**
  * @dev Referenced in the SDK with the current path `contracts/registries/datasets/DatasetRegistry.sol`.

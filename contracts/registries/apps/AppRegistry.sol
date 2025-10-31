@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../Registry.sol";
-import "./App.sol";
+import {Registry} from "../Registry.sol";
+import {App} from "./App.sol";
 
 /**
  * @dev Referenced in the SDK with the current path `contracts/registries/apps/AppRegistry.sol`.
