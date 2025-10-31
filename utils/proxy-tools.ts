@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2024-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import fs from 'fs';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { ContractFactory, FunctionFragment, Interface, ZeroAddress } from 'ethers';
+import fs from 'fs';
 import { deployments, ethers } from 'hardhat';
 import { FacetCut, FacetCutAction } from 'hardhat-deploy/dist/types';
 import type { IDiamond } from '../typechain';
@@ -11,7 +11,6 @@ import {
     DiamondCutFacet,
     DiamondCutFacet__factory,
     DiamondLoupeFacet__factory,
-    OwnershipFacet__factory,
     IexecAccessorsABILegacyFacet__factory,
     IexecCategoryManagerFacet__factory,
     IexecConfigurationExtraFacet__factory,
@@ -19,7 +18,6 @@ import {
     IexecERC20Facet__factory,
     IexecEscrowNativeFacet__factory,
     IexecEscrowTokenFacet__factory,
-    IexecEscrowTokenSwapFacet__factory,
     IexecOrderManagementFacet__factory,
     IexecPoco1Facet__factory,
     IexecPoco2Facet__factory,
@@ -28,10 +26,11 @@ import {
     IexecPocoBoostFacet__factory,
     IexecRelayFacet__factory,
     Ownable__factory,
+    OwnershipFacet__factory,
 } from '../typechain';
 import { getBaseNameFromContractFactory, getDeployerAndOwnerSigners } from '../utils/deploy-tools';
-import { getChainConfig, isFork } from './config';
 import { FactoryDeployer } from './FactoryDeployer';
+import { getChainConfig, isFork } from './config';
 
 const POCO_STORAGE_LOCATION = '0x5862653c6982c162832160cf30593645e8487b257e44d77cdd6b51eee2651b00';
 
@@ -145,7 +144,6 @@ function getAllLocalFacetFunctions(): Map<string, string> {
         IexecERC20Facet__factory.createInterface(),
         IexecEscrowNativeFacet__factory.createInterface(),
         IexecEscrowTokenFacet__factory.createInterface(),
-        IexecEscrowTokenSwapFacet__factory.createInterface(),
         IexecOrderManagementFacet__factory.createInterface(),
         IexecPoco1Facet__factory.createInterface(),
         IexecPoco2Facet__factory.createInterface(),
