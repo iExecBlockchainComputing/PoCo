@@ -13,12 +13,6 @@ module.exports = {
     mocha: {
         timeout: 600000, // double timeout
     },
-    skipFiles: [
-        'tools/testing/ERC734Mock.sol',
-        'tools/testing/ERC1271Mock.sol',
-        'tools/testing/TestClient.sol',
-        'tools/testing/TestReceiver.sol',
-        'facets/SignatureVerifier.sol',
-    ],
+    skipFiles: ['facets/SignatureVerifier.sol', 'tools/'],
     istanbulFolder: './coverage',
 };
