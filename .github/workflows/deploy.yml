@@ -46,6 +46,14 @@ jobs:
       - name: Build
         run: npm run build
 
+      # TODO activate later.
+      # Checks of initial state fails (e.g., balanceOf(proxyAddress) !== 0).
+      # - name: Run fork tests
+      #   run: |
+      #     if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
+      #       npm run test:arbitrumSepolia
+      #     fi
+
       - name: Deploy contracts
         env:
           # Note: it is required to define both private key env variables when calling Hardhat.

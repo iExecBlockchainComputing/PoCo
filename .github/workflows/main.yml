@@ -24,11 +24,8 @@ jobs:
         with:
           node-version: 20
           cache: 'npm' # Cache dependencies
-          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Clean build artifacts
-        run: npx hardhat clean
       - name: Build
         run: npm run build
       - name: Check storage layout
