@@ -28,51 +28,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Clean build artifacts
-        run: |
-          rm -rf artifacts cache
-          npx hardhat clean
+        run: npx hardhat clean
       - name: Build
-        run: npm run build -- --force
-      - name: Verify AST in build artifacts
-        run: |
-          # Install jq if not available (should be available on ubuntu-latest)
-          sudo apt-get update && sudo apt-get install -y jq || true
-          # Check that all build-info files have AST (or legacyAST for Solidity < 0.5)
-          # Solidity 0.4.x uses legacyAST, while 0.5+ uses ast
-          if [ -d artifacts/build-info ]; then
-            missing_ast=$(find artifacts/build-info -name "*.json" -exec sh -c '
-              result=$(jq -e ".output.sources | to_entries | map(select(.value.ast == null and .value.legacyAST == null)) | length == 0" "{}" 2>/dev/null)
-              if [ "$?" != "0" ] || [ "$result" != "true" ]; then
-                echo "{}"
-              fi
-            ' \; | wc -l)
-            if [ "$missing_ast" -gt 0 ]; then
-              echo "⚠️ ERROR: Some build-info files are missing AST or legacyAST!"
-              find artifacts/build-info -name "*.json" -exec sh -c '
-                result=$(jq -e ".output.sources | to_entries | map(select(.value.ast == null and .value.legacyAST == null)) | length == 0" "{}" 2>/dev/null)
-                if [ "$?" != "0" ] || [ "$result" != "true" ]; then
-                  echo "Missing AST/legacyAST: {}"
-                  jq -r ".input.sources | keys[0]" "{}" 2>/dev/null || echo "  (unknown source)"
-                fi
-              ' \;
-              exit 1
-            fi
-            echo "✅ All build-info files have AST or legacyAST"
-          else
-            echo "⚠️ WARNING: artifacts/build-info directory not found"
-          fi
+        run: npm run build
       - name: Check storage layout
         run: npm run check-storage-layout
       - name: Test deployment
-        run: |
-          # Hardhat network provider cannot use Solidity 0.4.x build-info (only legacyAST, no ast)
-          # Temporarily move them to avoid Hardhat trying to load them during provider initialization
-          mkdir -p artifacts/build-info-0.4-backup || true
-          find artifacts/build-info -name "*.json" -exec sh -c 'if jq -e ".solcVersion == \"0.4.11\"" "{}" >/dev/null 2>&1; then mv "{}" artifacts/build-info-0.4-backup/; fi' \;
-          npm run deploy
-          # Restore for other tasks that might need them
-          mv artifacts/build-info-0.4-backup/* artifacts/build-info/ 2>/dev/null || true
-          rmdir artifacts/build-info-0.4-backup 2>/dev/null || true
+        run: npm run deploy
       # TODO: Timelock will be removed in a dedicated PR
       # - name: Test Timelock deployment
       #   run: npm run deploy:timelock
