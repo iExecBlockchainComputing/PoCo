@@ -1,0 +1,14 @@
+[
+  "event Lock(address,uint256)",
+  "event Reward(address,uint256,bytes32)",
+  "event Seize(address,uint256,bytes32)",
+  "event Transfer(address indexed,address indexed,uint256)",
+  "event Unlock(address,uint256)",
+  "function balanceOf(address) view returns (uint256)",
+  "function frozenOf(address) view returns (uint256)",
+  "function lock_(address,uint256)",
+  "function reward_(address,uint256,bytes32)",
+  "function seize_(address,uint256,bytes32)",
+  "function setBalance(address,uint256)",
+  "function unlock_(address,uint256)"
+]

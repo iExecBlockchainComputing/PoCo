@@ -1,0 +1,20 @@
+[
+  "function APPORDEROPERATION_TYPEHASH() view returns (bytes32)",
+  "function APPORDER_TYPEHASH() view returns (bytes32)",
+  "function DATASETORDEROPERATION_TYPEHASH() view returns (bytes32)",
+  "function DATASETORDER_TYPEHASH() view returns (bytes32)",
+  "function EIP712DOMAIN_TYPEHASH() view returns (bytes32)",
+  "function REQUESTORDEROPERATION_TYPEHASH() view returns (bytes32)",
+  "function REQUESTORDER_TYPEHASH() view returns (bytes32)",
+  "function WORKERPOOLORDEROPERATION_TYPEHASH() view returns (bytes32)",
+  "function WORKERPOOLORDER_TYPEHASH() view returns (bytes32)",
+  "function hash(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes)) pure returns (bytes32)",
+  "function hash(tuple(tuple(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes),IexecLibOrders_v5.OrderOperationEnum,bytes)) pure returns (bytes32)",
+  "function hash(tuple(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),IexecLibOrders_v5.OrderOperationEnum,bytes)) pure returns (bytes32)",
+  "function hash(tuple(tuple(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),IexecLibOrders_v5.OrderOperationEnum,bytes)) pure returns (bytes32)",
+  "function hash(tuple(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),IexecLibOrders_v5.OrderOperationEnum,bytes)) pure returns (bytes32)",
+  "function hash(tuple(string,string,uint256,address)) pure returns (bytes32)",
+  "function hash(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes)) pure returns (bytes32)",
+  "function hash(tuple(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes)) pure returns (bytes32)",
+  "function hash(tuple(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes)) pure returns (bytes32)"
+]

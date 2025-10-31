@@ -1,0 +1,14 @@
+[
+  "event ClosedAppOrder(bytes32)",
+  "event ClosedDatasetOrder(bytes32)",
+  "event ClosedRequestOrder(bytes32)",
+  "event ClosedWorkerpoolOrder(bytes32)",
+  "event SignedAppOrder(bytes32)",
+  "event SignedDatasetOrder(bytes32)",
+  "event SignedRequestOrder(bytes32)",
+  "event SignedWorkerpoolOrder(bytes32)",
+  "function manageAppOrder(tuple(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes))",
+  "function manageDatasetOrder(tuple(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes))",
+  "function manageRequestOrder(tuple(tuple(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes),uint8,bytes))",
+  "function manageWorkerpoolOrder(tuple(tuple(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),uint8,bytes))"
+]

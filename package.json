@@ -38,8 +38,8 @@
     "!/artifacts/contracts/**/*.dbg.json"
   ],
   "__filesComment": [
-    "!!! @dev Update Hardhat `abis` task if this is updated",
-    "TODO remove artifacts/ from NPM package when releasing a major version"
+    "!!! @dev Update `abiExporter` config if this is modified",
+    "TODO [Major] remove artifacts/ from NPM package when releasing a major version"
   ],
   "lint-staged": {
     "*.{js,ts,sol,json,yml}": [
@@ -66,6 +66,7 @@
     "@openzeppelin/upgrades-core": "^1.37.1",
     "dotenv": "^16.5.0",
     "hardhat": "^2.22.18",
+    "hardhat-abi-exporter": "^2.11.0",
     "hardhat-dependency-compiler": "^1.2.1",
     "hardhat-deploy": "^0.11.43",
     "husky": "^9.1.6",

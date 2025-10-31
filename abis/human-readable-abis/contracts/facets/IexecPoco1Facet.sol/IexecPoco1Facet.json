@@ -1,0 +1,17 @@
+[
+  "error IncompatibleDatasetOrder(string)",
+  "event DealSponsored(bytes32,address)",
+  "event Lock(address,uint256)",
+  "event OrdersMatched(bytes32,bytes32,bytes32,bytes32,bytes32,uint256)",
+  "event Reward(address,uint256,bytes32)",
+  "event SchedulerNotice(address indexed,bytes32)",
+  "event Seize(address,uint256,bytes32)",
+  "event Transfer(address indexed,address indexed,uint256)",
+  "event Unlock(address,uint256)",
+  "function assertDatasetDealCompatibility(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),bytes32) view",
+  "function matchOrders(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),tuple(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),tuple(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes)) returns (bytes32)",
+  "function sponsorMatchOrders(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),tuple(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),tuple(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes)) returns (bytes32)",
+  "function verifyPresignature(address,bytes32) view returns (bool)",
+  "function verifyPresignatureOrSignature(address,bytes32,bytes) view returns (bool)",
+  "function verifySignature(address,bytes32,bytes) view returns (bool)"
+]
