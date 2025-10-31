@@ -45,19 +45,15 @@ contract AppRegistry is Registry {
         bytes32 _appChecksum,
         bytes calldata _appMREnclave
     ) external returns (App) {
-        return
-            App(
-                _mintCreate(
-                    _appOwner,
-                    encodeInitializer(
-                        _appName,
-                        _appType,
-                        _appMultiaddr,
-                        _appChecksum,
-                        _appMREnclave
-                    )
-                )
-            );
+        bytes memory initializer = encodeInitializer(
+            _appName,
+            _appType,
+            _appMultiaddr,
+            _appChecksum,
+            _appMREnclave
+        );
+        address entry = _mintCreate(_appOwner, initializer);
+        return App(entry);
     }
 
     function predictApp(

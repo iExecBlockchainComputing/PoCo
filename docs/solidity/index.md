@@ -1,5 +1,382 @@
 # Solidity API
 
+## IRegistry
+
+### isRegistered
+
+```solidity
+function isRegistered(address _entry) external view returns (bool)
+```
+
+## Registry
+
+### master
+
+```solidity
+address master
+```
+
+### proxyCode
+
+```solidity
+bytes proxyCode
+```
+
+### proxyCodeHash
+
+```solidity
+bytes32 proxyCodeHash
+```
+
+### previous
+
+```solidity
+contract IRegistry previous
+```
+
+### initialized
+
+```solidity
+bool initialized
+```
+
+### initialize
+
+```solidity
+function initialize(address _previous) external
+```
+
+### setBaseURI
+
+```solidity
+function setBaseURI(string baseUri) external
+```
+
+### baseURI
+
+```solidity
+function baseURI() public view returns (string)
+```
+
+_Added for retrocompatibility!
+
+Returns the base URI set via {setBaseURI}. This will be
+automatically added as a prefix in {tokenURI} to each token's ID._
+
+### isRegistered
+
+```solidity
+function isRegistered(address _entry) external view returns (bool)
+```
+
+### setName
+
+```solidity
+function setName(address, string) external
+```
+
+Sets the reverse registration name for a registry contract.
+
+_This functionality is supported only on Bellecour Sidechain, calls on other chains
+will revert. The function is kept as nonpayable to maintain retrocompatibility with the
+iExec SDK._
+
+## RegistryEntry
+
+_Referenced in the SDK with the current path `contracts/registries/RegistryEntry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### registry
+
+```solidity
+contract IRegistry registry
+```
+
+### owner
+
+```solidity
+function owner() public view returns (address)
+```
+
+### setName
+
+```solidity
+function setName(address, string) external
+```
+
+Sets the reverse registration name for a registry entry contract.
+
+_This functionality is supported only on Bellecour Sidechain, calls on other chains
+will revert. The function is kept as nonpayable to maintain retrocompatibility with the
+iExec SDK._
+
+## App
+
+_Referenced in the SDK with the current path `contracts/registries/apps/AppRegistry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### m_appName
+
+```solidity
+string m_appName
+```
+
+Members
+
+### m_appType
+
+```solidity
+string m_appType
+```
+
+### m_appMultiaddr
+
+```solidity
+bytes m_appMultiaddr
+```
+
+### m_appChecksum
+
+```solidity
+bytes32 m_appChecksum
+```
+
+### m_appMREnclave
+
+```solidity
+bytes m_appMREnclave
+```
+
+### initialize
+
+```solidity
+function initialize(string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) public
+```
+
+Constructor
+
+## AppRegistry
+
+_Referenced in the SDK with the current path `contracts/registries/apps/AppRegistry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### constructor
+
+```solidity
+constructor() public
+```
+
+Constructor
+
+### createApp
+
+```solidity
+function createApp(address _appOwner, string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) external returns (contract App)
+```
+
+### predictApp
+
+```solidity
+function predictApp(address _appOwner, string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) external view returns (contract App)
+```
+
+## Dataset
+
+_Referenced in the SDK with the current path `contracts/registries/datasets/Dataset.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### m_datasetName
+
+```solidity
+string m_datasetName
+```
+
+Members
+
+### m_datasetMultiaddr
+
+```solidity
+bytes m_datasetMultiaddr
+```
+
+### m_datasetChecksum
+
+```solidity
+bytes32 m_datasetChecksum
+```
+
+### initialize
+
+```solidity
+function initialize(string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) public
+```
+
+Constructor
+
+## DatasetRegistry
+
+_Referenced in the SDK with the current path `contracts/registries/datasets/DatasetRegistry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### constructor
+
+```solidity
+constructor() public
+```
+
+Constructor
+
+### createDataset
+
+```solidity
+function createDataset(address _datasetOwner, string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) external returns (contract Dataset)
+```
+
+### predictDataset
+
+```solidity
+function predictDataset(address _datasetOwner, string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) external view returns (contract Dataset)
+```
+
+## Address
+
+## BaseUpgradeabilityProxy
+
+_This contract implements a proxy that allows to change the
+implementation address to which it will delegate.
+Such a change is called an implementation upgrade._
+
+### Upgraded
+
+```solidity
+event Upgraded(address implementation)
+```
+
+_Emitted when the implementation is upgraded._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| implementation | address | Address of the new implementation. |
+
+## InitializableUpgradeabilityProxy
+
+_Extends BaseUpgradeabilityProxy with an initializer for initializing
+implementation and init data._
+
+### initialize
+
+```solidity
+function initialize(address _logic, bytes _data) public payable
+```
+
+_Contract initializer._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _logic | address | Address of the initial implementation. |
+| _data | bytes | Data to send as msg.data to the implementation to initialize the proxied contract. It should include the signature and the parameters of the function to be called, as described in https://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding. This parameter is optional, if no data is given the initialization call to proxied contract will be skipped. |
+
+## Proxy
+
+_Implements delegation of calls to other contracts, with proper
+forwarding of return values and bubbling of failures.
+It defines a fallback function that delegates all calls to the address
+returned by the abstract _implementation() internal function._
+
+### receive
+
+```solidity
+receive() external payable virtual
+```
+
+_Receive function.
+Implemented entirely in `_fallback`._
+
+### fallback
+
+```solidity
+fallback() external payable
+```
+
+_Fallback function.
+Implemented entirely in `_fallback`._
+
+## Workerpool
+
+_Referenced in the SDK with the current path `contracts/registries/workerpools/Workerpool.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### m_workerpoolDescription
+
+```solidity
+string m_workerpoolDescription
+```
+
+Parameters
+
+### m_workerStakeRatioPolicy
+
+```solidity
+uint256 m_workerStakeRatioPolicy
+```
+
+### m_schedulerRewardRatioPolicy
+
+```solidity
+uint256 m_schedulerRewardRatioPolicy
+```
+
+### PolicyUpdate
+
+```solidity
+event PolicyUpdate(uint256 oldWorkerStakeRatioPolicy, uint256 newWorkerStakeRatioPolicy, uint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy)
+```
+
+Events
+
+### initialize
+
+```solidity
+function initialize(string _workerpoolDescription) public
+```
+
+Constructor
+
+### changePolicy
+
+```solidity
+function changePolicy(uint256 _newWorkerStakeRatioPolicy, uint256 _newSchedulerRewardRatioPolicy) external
+```
+
+## WorkerpoolRegistry
+
+_Referenced in the SDK with the current path `contracts/registries/workerpools/WorkerpoolRegistry.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+### constructor
+
+```solidity
+constructor() public
+```
+
+Constructor
+
+### createWorkerpool
+
+```solidity
+function createWorkerpool(address _workerpoolOwner, string _workerpoolDescription) external returns (contract Workerpool)
+```
+
+### predictWorkerpool
+
+```solidity
+function predictWorkerpool(address _workerpoolOwner, string _workerpoolDescription) external view returns (contract Workerpool)
+```
+
 ## IexecInterfaceNative
 
 A global interface that aggregates all the interfaces needed to interact with
@@ -16,9 +393,101 @@ the PoCo contracts in token mode.
 _Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
 Changing the name or the path would cause a breaking change in the SDK._
 
-## FacetBase
+## IexecCategoryManagerFacet
 
-_Every facet must inherit from this contract._
+### createCategory
+
+```solidity
+function createCategory(string name, string description, uint256 workClockTimeRef) external returns (uint256)
+```
+
+Methods
+
+## IexecConfigurationExtraFacet
+
+### changeRegistries
+
+```solidity
+function changeRegistries(address _appregistryAddress, address _datasetregistryAddress, address _workerpoolregistryAddress) external
+```
+
+## IexecConfigurationFacet
+
+### configure
+
+```solidity
+function configure(address _token, string _name, string _symbol, uint8 _decimal, address _appregistryAddress, address _datasetregistryAddress, address _workerpoolregistryAddress, address _v3_iexecHubAddress) external
+```
+
+### domain
+
+```solidity
+function domain() external view returns (struct IexecLibOrders_v5.EIP712Domain)
+```
+
+### updateDomainSeparator
+
+```solidity
+function updateDomainSeparator() external
+```
+
+### importScore
+
+```solidity
+function importScore(address _worker) external
+```
+
+### setTeeBroker
+
+```solidity
+function setTeeBroker(address _teebroker) external
+```
+
+### setCallbackGas
+
+```solidity
+function setCallbackGas(uint256 _callbackgas) external
+```
+
+## IexecERC20Core
+
+## IexecERC20Facet
+
+### transfer
+
+```solidity
+function transfer(address recipient, uint256 amount) external returns (bool)
+```
+
+### approve
+
+```solidity
+function approve(address spender, uint256 value) external returns (bool)
+```
+
+### approveAndCall
+
+```solidity
+function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
+```
+
+### transferFrom
+
+```solidity
+function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
+```
+
+### increaseAllowance
+
+```solidity
+function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
+```
+
+### decreaseAllowance
+
+```solidity
+function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
+```
 
 ## IexecEscrow
 
@@ -50,6 +519,112 @@ event Reward(address owner, uint256 amount, bytes32 ref)
 
 ```solidity
 event Seize(address owner, uint256 amount, bytes32 ref)
+```
+
+## IexecEscrowNativeFacet
+
+### receive
+
+```solidity
+receive() external payable
+```
+
+### fallback
+
+```solidity
+fallback() external payable
+```
+
+### deposit
+
+```solidity
+function deposit() external payable returns (bool)
+```
+
+### depositFor
+
+```solidity
+function depositFor(address target) external payable returns (bool)
+```
+
+### depositForArray
+
+```solidity
+function depositForArray(uint256[] amounts, address[] targets) external payable returns (bool)
+```
+
+### withdraw
+
+```solidity
+function withdraw(uint256 amount) external returns (bool)
+```
+
+### withdrawTo
+
+```solidity
+function withdrawTo(uint256 amount, address target) external returns (bool)
+```
+
+### recover
+
+```solidity
+function recover() external returns (uint256)
+```
+
+## IexecEscrowTokenFacet
+
+### receive
+
+```solidity
+receive() external payable
+```
+
+### fallback
+
+```solidity
+fallback() external payable
+```
+
+### deposit
+
+```solidity
+function deposit(uint256 amount) external returns (bool)
+```
+
+### depositFor
+
+```solidity
+function depositFor(uint256 amount, address target) external returns (bool)
+```
+
+### depositForArray
+
+```solidity
+function depositForArray(uint256[] amounts, address[] targets) external returns (bool)
+```
+
+### withdraw
+
+```solidity
+function withdraw(uint256 amount) external returns (bool)
+```
+
+### withdrawTo
+
+```solidity
+function withdrawTo(uint256 amount, address target) external returns (bool)
+```
+
+### recover
+
+```solidity
+function recover() external returns (uint256)
+```
+
+### receiveApproval
+
+```solidity
+function receiveApproval(address sender, uint256 amount, address token, bytes) external returns (bool)
 ```
 
 ## IexecOrderManagementFacet
@@ -606,6 +1181,32 @@ Claim task to get a refund if task is not completed after deadline.
 | dealId | bytes32 | The ID of the deal. |
 | index | uint256 | The index of the task. |
 
+## IexecRelayFacet
+
+### broadcastAppOrder
+
+```solidity
+function broadcastAppOrder(struct IexecLibOrders_v5.AppOrder _apporder) external
+```
+
+### broadcastDatasetOrder
+
+```solidity
+function broadcastDatasetOrder(struct IexecLibOrders_v5.DatasetOrder _datasetorder) external
+```
+
+### broadcastWorkerpoolOrder
+
+```solidity
+function broadcastWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder) external
+```
+
+### broadcastRequestOrder
+
+```solidity
+function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestorder) external
+```
+
 ## IexecLibCore_v5
 
 ### Account
@@ -1065,18 +1666,10 @@ struct PocoStorage {
   address m_teebroker;
   uint256 m_callbackgas;
   struct IexecLibCore_v5.Category[] m_categories;
-  address m_v3_iexecHub;
+  contract IexecHubV3Interface m_v3_iexecHub;
   mapping(address => bool) m_v3_scoreImported;
   mapping(bytes32 => struct IexecLibCore_v5.DealBoost) m_dealsBoost;
 }
-```
-
-## IRegistry
-
-### isRegistered
-
-```solidity
-function isRegistered(address _entry) external view returns (bool)
 ```
 
 ## IApp
@@ -1167,583 +1760,5 @@ function m_schedulerRewardRatioPolicy() external view returns (uint256)
 
 ```solidity
 function m_workerStakeRatioPolicy() external view returns (uint256)
-```
-
-## IexecCategoryManagerFacet
-
-### createCategory
-
-```solidity
-function createCategory(string name, string description, uint256 workClockTimeRef) external returns (uint256)
-```
-
-Methods
-
-## IexecConfigurationExtraFacet
-
-### changeRegistries
-
-```solidity
-function changeRegistries(address _appregistryAddress, address _datasetregistryAddress, address _workerpoolregistryAddress) external
-```
-
-## IexecConfigurationFacet
-
-### configure
-
-```solidity
-function configure(address _token, string _name, string _symbol, uint8 _decimal, address _appregistryAddress, address _datasetregistryAddress, address _workerpoolregistryAddress, address _v3_iexecHubAddress) external
-```
-
-### domain
-
-```solidity
-function domain() external view returns (struct IexecLibOrders_v5.EIP712Domain)
-```
-
-### updateDomainSeparator
-
-```solidity
-function updateDomainSeparator() external
-```
-
-### importScore
-
-```solidity
-function importScore(address _worker) external
-```
-
-### setTeeBroker
-
-```solidity
-function setTeeBroker(address _teebroker) external
-```
-
-### setCallbackGas
-
-```solidity
-function setCallbackGas(uint256 _callbackgas) external
-```
-
-## IexecERC20Core
-
-### Transfer
-
-```solidity
-event Transfer(address from, address to, uint256 value)
-```
-
-### Approval
-
-```solidity
-event Approval(address owner, address spender, uint256 value)
-```
-
-## IexecERC20Facet
-
-### transfer
-
-```solidity
-function transfer(address recipient, uint256 amount) external returns (bool)
-```
-
-### approve
-
-```solidity
-function approve(address spender, uint256 value) external returns (bool)
-```
-
-### approveAndCall
-
-```solidity
-function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
-```
-
-### transferFrom
-
-```solidity
-function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
-```
-
-### increaseAllowance
-
-```solidity
-function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
-```
-
-### decreaseAllowance
-
-```solidity
-function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
-```
-
-## IexecEscrowNativeFacet
-
-### receive
-
-```solidity
-receive() external payable
-```
-
-### fallback
-
-```solidity
-fallback() external payable
-```
-
-### deposit
-
-```solidity
-function deposit() external payable returns (bool)
-```
-
-### depositFor
-
-```solidity
-function depositFor(address target) external payable returns (bool)
-```
-
-### depositForArray
-
-```solidity
-function depositForArray(uint256[] amounts, address[] targets) external payable returns (bool)
-```
-
-### withdraw
-
-```solidity
-function withdraw(uint256 amount) external returns (bool)
-```
-
-### withdrawTo
-
-```solidity
-function withdrawTo(uint256 amount, address target) external returns (bool)
-```
-
-### recover
-
-```solidity
-function recover() external returns (uint256)
-```
-
-## IexecEscrowTokenFacet
-
-### receive
-
-```solidity
-receive() external payable
-```
-
-### fallback
-
-```solidity
-fallback() external payable
-```
-
-### deposit
-
-```solidity
-function deposit(uint256 amount) external returns (bool)
-```
-
-### depositFor
-
-```solidity
-function depositFor(uint256 amount, address target) external returns (bool)
-```
-
-### depositForArray
-
-```solidity
-function depositForArray(uint256[] amounts, address[] targets) external returns (bool)
-```
-
-### withdraw
-
-```solidity
-function withdraw(uint256 amount) external returns (bool)
-```
-
-### withdrawTo
-
-```solidity
-function withdrawTo(uint256 amount, address target) external returns (bool)
-```
-
-### recover
-
-```solidity
-function recover() external returns (uint256)
-```
-
-### receiveApproval
-
-```solidity
-function receiveApproval(address sender, uint256 amount, address token, bytes) external returns (bool)
-```
-
-## IexecRelayFacet
-
-### broadcastAppOrder
-
-```solidity
-function broadcastAppOrder(struct IexecLibOrders_v5.AppOrder _apporder) external
-```
-
-### broadcastDatasetOrder
-
-```solidity
-function broadcastDatasetOrder(struct IexecLibOrders_v5.DatasetOrder _datasetorder) external
-```
-
-### broadcastWorkerpoolOrder
-
-```solidity
-function broadcastWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder) external
-```
-
-### broadcastRequestOrder
-
-```solidity
-function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestorder) external
-```
-
-## PocoStorageLib
-
-### PocoStorage
-
-```solidity
-struct PocoStorage {
-  contract IRegistry m_appregistry;
-  contract IRegistry m_datasetregistry;
-  contract IRegistry m_workerpoolregistry;
-  contract IERC20 m_baseToken;
-  string m_name;
-  string m_symbol;
-  uint8 m_decimals;
-  uint256 m_totalSupply;
-  mapping(address => uint256) m_balances;
-  mapping(address => uint256) m_frozens;
-  mapping(address => mapping(address => uint256)) m_allowances;
-  bytes32 m_eip712DomainSeparator;
-  mapping(bytes32 => address) m_presigned;
-  mapping(bytes32 => uint256) m_consumed;
-  mapping(bytes32 => struct IexecLibCore_v5.Deal) m_deals;
-  mapping(bytes32 => struct IexecLibCore_v5.Task) m_tasks;
-  mapping(bytes32 => struct IexecLibCore_v5.Consensus) m_consensus;
-  mapping(bytes32 => mapping(address => struct IexecLibCore_v5.Contribution)) m_contributions;
-  mapping(address => uint256) m_workerScores;
-  address m_teebroker;
-  uint256 m_callbackgas;
-  struct IexecLibCore_v5.Category[] m_categories;
-  contract IexecHubV3Interface m_v3_iexecHub;
-  mapping(address => bool) m_v3_scoreImported;
-}
-```
-
-## IRegistry
-
-### isRegistered
-
-```solidity
-function isRegistered(address _entry) external view returns (bool)
-```
-
-## Registry
-
-### master
-
-```solidity
-address master
-```
-
-### proxyCode
-
-```solidity
-bytes proxyCode
-```
-
-### proxyCodeHash
-
-```solidity
-bytes32 proxyCodeHash
-```
-
-### previous
-
-```solidity
-contract IRegistry previous
-```
-
-### initialized
-
-```solidity
-bool initialized
-```
-
-### constructor
-
-```solidity
-constructor(address _master, string _name, string _symbol) public
-```
-
-### initialize
-
-```solidity
-function initialize(address _previous) external
-```
-
-### setBaseURI
-
-```solidity
-function setBaseURI(string _baseURI) external
-```
-
-### isRegistered
-
-```solidity
-function isRegistered(address _entry) external view returns (bool)
-```
-
-### setName
-
-```solidity
-function setName(address, string) external
-```
-
-Sets the reverse registration name for a registry contract.
-
-_This functionality is supported only on Bellecour Sidechain, calls on other chains
-will revert. The function is kept as nonpayable to maintain retrocompatibility with the
-iExec SDK._
-
-## RegistryEntry
-
-_Referenced in the SDK with the current path `contracts/registries/RegistryEntry.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-### registry
-
-```solidity
-contract IRegistry registry
-```
-
-### owner
-
-```solidity
-function owner() public view returns (address)
-```
-
-### setName
-
-```solidity
-function setName(address, string) external
-```
-
-Sets the reverse registration name for a registry entry contract.
-
-_This functionality is supported only on Bellecour Sidechain, calls on other chains
-will revert. The function is kept as nonpayable to maintain retrocompatibility with the
-iExec SDK._
-
-## App
-
-_Referenced in the SDK with the current path `contracts/registries/apps/AppRegistry.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-### m_appName
-
-```solidity
-string m_appName
-```
-
-Members
-
-### m_appType
-
-```solidity
-string m_appType
-```
-
-### m_appMultiaddr
-
-```solidity
-bytes m_appMultiaddr
-```
-
-### m_appChecksum
-
-```solidity
-bytes32 m_appChecksum
-```
-
-### m_appMREnclave
-
-```solidity
-bytes m_appMREnclave
-```
-
-### initialize
-
-```solidity
-function initialize(string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) public
-```
-
-Constructor
-
-## AppRegistry
-
-_Referenced in the SDK with the current path `contracts/registries/apps/AppRegistry.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-### constructor
-
-```solidity
-constructor() public
-```
-
-Constructor
-
-### createApp
-
-```solidity
-function createApp(address _appOwner, string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) external returns (contract App)
-```
-
-### predictApp
-
-```solidity
-function predictApp(address _appOwner, string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) external view returns (contract App)
-```
-
-## Dataset
-
-_Referenced in the SDK with the current path `contracts/registries/datasets/Dataset.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-### m_datasetName
-
-```solidity
-string m_datasetName
-```
-
-Members
-
-### m_datasetMultiaddr
-
-```solidity
-bytes m_datasetMultiaddr
-```
-
-### m_datasetChecksum
-
-```solidity
-bytes32 m_datasetChecksum
-```
-
-### initialize
-
-```solidity
-function initialize(string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) public
-```
-
-Constructor
-
-## DatasetRegistry
-
-_Referenced in the SDK with the current path `contracts/registries/datasets/DatasetRegistry.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-### constructor
-
-```solidity
-constructor() public
-```
-
-Constructor
-
-### createDataset
-
-```solidity
-function createDataset(address _datasetOwner, string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) external returns (contract Dataset)
-```
-
-### predictDataset
-
-```solidity
-function predictDataset(address _datasetOwner, string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) external view returns (contract Dataset)
-```
-
-## Workerpool
-
-_Referenced in the SDK with the current path `contracts/registries/workerpools/Workerpool.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-### m_workerpoolDescription
-
-```solidity
-string m_workerpoolDescription
-```
-
-Parameters
-
-### m_workerStakeRatioPolicy
-
-```solidity
-uint256 m_workerStakeRatioPolicy
-```
-
-### m_schedulerRewardRatioPolicy
-
-```solidity
-uint256 m_schedulerRewardRatioPolicy
-```
-
-### PolicyUpdate
-
-```solidity
-event PolicyUpdate(uint256 oldWorkerStakeRatioPolicy, uint256 newWorkerStakeRatioPolicy, uint256 oldSchedulerRewardRatioPolicy, uint256 newSchedulerRewardRatioPolicy)
-```
-
-Events
-
-### initialize
-
-```solidity
-function initialize(string _workerpoolDescription) public
-```
-
-Constructor
-
-### changePolicy
-
-```solidity
-function changePolicy(uint256 _newWorkerStakeRatioPolicy, uint256 _newSchedulerRewardRatioPolicy) external
-```
-
-## WorkerpoolRegistry
-
-_Referenced in the SDK with the current path `contracts/registries/workerpools/WorkerpoolRegistry.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-### constructor
-
-```solidity
-constructor() public
-```
-
-Constructor
-
-### createWorkerpool
-
-```solidity
-function createWorkerpool(address _workerpoolOwner, string _workerpoolDescription) external returns (contract Workerpool)
-```
-
-### predictWorkerpool
-
-```solidity
-function predictWorkerpool(address _workerpoolOwner, string _workerpoolDescription) external view returns (contract Workerpool)
 ```
 

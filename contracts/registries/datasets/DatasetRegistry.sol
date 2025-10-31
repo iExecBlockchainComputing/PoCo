@@ -41,13 +41,13 @@ contract DatasetRegistry is Registry {
         bytes calldata _datasetMultiaddr,
         bytes32 _datasetChecksum
     ) external returns (Dataset) {
-        return
-            Dataset(
-                _mintCreate(
-                    _datasetOwner,
-                    encodeInitializer(_datasetName, _datasetMultiaddr, _datasetChecksum)
-                )
-            );
+        bytes memory initializer = encodeInitializer(
+            _datasetName,
+            _datasetMultiaddr,
+            _datasetChecksum
+        );
+        address entry = _mintCreate(_datasetOwner, initializer);
+        return Dataset(entry);
     }
 
     function predictDataset(

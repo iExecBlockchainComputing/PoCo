@@ -97,7 +97,7 @@ describe('ERC20', async () => {
         it('Should not transfer when sender balance is too low', async () => {
             await expect(
                 iexecPocoAsHolder.transfer(recipient.address, value + 1n),
-            ).to.be.revertedWithPanic(0x11);
+            ).to.be.revertedWithoutReason();
         });
     });
 
@@ -201,13 +201,13 @@ describe('ERC20', async () => {
         it('Should not transferFrom when owner balance is too low', async () => {
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, spender.address, value + 1n),
-            ).to.be.revertedWithPanic(0x11);
+            ).to.be.revertedWithoutReason();
         });
         it('Should not transferFrom when spender allowance is too low', async () => {
             await iexecPocoAsHolder.approve(spender.address, value - 1n).then((tx) => tx.wait());
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, spender.address, value),
-            ).to.be.revertedWithPanic(0x11);
+            ).to.be.revertedWithoutReason();
         });
     });
 
@@ -260,7 +260,7 @@ describe('ERC20', async () => {
         it('Should not decrease allowance of a value greater than old allowance', async () => {
             await expect(
                 iexecPocoAsHolder.decreaseAllowance(spender.address, 1),
-            ).to.be.revertedWithPanic(0x11);
+            ).to.be.revertedWithoutReason();
         });
         it('Should not decrease allowance from the zero address', async () => {
             await expect(

@@ -10,7 +10,6 @@ import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
-
     /***************************************************************************
      *                         Escrow methods: public                          *
      ***************************************************************************/
