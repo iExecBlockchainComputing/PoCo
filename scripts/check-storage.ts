@@ -41,7 +41,7 @@ export function checkStorageLayoutCompatibility(): boolean {
                 // Skip libraries and interfaces that don't have storage
                 if (['library', 'interface'].includes(contractDef.contractKind)) continue;
 
-                // Skip contracts  rlc-faucet-contract
+                // Skip contracts from rlc-faucet-contract
                 if (src.includes('rlc-faucet-contract/')) {
                     continue;
                 }
