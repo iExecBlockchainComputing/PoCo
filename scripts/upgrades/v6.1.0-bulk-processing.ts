@@ -3,9 +3,10 @@
 
 import { FunctionFragment } from 'ethers';
 import { IexecPoco1Facet__factory, IexecPocoAccessorsFacet__factory } from '../../typechain';
+import { isArbitrumChainId, isArbitrumSepoliaChainId } from '../../utils/config';
 import {
-    deployFacets,
     FacetDetails,
+    deployFacets,
     getUpgradeContext,
     linkFacetsToDiamond,
     printOnchainDiamondDescription,
@@ -15,7 +16,6 @@ import {
     saveOnchainDiamondDescription,
 } from '../../utils/proxy-tools';
 import { tryVerify } from '../verify';
-import { isArbitrumChainId, isArbitrumSepoliaChainId } from '../../utils/config';
 
 async function main() {
     console.log('Performing bulk processing upgrade...');

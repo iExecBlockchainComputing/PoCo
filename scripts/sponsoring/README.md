@@ -3,11 +3,13 @@
 ## Locally forked Bellecour network
 
 0. Start node
+
 ```
 LOCAL_FORK=true npx hardhat node --no-deploy
 ```
 
 1. Deploy modules and add to proxy
+
 ```
 (export LOCAL_FORK=true; \
 npx hardhat run scripts/sponsoring/0_deploy-modules.ts --network external-hardhat && \
@@ -15,6 +17,7 @@ npx hardhat run scripts/sponsoring/1_add-modules-to-proxy.ts --network external-
 ```
 
 2. Run test(s)
+
 ```
 LOCAL_FORK=true npx hardhat test test/byContract/IexecPoco/04_finalize.test.ts --network external-hardhat
 ```
@@ -22,14 +25,15 @@ LOCAL_FORK=true npx hardhat test test/byContract/IexecPoco/04_finalize.test.ts -
 OR
 
 0. Run test(s) directly (without launching node and deploying/upgrading Poco manually)
+
 ```
 LOCAL_FORK=true HANDLE_SPONSORING_UPGRADE_INTERNALLY=true npx hardhat test test/byContract/IexecPoco/04_finalize.test.ts
 ```
 
-
 ## Bellecour
 
 0. Deploy modules
+
 ```
 npx hardhat run scripts/sponsoring/0_deploy-modules.ts --network bellecour
 ```
@@ -46,14 +50,19 @@ IexecPocoAccessorsDelegate: 0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261 // https:
 0b. Verify contracts
 
 Contracts have been verified using `etherscan-verify` plugin of `hardhat-deploy` (v0.12.4):
+
 ```
 npx hardhat --network bellecour etherscan-verify
 ```
+
 and embedded `hardhat-verify` plugin of `hardhat` (v2.22.12):
+
 ```
 npx hardhat run ./scripts/verify.ts --network bellecour
 ```
+
 by previously modifiying the `.json` file produced by:
+
 ```
 await deployments.deploy('<XxxxDelegate>Delegate', {
     from: deployer.address,
@@ -66,15 +75,17 @@ await deployments.deploy('<XxxxDelegate>Delegate', {
 1. Schedule upgrade
 
 From [c54f713](https://github.com/iExecBlockchainComputing/PoCo/blob/c54f713af4a520ed3260bf119e689cf32cf85925/scripts/sponsoring/1_add-modules-to-proxy.ts) commit:
+
 ```
 npx hardhat run scripts/sponsoring/1_add-modules-to-proxy.ts --network bellecour
 ```
-- Tx: https://blockscout-bellecour.iex.ec/tx/0x59c94a0206187ff9cfe36bf380dfa012f25b51189e321ed70650827230ab8bd7
 
+-   Tx: https://blockscout-bellecour.iex.ec/tx/0x59c94a0206187ff9cfe36bf380dfa012f25b51189e321ed70650827230ab8bd7
 
 1. Execute upgrade
 
 From [1c5d486](https://github.com/iExecBlockchainComputing/PoCo/blob/1c5d486a90e14b8f1e5df96d90926861f103d6ea/scripts/sponsoring/1_add-modules-to-proxy.ts) commit:
+
 ```
 npx hardhat run scripts/sponsoring/1_add-modules-to-proxy.ts --network bellecour
 ```

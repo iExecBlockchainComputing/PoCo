@@ -14,10 +14,9 @@
 // in order to force recreation of this parent diagram made of updated and
 // included child diagrams.
 
+$.verbose = false; // Disable bash commands logging.
 
-$.verbose = false // Disable bash commands logging.
-
-const projectRootDir = await $`dirname ${__dirname}`
+const projectRootDir = await $`dirname ${__dirname}`;
 // Search for markdown files and update puml links.
-const output = await $`npx puml-for-markdown -x ${projectRootDir}/docs/`
+const output = await $`npx puml-for-markdown -x ${projectRootDir}/docs/`;
 console.log(output.toString());

@@ -13,8 +13,8 @@ import {
     TimelockController__factory,
 } from '../../typechain';
 import config from '../../utils/config';
-import { encodeModuleProxyUpdate, printBlockTime } from '../upgrades/upgrade-helper';
 import { printOnchainDiamondDescription } from '../../utils/proxy-tools';
+import { encodeModuleProxyUpdate, printBlockTime } from '../upgrades/upgrade-helper';
 
 if (process.env.HANDLE_SPONSORING_UPGRADE_INTERNALLY != 'true') {
     (async () => {

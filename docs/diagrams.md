@@ -1,14 +1,16 @@
 # Diagrams
 
 ## Actors diagram
+
 [![Contracts and Actors Architecture](https://tinyurl.com/2l3942fk)](https://tinyurl.com/2l3942fk)<!--![Contracts and Actors Architecture](./uml/architecture-ODB.puml)-->
 
 ## Task statuses
 
 Possible workflows:
-- Nominal
-- ContributeAndFinalize
-- Boost
+
+-   Nominal
+-   ContributeAndFinalize
+-   Boost
 
 ```mermaid
 flowchart TB
@@ -25,12 +27,14 @@ flowchart TB
     UNSET --> |if trust = 1, <br> boost_matchOrder <br>and boost_pushResult| COMPLETED
     linkStyle 9 stroke:green
 ```
+
 ## Contribution statuses
 
 Possible workflows:
-- Nominal
-- ContributeAndFinalize
-- Boost => **No contributions statuses in Boost flow**
+
+-   Nominal
+-   ContributeAndFinalize
+-   Boost => **No contributions statuses in Boost flow**
 
 ```mermaid
 flowchart TB
@@ -44,12 +48,15 @@ flowchart TB
 ## Sequence diagrams of different workflows
 
 ### Nominal
+
 [![Nominal workflow sequence](https://tinyurl.com/2nb5oau3)](https://tinyurl.com/2nb5oau3)<!--![Nominal workflow sequence](./uml/nominalworkflow-ODB.puml)-->
 
 ### Nominal+TEE
+
 [![Nominal workflow sequence w/ TEE](https://tinyurl.com/2jwzqrgx)](https://tinyurl.com/2jwzqrgx)<!--![Nominal workflow sequence w/ TEE](./uml/nominalworkflow-ODB+TEE.puml)-->
 
 ### Boost
+
 [![Boost workflow sequence](https://tinyurl.com/2oofk7yf)](https://tinyurl.com/2oofk7yf)<!--![Boost workflow sequence](./uml/boost-workflow-ODB.puml)-->
 
 ### Nominal vs Boost vs Nominal TEE: From Match to Finalize
