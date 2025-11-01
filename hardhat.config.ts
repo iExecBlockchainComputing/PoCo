@@ -51,7 +51,6 @@ const settings = {
         enabled: true,
         runs: 200,
     },
-    outputSelection: { '*': { '*': ['storageLayout'] } },
 };
 
 const v8Settings = {
@@ -76,9 +75,9 @@ const v8Settings = {
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: '0.8.21', settings: v8Settings }, // PoCo Boost
-            { version: '0.6.12', settings }, // PoCo contracts
-            { version: '0.4.11', settings }, // RLC contracts
+            { version: '0.8.21', settings: v8Settings }, // PoCo contracts
+            { version: '0.6.12', settings }, // External dependencies (@amxx/factory)
+            { version: '0.4.26', settings }, // RLC contracts - 0.4.26 is the minimum version that produces standard AST output required for storage layout checks
         ],
     },
     namedAccounts: {
