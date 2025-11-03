@@ -12,8 +12,8 @@ import {
 import { Ownable__factory } from '../../typechain/factories/rlc-faucet-contract/contracts';
 import config from '../../utils/config';
 import { getDeployerAndOwnerSigners } from '../../utils/deploy-tools';
-import { encodeModuleProxyUpdate, printBlockTime } from '../upgrades/upgrade-helper';
 import { printOnchainDiamondDescription } from '../../utils/proxy-tools';
+import { encodeModuleProxyUpdate, printBlockTime } from '../upgrades/upgrade-helper';
 
 (async () => {
     const chainId = (await ethers.provider.getNetwork()).chainId;
