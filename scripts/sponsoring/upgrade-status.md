@@ -1,4 +1,4 @@
-# PoCo v5.5 upgrade status 
+# PoCo v5.5 upgrade status
 
 ## Legacy modules linked to proxy before this v5.5 upgrade
 
@@ -7,7 +7,6 @@
 | [IexecOrderManagementDelegate](https://github.com/iExecBlockchainComputing/PoCo/blob/v5.4.3/contracts/modules/delegates/IexecOrderManagementDelegate.sol)  | [0xc7d6c9cAf4cdA7B1EC24bd83873A822eE7Da2966](https://blockscout-bellecour.iex.ec/address/0xc7d6c9cAf4cdA7B1EC24bd83873A822eE7Da2966) |
 | [IexecPocoDelegate](https://github.com/iExecBlockchainComputing/PoCo/blob/v5.2.1/contracts/modules/delegates/IexecPocoDelegate.sol)                        | [0xE20a3d2B778B9e924c68dD74beB6723620eBaD0c](https://blockscout-bellecour.iex.ec/address/0xE20a3d2B778B9e924c68dD74beB6723620eBaD0c) |
 | [IexecPocoAccessorsDelegate](https://github.com/iExecBlockchainComputing/PoCo/blob/v5.4.3/contracts/modules/delegates/IexecAccessorsABILegacyDelegate.sol) | [0xAa567D6C87C465A5a15b8efAe4778acD33e6Cd66](https://blockscout-bellecour.iex.ec/address/0xAa567D6C87C465A5a15b8efAe4778acD33e6Cd66) |
-
 
 ## New modules deployed for v5.5 upgrade
 
@@ -18,18 +17,20 @@
 | IexecPoco2Delegate           | [0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27](https://blockscout-bellecour.iex.ec/address/0x7eCf076343FBe296Da2D39f20B2a01AaBB68CC27/contracts#address-tabs) | [0x4013dcc930acc2ac5fa53f4ad1062e4b6bd0deb6945972534b2db3586a6617d1](https://blockscout-bellecour.iex.ec/tx/0x4013dcc930acc2ac5fa53f4ad1062e4b6bd0deb6945972534b2db3586a6617d1) |
 | IexecPocoAccessorsDelegate   | [0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261](https://blockscout-bellecour.iex.ec/address/0xa1d371eF7bf36e89Db41276543ACf91Ec50Dd261/contracts#address-tabs) | [0xcc90f94b6ddb809720f94271b7b58bef9b24c4fe6e92a72f1271c5f83912081f](https://blockscout-bellecour.iex.ec/tx/0xcc90f94b6ddb809720f94271b7b58bef9b24c4fe6e92a72f1271c5f83912081f) |
 
-
 ## Linking of these new modules to proxy is scheduled on TimelockControler
 
 ```
 Block#30158507: Mon Sep 23 2024 17:31:40 GMT+0200 (Central European Summer Time) (timestamp:1727105500)
 Timelock proposer: 0x0B3a38b0A47aB0c5E8b208A703de366751Df5916
 ```
-- Tx: https://blockscout-bellecour.iex.ec/tx/0x59c94a0206187ff9cfe36bf380dfa012f25b51189e321ed70650827230ab8bd7
-- The ERC1538Proxy currently supports 96 functions.
+
+-   Tx: https://blockscout-bellecour.iex.ec/tx/0x59c94a0206187ff9cfe36bf380dfa012f25b51189e321ed70650827230ab8bd7
+-   The ERC1538Proxy currently supports 96 functions.
 
 Now 7-days are required before executing linking of new modules.
-- Functions from `IexecOrderManagementDelegate`, `IexecPoco1Delegate`, `IexecPoco2Delegate` & `IexecPocoAccessorsDelegate` modules that will be added to proxy (or modified on proxy):
+
+-   Functions from `IexecOrderManagementDelegate`, `IexecPoco1Delegate`, `IexecPoco2Delegate` & `IexecPocoAccessorsDelegate` modules that will be added to proxy (or modified on proxy):
+
 ```
 - manageAppOrder(((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes));
 - manageDatasetOrder(((address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),uint8,bytes));
@@ -73,7 +74,8 @@ Now 7-days are required before executing linking of new modules.
 Block#30158507: Mon Sep 23 2024 17:31:40 GMT+0200 (Central European Summer Time) (timestamp:1727105500)
 Timelock proposer: 0x0B3a38b0A47aB0c5E8b208A703de366751Df5916
 ```
-- Tx: 0x71b904f526a9be218d35748f57d74ef6da20d12c88f94cfa1ec5ae2de187cb98
+
+-   Tx: 0x71b904f526a9be218d35748f57d74ef6da20d12c88f94cfa1ec5ae2de187cb98
 
 ```
 [...]
