@@ -274,7 +274,8 @@ have been introduced to the business logic.
         -   restrictions
             -   Assets or requester belong to groups in ERC734 identity contract.
     -   Verify entries are registered & category exists.
-    -   Verify signatures or presignatures of orders. - ERC1271 contracts can be signers of orders.
+    -   Verify signatures or presignatures of orders.
+    -   ERC1271 contracts can be signers of orders.
     -   Compute volume & consume orders.
     -   Lock requester deal value.
     -   Store deal.
