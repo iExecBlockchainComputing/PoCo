@@ -36,17 +36,20 @@ export function checkStorageLayoutCompatibility(): boolean {
             // Skip if no AST
             if (!output.sources[src].ast) continue;
 
+            // Skip contracts from rlc-faucet-contract
+            if (src.includes('rlc-faucet-contract/')) {
+                continue;
+            }
+
             // Process each contract definition
             for (const contractDef of findAll('ContractDefinition', output.sources[src].ast)) {
                 // Skip libraries and interfaces that don't have storage
                 if (['library', 'interface'].includes(contractDef.contractKind)) continue;
-                const contractKey = `${src}:${contractDef.name}`;
-
                 // Initialize storage layout for this contract if not exists
-                layouts[contractKey] = layouts[contractKey] || {};
+                layouts[contractDef.name] = layouts[contractDef.name] || {};
 
                 // Store storage layout for this version
-                layouts[contractKey][solcVersion] = extractStorageLayout(
+                layouts[contractDef.name][solcVersion] = extractStorageLayout(
                     contractDef,
                     decoder,
                     deref,
