@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 interface IexecPoco2 {
     // TODO replace `taskid` by `taskId` and update the PoCo subgraph and check
-    // the impact on SDKs and Middelware.
+    // the impact on SDKs and Middleware.
     event AccurateContribution(address indexed worker, bytes32 indexed taskid);
     event FaultyContribution(address indexed worker, bytes32 indexed taskid);
 
