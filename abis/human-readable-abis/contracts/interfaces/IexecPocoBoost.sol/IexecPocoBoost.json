@@ -1,0 +1,11 @@
+[
+  "event DealSponsoredBoost(bytes32,address)",
+  "event OrdersMatched(bytes32,bytes32,bytes32,bytes32,bytes32,uint256)",
+  "event ResultPushedBoost(bytes32,uint256,bytes)",
+  "event SchedulerNoticeBoost(address indexed,bytes32,address,address,uint256,bytes32,string,address)",
+  "event TaskClaimed(bytes32 indexed)",
+  "function claimBoost(bytes32,uint256)",
+  "function matchOrdersBoost(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),tuple(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),tuple(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes)) returns (bytes32)",
+  "function pushResultBoost(bytes32,uint256,bytes,bytes,bytes,address,bytes)",
+  "function sponsorMatchOrdersBoost(tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),tuple(address,uint256,uint256,bytes32,address,address,address,bytes32,bytes),tuple(address,uint256,uint256,bytes32,uint256,uint256,address,address,address,bytes32,bytes),tuple(address,uint256,address,uint256,address,uint256,address,uint256,bytes32,uint256,uint256,address,address,string,bytes32,bytes)) returns (bytes32)"
+]
