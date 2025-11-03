@@ -10,7 +10,6 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {FacetBase} from "./FacetBase.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
 
-// TODO uncomment and fix file
 contract SignatureVerifier is FacetBase {
     /**
      * Prepare message/structure predicat used for signing
