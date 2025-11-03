@@ -1,6 +1,10 @@
 [
   "event Approval(address indexed,address indexed,uint256)",
+  "event Lock(address,uint256)",
+  "event Reward(address,uint256,bytes32)",
+  "event Seize(address,uint256,bytes32)",
   "event Transfer(address indexed,address indexed,uint256)",
+  "event Unlock(address,uint256)",
   "function deposit(uint256) returns (bool)",
   "function depositFor(uint256,address) returns (bool)",
   "function depositForArray(uint256[],address[]) returns (bool)",
