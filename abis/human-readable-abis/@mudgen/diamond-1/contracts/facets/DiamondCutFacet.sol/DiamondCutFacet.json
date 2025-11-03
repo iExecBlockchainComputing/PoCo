@@ -1,0 +1,19 @@
+[
+  "error CannotAddFunctionToDiamondThatAlreadyExists(bytes4)",
+  "error CannotAddSelectorsToZeroAddress(bytes4[])",
+  "error CannotRemoveFunctionThatDoesNotExist(bytes4)",
+  "error CannotRemoveImmutableFunction(bytes4)",
+  "error CannotReplaceFunctionThatDoesNotExists(bytes4)",
+  "error CannotReplaceFunctionWithTheSameFunctionFromTheSameFacet(bytes4)",
+  "error CannotReplaceFunctionsFromFacetWithZeroAddress(bytes4[])",
+  "error CannotReplaceImmutableFunction(bytes4)",
+  "error IncorrectFacetCutAction(uint8)",
+  "error InitializationFunctionReverted(address,bytes)",
+  "error NoBytecodeAtAddress(address,string)",
+  "error NoSelectorsProvidedForFacetForCut(address)",
+  "error NotContractOwner(address,address)",
+  "error RemoveFacetAddressMustBeZeroAddress(address)",
+  "event DiamondCut(tuple(address,uint8,bytes4[])[],address,bytes)",
+  "event DiamondCut(tuple(address,uint8,bytes4[])[],address,bytes)",
+  "function diamondCut(tuple(address,uint8,bytes4[])[],address,bytes)"
+]
