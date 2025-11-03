@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-# TODO extract common steps into reusable workflows to resolve
-# concurrency issue.
+  # TODO extract common steps into reusable workflows to resolve
+  # concurrency issue.
   build-and-test:
     runs-on: ubuntu-latest
     steps:
