@@ -47,7 +47,7 @@ contract IexecERC20Facet is IexecERC20, FacetBase, IexecERC20Core {
         _transfer(sender, recipient, amount);
         // TEMPORARY MIGRATION FIX: Check allowance to prevent underflow and revert without reason for backward compatibility
         // TODO: Remove this in the next major version
-        uint256 currentAllowance = $.m_allowances[sender][_msgSender()]; // Read allowance once
+        uint256 currentAllowance = $.m_allowances[sender][_msgSender()];
         if (currentAllowance < amount) {
             revert();
         }
