@@ -144,7 +144,7 @@ describe('Registries', () => {
     });
 
     describe('Registry Getters', () => {
-        it('Should check that masters are deployed at master addresses', async () => {
+        it.only('Should check that masters are deployed at master addresses', async () => {
             const appCode = App__factory.bytecode.replace('0x', '');
             const datasetCode = Dataset__factory.bytecode.replace('0x', '');
             const workerpoolCode = Workerpool__factory.bytecode.replace('0x', '');

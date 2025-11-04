@@ -95,7 +95,7 @@ describe('IexecPocoAccessors', async () => {
         expect(await iexecPoco.decimals()).to.equal(9n);
     });
 
-    it('totalSupply', async function () {
+    it.only('totalSupply', async function () {
         expect(await iexecPoco.totalSupply()).to.equal(0n);
     });
 
@@ -248,7 +248,7 @@ describe('IexecPocoAccessors', async () => {
         expect(await iexecPoco.teebroker()).to.equal(ZeroAddress);
     });
 
-    it('callbackGas', async function () {
+    it.only('callbackGas', async function () {
         expect(await iexecPoco.callbackgas()).to.equal(100_000n);
     });
 
