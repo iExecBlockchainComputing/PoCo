@@ -1,5 +1,3 @@
-const BASE_FOLDER = './coverage';
-
 module.exports = {
     /**
      * See https://github.com/sc-forks/solidity-coverage/issues/715 issue if
@@ -15,13 +13,6 @@ module.exports = {
     mocha: {
         timeout: 600000, // double timeout
     },
-    skipFiles: [
-        'tools/Migrations.sol',
-        'tools/testing/ERC734Mock.sol',
-        'tools/testing/ERC1271Mock.sol',
-        'tools/testing/TestClient.sol',
-        'tools/testing/TestReceiver.sol',
-        'facets/SignatureVerifier.sol',
-    ],
-    istanbulFolder: BASE_FOLDER,
+    skipFiles: ['facets/SignatureVerifier.sol', 'tools/'],
+    istanbulFolder: './coverage',
 };
