@@ -266,7 +266,6 @@ const config: HardhatUserConfig = {
                 // TODO reorganize utility contracts.
                 '^contracts/tools/testing/',
                 '^contracts/tools/diagrams/',
-                '^contracts/tools/TimelockController',
             ],
             rename: (sourceName, contractName) =>
                 `${sourceName.replace('contracts/', '').replace('.sol', '')}`,

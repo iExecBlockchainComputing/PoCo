@@ -10,7 +10,6 @@
     "prepare": "husky",
     "build": "npx hardhat compile",
     "deploy": "npx hardhat deploy",
-    "deploy:timelock": "hardhat run scripts/deploy-timelock.ts",
     "check-storage-layout": "npx hardhat run scripts/check-storage.ts",
     "clean": "rm -rf deployments/hardhat",
     "test": "npm run clean && REPORT_GAS=true npx hardhat test",
@@ -32,7 +31,6 @@
     "/contracts",
     "!/contracts/tools/testing/**/*",
     "!/contracts/tools/diagrams/**/*",
-    "!/contracts/tools/TimelockController/**/*",
     "/deployments",
     "/artifacts/contracts",
     "!/artifacts/contracts/**/*.dbg.json"
