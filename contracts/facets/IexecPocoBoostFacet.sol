@@ -17,7 +17,7 @@ import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
-import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
+import {SignatureVerifier} from "./SignatureVerifier.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
 //
