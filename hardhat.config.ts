@@ -227,7 +227,6 @@ const config: HardhatUserConfig = {
             // Used as mock or fake in UTs
             '@openzeppelin/contracts/interfaces/IERC1271.sol',
             // Used in deployment
-            '@openzeppelin/contracts/governance/TimelockController.sol',
             '@amxx/factory/contracts/v6/GenericFactory.sol',
             'createx/src/ICreateX.sol',
         ],
@@ -308,7 +307,8 @@ task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
         // Remove non relevant contracts
         // !!! Update package.json#files if this is updated.
         .filter((name) => !name.startsWith('contracts/tools/testing'))
-        .filter((name) => !name.startsWith('contracts/tools/diagrams'));
+        .filter((name) => !name.startsWith('contracts/tools/diagrams'))
+        .filter((name) => !name.startsWith('contracts/tools/TimelockController'));
     for (const contractFile of contracts) {
         const artifact = await hre.artifacts.readArtifact(contractFile);
         const abiFileDir = `${abisDir}/${path.dirname(contractFile)}`;

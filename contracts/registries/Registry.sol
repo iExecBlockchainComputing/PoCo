@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "./proxy/InitializableUpgradeabilityProxy.sol";
+import {InitializableUpgradeabilityProxy} from "./proxy/InitializableUpgradeabilityProxy.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
@@ -77,8 +77,14 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
 
     /* Factory */
     function _mintCreate(address _owner, bytes memory _args) internal returns (address) {
+        // TEMPORARY MIGRATION FIX: Check if contract already exists to revert without custom error for backward compatibility
+        // TODO: Remove this in the next major version
+        address entry = _mintPredict(_owner, _args);
+        if (entry.code.length > 0) {
+            revert("Create2: Failed on deploy");
+        }
         // Create entry (proxy)
-        address entry = Create2.deploy(0, keccak256(abi.encodePacked(_args, _owner)), proxyCode);
+        entry = Create2.deploy(0, keccak256(abi.encodePacked(_args, _owner)), proxyCode);
         InitializableUpgradeabilityProxy(payable(entry)).initialize(master, _args);
         // Mint corresponding token
         _mint(_owner, uint256(uint160(entry)));
