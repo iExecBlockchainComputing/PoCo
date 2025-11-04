@@ -15,36 +15,38 @@ Reports of all PoCo upgrades are available in [scripts/upgrades/](../scripts/upg
 
 ### UML diagrams
 
-- [Actors diagram](./diagrams.md#actors-diagram)
-- [Task statuses](./diagrams.md#task-statuses)
-- [Contribution statuses](./diagrams.md#contribution-statuses)
-- [Nominal workflow sequence](./diagrams.md#nominal)
-- [Nominal workflow sequence with TEE](./diagrams.md#nominaltee)
-- [Boost workflow sequence](./diagrams.md#boost)
-- UML class diagrams related to:
-    - [IexecPoco1Facet & IexecPoco2Facet](./uml/class-uml-IexecPocoFacets.svg)
-    - [IexecPocoBoostFacet](./uml/class-uml-IexecPocoBoostFacet.svg)
-    - [IexecEscrows](./uml/class-uml-IexecEscrows.svg)
-    - [iExec PoCo registries](./uml/class-uml-dir-registries.svg)
-    - [iExec PoCo libraries](./uml/class-uml-dir-libs.svg)
-    - [iExec PoCo modules (facets)](./uml/class-uml-dir-facets.svg)
+-   [Actors diagram](./diagrams.md#actors-diagram)
+-   [Task statuses](./diagrams.md#task-statuses)
+-   [Contribution statuses](./diagrams.md#contribution-statuses)
+-   [Nominal workflow sequence](./diagrams.md#nominal)
+-   [Nominal workflow sequence with TEE](./diagrams.md#nominaltee)
+-   [Boost workflow sequence](./diagrams.md#boost)
+-   UML class diagrams related to:
+    -   [IexecPoco1Facet & IexecPoco2Facet](./uml/class-uml-IexecPocoFacets.svg)
+    -   [IexecPocoBoostFacet](./uml/class-uml-IexecPocoBoostFacet.svg)
+    -   [IexecEscrows](./uml/class-uml-IexecEscrows.svg)
+    -   [iExec PoCo registries](./uml/class-uml-dir-registries.svg)
+    -   [iExec PoCo libraries](./uml/class-uml-dir-libs.svg)
+    -   [iExec PoCo modules (facets)](./uml/class-uml-dir-facets.svg)
 
 ### Storage diagrams
 
-- [Diamond storage](./uml/storage-diagram-diamond.svg)
-- [PoCo storage](./uml/storage-diagram-poco.svg)
+-   [Diamond storage](./uml/storage-diagram-diamond.svg)
+-   [PoCo storage](./uml/storage-diagram-poco.svg)
 
 ## Development
 
 This project uses trunk-based development workflow with automatic release management. It means that:
-- Only squash merge commits are accepted.
-- When merging a PR, its title is used as the commit message (configured in GitHub).
-- A check is added to enforce using the correct format for PR titles (feat:..., fix:..., ...).
-- Release please is used to manage Github releases.
+
+-   Only squash merge commits are accepted.
+-   When merging a PR, its title is used as the commit message (configured in GitHub).
+-   A check is added to enforce using the correct format for PR titles (feat:..., fix:..., ...).
+-   Release please is used to manage Github releases.
 
 ### Build
 
 The PoCo smart contracts are in the `contracts/` folder. JSON artifacts, containing the contracts bytecode and ABI can be found in the `artifacts/` folder. In case you need to regenerate them, you can use the following command:
+
 ```
 npm install
 npm run build
@@ -62,6 +64,7 @@ npm run test
 ```
 
 Additionally, you can produce a coverage report using the following command:
+
 ```
 npm run coverage
 ```
@@ -71,7 +74,7 @@ The automatic testing command uses the Hardhat network by default to run the tes
 #### Testing on a custom blockchain
 
 1. Start a blockchain
-    -   You can either use the Hardhat CLI with the following command:
+    - You can either use the Hardhat CLI with the following command:
     ```
     npx hardhat node [<any additional arguments>]
     ```
@@ -79,7 +82,9 @@ The automatic testing command uses the Hardhat network by default to run the tes
 2. **[Optional]** Update the configuration
 
     If your blockchain listens to a port that is not 8545, or if the blockchain is on a different node, update the `hardhat.config.ts` configuration (network ports, accounts with mnemonic, ..) accordingly to the [Hardhat Configuration](https://hardhat.org/hardhat-runner/docs/config) documentation.
+
 3. Run tests
+
 ```
 npm run test -- --network <networkUrl>
 ```
@@ -99,12 +104,13 @@ Starting from version 5, the PoCo uses a modular design based on [ERC-2535](http
 The configuration file is located in `./config/config.json`.
 
 It contains:
-- A list of categories created during the deployment process. Additional categories can be created by the contract administrator using the `createCategory` function.
-- For each chain id, a quick configuration:
-    - **"asset":** can be "Token" or "Native", select which escrow to use.
-    - **"token":** the address of the token to use. If asset is set to `Token`, and no token address is provided, a mock will be deployed on the fly.
-    - **"v3":** a list of resources from a previous (v3) deployment. This allows previous resources to be automatically available. It also enables score transfer from v3 to v5. [optional]
-    - **"v5":** deployment parameters for the new version. If factory address is set, and no salt is provided, `bytes32(0)` will be used by default.
+
+-   A list of categories created during the deployment process. Additional categories can be created by the contract administrator using the `createCategory` function.
+-   For each chain id, a quick configuration:
+    -   **"asset":** can be "Token" or "Native", select which escrow to use.
+    -   **"token":** the address of the token to use. If asset is set to `Token`, and no token address is provided, a mock will be deployed on the fly.
+    -   **"v3":** a list of resources from a previous (v3) deployment. This allows previous resources to be automatically available. It also enables score transfer from v3 to v5. [optional]
+    -   **"v5":** deployment parameters for the new version. If factory address is set, and no salt is provided, `bytes32(0)` will be used by default.
 
 If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the recommended process is to:
 
@@ -119,7 +125,8 @@ If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the
 ##### [Optional] Additional configuration & environment variables
 
 Environment variable can be used to alter the configuration of a deployment:
-- **SALT**: if set, the `SALT` env var will overwrite the salt parameter from the config. This can be useful to distinguish different deployments without modifying the config.
+
+-   **SALT**: if set, the `SALT` env var will overwrite the salt parameter from the config. This can be useful to distinguish different deployments without modifying the config.
 
 > **Warning:** Changing the `SALT` value will result in different contract addresses being derived. If you rely on deterministic deployment addresses for integrations or other purposes, ensure you understand the consequences before modifying the salt. Unintended changes may break existing integrations or expectations.
 
@@ -142,7 +149,6 @@ Example with custom salt:
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001 npx hardhat deploy --network hardhat
 ```
 
-
 #### Contract verification
 
 To verify contracts:
@@ -153,10 +159,10 @@ npm run verify:all -- --network <your network name> # e.g. arbitrum
 
 This script automatically reads all deployed contract addresses and their constructor arguments from the deployment artifacts and verifies them on the relevant block explorer.
 
-
 ### Format
 
 Format a specific file or files in a directory:
+
 ```
 npm run format <filePath|folderPath>
 ```
@@ -172,6 +178,7 @@ npm run doc
 #### UML diagrams rendering
 
 To render all UML diagrams:
+
 ```
 npm run uml
 ```
@@ -196,15 +203,18 @@ npm run storage-to-diagrams
 
 ### Release
 
-- **Final releases** are automated using [Release Please](https://github.com/googleapis/release-please). Major, minor, and patch versions should be published through the corresponding GitHub Actions workflows.
-- **Prereleases** (`vX.Y.Z-rc.*`) should be created manually using:
+-   **Final releases** are automated using [Release Please](https://github.com/googleapis/release-please). Major, minor, and patch versions should be published through the corresponding GitHub Actions workflows.
+-   **Prereleases** (`vX.Y.Z-rc.*`) should be created manually using:
+
     ```
     npm run prerelease
     ```
+
     This command will:
-    - Bump the RC version in `package.json` and `package-lock.json` files.
-    - Create a new commit with the version bump.
-    - Generate the corresponding Git tag.
+
+    -   Bump the RC version in `package.json` and `package-lock.json` files.
+    -   Create a new commit with the version bump.
+    -   Generate the corresponding Git tag.
 
     Running this command ensures that the version in package.json matches the Git tag. This alignment is required for correct package publication and to automatically determine the appropriate npm dist tag (see [publish.yml](../.github/workflows/publish.yml)).
 

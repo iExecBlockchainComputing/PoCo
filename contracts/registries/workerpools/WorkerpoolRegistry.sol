@@ -31,9 +31,7 @@ contract WorkerpoolRegistry is Registry {
         address _workerpoolOwner,
         string calldata _workerpoolDescription
     ) external returns (Workerpool) {
-        bytes memory initializer = encodeInitializer(_workerpoolDescription);
-        address entry = _mintCreate(_workerpoolOwner, initializer);
-        return Workerpool(entry);
+        return Workerpool(_mintCreate(_workerpoolOwner, encodeInitializer(_workerpoolDescription)));
     }
 
     function predictWorkerpool(

@@ -9,7 +9,7 @@ import {IexecLibCore_v5} from "./IexecLibCore_v5.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
 
 /****************************************************************************
- * WARNING: Be carefull when editing this file.                             *
+ * WARNING: Be careful when editing this file.                             *
  *                                                                          *
  * If you want to add new variables, add them to the end of the             *
  * struct `PocoStorage`.                                                    *
