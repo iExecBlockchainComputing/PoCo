@@ -62,11 +62,11 @@
   },
   "devDependencies": {
     "@amxx/factory": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "@openzeppelin/upgrades-core": "^1.37.1",
     "dotenv": "^16.5.0",
     "hardhat": "^3.0.10",
-    "hardhat-dependency-compiler": "^1.2.1",
-    "hardhat-deploy": "^0.11.43",
+    "hardhat-deploy": "^2.0.0-next.52",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "mocha": "^10.7.3",
@@ -75,13 +75,14 @@
     "prettier-plugin-solidity": "^1.4.1",
     "puml-for-markdown": "^1.2.1",
     "sol2uml": "^2.5.22",
-    "solidity-coverage": "^0.8.14",
-    "solidity-docgen": "^0.6.0-beta.36",
     "zx": "^8.1.6"
   },
   "__devDependenciesComments": {
     "mocha": "[Optional] Install Mocha Test Explorer in VSCode to see tests in VSCode UI",
-    "solidity-coverage": "Fixing Hardhat's solidity-coverage: TypeError: provider.send is not a function"
+    "hardhat-deploy": "Version 2.x supports Hardhat 3",
+    "solidity-coverage": "Temporarily disabled - not compatible with Hardhat 3 yet. Hardhat 3 has built-in coverage support with --coverage flag",
+    "solidity-docgen": "Temporarily disabled - not compatible with Hardhat 3 yet. TODO: Re-enable when solidity-docgen supports Hardhat 3",
+    "hardhat-dependency-compiler": "Temporarily disabled - not compatible with Hardhat 3 yet. TODO: Re-enable when hardhat-dependency-compiler supports Hardhat 3"
   },
   "repository": {
     "type": "git",

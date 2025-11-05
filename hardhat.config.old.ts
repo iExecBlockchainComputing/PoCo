@@ -1,17 +1,18 @@
+import '@nomicfoundation/hardhat-toolbox';
 import 'dotenv/config';
 import * as fs from 'fs';
-// hardhat-deploy temporarily disabled - not compatible with Hardhat 3 yet
-// import 'hardhat-deploy';
+import 'hardhat-abi-exporter';
+import 'hardhat-dependency-compiler';
+import 'hardhat-deploy';
 import { HardhatUserConfig, task } from 'hardhat/config';
-import * as path from 'path';
-// solidity-docgen temporarily disabled - not compatible with Hardhat 3 yet
-// import 'solidity-docgen';
+import {
+    HARDHAT_NETWORK_MNEMONIC,
+    defaultHardhatNetworkParams,
+    defaultLocalhostNetworkParams,
+} from 'hardhat/internal/core/config/default-config';
+import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
-// Hardhat 3: internal imports may have changed, using defaults directly
-const HARDHAT_NETWORK_MNEMONIC = 'test test test test test test test test test test test junk';
-const defaultHardhatNetworkParams = {};
-const defaultLocalhostNetworkParams = {};
 
 const isNativeChainType = chainConfig.isNativeChain();
 const isLocalFork = chainConfig.isLocalFork();
@@ -73,12 +74,6 @@ const v8Settings = {
 };
 
 const config: HardhatUserConfig = {
-    paths: {
-        sources: './contracts',
-        tests: './test',
-        cache: './cache',
-        artifacts: './artifacts',
-    },
     solidity: {
         compilers: [
             { version: '0.8.21', settings: v8Settings }, // PoCo Boost
@@ -102,7 +97,6 @@ const config: HardhatUserConfig = {
     },
     networks: {
         hardhat: {
-            type: 'edr-simulated', // Hardhat 3: required network type
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
@@ -135,7 +129,6 @@ const config: HardhatUserConfig = {
             }),
         },
         'external-hardhat': {
-            type: 'edr-simulated', // Hardhat 3: required network type
             ...defaultHardhatNetworkParams,
             ...defaultLocalhostNetworkParams,
             accounts: {
@@ -156,7 +149,6 @@ const config: HardhatUserConfig = {
             }),
         },
         'dev-native': {
-            type: 'http', // Hardhat 3: required network type
             chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
@@ -165,7 +157,6 @@ const config: HardhatUserConfig = {
             gasPrice: bellecourBaseConfig.gasPrice, // Get closer to Bellecour network
         },
         'dev-token': {
-            type: 'http', // Hardhat 3: required network type
             chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',
             accounts: {
@@ -177,7 +168,6 @@ const config: HardhatUserConfig = {
             gasPrice: 8_000_000_000, // 8 Gwei
         },
         arbitrum: {
-            type: 'http', // Hardhat 3: required network type
             url:
                 process.env.ARBITRUM_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
@@ -186,7 +176,6 @@ const config: HardhatUserConfig = {
             ...arbitrumBaseConfig,
         },
         arbitrumSepolia: {
-            type: 'http', // Hardhat 3: required network type
             url:
                 process.env.ARBITRUM_SEPOLIA_RPC_URL || // Used in local development
                 process.env.RPC_URL || // Defined in Github Actions environments
@@ -195,7 +184,6 @@ const config: HardhatUserConfig = {
             ...arbitrumSepoliaBaseConfig,
         },
         bellecour: {
-            type: 'http', // Hardhat 3: required network type
             chainId: 134,
             url: 'https://bellecour.iex.ec',
             accounts: _getPrivateKeys(),
@@ -228,25 +216,23 @@ const config: HardhatUserConfig = {
     typechain: {
         outDir: 'typechain',
     },
-    // dependencyCompiler temporarily disabled - not compatible with Hardhat 3 yet
-    // TODO: Re-enable when hardhat-dependency-compiler supports Hardhat 3
-    // dependencyCompiler: {
-    //     paths: [
-    //         'rlc-faucet-contract/contracts/RLC.sol',
-    //         // ERC-2535 Diamond
-    //         '@mudgen/diamond-1/contracts/facets/DiamondCutFacet.sol',
-    //         '@mudgen/diamond-1/contracts/facets/DiamondLoupeFacet.sol',
-    //         '@mudgen/diamond-1/contracts/facets/OwnershipFacet.sol',
-    //         '@mudgen/diamond-1/contracts/libraries/LibDiamond.sol',
-    //         '@mudgen/diamond-1/contracts/upgradeInitializers/DiamondInit.sol',
-    //         // Used as mock or fake in UTs
-    //         '@openzeppelin/contracts/interfaces/IERC1271.sol',
-    //         // Used in deployment
-    //         '@amxx/factory/contracts/v6/GenericFactory.sol',
-    //         'createx/src/ICreateX.sol',
-    //     ],
-    //     keep: true, // Slither requires compiled dependencies
-    // },
+    dependencyCompiler: {
+        paths: [
+            'rlc-faucet-contract/contracts/RLC.sol',
+            // ERC-2535 Diamond
+            '@mudgen/diamond-1/contracts/facets/DiamondCutFacet.sol',
+            '@mudgen/diamond-1/contracts/facets/DiamondLoupeFacet.sol',
+            '@mudgen/diamond-1/contracts/facets/OwnershipFacet.sol',
+            '@mudgen/diamond-1/contracts/libraries/LibDiamond.sol',
+            '@mudgen/diamond-1/contracts/upgradeInitializers/DiamondInit.sol',
+            // Used as mock or fake in UTs
+            '@openzeppelin/contracts/interfaces/IERC1271.sol',
+            // Used in deployment
+            '@amxx/factory/contracts/v6/GenericFactory.sol',
+            'createx/src/ICreateX.sol',
+        ],
+        keep: true, // Slither requires compiled dependencies
+    },
     docgen: {
         outputDir: 'docs/solidity',
         templates: 'docs/solidity/templates',
@@ -265,6 +251,32 @@ const config: HardhatUserConfig = {
         ],
     },
     mocha: { timeout: 300000 },
+    abiExporter: [
+        // ABIs of PoCo contracts for integration with other tools.
+        {
+            path: './abis/contracts',
+            format: 'json',
+            runOnCompile: true,
+            clear: true,
+            only: ['^contracts/'],
+            except: [
+                // !!! Update package.json#files if this is modified.
+                // TODO reorganize utility contracts.
+                '^contracts/tools/testing/',
+                '^contracts/tools/diagrams/',
+                '^contracts/tools/TimelockController',
+            ],
+            rename: (sourceName, contractName) =>
+                `${sourceName.replace('contracts/', '').replace('.sol', '')}`,
+        },
+        // ABIs of all contracts in a human readable format for easier upgrade debugging.
+        {
+            path: './abis/human-readable-abis',
+            format: 'minimal',
+            runOnCompile: true,
+            clear: true,
+        },
+    ],
 };
 
 /**
@@ -287,6 +299,10 @@ task('docgen').setAction(async (taskArgs, hre, runSuper) => {
     });
 });
 
+/**
+ * Override `test` task to copy deployments of Arbitrum Sepolia if running tests on
+ * a forked Arbitrum Sepolia network and clean them up afterwards.
+ */
 task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     let deploymentsCopied = false;
     let networkName = '';
@@ -301,37 +317,6 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
             await cleanupDeployments(networkName);
         }
     }
-});
-
-// Automatically update ABIs after compiling contracts.
-task('compile').setAction(async (taskArgs: any, hre, runSuper) => {
-    await runSuper(taskArgs);
-    await hre.run('abis');
-});
-
-task('abis', 'Generate contract ABIs').setAction(async (taskArgs, hre) => {
-    const abisDir = './abis';
-    // Remove old ABIs folder if it exists.
-    if (fs.existsSync(abisDir)) {
-        fs.rmSync(abisDir, { recursive: true, force: true });
-    }
-    fs.mkdirSync(abisDir);
-    const contracts = (await hre.artifacts.getAllFullyQualifiedNames())
-        // Keep only "contracts/" folder
-        .filter((name) => name.startsWith('contracts/'))
-        // Remove non relevant contracts
-        // !!! Update package.json#files if this is updated.
-        .filter((name) => !name.startsWith('contracts/tools/testing'))
-        .filter((name) => !name.startsWith('contracts/tools/diagrams'))
-        .filter((name) => !name.startsWith('contracts/tools/TimelockController'));
-    for (const contractFile of contracts) {
-        const artifact = await hre.artifacts.readArtifact(contractFile);
-        const abiFileDir = `${abisDir}/${path.dirname(contractFile)}`;
-        const abiFile = `${abiFileDir}/${artifact.contractName}.json`;
-        fs.mkdirSync(abiFileDir, { recursive: true });
-        fs.writeFileSync(abiFile, JSON.stringify(artifact.abi, null, 2));
-    }
-    console.log(`Saved ${contracts.length} ABI files to ${abisDir} folder`);
 });
 
 function _getPrivateKeys() {
