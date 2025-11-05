@@ -10,6 +10,11 @@ import {Create2} from "@openzeppelin/contracts-v5/utils/Create2.sol";
 import {IRegistry} from "./IRegistry.sol";
 import {ERC721Enumerable} from "@openzeppelin/contracts-v5/token/ERC721/extensions/ERC721Enumerable.sol";
 
+// Note: this version of this contract that has been migrated to solidity v0.8 is not the
+// same version that is currently deployed on live networks. The reason being, registries
+// are not upgradable thus we don't mind having a mismatch between the deployed version
+// and the latest version in the codebase.
+
 abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
     address public master;
     bytes public proxyCode;
