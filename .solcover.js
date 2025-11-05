@@ -13,6 +13,6 @@ module.exports = {
     mocha: {
         timeout: 600000, // double timeout
     },
-    skipFiles: ['facets/SignatureVerifier.sol', 'tools/'],
+    skipFiles: ['tools/'],
     istanbulFolder: './coverage',
 };
