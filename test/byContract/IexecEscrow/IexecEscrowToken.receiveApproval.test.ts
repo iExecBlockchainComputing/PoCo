@@ -31,7 +31,7 @@ const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 const volume = 1n;
 
-describe.only('IexecEscrowToken-receiveApproval', () => {
+describe('IexecEscrowToken-receiveApproval', () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceToken;
     let iexecPocoAsRequester: IexecInterfaceToken;
@@ -208,9 +208,11 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
 
             // Verify total supply increased
             expect(await iexecPoco.totalSupply()).to.equal(initialTotalSupply + dealCost);
+            // Total balance should be existing + new deposit - frozen
             expect(await iexecPoco.balanceOf(requester.address)).to.equal(
-                initialBalance + dealCost,
+                initialBalance + dealCost - dealCost,
             );
+            expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealCost);
         });
 
         it('Should approve, deposit and match orders without dataset', async () => {
