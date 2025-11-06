@@ -1,13 +1,5 @@
 # Solidity API
 
-## IexecInterfaceToken
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in token mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
 ## IexecERC20Core
 
 ## IexecEscrowTokenFacet
@@ -68,14 +60,12 @@ function receiveApproval(address sender, uint256 amount, address token, bytes da
 
 Receives approval and optionally matches orders in one transaction
 
-_This is the magic function that enables approve+deposit+match atomicity
-
 Usage patterns:
 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
 2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedOrders)
 
 The `data` parameter should be ABI-encoded orders if matching is desired:
-abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)_
+abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
 
 #### Parameters
 
@@ -90,7 +80,7 @@ abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| [0] | bool | success True if operation succeeded @custom:example ```solidity // Encode orders bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder); // One transaction does it all RLC.approveAndCall(iexecProxy, dealCost, data); ``` |
+| [0] | bool | success True if operation succeeded @custom:example ```solidity // Encode orders bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder); // One transaction does it all RLC(token).approveAndCall(iexecProxy, dealCost, data); ``` |
 
 ## IexecLibCore_v5
 
@@ -564,6 +554,14 @@ struct PocoStorage {
 ```solidity
 function isRegistered(address _entry) external view returns (bool)
 ```
+
+## IexecInterfaceToken
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in token mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
 
 ## IexecInterfaceNative
 

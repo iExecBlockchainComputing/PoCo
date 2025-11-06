@@ -111,7 +111,6 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         if (data.length > 0) {
             dealId = _matchOrdersAfterDeposit(sender, data);
         }
-        emit ApprovalReceivedAndMatched(sender, amount, dealId);
         return true;
     }
 

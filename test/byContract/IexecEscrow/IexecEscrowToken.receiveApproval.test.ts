@@ -251,10 +251,6 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 .withArgs(AddressZero, requester.address, dealCost);
 
             await expect(tx)
-                .to.emit(iexecPoco, 'ApprovalReceivedAndMatched')
-                .withArgs(requester.address, dealCost, dealId);
-
-            await expect(tx)
                 .to.emit(iexecPoco, 'OrdersMatched')
                 .withArgs(
                     dealId,
@@ -297,10 +293,6 @@ describe('IexecEscrowToken-receiveApproval', () => {
             const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
 
             const tx = rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders);
-
-            await expect(tx)
-                .to.emit(iexecPoco, 'ApprovalReceivedAndMatched')
-                .withArgs(requester.address, dealCost, dealId);
 
             // Total balance should be existing + new deposit - frozen
             expect(await iexecPoco.balanceOf(requester.address)).to.equal(
@@ -453,10 +445,6 @@ describe('IexecEscrowToken-receiveApproval', () => {
             await expect(tx)
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, requester.address, dealCost);
-
-            await expect(tx)
-                .to.emit(iexecPoco, 'ApprovalReceivedAndMatched')
-                .withArgs(requester.address, dealCost, dealId);
 
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(0n);
         });
