@@ -3,158 +3,151 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC734} from "../external/interfaces/IERC734.sol";
 import {IERC1271} from "@openzeppelin/contracts-v5/interfaces/IERC1271.sol";
-// import "@iexec/solidity/contracts/ERC1654/IERC1654.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {FacetBase} from "./FacetBase.sol";
+import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
+import {FacetBase} from "./FacetBase.sol";
+import {IERC734} from "../external/interfaces/IERC734.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract SignatureVerifier is FacetBase {
-    /**
-     * Prepare message/structure predicat used for signing
-     */
-    function _toEthSignedMessage(bytes32 _msgHash) internal pure returns (bytes memory) {
-        return abi.encodePacked("\x19Ethereum Signed Message:\n32", _msgHash);
-    }
+    using ECDSA for bytes32;
 
-    function _toEthTypedStruct(
-        bytes32 _structHash,
-        bytes32 _domainHash
-    ) internal pure returns (bytes memory) {
-        return abi.encodePacked("\x19\x01", _domainHash, _structHash);
+    /**
+     * Hash a Typed Data using the configured domain.
+     * @param structHash The original structure hash.
+     */
+    function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return MessageHashUtils.toTypedDataHash($.m_eip712DomainSeparator, structHash);
     }
 
     /**
-     * recover EOA signature (support both 65 bytes traditional and 64 bytes format EIP2098 format)
+     * @notice Verify that an Ethereum Signed Message is signed by a particular account.
+     * @param account The expected signer account.
+     * @param message The original message that was signed.
+     * @param signature The signature to be verified.
      */
-    function _recover(bytes32 _hash, bytes memory _sign) internal pure returns (address) {
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
+    function _verifySignatureOfEthSignedMessage(
+        address account,
+        bytes memory message,
+        bytes calldata signature
+    ) internal view returns (bool) {
+        return
+            _verifySignature(
+                account,
+                MessageHashUtils.toEthSignedMessageHash(keccak256(message)),
+                signature
+            );
+    }
 
-        if (_sign.length == 65) // 65bytes: (r,s,v) form
-        {
-            assembly {
-                r := mload(add(_sign, 0x20))
-                s := mload(add(_sign, 0x40))
-                v := byte(0, mload(add(_sign, 0x60)))
-            }
-        } else if (_sign.length == 64) // 64bytes: (r,vs) form → see EIP2098
-        {
-            assembly {
-                r := mload(add(_sign, 0x20))
-                s := and(
-                    mload(add(_sign, 0x40)),
-                    0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-                )
-                v := shr(7, byte(0, mload(add(_sign, 0x40))))
-            }
+    /**
+     * @notice Verify that a message is signed by an EOA or an ERC1271 smart contract.
+     *
+     * It supports short signatures.
+     * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
+     * & https://github.com/OpenZeppelin/openzeppelin-contracts/pull/4915
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/cryptography/ECDSA.sol#L112
+     *
+     * @param account The expected signer account.
+     * @param messageHash The message hash that was signed.
+     * @param signature The signature to be verified.
+     */
+    function _verifySignature(
+        address account,
+        bytes32 messageHash,
+        bytes calldata signature
+    ) internal view returns (bool) {
+        // When the account is a smart contract, delegate signature verification.
+        if (account.code.length > 0) {
+            try IERC1271(account).isValidSignature(messageHash, signature) returns (bytes4 result) {
+                return result == IERC1271.isValidSignature.selector;
+            } catch {}
+            return false;
+        }
+        // When the account is an EoA, check signature validity.
+        address recoveredAddress = address(0); // Initialize local variable
+        if (signature.length == 65) {
+            //slither-disable-next-line unused-return
+            (recoveredAddress, , ) = messageHash.tryRecover(signature);
+        } else if (signature.length == 64) {
+            //slither-disable-next-line unused-return
+            (recoveredAddress, , ) = messageHash.tryRecover( // short signature
+                    bytes32(signature[:32]),
+                    bytes32(signature[32:])
+                );
         } else {
             revert("invalid-signature-format");
         }
-
-        if (v < 27) v += 27;
-        require(v == 27 || v == 28, "invalid-signature-v");
-        return ecrecover(_hash, v, r, s);
+        return recoveredAddress == account;
     }
 
     /**
-     * Check if contract exist, otherwize assumed to be EOA
+     * @notice Verify that a message hash is presigned by a particular account.
+     * @param account The expected presigner account.
+     * @param messageHash The message hash that was presigned.
      */
-    // TODO refactor this with Address library.
-    function _isContract(address account) internal view returns (bool) {
-        // According to EIP-1052, 0x0 is the value returned for not-yet created accounts
-        // and 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470 is returned
-        // for accounts without code, i.e. `keccak256('')`
-        bytes32 codehash;
-        bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
-        // solhint-disable-next-line no-inline-assembly
-        assembly {
-            codehash := extcodehash(account)
-        }
-        return (codehash != accountHash && codehash != 0x0);
-    }
-
-    /**
-     * Address to bytes32 casting to ERC734
-     */
-    function _addrToKey(address _addr) internal pure returns (bytes32) {
-        return bytes32(uint256(uint160(_addr)));
-    }
-
-    /**
-     * Identity verification
-     */
-    function _checkIdentity(
-        address _identity,
-        address _candidate,
-        uint256 _purpose
-    ) internal view returns (bool valid) {
-        return
-            _identity == _candidate ||
-            IERC734(_identity).keyHasPurpose(_addrToKey(_candidate), _purpose); // Simple address || ERC 734 identity contract
-    }
-
-    function _checkPresignature(address _identity, bytes32 _hash) internal view returns (bool) {
+    function _verifyPresignature(
+        address account,
+        bytes32 messageHash
+    ) internal view returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        return _identity != address(0) && _identity == $.m_presigned[_hash];
+        return account != address(0) && account == $.m_presigned[messageHash];
     }
 
-    function _checkSignature(
-        address _identity,
-        bytes32 _hash,
-        bytes memory _signature
-    ) internal view returns (bool) {
-        if (_isContract(_identity)) {
-            // try address(0)(_identity).isValidSignature(_hash, _signature) returns (bytes4 value) {
-            //     return value == address(0)(address(0)).isValidSignature.selector;
-            // } catch (bytes memory /*lowLevelData*/) {}
-
-            return false;
-        } else {
-            return _recover(_hash, _signature) == _identity;
-        }
-    }
-
-    function _checkSignature(
-        address _identity,
-        bytes memory _predicat,
-        bytes memory _signature
-    ) internal view returns (bool) {
-        if (_isContract(_identity)) {
-            // try IERC1271(_identity).isValidSignature(_predicat, _signature) returns (bytes4 value) {
-            //     return value == IERC1271(address(0)).isValidSignature.selector;
-            // } catch (bytes memory /*lowLevelData*/) {}
-
-            // try IERC1654(_identity).isValidSignature(keccak256(_predicat), _signature) returns (
-            //     bytes4 value
-            // ) {
-            //     return value == IERC1654(0).isValidSignature.selector;
-            // } catch (bytes memory /*lowLevelData*/) {}
-
-            return false;
-        } else {
-            return _recover(keccak256(_predicat), _signature) == _identity;
-        }
-    }
-
-    function _checkPresignatureOrSignature(
-        address _identity,
-        bytes32 _hash,
-        bytes memory _signature
+    /**
+     * @notice Verify that a message hash is signed or presigned by a particular account.
+     * @param account The expected signer or presigner account.
+     * @param messageHash The message hash that was signed or presigned.
+     * @param signature The signature to be verified. Not required for a presignature.
+     */
+    function _verifySignatureOrPresignature(
+        address account,
+        bytes32 messageHash,
+        bytes calldata signature
     ) internal view returns (bool) {
         return
-            _checkPresignature(_identity, _hash) || _checkSignature(_identity, _hash, _signature);
+            _verifyPresignature(account, messageHash) ||
+            _verifySignature(account, messageHash, signature);
     }
 
-    function _checkPresignatureOrSignature(
-        address _identity,
-        bytes memory _predicat,
-        bytes memory _signature
+    /**
+     * @notice
+     * This function makes an external call to an untrusted contract. It has to
+     * be carefully called to avoid creating re-entrancy vulnerabilities. Calls to this function
+     * has to be done before updating state variables.
+     *
+     * @notice Verify that an account is authorized based on a given restriction.
+     * The given restriction can be:
+     * (1) `0x`: No restriction, accept any address;
+     * (2) `0x<same-address-than-restriction>`: Only accept the exact same address;
+     * (3) `0x<ERC734-contract-address>`: Accept any address in a group (having
+     * the given `GROUPMEMBER` purpose) inside an ERC734 Key Manager identity
+     * contract.
+     * @param restriction A simple address or an ERC734 identity contract
+     * that might whitelist a given address in a group.
+     * @param account An address to be checked.
+     */
+    function _isAccountAuthorizedByRestriction(
+        address restriction,
+        address account
     ) internal view returns (bool) {
-        return
-            _checkPresignature(_identity, keccak256(_predicat)) ||
-            _checkSignature(_identity, _predicat, _signature);
+        if (
+            restriction == address(0) || // No restriction
+            restriction == account // Simple address restriction
+        ) {
+            return true;
+        }
+        if (restriction.code.length > 0) {
+            try
+                IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
+                        bytes32(uint256(uint160(account))),
+                        GROUPMEMBER_PURPOSE
+                    )
+            returns (bool success) {
+                return success;
+            } catch {}
+        }
+        return false;
     }
 }

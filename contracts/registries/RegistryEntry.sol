@@ -5,6 +5,11 @@ pragma solidity ^0.8.0;
 
 import "./Registry.sol";
 
+// Note: this version of this contract that has been migrated to solidity v0.8 is not the
+// same version that is currently deployed on live networks. The reason being, registries
+// are not upgradable thus we don't mind having a mismatch between the deployed version
+// and the latest version in the codebase.
+
 /**
  * @dev Referenced in the SDK with the current path `contracts/registries/RegistryEntry.sol`.
  * Changing the name or the path would cause a breaking change in the SDK.

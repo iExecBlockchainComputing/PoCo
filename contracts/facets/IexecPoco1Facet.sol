@@ -14,7 +14,7 @@ import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
-import {SignatureVerifier} from "./SignatureVerifier.v8.sol";
+import {SignatureVerifier} from "./SignatureVerifier.sol";
 
 struct Matching {
     bytes32 apporderHash;
