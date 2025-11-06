@@ -244,7 +244,6 @@ const config: HardhatUserConfig = {
             // kept for events 'facets/IexecEscrow.v8.sol', // contains only internal/private
             'facets/IexecPocoCommon.sol', // contains only internal/private
             'facets/SignatureVerifier.sol', // contains only internal/private
-            'facets/SignatureVerifier.v8.sol',
             'interfaces', // interesting for events but too much doc duplication if enabled
             'tools',
             'Diamond.sol', // not relevant
@@ -266,7 +265,6 @@ const config: HardhatUserConfig = {
                 // TODO reorganize utility contracts.
                 '^contracts/tools/testing/',
                 '^contracts/tools/diagrams/',
-                '^contracts/tools/TimelockController',
             ],
             rename: (sourceName, contractName) =>
                 `${sourceName.replace('contracts/', '').replace('.sol', '')}`,
