@@ -5,7 +5,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployments, ethers } from 'hardhat';
 import deploy from '../../deploy/0_deploy';
 import { RLC__factory } from '../../typechain';
-import config, { isArbitrumSepoliaFork, isLocalFork } from '../../utils/config';
+import config, { isArbitrumFork, isArbitrumSepoliaFork, isLocalFork } from '../../utils/config';
 import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixture-helpers';
 
 /**
@@ -70,7 +70,7 @@ export const loadHardhatFixtureDeployment = async () => {
     if (isLocalFork()) {
         return await loadFixture(setUpLocalForkInNativeMode);
     }
-    if (isArbitrumSepoliaFork()) {
+    if (isArbitrumSepoliaFork() || isArbitrumFork()) {
         return await loadFixture(setUpLocalForkInTokenMode);
     }
     return await loadFixture(deployAll);
