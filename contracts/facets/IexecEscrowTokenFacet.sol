@@ -148,8 +148,10 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         if (requestorder.requester != sender) revert("caller-must-be-requester");
 
         // Call matchOrders on the IexecPoco1 facet through the diamond
-        // Using delegatecall pattern via address(this)
-        (bool success, bytes memory result) = address(this).call(
+        // Using delegatecall for safety: preserves msg.sender context
+        // Note: matchOrders doesn't use msg.sender, but delegatecall is safer
+        // in case the implementation changes in the future
+        (bool success, bytes memory result) = address(this).delegatecall(
             abi.encodeWithSelector(
                 IexecPoco1.matchOrders.selector,
                 apporder,
