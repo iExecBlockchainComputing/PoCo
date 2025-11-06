@@ -182,7 +182,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
 
     function _deposit(address from, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require($.m_baseToken.transferFrom(from, address(this), amount), "failled-transferFrom");
+        require($.m_baseToken.transferFrom(from, address(this), amount), "failed-transferFrom");
     }
 
     function _withdraw(address to, uint256 amount) internal {
