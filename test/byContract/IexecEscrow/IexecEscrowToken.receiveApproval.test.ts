@@ -21,6 +21,7 @@ import {
     buildOrders,
     signOrders,
 } from '../../../utils/createOrders';
+import { encodeOrders } from '../../../utils/odb-tools';
 import { getDealId, getIexecAccounts } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
@@ -102,15 +103,7 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
     }
 
     function encodeOrdersForCallback(orders: IexecOrders): string {
-        return ethers.AbiCoder.defaultAbiCoder().encode(
-            [
-                'tuple(address app, uint256 appprice, uint256 volume, bytes32 tag, address datasetrestrict, address workerpoolrestrict, address requesterrestrict, bytes32 salt, bytes sign)',
-                'tuple(address dataset, uint256 datasetprice, uint256 volume, bytes32 tag, address apprestrict, address workerpoolrestrict, address requesterrestrict, bytes32 salt, bytes sign)',
-                'tuple(address workerpool, uint256 workerpoolprice, uint256 volume, bytes32 tag, uint256 category, uint256 trust, address apprestrict, address datasetrestrict, address requesterrestrict, bytes32 salt, bytes sign)',
-                'tuple(address app, uint256 appmaxprice, address dataset, uint256 datasetmaxprice, address workerpool, uint256 workerpoolmaxprice, address requester, uint256 volume, bytes32 tag, uint256 category, uint256 trust, address beneficiary, address callback, string params, bytes32 salt, bytes sign)',
-            ],
-            [orders.app, orders.dataset, orders.workerpool, orders.requester],
-        );
+        return encodeOrders(orders.app, orders.dataset, orders.workerpool, orders.requester);
     }
 
     describe('Basic receiveApproval (backward compatibility)', () => {
@@ -154,115 +147,6 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
                 .to.emit(iexecPoco, 'Transfer')
                 .withArgs(AddressZero, requester.address, depositAmount);
         });
-
-        // it('Should not deposit when wrong token calls receiveApproval', async () => {
-        //     // Deploy a fake RLC token
-        //     const FakeRLC = await ethers.getContractFactory('RLC');
-        //     const fakeRlc = await FakeRLC.deploy();
-        //     await fakeRlc.waitForDeployment();
-
-        //     // Give requester some fake tokens
-        //     const fakeRlcAsRequester = fakeRlc.connect(requester);
-        //     await fakeRlc.transfer(requester.address, 1000n);
-
-        //     // Try to call approveAndCall with fake token
-        //     await expect(
-        //         fakeRlcAsRequester.approveAndCall(proxyAddress, 100n, '0x'),
-        //     ).to.be.revertedWith('wrong-token');
-        // });
-    });
-    describe('Debug receiveApproval - Deep Dive', () => {
-        it('Should check RLC implementation', async () => {
-            const rlcAddress = await rlcInstance.getAddress();
-            const code = await ethers.provider.getCode(rlcAddress);
-            console.log('RLC contract has code:', code !== '0x');
-            console.log('RLC code length:', code.length);
-        });
-
-        it('Should test basic RLC approve', async () => {
-            const amount = 1000n;
-
-            // Test basic approve works
-            await rlcInstanceAsRequester.approve(proxyAddress, amount);
-            const allowance = await rlcInstance.allowance(requester.address, proxyAddress);
-            console.log('Allowance set:', allowance.toString());
-            expect(allowance).to.equal(amount);
-        });
-
-        it('Should test approveAndCall with empty data to a simple contract', async () => {
-            // Deploy a simple receiver contract
-            const SimpleReceiver = await ethers.getContractFactory(
-                'contracts/tests/TestReceiver.sol:TestReceiver',
-            );
-            const receiver = await SimpleReceiver.deploy();
-            await receiver.waitForDeployment();
-            const receiverAddress = await receiver.getAddress();
-
-            console.log('Receiver deployed at:', receiverAddress);
-
-            // Give requester some RLC
-            const amount = 1000n;
-            await rlcInstance.transfer(requester.address, amount);
-
-            // Try approveAndCall
-            try {
-                const tx = await rlcInstanceAsRequester.approveAndCall(
-                    receiverAddress,
-                    amount,
-                    '0x',
-                );
-                console.log('approveAndCall to simple receiver succeeded');
-                await tx.wait();
-            } catch (e: any) {
-                console.log('approveAndCall to simple receiver failed:', e.message);
-            }
-        });
-
-        it('Should test if proxy can receive approval', async () => {
-            const amount = 1000n;
-
-            // Give requester some RLC
-            await rlcInstance.transfer(requester.address, amount);
-
-            console.log('Proxy address:', proxyAddress);
-            console.log(
-                'RLC balance of requester:',
-                await rlcInstance.balanceOf(requester.address),
-            );
-
-            // Try to call receiveApproval directly on the proxy (simulating what RLC does)
-            try {
-                // Impersonate the RLC token
-                const rlcAddress = await rlcInstance.getAddress();
-                await ethers.provider.send('hardhat_impersonateAccount', [rlcAddress]);
-                const rlcSigner = await ethers.getSigner(rlcAddress);
-
-                // Fund the RLC address with some ETH for gas
-                await iexecAdmin.sendTransaction({
-                    to: rlcAddress,
-                    value: ethers.parseEther('1.0'),
-                });
-
-                const iexecAsRLC = iexecPoco.connect(rlcSigner);
-
-                const tx = await iexecAsRLC.receiveApproval(
-                    requester.address,
-                    amount,
-                    rlcAddress,
-                    '0x',
-                );
-
-                console.log('Direct receiveApproval call succeeded');
-                await tx.wait();
-
-                await ethers.provider.send('hardhat_stopImpersonatingAccount', [rlcAddress]);
-            } catch (e: any) {
-                console.log('Direct receiveApproval call failed:', e.message);
-                if (e.data) {
-                    console.log('Error data:', e.data);
-                }
-            }
-        });
     });
 
     describe('receiveApproval with Order Matching', () => {
@@ -275,27 +159,20 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
                 volume: volume,
             });
 
-            // This already deposits the scheduler stake
             await signAndPrepareOrders(orders);
 
             const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
+
             const initialBalance = await iexecPoco.balanceOf(requester.address);
             const initialTotalSupply = await iexecPoco.totalSupply();
 
             const encodedOrders = encodeOrdersForCallback(orders);
-
-            console.log('Requester address:', requester.address);
-            console.log('Proxy address:', proxyAddress);
-            console.log('RLC address:', await rlcInstance.getAddress());
-            console.log('Deal cost:', dealCost.toString());
-            console.log('Encoded orders length:', encodedOrders.length);
-
-            // First, let's try without orders to see if basic deposit works
-            // const tx = await rlcInstanceAsRequester.approveAndCall(
-            //     proxyAddress,
-            //     dealCost,
-            //     '0x' // Try with empty data first
-            // );
 
             const tx = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
@@ -479,7 +356,7 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
                     insufficientAmount,
                     encodedOrders,
                 ),
-            ).to.be.revertedWithoutReason(); // Will revert in _lock due to insufficient balance
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
 
         it('Should not match orders with invalid calldata', async () => {
@@ -491,6 +368,15 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
         });
 
         it('Should handle multiple sequential approveAndCall operations', async () => {
+            const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
+            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
+                workerpoolPrice,
+                volume,
+            );
+
+            // Deposit enough stake for both deals
+            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake * 2n);
+
             // First operation
             const orders1 = buildOrders({
                 assets: ordersAssets,
@@ -498,11 +384,11 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
                 requester: requester.address,
                 tag: TAG_TEE,
                 volume: volume,
+                salt: ethers.hexlify(ethers.randomBytes(32)),
             });
 
             await signAndPrepareOrders(orders1);
 
-            const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const encodedOrders1 = encodeOrdersForCallback(orders1);
 
             const tx1 = await rlcInstanceAsRequester.approveAndCall(
@@ -523,6 +409,7 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
                 requester: requester.address,
                 tag: TAG_TEE,
                 volume: volume,
+                salt: ethers.hexlify(ethers.randomBytes(32)),
             });
 
             await signAndPrepareOrders(orders2);
@@ -584,6 +471,7 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
                 requester: requester.address,
                 tag: TAG_TEE,
                 volume: volume,
+                salt: ethers.hexlify(ethers.randomBytes(32)),
             });
 
             await signAndPrepareOrders(orders);
@@ -623,6 +511,7 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
                 requester: requester.address,
                 tag: TAG_TEE,
                 volume: volume,
+                salt: ethers.hexlify(ethers.randomBytes(32)),
             });
 
             await signAndPrepareOrders(orders2);
