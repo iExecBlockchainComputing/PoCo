@@ -1,9 +1,7 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity >=0.6.0;
-pragma experimental ABIEncoderV2;
-
+pragma solidity ^0.8.0;
 library IexecLibOrders_v5 {
     // bytes32 public constant EIP712DOMAIN_TYPEHASH = keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)');
     // bytes32 public constant APPORDER_TYPEHASH = keccak256('AppOrder(address app,uint256 appprice,uint256 volume,bytes32 tag,address datasetrestrict,address workerpoolrestrict,address requesterrestrict,bytes32 salt)');

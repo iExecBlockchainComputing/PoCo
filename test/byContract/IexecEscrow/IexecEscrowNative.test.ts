@@ -254,9 +254,9 @@ if (config.isNativeChain()) {
             });
 
             it('Should not withdraw native tokens with empty balance', async () => {
-                await expect(iexecPocoAsAccountA.withdraw(...withdrawArg)).to.be.revertedWithPanic(
-                    0x11,
-                );
+                await expect(
+                    iexecPocoAsAccountA.withdraw(...withdrawArg),
+                ).to.be.revertedWithoutReason();
             });
 
             it('Should not withdraw native tokens with insufficient balance', async () => {
@@ -264,7 +264,7 @@ if (config.isNativeChain()) {
 
                 await expect(
                     iexecPocoAsAccountA.withdraw(depositAmount * 2n),
-                ).to.be.revertedWithPanic(0x11);
+                ).to.be.revertedWithoutReason();
             });
         });
 
@@ -289,7 +289,7 @@ if (config.isNativeChain()) {
                 const withdrawToArgs = [...withdrawArg, accountB.address] as [bigint, string];
                 await expect(
                     iexecPocoAsAccountA.withdrawTo(...withdrawToArgs),
-                ).to.be.revertedWithPanic(0x11);
+                ).to.be.revertedWithoutReason();
             });
 
             it('Should not withdraw To native tokens with insufficient balance', async () => {
@@ -297,7 +297,7 @@ if (config.isNativeChain()) {
                 const withdrawToArgs = [...withdrawArg, accountB.address] as [bigint, string];
                 await expect(
                     iexecPocoAsAccountA.withdrawTo(withdrawToArgs[0] * 2n, withdrawToArgs[1]),
-                ).to.be.revertedWithPanic(0x11);
+                ).to.be.revertedWithoutReason();
             });
         });
 
