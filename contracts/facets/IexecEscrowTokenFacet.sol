@@ -72,7 +72,6 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
 
     /**
      * @notice Receives approval and optionally matches orders in one transaction
-     * @dev This is the magic function that enables approve+deposit+match atomicity
      *
      * Usage patterns:
      * 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
@@ -95,7 +94,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      * bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder);
      *
      * // One transaction does it all
-     * RLC.approveAndCall(iexecProxy, dealCost, data);
+     * RLC(token).approveAndCall(iexecProxy, dealCost, data);
      * ```
      */
     function receiveApproval(
@@ -116,9 +115,9 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         return true;
     }
 
-    /***************************************************************************
-     *                         Internal Helper Functions                       *
-     ***************************************************************************/
+    /******************************************************************************
+     *        Token Spender: Atomic Deposit+Match if used with RLC.approveAndCall *
+     *****************************************************************************/
 
     /**
      * @dev Internal function to match orders after deposit
