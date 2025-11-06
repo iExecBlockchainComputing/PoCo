@@ -10,7 +10,6 @@
     "prepare": "husky",
     "build": "npx hardhat compile",
     "deploy": "npx hardhat deploy",
-    "deploy:timelock": "hardhat run scripts/deploy-timelock.ts",
     "check-storage-layout": "npx hardhat run scripts/check-storage.ts",
     "clean": "rm -rf deployments/hardhat",
     "test": "npm run clean && REPORT_GAS=true npx hardhat test",
@@ -32,7 +31,6 @@
     "/contracts",
     "!/contracts/tools/testing/**/*",
     "!/contracts/tools/diagrams/**/*",
-    "!/contracts/tools/TimelockController/**/*",
     "/deployments",
     "/artifacts/contracts",
     "!/artifacts/contracts/**/*.dbg.json"
@@ -62,9 +60,10 @@
   "devDependencies": {
     "@amxx/factory": "^1.0.0",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.3",
     "@openzeppelin/upgrades-core": "^1.37.1",
     "dotenv": "^16.5.0",
-    "hardhat": "^2.22.18",
+    "hardhat": "^2.26.5",
     "hardhat-abi-exporter": "^2.11.0",
     "hardhat-dependency-compiler": "^1.2.1",
     "hardhat-deploy": "^0.11.43",
