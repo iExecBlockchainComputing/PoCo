@@ -116,6 +116,9 @@ const config: HardhatUserConfig = {
                         ? parseInt(process.env.ARBITRUM_SEPOLIA_BLOCK_NUMBER)
                         : undefined,
                 },
+                accounts: {
+                    mnemonic: process.env.MNEMONIC_FORK || HARDHAT_NETWORK_MNEMONIC,
+                },
                 ...arbitrumSepoliaBaseConfig,
                 gasPrice: 100_000_000, // 0.1 Gwei
             }),
@@ -123,6 +126,9 @@ const config: HardhatUserConfig = {
             ...(isArbitrumFork && {
                 forking: {
                     url: process.env.ARBITRUM_RPC_URL || 'https://arbitrum.gateway.tenderly.co',
+                },
+                accounts: {
+                    mnemonic: process.env.MNEMONIC_FORK || HARDHAT_NETWORK_MNEMONIC,
                 },
                 ...arbitrumBaseConfig,
                 gasPrice: 100_000_000, // 0.1 Gwei
@@ -311,6 +317,14 @@ task('test').setAction(async (taskArgs: any, hre, runSuper) => {
     try {
         if (isArbitrumSepoliaFork) {
             networkName = 'arbitrumSepolia';
+            deploymentsCopied = await copyDeployments(networkName);
+        }
+        if (isArbitrumFork) {
+            networkName = 'arbitrum';
+            deploymentsCopied = await copyDeployments(networkName);
+        }
+        if (isLocalFork) {
+            networkName = 'bellecour';
             deploymentsCopied = await copyDeployments(networkName);
         }
         await runSuper(taskArgs);
