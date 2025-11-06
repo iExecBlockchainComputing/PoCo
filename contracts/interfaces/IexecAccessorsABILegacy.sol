@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../libs/IexecLibCore_v5.sol";
+import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 
 /**
  * TODO: Remove this interface in the future.
