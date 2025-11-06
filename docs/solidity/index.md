@@ -63,8 +63,34 @@ function recover() external returns (uint256)
 ### receiveApproval
 
 ```solidity
-function receiveApproval(address sender, uint256 amount, address token, bytes) external returns (bool)
+function receiveApproval(address sender, uint256 amount, address token, bytes data) external returns (bool)
 ```
+
+Receives approval and optionally matches orders in one transaction
+
+_This is the magic function that enables approve+deposit+match atomicity
+
+Usage patterns:
+1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
+2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedOrders)
+
+The `data` parameter should be ABI-encoded orders if matching is desired:
+abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| sender | address | The address that approved tokens (must be requester if matching) |
+| amount | uint256 | Amount of tokens approved and to be deposited |
+| token | address | Address of the token (must be RLC) |
+| data | bytes | Optional: ABI-encoded orders for matching |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | success True if operation succeeded @custom:example ```solidity // Encode orders bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder); // One transaction does it all RLC.approveAndCall(iexecProxy, dealCost, data); ``` |
 
 ## IexecLibCore_v5
 
