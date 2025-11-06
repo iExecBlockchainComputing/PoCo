@@ -1,5 +1,13 @@
 # Solidity API
 
+## IexecInterfaceToken
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in token mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
 ## IexecERC20Core
 
 ## IexecEscrowTokenFacet
@@ -554,14 +562,6 @@ struct PocoStorage {
 ```solidity
 function isRegistered(address _entry) external view returns (bool)
 ```
-
-## IexecInterfaceToken
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in token mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
 
 ## IexecInterfaceNative
 
