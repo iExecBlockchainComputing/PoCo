@@ -31,12 +31,12 @@ import {
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet__factory,
     IexecRelayFacet__factory,
+    Ownable__factory,
     OwnershipFacet__factory,
     RLC__factory,
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { DiamondArgsStruct } from '../typechain/contracts/Diamond';
-import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config, { isArbitrumChainId, isArbitrumSepoliaChainId } from '../utils/config';
 import { getDeployerAndOwnerSigners } from '../utils/deploy-tools';

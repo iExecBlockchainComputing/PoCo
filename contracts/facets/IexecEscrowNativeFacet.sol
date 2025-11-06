@@ -4,9 +4,9 @@
 pragma solidity ^0.8.0;
 
 import {IexecERC20Core} from "./IexecERC20Core.sol";
-import {FacetBase} from "./FacetBase.v8.sol";
+import {FacetBase} from "./FacetBase.sol";
 import {IexecEscrowNative} from "../interfaces/IexecEscrowNative.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core {
     uint256 internal constant nRLCtoWei = 10 ** 9;

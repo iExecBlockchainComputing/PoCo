@@ -247,8 +247,6 @@ const config: HardhatUserConfig = {
             'interfaces', // interesting for events but too much doc duplication if enabled
             'tools',
             'Diamond.sol', // not relevant
-            'IexecInterfaceNativeABILegacy.sol', // not relevant
-            'IexecInterfaceTokenABILegacy.sol', // not relevant
         ],
     },
     mocha: { timeout: 300000 },
