@@ -98,14 +98,6 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
             .then((tx) => tx.wait());
     }
 
-    async function signAndPrepareOrders(orders: IexecOrders): Promise<void> {
-        await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-    }
-
-    function encodeOrdersForCallback(orders: IexecOrders): string {
-        return encodeOrders(orders.app, orders.dataset, orders.workerpool, orders.requester);
-    }
-
     describe('Basic receiveApproval (backward compatibility)', () => {
         it('Should deposit tokens via approveAndCall with empty data', async () => {
             const depositAmount = 1000n;
@@ -216,6 +208,9 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
 
             // Verify total supply increased
             expect(await iexecPoco.totalSupply()).to.equal(initialTotalSupply + dealCost);
+            expect(await iexecPoco.balanceOf(requester.address)).to.equal(
+                initialBalance + dealCost,
+            );
         });
 
         it('Should approve, deposit and match orders without dataset', async () => {
@@ -257,14 +252,16 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
                 .to.emit(iexecPoco, 'ApprovalReceivedAndMatched')
                 .withArgs(requester.address, dealCost, dealId);
 
-            await expect(tx).to.emit(iexecPoco, 'OrdersMatched').withArgs(
-                dealId,
-                appOrderHash,
-                ethers.ZeroHash, // No dataset
-                workerpoolOrderHash,
-                requestOrderHash,
-                volume,
-            );
+            await expect(tx)
+                .to.emit(iexecPoco, 'OrdersMatched')
+                .withArgs(
+                    dealId,
+                    appOrderHash,
+                    ethers.ZeroHash,
+                    workerpoolOrderHash,
+                    requestOrderHash,
+                    volume,
+                );
 
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealCost);
         });
@@ -535,4 +532,12 @@ describe.only('IexecEscrowToken-receiveApproval', () => {
             expect(newGas).to.be.lt(traditionalGas);
         });
     });
+
+    async function signAndPrepareOrders(orders: IexecOrders): Promise<void> {
+        await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+    }
+
+    function encodeOrdersForCallback(orders: IexecOrders): string {
+        return encodeOrders(orders.app, orders.dataset, orders.workerpool, orders.requester);
+    }
 });
