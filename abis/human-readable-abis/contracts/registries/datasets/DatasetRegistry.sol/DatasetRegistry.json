@@ -1,6 +1,8 @@
 [
   "constructor()",
   "error Create2EmptyBytecode()",
+  "error Create2FailedDeployment()",
+  "error Create2InsufficientBalance(uint256,uint256)",
   "error ERC721EnumerableForbiddenBatchMint()",
   "error ERC721IncorrectOwner(address,uint256,address)",
   "error ERC721InsufficientApproval(address,uint256)",
@@ -11,8 +13,6 @@
   "error ERC721InvalidSender(address)",
   "error ERC721NonexistentToken(uint256)",
   "error ERC721OutOfBoundsIndex(address,uint256)",
-  "error FailedDeployment()",
-  "error InsufficientBalance(uint256,uint256)",
   "error OwnableInvalidOwner(address)",
   "error OwnableUnauthorizedAccount(address)",
   "event Approval(address indexed,address indexed,uint256 indexed)",
