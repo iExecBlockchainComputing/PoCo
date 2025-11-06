@@ -124,7 +124,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      * @dev Internal function to match orders after deposit
      * @param sender The user who deposited (must be the requester)
      * @param data ABI-encoded orders
-     * @return dealId The ID of the matched deal
+     * @return dealId The deal ID of the matched deal
      */
     function _matchOrdersAfterDeposit(
         address sender,
