@@ -9,7 +9,6 @@ import {IexecEscrowNative} from "../interfaces/IexecEscrowNative.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecEscrowNativeFacet is IexecEscrowNative, FacetBase, IexecERC20Core {
-
     uint256 internal constant nRLCtoWei = 10 ** 9;
     /***************************************************************************
      *                         Escrow methods: public                          *
