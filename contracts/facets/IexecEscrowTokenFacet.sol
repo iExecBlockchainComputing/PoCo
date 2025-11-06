@@ -109,7 +109,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         _mint(sender, amount);
         bytes32 dealId = bytes32(0);
         if (data.length > 0) {
-            dealId = _matchOrdersAfterDeposit(sender, data);
+            dealId = _decodeDataAndMatchOrders(sender, data);
         }
         return true;
     }
@@ -124,7 +124,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      * @param data ABI-encoded orders
      * @return dealId The deal ID of the matched deal
      */
-    function _matchOrdersAfterDeposit(
+    function _decodeDataAndMatchOrders(
         address sender,
         bytes calldata data
     ) internal returns (bytes32 dealId) {
