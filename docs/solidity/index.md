@@ -247,8 +247,32 @@ function recover() external returns (uint256)
 ### receiveApproval
 
 ```solidity
-function receiveApproval(address sender, uint256 amount, address token, bytes) external returns (bool)
+function receiveApproval(address sender, uint256 amount, address token, bytes data) external returns (bool)
 ```
+
+Receives approval and optionally matches orders in one transaction
+
+Usage patterns:
+1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
+2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedOrders)
+
+The `data` parameter should be ABI-encoded orders if matching is desired:
+abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| sender | address | The address that approved tokens (must be requester if matching) |
+| amount | uint256 | Amount of tokens approved and to be deposited |
+| token | address | Address of the token (must be RLC) |
+| data | bytes | Optional: ABI-encoded orders for matching |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | success True if operation succeeded @custom:example ```solidity // Encode orders bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder); // One transaction does it all RLC(token).approveAndCall(iexecProxy, dealCost, data); ``` |
 
 ## IexecOrderManagementFacet
 
@@ -342,6 +366,11 @@ function matchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLi
 ```
 
 Match orders. The requester gets debited.
+
+This function does not use `msg.sender` to determine who pays for the deal.
+The sponsor is always set to `_requestorder.requester`, regardless of who calls this function.
+This design allows the function to be safely called via delegatecall from other facets
+(e.g., IexecEscrowTokenFacet.receiveApproval) without security concerns.
 
 #### Parameters
 
