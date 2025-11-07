@@ -71,25 +71,28 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      ***************************************************************************/
 
     /**
-     * @notice Receives approval and optionally matches orders in one transaction
+     * @notice Receives approval and optionally executes an operation in one transaction
      *
      * Usage patterns:
      * 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
-     * 2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedOrders)
+     * 2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedCall)
      *
-     * The `data` parameter should be ABI-encoded orders if matching is desired:
-     * abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+     * The `data` parameter should be a fully ABI-encoded function call (selector + arguments).
+     * Currently supported operations:
+     * - matchOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder)
      *
      * @dev Important notes:
      * - Match orders sponsoring is NOT supported. The requester (sender) always pays for the deal.
      * - Clients must compute the exact deal cost and deposit the right amount for the deal to be matched.
      *   The deal cost = (appPrice + datasetPrice + workerpoolPrice) * volume.
      * - If insufficient funds are deposited, the match will fail.
+     * - The function selector is checked to determine which operation to execute.
+     * - Unknown selectors will cause a revert.
      *
      * @param sender The address that approved tokens (must be requester if matching)
      * @param amount Amount of tokens approved and to be deposited
      * @param token Address of the token (must be RLC)
-     * @param data Optional: ABI-encoded orders for matching
+     * @param data Optional: ABI-encoded function call (with selector)
      * @return success True if operation succeeded
      *
      *
@@ -98,8 +101,14 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      * // Compute deal cost
      * uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
      *
-     * // Encode orders
-     * bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder);
+     * // Encode the full matchOrders call
+     * bytes memory data = abi.encodeWithSelector(
+     *     IexecPoco1.matchOrders.selector,
+     *     appOrder,
+     *     datasetOrder,
+     *     workerpoolOrder,
+     *     requestOrder
+     * );
      *
      * // One transaction does it all
      * RLC(token).approveAndCall(iexecProxy, dealCost, data);
@@ -115,42 +124,52 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         require(token == address($.m_baseToken), "wrong-token");
         _deposit(sender, amount);
         _mint(sender, amount);
-        bytes32 dealId = bytes32(0);
+
         if (data.length > 0) {
-            dealId = _decodeDataAndMatchOrders(sender, data);
+            _executeOperation(sender, data);
         }
         return true;
     }
 
     /******************************************************************************
-     *        Token Spender: Atomic Deposit+Match if used with RLC.approveAndCall *
+     *      Token Spender: Operation execution after deposit via approveAndCall  *
      *****************************************************************************/
 
     /**
-     * @dev Internal function to match orders after deposit
-     * @param sender The user who deposited (must be the requester)
-     * @param data ABI-encoded orders
-     * @return dealId The deal ID of the matched deal
+     * @dev Execute an operation after deposit based on the function selector
+     * @param sender The user who deposited
+     * @param data Full ABI-encoded function call (selector + arguments)
      */
-    function _decodeDataAndMatchOrders(
-        address sender,
-        bytes calldata data
-    ) internal returns (bytes32 dealId) {
-        // Decode the orders from calldata
-        (
-            IexecLibOrders_v5.AppOrder memory apporder,
-            IexecLibOrders_v5.DatasetOrder memory datasetorder,
-            IexecLibOrders_v5.WorkerpoolOrder memory workerpoolorder,
-            IexecLibOrders_v5.RequestOrder memory requestorder
-        ) = abi.decode(
-                data,
-                (
-                    IexecLibOrders_v5.AppOrder,
-                    IexecLibOrders_v5.DatasetOrder,
-                    IexecLibOrders_v5.WorkerpoolOrder,
-                    IexecLibOrders_v5.RequestOrder
-                )
-            );
+    function _executeOperation(address sender, bytes calldata data) internal {
+        // Extract the function selector (first 4 bytes)
+        bytes4 selector = bytes4(data[:4]);
+
+        // Check which operation to execute
+        if (selector == IexecPoco1.matchOrders.selector) {
+            _executeMatchOrders(sender, data);
+        } else {
+            revert("unsupported-operation");
+        }
+    }
+
+    /**
+     * @dev Internal function to execute matchOrders after deposit
+     * @param sender The user who deposited (must be the requester)
+     * @param data Full ABI-encoded matchOrders call
+     */
+    function _executeMatchOrders(address sender, bytes calldata data) internal {
+        // Decode only the request order to validate the requester
+        // Full decoding: (AppOrder, DatasetOrder, WorkerpoolOrder, RequestOrder)
+        // We only need to check requestorder.requester
+        (, , , IexecLibOrders_v5.RequestOrder memory requestorder) = abi.decode(
+            data[4:],
+            (
+                IexecLibOrders_v5.AppOrder,
+                IexecLibOrders_v5.DatasetOrder,
+                IexecLibOrders_v5.WorkerpoolOrder,
+                IexecLibOrders_v5.RequestOrder
+            )
+        );
 
         // Validate that sender is the requester
         if (requestorder.requester != sender) revert("caller-must-be-requester");
@@ -159,15 +178,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         // Using delegatecall for safety: preserves msg.sender context
         // Note: matchOrders doesn't use msg.sender, but delegatecall is safer
         // in case the implementation changes in the future
-        (bool success, bytes memory result) = address(this).delegatecall(
-            abi.encodeWithSelector(
-                IexecPoco1.matchOrders.selector,
-                apporder,
-                datasetorder,
-                workerpoolorder,
-                requestorder
-            )
-        );
+        (bool success, bytes memory result) = address(this).delegatecall(data);
 
         // Handle failure and bubble up revert reason
         if (!success) {
@@ -178,14 +189,9 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
                     revert(add(result, 32), returndata_size)
                 }
             } else {
-                revert("receive-approval-failed");
+                revert("match-orders-failed");
             }
         }
-
-        // Decode the dealId from successful call
-        dealId = abi.decode(result, (bytes32));
-
-        return dealId;
     }
 
     function _deposit(address from, uint256 amount) internal {
