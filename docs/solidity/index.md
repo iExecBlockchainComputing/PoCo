@@ -259,6 +259,12 @@ Usage patterns:
 The `data` parameter should be ABI-encoded orders if matching is desired:
 abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
 
+_Important notes:
+- Match orders sponsoring is NOT supported. The requester (sender) always pays for the deal.
+- Clients must compute the exact deal cost and deposit the right amount for the deal to be matched.
+  The deal cost = (appPrice + datasetPrice + workerpoolPrice) * volume.
+- If insufficient funds are deposited, the match will fail._
+
 #### Parameters
 
 | Name | Type | Description |
@@ -272,7 +278,7 @@ abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| [0] | bool | success True if operation succeeded @custom:example ```solidity // Encode orders bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder); // One transaction does it all RLC(token).approveAndCall(iexecProxy, dealCost, data); ``` |
+| [0] | bool | success True if operation succeeded @custom:example ```solidity // Compute deal cost uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume; // Encode orders bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder); // One transaction does it all RLC(token).approveAndCall(iexecProxy, dealCost, data); ``` |
 
 ## IexecOrderManagementFacet
 
