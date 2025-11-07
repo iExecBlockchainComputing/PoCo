@@ -6,11 +6,13 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
     IexecInterfaceToken,
     IexecInterfaceToken__factory,
     RLC,
     RLC__factory,
+    ReceiveApprovalTestHelper__factory,
 } from '../../../typechain';
 import { TAG_TEE } from '../../../utils/constants';
 import {
@@ -23,6 +25,7 @@ import {
 } from '../../../utils/createOrders';
 import { encodeOrders } from '../../../utils/odb-tools';
 import { getDealId, getIexecAccounts } from '../../../utils/poco-tools';
+import { getFunctionSelectors } from '../../../utils/proxy-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
@@ -309,7 +312,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             ).to.be.revertedWith('caller-must-be-requester');
         });
 
-        it('Should not match orders with insufficient deposit', async () => {
+        it('Should bubble up error when matchOrders fails', async () => {
             const orders = buildOrders({
                 assets: ordersAssets,
                 prices: ordersPrices,
@@ -441,6 +444,71 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 .withArgs(AddressZero, requester.address, dealCost);
 
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(0n);
+        });
+
+        it('Should revert with receive-approval-failed when delegatecall fails silently', async () => {
+            // Deploy the mock helper contract that fails silently
+            const mockFacet = await new ReceiveApprovalTestHelper__factory()
+                .connect(iexecAdmin)
+                .deploy()
+                .then((tx) => tx.waitForDeployment());
+
+            const mockFacetAddress = await mockFacet.getAddress();
+
+            const mockFactory = new ReceiveApprovalTestHelper__factory();
+            const matchOrdersSelector = getFunctionSelectors(mockFactory)[0]; // matchOrders is the only function
+
+            const diamondLoupe = await ethers.getContractAt('DiamondLoupeFacet', proxyAddress);
+            const originalFacetAddress = await diamondLoupe.facetAddress(matchOrdersSelector);
+            const diamondCut = await ethers.getContractAt(
+                'DiamondCutFacet',
+                proxyAddress,
+                iexecAdmin,
+            );
+
+            await diamondCut.diamondCut(
+                [
+                    {
+                        facetAddress: mockFacetAddress,
+                        action: FacetCutAction.Replace,
+                        functionSelectors: [matchOrdersSelector],
+                    },
+                ],
+                ethers.ZeroAddress,
+                '0x',
+            );
+
+            // Now test receiveApproval - it will delegatecall to our mock which fails silently
+            const depositAmount = 1000n;
+            const orders = buildOrders({
+                assets: ordersAssets,
+                prices: ordersPrices,
+                requester: requester.address,
+                tag: TAG_TEE,
+                volume: volume,
+            });
+
+            const encodedOrders = encodeOrdersForCallback(orders);
+
+            const tx = rlcInstanceAsRequester.approveAndCall(
+                proxyAddress,
+                depositAmount,
+                encodedOrders,
+            );
+            await expect(tx).to.be.revertedWith('receive-approval-failed');
+
+            // Restore original facet
+            await diamondCut.diamondCut(
+                [
+                    {
+                        facetAddress: originalFacetAddress,
+                        action: FacetCutAction.Replace,
+                        functionSelectors: [matchOrdersSelector],
+                    },
+                ],
+                ethers.ZeroAddress,
+                '0x',
+            );
         });
     });
 
