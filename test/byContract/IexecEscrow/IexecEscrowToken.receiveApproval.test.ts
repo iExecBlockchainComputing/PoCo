@@ -203,15 +203,11 @@ describe('IexecEscrowToken-receiveApproval', () => {
                     volume,
                 );
 
-            // Verify frozen balance
-            expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealCost);
-
             // Verify total supply increased
             expect(await iexecPoco.totalSupply()).to.equal(initialTotalSupply + dealCost);
-            // Total balance should be existing + new deposit - frozen
-            expect(await iexecPoco.balanceOf(requester.address)).to.equal(
-                initialBalance + dealCost - dealCost,
-            );
+            // The available balance remains unchanged because the deposit is immediately frozen
+            expect(await iexecPoco.balanceOf(requester.address)).to.equal(initialBalance);
+            // Verify frozen balance
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealCost);
         });
 
@@ -290,14 +286,10 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             const initialBalance = await iexecPoco.balanceOf(requester.address);
             const encodedOrders = encodeOrdersForCallback(orders);
-            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
+            await rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders);
 
-            const tx = rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders);
-
-            // Total balance should be existing + new deposit - frozen
-            expect(await iexecPoco.balanceOf(requester.address)).to.equal(
-                initialBalance + dealCost - dealCost,
-            );
+            // The available balance remains unchanged because the deposit is immediately frozen
+            expect(await iexecPoco.balanceOf(requester.address)).to.equal(initialBalance);
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealCost);
         });
 
@@ -438,9 +430,12 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             const dealCost = 0n;
             const encodedOrders = encodeOrdersForCallback(ordersZeroPrice);
-            const dealId = getDealId(iexecWrapper.getDomain(), ordersZeroPrice.requester);
 
-            const tx = rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders);
+            const tx = await rlcInstanceAsRequester.approveAndCall(
+                proxyAddress,
+                dealCost,
+                encodedOrders,
+            );
 
             await expect(tx)
                 .to.emit(iexecPoco, 'Transfer')
