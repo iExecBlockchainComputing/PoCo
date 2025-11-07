@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "./Registry.sol";
+import {IRegistry} from "./IRegistry.sol";
 
 // Note: this version of this contract that has been migrated to solidity v0.8 is not the
 // same version that is currently deployed on live networks. The reason being, registries

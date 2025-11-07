@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../../interfaces/IexecTokenSpender.sol";
+import {IexecTokenSpender} from "../../interfaces/IexecTokenSpender.sol";
 
 contract TestReceiver is IexecTokenSpender {
     event GotApproval(address sender, uint256 value, address token, bytes extraData);
