@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC20} from "@openzeppelin/contracts-v5/token/ERC20/IERC20.sol";
-import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {FacetBase} from "./FacetBase.sol";
 import {IexecConfiguration} from "../interfaces/IexecConfiguration.sol";
 import {IexecHubV3Interface} from "../interfaces/IexecHubV3Interface.sol";

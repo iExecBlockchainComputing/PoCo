@@ -3,12 +3,12 @@
 
 pragma solidity ^0.8.0;
 
-import "./proxy/InitializableUpgradeabilityProxy.sol";
-import {Ownable} from "@openzeppelin/contracts-v5/access/Ownable.sol";
-import {ERC721} from "@openzeppelin/contracts-v5/token/ERC721/ERC721.sol";
-import {Create2} from "@openzeppelin/contracts-v5/utils/Create2.sol";
+import {InitializableUpgradeabilityProxy} from "./proxy/InitializableUpgradeabilityProxy.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
 import {IRegistry} from "./IRegistry.sol";
-import {ERC721Enumerable} from "@openzeppelin/contracts-v5/token/ERC721/extensions/ERC721Enumerable.sol";
+import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 // Note: this version of this contract that has been migrated to solidity v0.8 is not the
 // same version that is currently deployed on live networks. The reason being, registries

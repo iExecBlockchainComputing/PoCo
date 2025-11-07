@@ -76,8 +76,8 @@ const v8Settings = {
 const config: HardhatUserConfig = {
     solidity: {
         compilers: [
-            { version: '0.8.21', settings: v8Settings }, // PoCo Boost
-            { version: '0.6.12', settings }, // PoCo contracts
+            { version: '0.8.21', settings: v8Settings }, // PoCo contracts
+            { version: '0.6.12', settings }, // External dependencies (@amxx/factory)
             { version: '0.4.24', settings }, // RLC contracts
         ],
     },
@@ -226,7 +226,7 @@ const config: HardhatUserConfig = {
             '@mudgen/diamond-1/contracts/libraries/LibDiamond.sol',
             '@mudgen/diamond-1/contracts/upgradeInitializers/DiamondInit.sol',
             // Used as mock or fake in UTs
-            '@openzeppelin/contracts-v5/interfaces/IERC1271.sol',
+            '@openzeppelin/contracts/interfaces/IERC1271.sol',
             // Used in deployment
             '@amxx/factory/contracts/v6/GenericFactory.sol',
             'createx/src/ICreateX.sol',

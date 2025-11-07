@@ -11,7 +11,7 @@
 
 pragma solidity ^0.8.0;
 
-import "./BaseUpgradeabilityProxy.sol";
+import {BaseUpgradeabilityProxy} from "./BaseUpgradeabilityProxy.sol";
 
 /**
  * @title InitializableUpgradeabilityProxy
