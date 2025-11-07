@@ -263,8 +263,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
         it('Should work when requester has existing balance', async () => {
             // First, deposit some tokens traditionally
             const existingDeposit = 500_000n;
-            await rlcInstanceAsRequester.approve(proxyAddress, existingDeposit);
-            await iexecPocoAsRequester.deposit(existingDeposit);
+            await rlcInstanceAsRequester.approveAndCall(proxyAddress, existingDeposit, '0x');
 
             const orders = buildOrders({
                 assets: ordersAssets,
