@@ -1,550 +1,19 @@
 # Solidity API
 
-## IexecInterfaceToken
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in token mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-## IexecERC20Core
-
-## IexecEscrowTokenFacet
-
-### receive
-
-```solidity
-receive() external payable
-```
-
-### fallback
-
-```solidity
-fallback() external payable
-```
-
-### deposit
-
-```solidity
-function deposit(uint256 amount) external returns (bool)
-```
-
-### depositFor
-
-```solidity
-function depositFor(uint256 amount, address target) external returns (bool)
-```
-
-### depositForArray
-
-```solidity
-function depositForArray(uint256[] amounts, address[] targets) external returns (bool)
-```
-
-### withdraw
-
-```solidity
-function withdraw(uint256 amount) external returns (bool)
-```
-
-### withdrawTo
-
-```solidity
-function withdrawTo(uint256 amount, address target) external returns (bool)
-```
-
-### recover
-
-```solidity
-function recover() external returns (uint256)
-```
-
-### receiveApproval
-
-```solidity
-function receiveApproval(address sender, uint256 amount, address token, bytes) external returns (bool)
-```
-
-## IexecLibCore_v5
-
-### Account
-
-Tools
-
-```solidity
-struct Account {
-  uint256 stake;
-  uint256 locked;
-}
-```
-
-### Category
-
-```solidity
-struct Category {
-  string name;
-  string description;
-  uint256 workClockTimeRef;
-}
-```
-
-### DatasetInfo
-
-```solidity
-struct DatasetInfo {
-  address owner;
-  string m_datasetName;
-  bytes m_datasetMultiaddr;
-  bytes32 m_datasetChecksum;
-}
-```
-
-### AppInfo
-
-```solidity
-struct AppInfo {
-  address owner;
-  string m_appName;
-  string m_appType;
-  bytes m_appMultiaddr;
-  bytes32 m_appChecksum;
-  bytes m_appMREnclave;
-}
-```
-
-### WorkerpoolInfo
-
-```solidity
-struct WorkerpoolInfo {
-  address owner;
-  string m_workerpoolDescription;
-  uint256 m_workerStakeRatioPolicy;
-  uint256 m_schedulerRewardRatioPolicy;
-}
-```
-
-### Resource
-
-Clerk - Deals
-
-```solidity
-struct Resource {
-  address pointer;
-  address owner;
-  uint256 price;
-}
-```
-
-### Deal
-
-```solidity
-struct Deal {
-  struct IexecLibCore_v5.Resource app;
-  struct IexecLibCore_v5.Resource dataset;
-  struct IexecLibCore_v5.Resource workerpool;
-  uint256 trust;
-  uint256 category;
-  bytes32 tag;
-  address requester;
-  address beneficiary;
-  address callback;
-  string params;
-  uint256 startTime;
-  uint256 botFirst;
-  uint256 botSize;
-  uint256 workerStake;
-  uint256 schedulerRewardRatio;
-  address sponsor;
-}
-```
-
-### DealBoost
-
-Simplified deals for PoCo Boost module.
-
-```solidity
-struct DealBoost {
-  address appOwner;
-  uint96 appPrice;
-  address datasetOwner;
-  uint96 datasetPrice;
-  address workerpoolOwner;
-  uint96 workerpoolPrice;
-  address requester;
-  uint96 workerReward;
-  address callback;
-  uint40 deadline;
-  uint16 botFirst;
-  uint16 botSize;
-  bytes3 shortTag;
-  address sponsor;
-}
-```
-
-### TaskStatusEnum
-
-Tasks
-
-```solidity
-enum TaskStatusEnum {
-  UNSET,
-  ACTIVE,
-  REVEALING,
-  COMPLETED,
-  FAILED
-}
-```
-
-### Task
-
-```solidity
-struct Task {
-  enum IexecLibCore_v5.TaskStatusEnum status;
-  bytes32 dealid;
-  uint256 idx;
-  uint256 timeref;
-  uint256 contributionDeadline;
-  uint256 revealDeadline;
-  uint256 finalDeadline;
-  bytes32 consensusValue;
-  uint256 revealCounter;
-  uint256 winnerCounter;
-  address[] contributors;
-  bytes32 resultDigest;
-  bytes results;
-  uint256 resultsTimestamp;
-  bytes resultsCallback;
-}
-```
-
-### Consensus
-
-Consensus
-
-```solidity
-struct Consensus {
-  mapping(bytes32 => uint256) group;
-  uint256 total;
-}
-```
-
-### ContributionStatusEnum
-
-Consensus
-
-```solidity
-enum ContributionStatusEnum {
-  UNSET,
-  CONTRIBUTED,
-  PROVED,
-  REJECTED
-}
-```
-
-### Contribution
-
-```solidity
-struct Contribution {
-  enum IexecLibCore_v5.ContributionStatusEnum status;
-  bytes32 resultHash;
-  bytes32 resultSeal;
-  address enclaveChallenge;
-  uint256 weight;
-}
-```
-
-## IexecLibOrders_v5
-
-### EIP712DOMAIN_TYPEHASH
-
-```solidity
-bytes32 EIP712DOMAIN_TYPEHASH
-```
-
-### APPORDER_TYPEHASH
-
-```solidity
-bytes32 APPORDER_TYPEHASH
-```
-
-### DATASETORDER_TYPEHASH
-
-```solidity
-bytes32 DATASETORDER_TYPEHASH
-```
-
-### WORKERPOOLORDER_TYPEHASH
-
-```solidity
-bytes32 WORKERPOOLORDER_TYPEHASH
-```
-
-### REQUESTORDER_TYPEHASH
-
-```solidity
-bytes32 REQUESTORDER_TYPEHASH
-```
-
-### APPORDEROPERATION_TYPEHASH
-
-```solidity
-bytes32 APPORDEROPERATION_TYPEHASH
-```
-
-### DATASETORDEROPERATION_TYPEHASH
-
-```solidity
-bytes32 DATASETORDEROPERATION_TYPEHASH
-```
-
-### WORKERPOOLORDEROPERATION_TYPEHASH
-
-```solidity
-bytes32 WORKERPOOLORDEROPERATION_TYPEHASH
-```
-
-### REQUESTORDEROPERATION_TYPEHASH
-
-```solidity
-bytes32 REQUESTORDEROPERATION_TYPEHASH
-```
-
-### OrderOperationEnum
-
-```solidity
-enum OrderOperationEnum {
-  SIGN,
-  CLOSE
-}
-```
-
-### EIP712Domain
-
-```solidity
-struct EIP712Domain {
-  string name;
-  string version;
-  uint256 chainId;
-  address verifyingContract;
-}
-```
-
-### AppOrder
-
-```solidity
-struct AppOrder {
-  address app;
-  uint256 appprice;
-  uint256 volume;
-  bytes32 tag;
-  address datasetrestrict;
-  address workerpoolrestrict;
-  address requesterrestrict;
-  bytes32 salt;
-  bytes sign;
-}
-```
-
-### DatasetOrder
-
-```solidity
-struct DatasetOrder {
-  address dataset;
-  uint256 datasetprice;
-  uint256 volume;
-  bytes32 tag;
-  address apprestrict;
-  address workerpoolrestrict;
-  address requesterrestrict;
-  bytes32 salt;
-  bytes sign;
-}
-```
-
-### WorkerpoolOrder
-
-```solidity
-struct WorkerpoolOrder {
-  address workerpool;
-  uint256 workerpoolprice;
-  uint256 volume;
-  bytes32 tag;
-  uint256 category;
-  uint256 trust;
-  address apprestrict;
-  address datasetrestrict;
-  address requesterrestrict;
-  bytes32 salt;
-  bytes sign;
-}
-```
-
-### RequestOrder
-
-```solidity
-struct RequestOrder {
-  address app;
-  uint256 appmaxprice;
-  address dataset;
-  uint256 datasetmaxprice;
-  address workerpool;
-  uint256 workerpoolmaxprice;
-  address requester;
-  uint256 volume;
-  bytes32 tag;
-  uint256 category;
-  uint256 trust;
-  address beneficiary;
-  address callback;
-  string params;
-  bytes32 salt;
-  bytes sign;
-}
-```
-
-### AppOrderOperation
-
-```solidity
-struct AppOrderOperation {
-  struct IexecLibOrders_v5.AppOrder order;
-  enum IexecLibOrders_v5.OrderOperationEnum operation;
-  bytes sign;
-}
-```
-
-### DatasetOrderOperation
-
-```solidity
-struct DatasetOrderOperation {
-  struct IexecLibOrders_v5.DatasetOrder order;
-  enum IexecLibOrders_v5.OrderOperationEnum operation;
-  bytes sign;
-}
-```
-
-### WorkerpoolOrderOperation
-
-```solidity
-struct WorkerpoolOrderOperation {
-  struct IexecLibOrders_v5.WorkerpoolOrder order;
-  enum IexecLibOrders_v5.OrderOperationEnum operation;
-  bytes sign;
-}
-```
-
-### RequestOrderOperation
-
-```solidity
-struct RequestOrderOperation {
-  struct IexecLibOrders_v5.RequestOrder order;
-  enum IexecLibOrders_v5.OrderOperationEnum operation;
-  bytes sign;
-}
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.EIP712Domain _domain) public pure returns (bytes32 domainhash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.AppOrder _apporder) public pure returns (bytes32 apphash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.DatasetOrder _datasetorder) public pure returns (bytes32 datasethash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder) public pure returns (bytes32 workerpoolhash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.RequestOrder _requestorder) public pure returns (bytes32 requesthash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) public pure returns (bytes32)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) public pure returns (bytes32)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) public pure returns (bytes32)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) public pure returns (bytes32)
-```
-
-## PocoStorageLib
-
-### PocoStorage
-
-```solidity
-struct PocoStorage {
-  contract IRegistry m_appregistry;
-  contract IRegistry m_datasetregistry;
-  contract IRegistry m_workerpoolregistry;
-  contract IERC20 m_baseToken;
-  string m_name;
-  string m_symbol;
-  uint8 m_decimals;
-  uint256 m_totalSupply;
-  mapping(address => uint256) m_balances;
-  mapping(address => uint256) m_frozens;
-  mapping(address => mapping(address => uint256)) m_allowances;
-  bytes32 m_eip712DomainSeparator;
-  mapping(bytes32 => address) m_presigned;
-  mapping(bytes32 => uint256) m_consumed;
-  mapping(bytes32 => struct IexecLibCore_v5.Deal) m_deals;
-  mapping(bytes32 => struct IexecLibCore_v5.Task) m_tasks;
-  mapping(bytes32 => struct IexecLibCore_v5.Consensus) m_consensus;
-  mapping(bytes32 => mapping(address => struct IexecLibCore_v5.Contribution)) m_contributions;
-  mapping(address => uint256) m_workerScores;
-  address m_teebroker;
-  uint256 m_callbackgas;
-  struct IexecLibCore_v5.Category[] m_categories;
-  contract IexecHubV3Interface m_v3_iexecHub;
-  mapping(address => bool) m_v3_scoreImported;
-  mapping(bytes32 => struct IexecLibCore_v5.DealBoost) m_dealsBoost;
-}
-```
-
-## IRegistry
-
-### isRegistered
-
-```solidity
-function isRegistered(address _entry) external view returns (bool)
-```
-
 ## IexecInterfaceNative
 
 A global interface that aggregates all the interfaces needed to interact with
 the PoCo contracts in native mode.
 
 _Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+## IexecInterfaceToken
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in token mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
 Changing the name or the path would cause a breaking change in the SDK._
 
 ## IexecCategoryManagerFacet
@@ -602,6 +71,8 @@ function setTeeBroker(address _teebroker) external
 ```solidity
 function setCallbackGas(uint256 _callbackgas) external
 ```
+
+## IexecERC20Core
 
 ## IexecERC20Facet
 
@@ -721,6 +192,62 @@ function withdrawTo(uint256 amount, address target) external returns (bool)
 
 ```solidity
 function recover() external returns (uint256)
+```
+
+## IexecEscrowTokenFacet
+
+### receive
+
+```solidity
+receive() external payable
+```
+
+### fallback
+
+```solidity
+fallback() external payable
+```
+
+### deposit
+
+```solidity
+function deposit(uint256 amount) external returns (bool)
+```
+
+### depositFor
+
+```solidity
+function depositFor(uint256 amount, address target) external returns (bool)
+```
+
+### depositForArray
+
+```solidity
+function depositForArray(uint256[] amounts, address[] targets) external returns (bool)
+```
+
+### withdraw
+
+```solidity
+function withdraw(uint256 amount) external returns (bool)
+```
+
+### withdrawTo
+
+```solidity
+function withdrawTo(uint256 amount, address target) external returns (bool)
+```
+
+### recover
+
+```solidity
+function recover() external returns (uint256)
+```
+
+### receiveApproval
+
+```solidity
+function receiveApproval(address sender, uint256 amount, address token, bytes) external returns (bool)
 ```
 
 ## IexecOrderManagementFacet
@@ -1301,6 +828,479 @@ function broadcastWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrder _work
 
 ```solidity
 function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestorder) external
+```
+
+## IexecLibCore_v5
+
+### Account
+
+Tools
+
+```solidity
+struct Account {
+  uint256 stake;
+  uint256 locked;
+}
+```
+
+### Category
+
+```solidity
+struct Category {
+  string name;
+  string description;
+  uint256 workClockTimeRef;
+}
+```
+
+### DatasetInfo
+
+```solidity
+struct DatasetInfo {
+  address owner;
+  string m_datasetName;
+  bytes m_datasetMultiaddr;
+  bytes32 m_datasetChecksum;
+}
+```
+
+### AppInfo
+
+```solidity
+struct AppInfo {
+  address owner;
+  string m_appName;
+  string m_appType;
+  bytes m_appMultiaddr;
+  bytes32 m_appChecksum;
+  bytes m_appMREnclave;
+}
+```
+
+### WorkerpoolInfo
+
+```solidity
+struct WorkerpoolInfo {
+  address owner;
+  string m_workerpoolDescription;
+  uint256 m_workerStakeRatioPolicy;
+  uint256 m_schedulerRewardRatioPolicy;
+}
+```
+
+### Resource
+
+Clerk - Deals
+
+```solidity
+struct Resource {
+  address pointer;
+  address owner;
+  uint256 price;
+}
+```
+
+### Deal
+
+```solidity
+struct Deal {
+  struct IexecLibCore_v5.Resource app;
+  struct IexecLibCore_v5.Resource dataset;
+  struct IexecLibCore_v5.Resource workerpool;
+  uint256 trust;
+  uint256 category;
+  bytes32 tag;
+  address requester;
+  address beneficiary;
+  address callback;
+  string params;
+  uint256 startTime;
+  uint256 botFirst;
+  uint256 botSize;
+  uint256 workerStake;
+  uint256 schedulerRewardRatio;
+  address sponsor;
+}
+```
+
+### DealBoost
+
+Simplified deals for PoCo Boost module.
+
+```solidity
+struct DealBoost {
+  address appOwner;
+  uint96 appPrice;
+  address datasetOwner;
+  uint96 datasetPrice;
+  address workerpoolOwner;
+  uint96 workerpoolPrice;
+  address requester;
+  uint96 workerReward;
+  address callback;
+  uint40 deadline;
+  uint16 botFirst;
+  uint16 botSize;
+  bytes3 shortTag;
+  address sponsor;
+}
+```
+
+### TaskStatusEnum
+
+Tasks
+
+```solidity
+enum TaskStatusEnum {
+  UNSET,
+  ACTIVE,
+  REVEALING,
+  COMPLETED,
+  FAILED
+}
+```
+
+### Task
+
+```solidity
+struct Task {
+  enum IexecLibCore_v5.TaskStatusEnum status;
+  bytes32 dealid;
+  uint256 idx;
+  uint256 timeref;
+  uint256 contributionDeadline;
+  uint256 revealDeadline;
+  uint256 finalDeadline;
+  bytes32 consensusValue;
+  uint256 revealCounter;
+  uint256 winnerCounter;
+  address[] contributors;
+  bytes32 resultDigest;
+  bytes results;
+  uint256 resultsTimestamp;
+  bytes resultsCallback;
+}
+```
+
+### Consensus
+
+Consensus
+
+```solidity
+struct Consensus {
+  mapping(bytes32 => uint256) group;
+  uint256 total;
+}
+```
+
+### ContributionStatusEnum
+
+Consensus
+
+```solidity
+enum ContributionStatusEnum {
+  UNSET,
+  CONTRIBUTED,
+  PROVED,
+  REJECTED
+}
+```
+
+### Contribution
+
+```solidity
+struct Contribution {
+  enum IexecLibCore_v5.ContributionStatusEnum status;
+  bytes32 resultHash;
+  bytes32 resultSeal;
+  address enclaveChallenge;
+  uint256 weight;
+}
+```
+
+## IexecLibOrders_v5
+
+### EIP712DOMAIN_TYPEHASH
+
+```solidity
+bytes32 EIP712DOMAIN_TYPEHASH
+```
+
+### APPORDER_TYPEHASH
+
+```solidity
+bytes32 APPORDER_TYPEHASH
+```
+
+### DATASETORDER_TYPEHASH
+
+```solidity
+bytes32 DATASETORDER_TYPEHASH
+```
+
+### WORKERPOOLORDER_TYPEHASH
+
+```solidity
+bytes32 WORKERPOOLORDER_TYPEHASH
+```
+
+### REQUESTORDER_TYPEHASH
+
+```solidity
+bytes32 REQUESTORDER_TYPEHASH
+```
+
+### APPORDEROPERATION_TYPEHASH
+
+```solidity
+bytes32 APPORDEROPERATION_TYPEHASH
+```
+
+### DATASETORDEROPERATION_TYPEHASH
+
+```solidity
+bytes32 DATASETORDEROPERATION_TYPEHASH
+```
+
+### WORKERPOOLORDEROPERATION_TYPEHASH
+
+```solidity
+bytes32 WORKERPOOLORDEROPERATION_TYPEHASH
+```
+
+### REQUESTORDEROPERATION_TYPEHASH
+
+```solidity
+bytes32 REQUESTORDEROPERATION_TYPEHASH
+```
+
+### OrderOperationEnum
+
+```solidity
+enum OrderOperationEnum {
+  SIGN,
+  CLOSE
+}
+```
+
+### EIP712Domain
+
+```solidity
+struct EIP712Domain {
+  string name;
+  string version;
+  uint256 chainId;
+  address verifyingContract;
+}
+```
+
+### AppOrder
+
+```solidity
+struct AppOrder {
+  address app;
+  uint256 appprice;
+  uint256 volume;
+  bytes32 tag;
+  address datasetrestrict;
+  address workerpoolrestrict;
+  address requesterrestrict;
+  bytes32 salt;
+  bytes sign;
+}
+```
+
+### DatasetOrder
+
+```solidity
+struct DatasetOrder {
+  address dataset;
+  uint256 datasetprice;
+  uint256 volume;
+  bytes32 tag;
+  address apprestrict;
+  address workerpoolrestrict;
+  address requesterrestrict;
+  bytes32 salt;
+  bytes sign;
+}
+```
+
+### WorkerpoolOrder
+
+```solidity
+struct WorkerpoolOrder {
+  address workerpool;
+  uint256 workerpoolprice;
+  uint256 volume;
+  bytes32 tag;
+  uint256 category;
+  uint256 trust;
+  address apprestrict;
+  address datasetrestrict;
+  address requesterrestrict;
+  bytes32 salt;
+  bytes sign;
+}
+```
+
+### RequestOrder
+
+```solidity
+struct RequestOrder {
+  address app;
+  uint256 appmaxprice;
+  address dataset;
+  uint256 datasetmaxprice;
+  address workerpool;
+  uint256 workerpoolmaxprice;
+  address requester;
+  uint256 volume;
+  bytes32 tag;
+  uint256 category;
+  uint256 trust;
+  address beneficiary;
+  address callback;
+  string params;
+  bytes32 salt;
+  bytes sign;
+}
+```
+
+### AppOrderOperation
+
+```solidity
+struct AppOrderOperation {
+  struct IexecLibOrders_v5.AppOrder order;
+  enum IexecLibOrders_v5.OrderOperationEnum operation;
+  bytes sign;
+}
+```
+
+### DatasetOrderOperation
+
+```solidity
+struct DatasetOrderOperation {
+  struct IexecLibOrders_v5.DatasetOrder order;
+  enum IexecLibOrders_v5.OrderOperationEnum operation;
+  bytes sign;
+}
+```
+
+### WorkerpoolOrderOperation
+
+```solidity
+struct WorkerpoolOrderOperation {
+  struct IexecLibOrders_v5.WorkerpoolOrder order;
+  enum IexecLibOrders_v5.OrderOperationEnum operation;
+  bytes sign;
+}
+```
+
+### RequestOrderOperation
+
+```solidity
+struct RequestOrderOperation {
+  struct IexecLibOrders_v5.RequestOrder order;
+  enum IexecLibOrders_v5.OrderOperationEnum operation;
+  bytes sign;
+}
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.EIP712Domain _domain) public pure returns (bytes32 domainhash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.AppOrder _apporder) public pure returns (bytes32 apphash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.DatasetOrder _datasetorder) public pure returns (bytes32 datasethash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder) public pure returns (bytes32 workerpoolhash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.RequestOrder _requestorder) public pure returns (bytes32 requesthash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) public pure returns (bytes32)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) public pure returns (bytes32)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) public pure returns (bytes32)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) public pure returns (bytes32)
+```
+
+## PocoStorageLib
+
+### PocoStorage
+
+```solidity
+struct PocoStorage {
+  contract IRegistry m_appregistry;
+  contract IRegistry m_datasetregistry;
+  contract IRegistry m_workerpoolregistry;
+  contract IERC20 m_baseToken;
+  string m_name;
+  string m_symbol;
+  uint8 m_decimals;
+  uint256 m_totalSupply;
+  mapping(address => uint256) m_balances;
+  mapping(address => uint256) m_frozens;
+  mapping(address => mapping(address => uint256)) m_allowances;
+  bytes32 m_eip712DomainSeparator;
+  mapping(bytes32 => address) m_presigned;
+  mapping(bytes32 => uint256) m_consumed;
+  mapping(bytes32 => struct IexecLibCore_v5.Deal) m_deals;
+  mapping(bytes32 => struct IexecLibCore_v5.Task) m_tasks;
+  mapping(bytes32 => struct IexecLibCore_v5.Consensus) m_consensus;
+  mapping(bytes32 => mapping(address => struct IexecLibCore_v5.Contribution)) m_contributions;
+  mapping(address => uint256) m_workerScores;
+  address m_teebroker;
+  uint256 m_callbackgas;
+  struct IexecLibCore_v5.Category[] m_categories;
+  contract IexecHubV3Interface m_v3_iexecHub;
+  mapping(address => bool) m_v3_scoreImported;
+  mapping(bytes32 => struct IexecLibCore_v5.DealBoost) m_dealsBoost;
+}
+```
+
+## IRegistry
+
+### isRegistered
+
+```solidity
+function isRegistered(address _entry) external view returns (bool)
 ```
 
 ## Registry
