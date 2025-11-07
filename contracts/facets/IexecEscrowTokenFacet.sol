@@ -80,6 +80,11 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      * The `data` parameter should be ABI-encoded orders if matching is desired:
      * abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
      *
+     * @dev Important notes:
+     * - Match orders sponsoring is NOT supported. The requester (sender) always pays for the deal.
+     * - Clients must compute the exact deal cost and deposit the right amount for the deal to be matched.
+     *   The deal cost = (appPrice + datasetPrice + workerpoolPrice) * volume.
+     * - If insufficient funds are deposited, the match will fail.
      *
      * @param sender The address that approved tokens (must be requester if matching)
      * @param amount Amount of tokens approved and to be deposited
@@ -90,6 +95,9 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      *
      * @custom:example
      * ```solidity
+     * // Compute deal cost
+     * uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
+     *
      * // Encode orders
      * bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder);
      *
