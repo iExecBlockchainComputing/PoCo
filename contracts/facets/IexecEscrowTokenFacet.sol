@@ -3,13 +3,13 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecERC20Core} from "./IexecERC20Core.sol";
+import {IexecERC20Facet} from "./IexecERC20Facet.sol";
 import {FacetBase} from "./FacetBase.sol";
 import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
-contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
+contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Facet {
     /***************************************************************************
      *                         Escrow methods: public                          *
      ***************************************************************************/
