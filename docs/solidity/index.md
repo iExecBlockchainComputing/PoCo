@@ -1,22 +1,10 @@
 # Solidity API
 
-## IexecInterfaceNative
+## FacetBase
 
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in native mode.
+_Every facet must inherit from this contract._
 
-_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-## IexecInterfaceToken
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in token mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-## IexecERC20Facet
+## IexecERC20Base
 
 ### transfer
 
@@ -348,249 +336,6 @@ struct Contribution {
 }
 ```
 
-## IexecLibOrders_v5
-
-### EIP712DOMAIN_TYPEHASH
-
-```solidity
-bytes32 EIP712DOMAIN_TYPEHASH
-```
-
-### APPORDER_TYPEHASH
-
-```solidity
-bytes32 APPORDER_TYPEHASH
-```
-
-### DATASETORDER_TYPEHASH
-
-```solidity
-bytes32 DATASETORDER_TYPEHASH
-```
-
-### WORKERPOOLORDER_TYPEHASH
-
-```solidity
-bytes32 WORKERPOOLORDER_TYPEHASH
-```
-
-### REQUESTORDER_TYPEHASH
-
-```solidity
-bytes32 REQUESTORDER_TYPEHASH
-```
-
-### APPORDEROPERATION_TYPEHASH
-
-```solidity
-bytes32 APPORDEROPERATION_TYPEHASH
-```
-
-### DATASETORDEROPERATION_TYPEHASH
-
-```solidity
-bytes32 DATASETORDEROPERATION_TYPEHASH
-```
-
-### WORKERPOOLORDEROPERATION_TYPEHASH
-
-```solidity
-bytes32 WORKERPOOLORDEROPERATION_TYPEHASH
-```
-
-### REQUESTORDEROPERATION_TYPEHASH
-
-```solidity
-bytes32 REQUESTORDEROPERATION_TYPEHASH
-```
-
-### OrderOperationEnum
-
-```solidity
-enum OrderOperationEnum {
-  SIGN,
-  CLOSE
-}
-```
-
-### EIP712Domain
-
-```solidity
-struct EIP712Domain {
-  string name;
-  string version;
-  uint256 chainId;
-  address verifyingContract;
-}
-```
-
-### AppOrder
-
-```solidity
-struct AppOrder {
-  address app;
-  uint256 appprice;
-  uint256 volume;
-  bytes32 tag;
-  address datasetrestrict;
-  address workerpoolrestrict;
-  address requesterrestrict;
-  bytes32 salt;
-  bytes sign;
-}
-```
-
-### DatasetOrder
-
-```solidity
-struct DatasetOrder {
-  address dataset;
-  uint256 datasetprice;
-  uint256 volume;
-  bytes32 tag;
-  address apprestrict;
-  address workerpoolrestrict;
-  address requesterrestrict;
-  bytes32 salt;
-  bytes sign;
-}
-```
-
-### WorkerpoolOrder
-
-```solidity
-struct WorkerpoolOrder {
-  address workerpool;
-  uint256 workerpoolprice;
-  uint256 volume;
-  bytes32 tag;
-  uint256 category;
-  uint256 trust;
-  address apprestrict;
-  address datasetrestrict;
-  address requesterrestrict;
-  bytes32 salt;
-  bytes sign;
-}
-```
-
-### RequestOrder
-
-```solidity
-struct RequestOrder {
-  address app;
-  uint256 appmaxprice;
-  address dataset;
-  uint256 datasetmaxprice;
-  address workerpool;
-  uint256 workerpoolmaxprice;
-  address requester;
-  uint256 volume;
-  bytes32 tag;
-  uint256 category;
-  uint256 trust;
-  address beneficiary;
-  address callback;
-  string params;
-  bytes32 salt;
-  bytes sign;
-}
-```
-
-### AppOrderOperation
-
-```solidity
-struct AppOrderOperation {
-  struct IexecLibOrders_v5.AppOrder order;
-  enum IexecLibOrders_v5.OrderOperationEnum operation;
-  bytes sign;
-}
-```
-
-### DatasetOrderOperation
-
-```solidity
-struct DatasetOrderOperation {
-  struct IexecLibOrders_v5.DatasetOrder order;
-  enum IexecLibOrders_v5.OrderOperationEnum operation;
-  bytes sign;
-}
-```
-
-### WorkerpoolOrderOperation
-
-```solidity
-struct WorkerpoolOrderOperation {
-  struct IexecLibOrders_v5.WorkerpoolOrder order;
-  enum IexecLibOrders_v5.OrderOperationEnum operation;
-  bytes sign;
-}
-```
-
-### RequestOrderOperation
-
-```solidity
-struct RequestOrderOperation {
-  struct IexecLibOrders_v5.RequestOrder order;
-  enum IexecLibOrders_v5.OrderOperationEnum operation;
-  bytes sign;
-}
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.EIP712Domain _domain) public pure returns (bytes32 domainhash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.AppOrder _apporder) public pure returns (bytes32 apphash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.DatasetOrder _datasetorder) public pure returns (bytes32 datasethash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder) public pure returns (bytes32 workerpoolhash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.RequestOrder _requestorder) public pure returns (bytes32 requesthash)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) public pure returns (bytes32)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) public pure returns (bytes32)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) public pure returns (bytes32)
-```
-
-### hash
-
-```solidity
-function hash(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) public pure returns (bytes32)
-```
-
 ## PocoStorageLib
 
 ### PocoStorage
@@ -632,6 +377,22 @@ struct PocoStorage {
 ```solidity
 function isRegistered(address _entry) external view returns (bool)
 ```
+
+## IexecInterfaceNative
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in native mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+## IexecInterfaceToken
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in token mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
 
 ## IexecCategoryManagerFacet
 
@@ -688,8 +449,6 @@ function setTeeBroker(address _teebroker) external
 ```solidity
 function setCallbackGas(uint256 _callbackgas) external
 ```
-
-## IexecERC20Core
 
 ## IexecEscrow
 
@@ -1301,6 +1060,249 @@ function broadcastWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrder _work
 
 ```solidity
 function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestorder) external
+```
+
+## IexecLibOrders_v5
+
+### EIP712DOMAIN_TYPEHASH
+
+```solidity
+bytes32 EIP712DOMAIN_TYPEHASH
+```
+
+### APPORDER_TYPEHASH
+
+```solidity
+bytes32 APPORDER_TYPEHASH
+```
+
+### DATASETORDER_TYPEHASH
+
+```solidity
+bytes32 DATASETORDER_TYPEHASH
+```
+
+### WORKERPOOLORDER_TYPEHASH
+
+```solidity
+bytes32 WORKERPOOLORDER_TYPEHASH
+```
+
+### REQUESTORDER_TYPEHASH
+
+```solidity
+bytes32 REQUESTORDER_TYPEHASH
+```
+
+### APPORDEROPERATION_TYPEHASH
+
+```solidity
+bytes32 APPORDEROPERATION_TYPEHASH
+```
+
+### DATASETORDEROPERATION_TYPEHASH
+
+```solidity
+bytes32 DATASETORDEROPERATION_TYPEHASH
+```
+
+### WORKERPOOLORDEROPERATION_TYPEHASH
+
+```solidity
+bytes32 WORKERPOOLORDEROPERATION_TYPEHASH
+```
+
+### REQUESTORDEROPERATION_TYPEHASH
+
+```solidity
+bytes32 REQUESTORDEROPERATION_TYPEHASH
+```
+
+### OrderOperationEnum
+
+```solidity
+enum OrderOperationEnum {
+  SIGN,
+  CLOSE
+}
+```
+
+### EIP712Domain
+
+```solidity
+struct EIP712Domain {
+  string name;
+  string version;
+  uint256 chainId;
+  address verifyingContract;
+}
+```
+
+### AppOrder
+
+```solidity
+struct AppOrder {
+  address app;
+  uint256 appprice;
+  uint256 volume;
+  bytes32 tag;
+  address datasetrestrict;
+  address workerpoolrestrict;
+  address requesterrestrict;
+  bytes32 salt;
+  bytes sign;
+}
+```
+
+### DatasetOrder
+
+```solidity
+struct DatasetOrder {
+  address dataset;
+  uint256 datasetprice;
+  uint256 volume;
+  bytes32 tag;
+  address apprestrict;
+  address workerpoolrestrict;
+  address requesterrestrict;
+  bytes32 salt;
+  bytes sign;
+}
+```
+
+### WorkerpoolOrder
+
+```solidity
+struct WorkerpoolOrder {
+  address workerpool;
+  uint256 workerpoolprice;
+  uint256 volume;
+  bytes32 tag;
+  uint256 category;
+  uint256 trust;
+  address apprestrict;
+  address datasetrestrict;
+  address requesterrestrict;
+  bytes32 salt;
+  bytes sign;
+}
+```
+
+### RequestOrder
+
+```solidity
+struct RequestOrder {
+  address app;
+  uint256 appmaxprice;
+  address dataset;
+  uint256 datasetmaxprice;
+  address workerpool;
+  uint256 workerpoolmaxprice;
+  address requester;
+  uint256 volume;
+  bytes32 tag;
+  uint256 category;
+  uint256 trust;
+  address beneficiary;
+  address callback;
+  string params;
+  bytes32 salt;
+  bytes sign;
+}
+```
+
+### AppOrderOperation
+
+```solidity
+struct AppOrderOperation {
+  struct IexecLibOrders_v5.AppOrder order;
+  enum IexecLibOrders_v5.OrderOperationEnum operation;
+  bytes sign;
+}
+```
+
+### DatasetOrderOperation
+
+```solidity
+struct DatasetOrderOperation {
+  struct IexecLibOrders_v5.DatasetOrder order;
+  enum IexecLibOrders_v5.OrderOperationEnum operation;
+  bytes sign;
+}
+```
+
+### WorkerpoolOrderOperation
+
+```solidity
+struct WorkerpoolOrderOperation {
+  struct IexecLibOrders_v5.WorkerpoolOrder order;
+  enum IexecLibOrders_v5.OrderOperationEnum operation;
+  bytes sign;
+}
+```
+
+### RequestOrderOperation
+
+```solidity
+struct RequestOrderOperation {
+  struct IexecLibOrders_v5.RequestOrder order;
+  enum IexecLibOrders_v5.OrderOperationEnum operation;
+  bytes sign;
+}
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.EIP712Domain _domain) public pure returns (bytes32 domainhash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.AppOrder _apporder) public pure returns (bytes32 apphash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.DatasetOrder _datasetorder) public pure returns (bytes32 datasethash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.WorkerpoolOrder _workerpoolorder) public pure returns (bytes32 workerpoolhash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.RequestOrder _requestorder) public pure returns (bytes32 requesthash)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.AppOrderOperation _apporderoperation) public pure returns (bytes32)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.DatasetOrderOperation _datasetorderoperation) public pure returns (bytes32)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorderoperation) public pure returns (bytes32)
+```
+
+### hash
+
+```solidity
+function hash(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) public pure returns (bytes32)
 ```
 
 ## Registry
