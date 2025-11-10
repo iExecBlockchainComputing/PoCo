@@ -140,6 +140,11 @@ contract IexecPoco1Facet is
     /**
      * Match orders. The requester gets debited.
      *
+     * @notice This function does not use `msg.sender` to determine who pays for the deal.
+     * The sponsor is always set to `_requestorder.requester`, regardless of who calls this function.
+     * This design allows the function to be safely called via delegatecall from other facets
+     * (e.g., IexecEscrowTokenFacet.receiveApproval) without security concerns.
+     *
      * @param _apporder The app order.
      * @param _datasetorder The dataset order.
      * @param _workerpoolorder The workerpool order.
@@ -161,6 +166,7 @@ contract IexecPoco1Facet is
             );
     }
 
+    // TODO: check if we want to modify sponsor origin to be a variable instead of msg.sender
     /**
      * Sponsor match orders for a requester.
      * Unlike the standard `matchOrders(..)` hook where the requester pays for

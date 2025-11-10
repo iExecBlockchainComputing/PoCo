@@ -7,6 +7,8 @@ import {IexecERC20Core} from "./IexecERC20Core.sol";
 import {FacetBase} from "./FacetBase.sol";
 import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
+import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
+import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase, IexecERC20Core {
@@ -64,23 +66,121 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         return delta;
     }
 
-    // Token Spender (endpoint for approveAndCallback calls to the proxy)
+    /***************************************************************************
+     *            Token Spender: Atomic Deposit+Match                  *
+     ***************************************************************************/
+
+    /**
+     * @notice Receives approval, deposit and optionally matches orders in one transaction
+     *
+     * Usage patterns:
+     * 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
+     * 2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedOrders)
+     *
+     * The `data` parameter should be ABI-encoded orders if matching is desired:
+     * abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+     *
+     * @dev Important notes:
+     * - Match orders sponsoring is NOT supported. The requester (sender) always pays for the deal.
+     * - Clients must compute the exact deal cost and deposit the right amount for the deal to be matched.
+     *   The deal cost = (appPrice + datasetPrice + workerpoolPrice) * volume.
+     * - If insufficient funds are deposited, the match will fail.
+     *
+     * @param sender The address that approved tokens (must be requester if matching)
+     * @param amount Amount of tokens approved and to be deposited
+     * @param token Address of the token (must be RLC)
+     * @param data Optional: ABI-encoded orders for matching
+     * @return success True if operation succeeded
+     *
+     *
+     * @custom:example
+     * ```solidity
+     * // Compute deal cost
+     * uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
+     *
+     * // Encode orders
+     * bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder);
+     *
+     * // One transaction does it all
+     * RLC(token).approveAndCall(iexecProxy, dealCost, data);
+     * ```
+     */
     function receiveApproval(
         address sender,
         uint256 amount,
         address token,
-        bytes calldata
+        bytes calldata data
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require(token == address($.m_baseToken), "wrong-token");
         _deposit(sender, amount);
         _mint(sender, amount);
+        if (data.length > 0) {
+            _decodeDataAndMatchOrders(sender, data);
+        }
         return true;
+    }
+
+    /******************************************************************************
+     *        Token Spender: Atomic Deposit+Match if used with RLC.approveAndCall *
+     *****************************************************************************/
+
+    /**
+     * @dev Internal function to match orders after deposit
+     * @param sender The user who deposited (must be the requester)
+     * @param data ABI-encoded orders
+     */
+    function _decodeDataAndMatchOrders(address sender, bytes calldata data) internal {
+        // Decode the orders from calldata
+        (
+            IexecLibOrders_v5.AppOrder memory apporder,
+            IexecLibOrders_v5.DatasetOrder memory datasetorder,
+            IexecLibOrders_v5.WorkerpoolOrder memory workerpoolorder,
+            IexecLibOrders_v5.RequestOrder memory requestorder
+        ) = abi.decode(
+                data,
+                (
+                    IexecLibOrders_v5.AppOrder,
+                    IexecLibOrders_v5.DatasetOrder,
+                    IexecLibOrders_v5.WorkerpoolOrder,
+                    IexecLibOrders_v5.RequestOrder
+                )
+            );
+
+        // Validate that sender is the requester
+        if (requestorder.requester != sender) revert("caller-must-be-requester");
+
+        // Call matchOrders on the IexecPoco1 facet through the diamond
+        // Using delegatecall for safety: preserves msg.sender context (RLC address in this case)
+        // Note: matchOrders doesn't use msg.sender, but delegatecall is safer
+        // in case the implementation changes in the future
+        (bool success, bytes memory result) = address(this).delegatecall(
+            abi.encodeWithSelector(
+                IexecPoco1.matchOrders.selector,
+                apporder,
+                datasetorder,
+                workerpoolorder,
+                requestorder
+            )
+        );
+
+        // Handle failure and bubble up revert reason
+        if (!success) {
+            if (result.length > 0) {
+                // Decode and revert with the original error
+                assembly {
+                    let returndata_size := mload(result)
+                    revert(add(result, 32), returndata_size)
+                }
+            } else {
+                revert("receive-approval-failed");
+            }
+        }
     }
 
     function _deposit(address from, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require($.m_baseToken.transferFrom(from, address(this), amount), "failled-transferFrom");
+        require($.m_baseToken.transferFrom(from, address(this), amount), "failed-transferFrom");
     }
 
     function _withdraw(address to, uint256 amount) internal {
