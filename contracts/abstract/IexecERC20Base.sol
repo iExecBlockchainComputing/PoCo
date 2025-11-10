@@ -8,7 +8,7 @@ import {IexecERC20} from "../interfaces/IexecERC20.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
-contract IexecERC20Facet is IexecERC20, FacetBase {
+abstract contract IexecERC20Base is IexecERC20, FacetBase {
     function transfer(address recipient, uint256 amount) external override returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;

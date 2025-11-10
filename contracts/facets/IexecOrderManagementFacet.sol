@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
-import {FacetBase} from "./FacetBase.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
 import {SignatureVerifier} from "./SignatureVerifier.sol";
 import {IexecOrderManagement} from "../interfaces/IexecOrderManagement.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
