@@ -7,6 +7,7 @@
   "homepage": "https://github.com/iExecBlockchainComputing/PoCo#readme",
   "main": "",
   "scripts": {
+    "prepare": "husky",
     "build": "npx hardhat compile",
     "deploy": "npx hardhat deploy",
     "check-storage-layout": "npx hardhat run scripts/check-storage.ts",
@@ -40,6 +41,11 @@
     "!!! @dev Update `abiExporter` config if this is modified",
     "TODO [Major] remove artifacts/ from NPM package when releasing a major version"
   ],
+  "lint-staged": {
+    "*.{js,ts,sol,json,yml}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@iexec/interface": "3.0.35-8",
     "@iexec/solidity": "^0.1.1",
@@ -64,6 +70,8 @@
     "hardhat-abi-exporter": "^2.11.0",
     "hardhat-dependency-compiler": "^1.2.1",
     "hardhat-deploy": "^0.11.43",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
     "mocha": "^10.7.3",
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.0.0",
