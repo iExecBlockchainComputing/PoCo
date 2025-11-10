@@ -67,11 +67,11 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
     }
 
     /***************************************************************************
-     *            Token Spender: Atomic Approve+Deposit+Match                  *
+     *            Token Spender: Atomic Deposit+Match                  *
      ***************************************************************************/
 
     /**
-     * @notice Receives approval and optionally matches orders in one transaction
+     * @notice Receives approval, deposit and optionally matches orders in one transaction
      *
      * Usage patterns:
      * 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
@@ -151,7 +151,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         if (requestorder.requester != sender) revert("caller-must-be-requester");
 
         // Call matchOrders on the IexecPoco1 facet through the diamond
-        // Using delegatecall for safety: preserves msg.sender context
+        // Using delegatecall for safety: preserves msg.sender context (RLC address in this case)
         // Note: matchOrders doesn't use msg.sender, but delegatecall is safer
         // in case the implementation changes in the future
         (bool success, bytes memory result) = address(this).delegatecall(
