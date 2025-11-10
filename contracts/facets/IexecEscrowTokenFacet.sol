@@ -115,9 +115,8 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         require(token == address($.m_baseToken), "wrong-token");
         _deposit(sender, amount);
         _mint(sender, amount);
-        bytes32 dealId = bytes32(0);
         if (data.length > 0) {
-            dealId = _decodeDataAndMatchOrders(sender, data);
+            _decodeDataAndMatchOrders(sender, data);
         }
         return true;
     }
@@ -130,12 +129,8 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      * @dev Internal function to match orders after deposit
      * @param sender The user who deposited (must be the requester)
      * @param data ABI-encoded orders
-     * @return dealId The deal ID of the matched deal
      */
-    function _decodeDataAndMatchOrders(
-        address sender,
-        bytes calldata data
-    ) internal returns (bytes32 dealId) {
+    function _decodeDataAndMatchOrders(address sender, bytes calldata data) internal {
         // Decode the orders from calldata
         (
             IexecLibOrders_v5.AppOrder memory apporder,
@@ -181,11 +176,6 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
                 revert("receive-approval-failed");
             }
         }
-
-        // Decode the dealId from successful call
-        dealId = abi.decode(result, (bytes32));
-
-        return dealId;
     }
 
     function _deposit(address from, uint256 amount) internal {
