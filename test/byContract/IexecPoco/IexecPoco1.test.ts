@@ -19,10 +19,8 @@ import {
 import {
     TAG_ALL_TEE_FRAMEWORKS,
     TAG_BIT_2,
-    TAG_BIT_3,
     TAG_BIT_4,
-    TAG_BIT_5,
-    TAG_BIT_5_AND_TEE,
+    TAG_BIT_4_AND_TEE,
     TAG_STANDARD,
     TAG_TEE,
     TAG_TEE_GRAMINE,
@@ -731,9 +729,9 @@ describe('IexecPoco1', () => {
 
         it('Should fail when workerpool tag does not satisfy app, dataset and request requirements', async () => {
             orders.app.tag = TAG_TEE;
-            orders.dataset.tag = TAG_BIT_2; // 0b0010
-            orders.requester.tag = TAG_BIT_3; // 0b0011
-            orders.workerpool.tag = TAG_BIT_4; // 0b0100 - does not satisfy last bits of app, dataset, request
+            orders.dataset.tag = TAG_TEE_SCONE; // 0b0010
+            orders.requester.tag = TAG_TEE_SCONE; // 0b0011
+            orders.workerpool.tag = TAG_BIT_2; // 0b0100 - does not satisfy last bits of app, dataset, request
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x06',
             );
@@ -741,7 +739,7 @@ describe('IexecPoco1', () => {
 
         it('Should fail when dataset has other bits set that are not ignored', async () => {
             // Dataset order with bit 5 set (not ignored): 0b10001 = 0x11
-            orders.dataset.tag = TAG_BIT_5_AND_TEE;
+            orders.dataset.tag = TAG_BIT_4_AND_TEE;
             orders.workerpool.tag = TAG_TEE;
             orders.app.tag = TAG_TEE;
             orders.requester.tag = TAG_TEE;
@@ -752,11 +750,11 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when the last bit of app tag does not satisfy dataset or request requirements', async () => {
-            orders.app.tag = TAG_BIT_2; // 0b0010
-            orders.dataset.tag = TAG_BIT_3; // 0b0011
-            orders.requester.tag = TAG_BIT_3;
+            orders.app.tag = TAG_STANDARD; // 0b0000
+            orders.dataset.tag = TAG_TEE_SCONE; // 0b0011
+            orders.requester.tag = TAG_TEE_SCONE;
             // Set the workerpool tag in a way to pass first tag check.
-            orders.workerpool.tag = TAG_BIT_3;
+            orders.workerpool.tag = TAG_TEE_SCONE;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x07',
             );
@@ -1308,7 +1306,7 @@ describe('IexecPoco1', () => {
             // Create dataset order with incompatible tag
             const incompatibleTagDatasetOrder = {
                 ...compatibleDatasetOrder,
-                tag: TAG_BIT_5, // Different tag
+                tag: TAG_BIT_4, // Different tag
             };
             await signOrder(iexecWrapper.getDomain(), incompatibleTagDatasetOrder, datasetProvider);
             await expect(
@@ -1399,7 +1397,7 @@ describe('IexecPoco1', () => {
             // Create dataset order with bit 5 set (0b10001 = 0x11)
             const bit5DatasetOrder = {
                 ...compatibleDatasetOrder,
-                tag: TAG_BIT_5_AND_TEE,
+                tag: TAG_BIT_4_AND_TEE,
                 salt: ethers.id('bit5-dataset-salt'),
             };
             await signOrder(iexecWrapper.getDomain(), bit5DatasetOrder, datasetProvider);
