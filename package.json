@@ -24,7 +24,7 @@
     "sol-to-uml": "npx zx scripts/tools/sol-to-uml.mjs",
     "puml-to-links": "npx zx scripts/tools/puml-to-links.mjs",
     "storage-to-diagrams": "bash scripts/tools/storage-to-diagrams.sh",
-    "doc": "npx hardhat clean && npm run build && npx hardhat docgen",
+    "doc": "npx hardhat clean && npx hardhat docgen",
     "check-doc": "npm run doc && git diff --exit-code docs/",
     "prerelease": "npm version prerelease --preid=rc -m 'chore: v%s'"
   },
