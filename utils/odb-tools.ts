@@ -3,6 +3,7 @@
 
 import { TypedDataDomain, TypedDataEncoder, TypedDataField, ethers } from 'ethers';
 import hre from 'hardhat';
+import { IexecPoco1Facet__factory } from '../typechain';
 
 interface WalletInfo {
     privateKey?: string;
@@ -205,14 +206,8 @@ export function encodeOrders(
         [appOrderType, datasetOrderType, workerpoolOrderType, requestOrderType],
         [appOrder, datasetOrder, workerpoolOrder, requestOrder],
     );
+    const matchOrdersSelector =
+        IexecPoco1Facet__factory.createInterface().getFunction('matchOrders')!.selector;
 
-    // Get the function selector for matchOrders using ethers Interface
-    // This is the correct way to get the selector for a function with struct parameters
-    const iface = new ethers.Interface([
-        `function matchOrders(${appOrderType} apporder, ${datasetOrderType} datasetorder, ${workerpoolOrderType} workerpoolorder, ${requestOrderType} requestorder)`,
-    ]);
-    const matchOrdersSelector = iface.getFunction('matchOrders')!.selector;
-
-    // Combine selector + encoded parameters
     return matchOrdersSelector + encodedParams.slice(2);
 }
