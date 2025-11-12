@@ -250,7 +250,7 @@ function recover() external returns (uint256)
 function receiveApproval(address sender, uint256 amount, address token, bytes data) external returns (bool)
 ```
 
-Receives approval and optionally matches orders in one transaction
+Receives approval, deposit and optionally matches orders in one transaction
 
 Usage patterns:
 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
@@ -1338,6 +1338,138 @@ struct PocoStorage {
 function isRegistered(address _entry) external view returns (bool)
 ```
 
+## IApp
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+### m_appName
+
+```solidity
+function m_appName() external view returns (string)
+```
+
+### m_appType
+
+```solidity
+function m_appType() external view returns (string)
+```
+
+### m_appMultiaddr
+
+```solidity
+function m_appMultiaddr() external view returns (bytes)
+```
+
+### m_appChecksum
+
+```solidity
+function m_appChecksum() external view returns (bytes32)
+```
+
+### m_appMREnclave
+
+```solidity
+function m_appMREnclave() external view returns (bytes)
+```
+
+## IDataset
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+### m_datasetName
+
+```solidity
+function m_datasetName() external view returns (string)
+```
+
+### m_datasetMultiaddr
+
+```solidity
+function m_datasetMultiaddr() external view returns (bytes)
+```
+
+### m_datasetChecksum
+
+```solidity
+function m_datasetChecksum() external view returns (bytes32)
+```
+
+## IWorkerpool
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+### m_workerpoolDescription
+
+```solidity
+function m_workerpoolDescription() external view returns (string)
+```
+
+### m_schedulerRewardRatioPolicy
+
+```solidity
+function m_schedulerRewardRatioPolicy() external view returns (uint256)
+```
+
+### m_workerStakeRatioPolicy
+
+```solidity
+function m_workerStakeRatioPolicy() external view returns (uint256)
+```
+
+## FacetBase
+
+_Every facet must inherit from this contract._
+
+## IexecERC20Base
+
+### transfer
+
+```solidity
+function transfer(address recipient, uint256 amount) external returns (bool)
+```
+
+### approve
+
+```solidity
+function approve(address spender, uint256 value) external returns (bool)
+```
+
+### approveAndCall
+
+```solidity
+function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
+```
+
+### transferFrom
+
+```solidity
+function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
+```
+
+### increaseAllowance
+
+```solidity
+function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
+```
+
+### decreaseAllowance
+
+```solidity
+function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
+```
+
 ## Registry
 
 ### master
@@ -1510,44 +1642,6 @@ function createApp(address _appOwner, string _appName, string _appType, bytes _a
 function predictApp(address _appOwner, string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) external view returns (contract App)
 ```
 
-## IApp
-
-### owner
-
-```solidity
-function owner() external view returns (address)
-```
-
-### m_appName
-
-```solidity
-function m_appName() external view returns (string)
-```
-
-### m_appType
-
-```solidity
-function m_appType() external view returns (string)
-```
-
-### m_appMultiaddr
-
-```solidity
-function m_appMultiaddr() external view returns (bytes)
-```
-
-### m_appChecksum
-
-```solidity
-function m_appChecksum() external view returns (bytes32)
-```
-
-### m_appMREnclave
-
-```solidity
-function m_appMREnclave() external view returns (bytes)
-```
-
 ## Dataset
 
 _Referenced in the SDK with the current path `contracts/registries/datasets/Dataset.sol`.
@@ -1604,32 +1698,6 @@ function createDataset(address _datasetOwner, string _datasetName, bytes _datase
 
 ```solidity
 function predictDataset(address _datasetOwner, string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) external view returns (contract Dataset)
-```
-
-## IDataset
-
-### owner
-
-```solidity
-function owner() external view returns (address)
-```
-
-### m_datasetName
-
-```solidity
-function m_datasetName() external view returns (string)
-```
-
-### m_datasetMultiaddr
-
-```solidity
-function m_datasetMultiaddr() external view returns (bytes)
-```
-
-### m_datasetChecksum
-
-```solidity
-function m_datasetChecksum() external view returns (bytes32)
 ```
 
 ## Address
@@ -1698,32 +1766,6 @@ fallback() external payable
 
 _Fallback function.
 Implemented entirely in `_fallback`._
-
-## IWorkerpool
-
-### owner
-
-```solidity
-function owner() external view returns (address)
-```
-
-### m_workerpoolDescription
-
-```solidity
-function m_workerpoolDescription() external view returns (string)
-```
-
-### m_schedulerRewardRatioPolicy
-
-```solidity
-function m_schedulerRewardRatioPolicy() external view returns (uint256)
-```
-
-### m_workerStakeRatioPolicy
-
-```solidity
-function m_workerStakeRatioPolicy() external view returns (uint256)
-```
 
 ## Workerpool
 
