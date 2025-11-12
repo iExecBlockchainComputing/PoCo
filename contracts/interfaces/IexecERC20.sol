@@ -3,9 +3,16 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecERC20Common} from "./IexecERC20Common.sol";
+interface IexecERC20 {
+    // ERC20 standard events
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+    // iExec specific events
+    event Reward(address owner, uint256 amount, bytes32 ref);
+    event Seize(address owner, uint256 amount, bytes32 ref);
+    event Lock(address owner, uint256 amount);
+    event Unlock(address owner, uint256 amount);
 
-interface IexecERC20 is IexecERC20Common {
     function transfer(address, uint256) external returns (bool);
     function approve(address, uint256) external returns (bool);
     function transferFrom(address, address, uint256) external returns (bool);

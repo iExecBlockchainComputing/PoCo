@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import {FacetBase} from "./FacetBase.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecAccessorsABILegacy} from "../interfaces/IexecAccessorsABILegacy.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";

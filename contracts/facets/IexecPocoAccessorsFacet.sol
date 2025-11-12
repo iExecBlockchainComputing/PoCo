@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {FacetBase} from "./FacetBase.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IDataset} from "../registries/datasets/IDataset.v8.sol";
