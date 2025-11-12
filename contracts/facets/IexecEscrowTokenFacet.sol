@@ -67,32 +67,29 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
     }
 
     /***************************************************************************
-     *            Token Spender: Atomic Approve+Deposit+Match                  *
+     *            Token Spender: Atomic Deposit+Match                  *
      ***************************************************************************/
 
     /**
-     * @notice Receives approval and optionally executes an operation in one transaction
+     * @notice Receives approval, deposit and optionally matches orders in one transaction
      *
      * Usage patterns:
      * 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
-     * 2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedCall)
+     * 2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedOrders)
      *
-     * The `data` parameter should be a fully ABI-encoded function call (selector + arguments).
-     * Currently supported operations:
-     * - matchOrders(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+     * The `data` parameter should be ABI-encoded orders if matching is desired:
+     * abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
      *
      * @dev Important notes:
      * - Match orders sponsoring is NOT supported. The requester (sender) always pays for the deal.
      * - Clients must compute the exact deal cost and deposit the right amount for the deal to be matched.
      *   The deal cost = (appPrice + datasetPrice + workerpoolPrice) * volume.
      * - If insufficient funds are deposited, the match will fail.
-     * - The function selector is checked to determine which operation to execute.
-     * - Unknown selectors will cause a revert.
      *
      * @param sender The address that approved tokens (must be requester if matching)
      * @param amount Amount of tokens approved and to be deposited
      * @param token Address of the token (must be RLC)
-     * @param data Optional: ABI-encoded function call (with selector)
+     * @param data Optional: ABI-encoded orders for matching
      * @return success True if operation succeeded
      *
      *
@@ -101,7 +98,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      * // Compute deal cost
      * uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
      *
-     * // Encode the full matchOrders call
+     * // Encode orders
      * bytes memory data = abi.encodeWithSelector(
      *     IexecPoco1.matchOrders.selector,
      *     appOrder,
@@ -131,15 +128,6 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         return true;
     }
 
-    /******************************************************************************
-     *      Token Spender: Operation execution after deposit via approveAndCall  *
-     *****************************************************************************/
-
-    /**
-     * @dev Execute an operation after deposit based on the function selector
-     * @param sender The user who deposited
-     * @param data Full ABI-encoded function call (selector + arguments)
-     */
     function _executeOperation(address sender, bytes calldata data) internal {
         // Extract the function selector (first 4 bytes)
         bytes4 selector = bytes4(data[:4]);
@@ -152,10 +140,14 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         }
     }
 
+    /******************************************************************************
+     *        Token Spender: Atomic Deposit+Match if used with RLC.approveAndCall *
+     *****************************************************************************/
+
     /**
-     * @dev Internal function to execute matchOrders after deposit
+     * @dev Internal function to matchOrders after deposit
      * @param sender The user who deposited (must be the requester)
-     * @param data Full ABI-encoded matchOrders call
+     * @param data ABI-encoded orders
      */
     function _executeMatchOrders(address sender, bytes calldata data) internal {
         // Decode only the request order to validate the requester
