@@ -166,6 +166,7 @@ contract IexecPoco1Facet is
             );
     }
 
+    // TODO: check if we want to modify sponsor origin to be a variable instead of msg.sender
     /**
      * Sponsor match orders for a requester.
      * Unlike the standard `matchOrders(..)` hook where the requester pays for

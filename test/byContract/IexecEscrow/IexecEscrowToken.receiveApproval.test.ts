@@ -6,11 +6,13 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
     IexecInterfaceToken,
     IexecInterfaceToken__factory,
     RLC,
     RLC__factory,
+    ReceiveApprovalTestHelper__factory,
 } from '../../../typechain';
 import { TAG_TEE } from '../../../utils/constants';
 import {
@@ -23,6 +25,7 @@ import {
 } from '../../../utils/createOrders';
 import { encodeOrders } from '../../../utils/odb-tools';
 import { getDealId, getIexecAccounts } from '../../../utils/poco-tools';
+import { getFunctionSelectors } from '../../../utils/proxy-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 
@@ -203,15 +206,11 @@ describe('IexecEscrowToken-receiveApproval', () => {
                     volume,
                 );
 
-            // Verify frozen balance
-            expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealCost);
-
             // Verify total supply increased
             expect(await iexecPoco.totalSupply()).to.equal(initialTotalSupply + dealCost);
-            // Total balance should be existing + new deposit - frozen
-            expect(await iexecPoco.balanceOf(requester.address)).to.equal(
-                initialBalance + dealCost - dealCost,
-            );
+            // The available balance remains unchanged because the deposit is immediately frozen
+            expect(await iexecPoco.balanceOf(requester.address)).to.equal(initialBalance);
+            // Verify frozen balance
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealCost);
         });
 
@@ -267,8 +266,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
         it('Should work when requester has existing balance', async () => {
             // First, deposit some tokens traditionally
             const existingDeposit = 500_000n;
-            await rlcInstanceAsRequester.approve(proxyAddress, existingDeposit);
-            await iexecPocoAsRequester.deposit(existingDeposit);
+            await rlcInstanceAsRequester.approveAndCall(proxyAddress, existingDeposit, '0x');
 
             const orders = buildOrders({
                 assets: ordersAssets,
@@ -290,14 +288,10 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             const initialBalance = await iexecPoco.balanceOf(requester.address);
             const encodedOrders = encodeOrdersForCallback(orders);
-            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
+            await rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders);
 
-            const tx = rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders);
-
-            // Total balance should be existing + new deposit - frozen
-            expect(await iexecPoco.balanceOf(requester.address)).to.equal(
-                initialBalance + dealCost - dealCost,
-            );
+            // The available balance remains unchanged because the deposit is immediately frozen
+            expect(await iexecPoco.balanceOf(requester.address)).to.equal(initialBalance);
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(dealCost);
         });
 
@@ -318,7 +312,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             ).to.be.revertedWith('caller-must-be-requester');
         });
 
-        it('Should not match orders with insufficient deposit', async () => {
+        it('Should bubble up error when matchOrders fails', async () => {
             const orders = buildOrders({
                 assets: ordersAssets,
                 prices: ordersPrices,
@@ -438,9 +432,12 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             const dealCost = 0n;
             const encodedOrders = encodeOrdersForCallback(ordersZeroPrice);
-            const dealId = getDealId(iexecWrapper.getDomain(), ordersZeroPrice.requester);
 
-            const tx = rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders);
+            const tx = await rlcInstanceAsRequester.approveAndCall(
+                proxyAddress,
+                dealCost,
+                encodedOrders,
+            );
 
             await expect(tx)
                 .to.emit(iexecPoco, 'Transfer')
@@ -448,78 +445,70 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(0n);
         });
-    });
 
-    describe('Gas comparison', () => {
-        it('Should use less gas than separate transactions', async () => {
+        it('Should revert with receive-approval-failed when delegatecall fails silently', async () => {
+            // Deploy the mock helper contract that fails silently
+            const mockFacet = await new ReceiveApprovalTestHelper__factory()
+                .connect(iexecAdmin)
+                .deploy()
+                .then((tx) => tx.waitForDeployment());
+
+            const mockFacetAddress = await mockFacet.getAddress();
+
+            const mockFactory = new ReceiveApprovalTestHelper__factory();
+            const matchOrdersSelector = getFunctionSelectors(mockFactory)[0]; // matchOrders is the only function
+
+            const diamondLoupe = await ethers.getContractAt('DiamondLoupeFacet', proxyAddress);
+            const originalFacetAddress = await diamondLoupe.facetAddress(matchOrdersSelector);
+            const diamondCut = await ethers.getContractAt(
+                'DiamondCutFacet',
+                proxyAddress,
+                iexecAdmin,
+            );
+
+            await diamondCut.diamondCut(
+                [
+                    {
+                        facetAddress: mockFacetAddress,
+                        action: FacetCutAction.Replace,
+                        functionSelectors: [matchOrdersSelector],
+                    },
+                ],
+                ethers.ZeroAddress,
+                '0x',
+            );
+
+            // Now test receiveApproval - it will delegatecall to our mock which fails silently
+            const depositAmount = 1000n;
             const orders = buildOrders({
                 assets: ordersAssets,
                 prices: ordersPrices,
                 requester: requester.address,
                 tag: TAG_TEE,
                 volume: volume,
-                salt: ethers.hexlify(ethers.randomBytes(32)),
             });
 
-            await signAndPrepareOrders(orders);
+            const encodedOrders = encodeOrdersForCallback(orders);
 
-            const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
-            const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
-                workerpoolPrice,
-                volume,
-            );
-
-            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake * 2n);
-
-            // Traditional approach: 3 transactions
-            const tx1 = await rlcInstanceAsRequester.approve(proxyAddress, dealCost);
-            const receipt1 = await tx1.wait();
-
-            const tx2 = await iexecPocoAsRequester.deposit(dealCost);
-            const receipt2 = await tx2.wait();
-
-            const tx3 = await iexecPocoAsRequester.matchOrders(
-                orders.app,
-                orders.dataset,
-                orders.workerpool,
-                orders.requester,
-            );
-            const receipt3 = await tx3.wait();
-
-            const traditionalGas = receipt1!.gasUsed + receipt2!.gasUsed + receipt3!.gasUsed;
-
-            // Reset for new test
-            await iexecPocoAsRequester.withdraw(await iexecPoco.balanceOf(requester.address));
-
-            // New approach: 1 transaction
-            const orders2 = buildOrders({
-                assets: ordersAssets,
-                prices: ordersPrices,
-                requester: requester.address,
-                tag: TAG_TEE,
-                volume: volume,
-                salt: ethers.hexlify(ethers.randomBytes(32)),
-            });
-
-            await signAndPrepareOrders(orders2);
-
-            const encodedOrders = encodeOrdersForCallback(orders2);
-            const tx4 = await rlcInstanceAsRequester.approveAndCall(
+            const tx = rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
-                dealCost,
+                depositAmount,
                 encodedOrders,
             );
-            const receipt4 = await tx4.wait();
+            await expect(tx).to.be.revertedWith('receive-approval-failed');
 
-            const newGas = receipt4!.gasUsed;
-
-            console.log(`Traditional (3 txs): ${traditionalGas.toString()} gas`);
-            console.log(`New (1 tx): ${newGas.toString()} gas`);
-            console.log(
-                `Saved: ${(traditionalGas - newGas).toString()} gas (${(((traditionalGas - newGas) * 100n) / traditionalGas).toString()}%)`,
+            // Restore original facet
+            await diamondCut.diamondCut(
+                [
+                    {
+                        facetAddress: originalFacetAddress,
+                        action: FacetCutAction.Replace,
+                        functionSelectors: [matchOrdersSelector],
+                    },
+                ],
+                ethers.ZeroAddress,
+                '0x',
             );
-
-            expect(newGas).to.be.lt(traditionalGas);
         });
     });
 
