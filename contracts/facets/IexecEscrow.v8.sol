@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {FacetBase} from "./FacetBase.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.

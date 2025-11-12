@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import {FacetBase} from "./FacetBase.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecRelay} from "../interfaces/IexecRelay.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 

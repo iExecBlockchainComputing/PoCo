@@ -16,6 +16,48 @@ the PoCo contracts in token mode.
 _Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
 Changing the name or the path would cause a breaking change in the SDK._
 
+## FacetBase
+
+_Every facet must inherit from this contract._
+
+## IexecERC20Base
+
+### transfer
+
+```solidity
+function transfer(address recipient, uint256 amount) external returns (bool)
+```
+
+### approve
+
+```solidity
+function approve(address spender, uint256 value) external returns (bool)
+```
+
+### approveAndCall
+
+```solidity
+function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
+```
+
+### transferFrom
+
+```solidity
+function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
+```
+
+### increaseAllowance
+
+```solidity
+function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
+```
+
+### decreaseAllowance
+
+```solidity
+function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
+```
+
 ## IexecCategoryManagerFacet
 
 ### createCategory
@@ -70,46 +112,6 @@ function setTeeBroker(address _teebroker) external
 
 ```solidity
 function setCallbackGas(uint256 _callbackgas) external
-```
-
-## IexecERC20Core
-
-## IexecERC20Facet
-
-### transfer
-
-```solidity
-function transfer(address recipient, uint256 amount) external returns (bool)
-```
-
-### approve
-
-```solidity
-function approve(address spender, uint256 value) external returns (bool)
-```
-
-### approveAndCall
-
-```solidity
-function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
-```
-
-### transferFrom
-
-```solidity
-function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
-```
-
-### increaseAllowance
-
-```solidity
-function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
-```
-
-### decreaseAllowance
-
-```solidity
-function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
 ```
 
 ## IexecEscrow
