@@ -126,10 +126,17 @@ contract IexecPoco1Facet is
             revert IncompatibleDatasetOrder("Requester restriction not satisfied");
         }
         // The deal's tag should include all tag bits of the dataset order.
-        // Deal: 0b0101, Dataset: 0b0101 => ok
-        // Deal: 0b0101, Dataset: 0b0001 => ok
-        // Deal: 0b0101, Dataset: 0b0010 => !ok
-        if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
+        // For dataset orders: ignore bits 2, 3, and 4 (Scone, Gramine, TDX frameworks) to allow
+        // dataset orders from Arbitrum One SGX workerpool to be consumed on Arbitrum One TDX workerpool.
+        // Only bit 1 (TEE) is preserved from the dataset tag when checking compatibility.
+        // Bit mask: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1
+        // This mask clears bits 2, 3, and 4 (0b1110 = 0xE) while keeping all other bits.
+        // Deal: 0b0101, Dataset: 0b0101 => Masked Dataset: 0b0001 => ok
+        // Deal: 0b0101, Dataset: 0b0001 => Masked Dataset: 0b0001 => ok
+        // Deal: 0b1001, Dataset: 0b0011 => Masked Dataset: 0b0001 => ok (TDX deal with SGX dataset)
+        bytes32 maskedDatasetTag = datasetOrder.tag &
+            0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
+        if ((deal.tag & maskedDatasetTag) != maskedDatasetTag) {
             revert IncompatibleDatasetOrder("Tag compatibility not satisfied");
         }
     }
@@ -239,7 +246,14 @@ contract IexecPoco1Facet is
             "iExecV5-matchOrders-0x05"
         );
         // The workerpool tag should include all tag bits of dataset, app, and requester orders.
-        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+        // For dataset orders: ignore bits 2, 3, and 4 (Scone, Gramine, TDX frameworks) to allow
+        // dataset orders from Arbitrum One SGX workerpool to be consumed on Arbitrum One TDX workerpool.
+        // Only bit 1 (TEE) is preserved from the dataset tag, all other bits are masked out (bits 2-4).
+        // Bit mask: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1
+        // This mask clears bits 2, 3, and 4 (0b1110 = 0xE) while keeping all other bits.
+        bytes32 maskedDatasetTag = _datasetorder.tag &
+            0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
+        bytes32 tag = _apporder.tag | maskedDatasetTag | _requestorder.tag;
         require(tag & ~_workerpoolorder.tag == 0x0, "iExecV5-matchOrders-0x06");
         require((tag ^ _apporder.tag)[31] & 0x01 == 0x0, "iExecV5-matchOrders-0x07");
 
