@@ -126,14 +126,12 @@ contract IexecPoco1Facet is
             revert IncompatibleDatasetOrder("Requester restriction not satisfied");
         }
         // The deal's tag should include all tag bits of the dataset order.
-        // For dataset orders: ignore bits 2, 3, and 4 (Scone, Gramine, TDX frameworks) to allow
-        // dataset orders from Arbitrum One SGX workerpool to be consumed on Arbitrum One TDX workerpool.
-        // Only bit 1 (TEE) is preserved from the dataset tag when checking compatibility.
-        // Bit mask: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1
-        // This mask clears bits 2, 3, and 4 (0b1110 = 0xE) while keeping all other bits.
+        // For dataset orders: ignore Scone, Gramine, and TDX framework bits to allow
+        // dataset orders from SGX workerpools to be consumed on TDX workerpools and vice versa.
+        // Examples after masking:
         // Deal: 0b0101, Dataset: 0b0101 => Masked Dataset: 0b0001 => ok
         // Deal: 0b0101, Dataset: 0b0001 => Masked Dataset: 0b0001 => ok
-        // Deal: 0b1001, Dataset: 0b0011 => Masked Dataset: 0b0001 => ok (TDX deal with SGX dataset)
+        // Deal: 0b1001 (TDX), Dataset: 0b0011 (Scone) => Masked Dataset: 0b0001 => ok (cross-framework compatibility)
         bytes32 maskedDatasetTag = datasetOrder.tag &
             0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
         if ((deal.tag & maskedDatasetTag) != maskedDatasetTag) {
@@ -246,11 +244,10 @@ contract IexecPoco1Facet is
             "iExecV5-matchOrders-0x05"
         );
         // The workerpool tag should include all tag bits of dataset, app, and requester orders.
-        // For dataset orders: ignore bits 2, 3, and 4 (Scone, Gramine, TDX frameworks) to allow
-        // dataset orders from Arbitrum One SGX workerpool to be consumed on Arbitrum One TDX workerpool.
-        // Only bit 1 (TEE) is preserved from the dataset tag, all other bits are masked out (bits 2-4).
-        // Bit mask: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1
-        // This mask clears bits 2, 3, and 4 (0b1110 = 0xE) while keeping all other bits.
+        // For dataset orders: ignore Scone, Gramine, and TDX framework bits to allow
+        // dataset orders from SGX workerpools to be consumed on TDX workerpools and vice versa.
+        // Bit positions (0-indexed): bit 0 = TEE, bit 1 = Scone, bit 2 = Gramine, bit 3 = TDX
+        // Mask: ~(BIT_SCONE | BIT_GRAMINE | BIT_TDX) = ~0xE = 0xFFF...FF1
         bytes32 maskedDatasetTag = _datasetorder.tag &
             0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
         bytes32 tag = _apporder.tag | maskedDatasetTag | _requestorder.tag;
