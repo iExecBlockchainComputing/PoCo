@@ -169,13 +169,18 @@ export function hashStruct(
 }
 
 /**
- * Encode orders for callback data in receiveApproval.
- * Uses typechain-generated struct definitions to ensure type consistency.
+ * Encode orders with matchOrders selector for receiveApproval callback.
+ *
+ * The encoded data includes the function selector as the first 4 bytes, which allows
+ * the generalized receiveApproval implementation to:
+ * 1. Extract the selector to identify the operation (matchOrders in this case)
+ * 2. Route to the appropriate handler (_executeMatchOrders)
+ *
  * @param appOrder App order struct
  * @param datasetOrder Dataset order struct
  * @param workerpoolOrder Workerpool order struct
  * @param requestOrder Request order struct
- * @returns ABI-encoded orders
+ * @returns ABI-encoded calldata with matchOrders selector + encoded order structs
  */
 export function encodeOrders(
     appOrder: Record<string, any>,
@@ -195,8 +200,19 @@ export function encodeOrders(
     const requestOrderType =
         'tuple(address app, uint256 appmaxprice, address dataset, uint256 datasetmaxprice, address workerpool, uint256 workerpoolmaxprice, address requester, uint256 volume, bytes32 tag, uint256 category, uint256 trust, address beneficiary, address callback, string params, bytes32 salt, bytes sign)';
 
-    return ethers.AbiCoder.defaultAbiCoder().encode(
+    // Encode the function parameters (without selector)
+    const encodedParams = ethers.AbiCoder.defaultAbiCoder().encode(
         [appOrderType, datasetOrderType, workerpoolOrderType, requestOrderType],
         [appOrder, datasetOrder, workerpoolOrder, requestOrder],
     );
+
+    // Get the function selector for matchOrders using ethers Interface
+    // This is the correct way to get the selector for a function with struct parameters
+    const iface = new ethers.Interface([
+        `function matchOrders(${appOrderType} apporder, ${datasetOrderType} datasetorder, ${workerpoolOrderType} workerpoolorder, ${requestOrderType} requestorder)`,
+    ]);
+    const matchOrdersSelector = iface.getFunction('matchOrders')!.selector;
+
+    // Combine selector + encoded parameters
+    return matchOrdersSelector + encodedParams.slice(2);
 }

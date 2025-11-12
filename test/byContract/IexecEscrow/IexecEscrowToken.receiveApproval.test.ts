@@ -144,8 +144,19 @@ describe('IexecEscrowToken-receiveApproval', () => {
         });
     });
 
-    describe('receiveApproval with Order Matching', () => {
-        it('Should approve, deposit and match orders with all assets', async () => {
+    describe('receiveApproval with generalized operation execution', () => {
+        /**
+         * These tests demonstrate the generalized receiveApproval implementation:
+         *
+         * 1. receiveApproval deposits tokens and then checks if data is provided
+         * 2. If data exists, it extracts the function selector (first 4 bytes)
+         * 3. The selector determines which operation to execute via _executeOperation
+         * 4. Currently supports: matchOrders (with sender validation)
+         * 5. Unsupported selectors trigger 'unsupported-operation' error
+         * 6. This design allows future operations to be added by extending _executeOperation
+         */
+
+        it('Should approve, deposit and execute matchOrders operation with all assets', async () => {
             const orders = buildOrders({
                 assets: ordersAssets,
                 prices: ordersPrices,
@@ -167,6 +178,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             const initialBalance = await iexecPoco.balanceOf(requester.address);
             const initialTotalSupply = await iexecPoco.totalSupply();
 
+            // Encode the matchOrders operation with its selector
             const encodedOrders = encodeOrdersForCallback(orders);
 
             const tx = await rlcInstanceAsRequester.approveAndCall(
@@ -344,6 +356,19 @@ describe('IexecEscrowToken-receiveApproval', () => {
             ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
 
+        it('Should revert with unsupported-operation for unknown function selector', async () => {
+            const dealCost = 1000n;
+            // Create calldata with an unsupported function selector (not matchOrders)
+            // Using a random selector that doesn't exist
+            const unsupportedSelector = '0x12345678';
+            const dummyData = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [42]);
+            const invalidData = unsupportedSelector + dummyData.slice(2);
+
+            await expect(
+                rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, invalidData),
+            ).to.be.revertedWith('unsupported-operation');
+        });
+
         it('Should not match orders with invalid calldata', async () => {
             const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const invalidData = '0x1234'; // Too short to be valid
@@ -446,8 +471,10 @@ describe('IexecEscrowToken-receiveApproval', () => {
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(0n);
         });
 
-        it('Should revert with receive-approval-failed when delegatecall fails silently', async () => {
+        it('Should revert with match-orders-failed when delegatecall fails silently', async () => {
             // Deploy the mock helper contract that fails silently
+            // This tests that the generalized _executeOperation properly handles
+            // delegatecall failures and bubbles up errors
             const mockFacet = await new ReceiveApprovalTestHelper__factory()
                 .connect(iexecAdmin)
                 .deploy()
@@ -495,7 +522,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 depositAmount,
                 encodedOrders,
             );
-            await expect(tx).to.be.revertedWith('receive-approval-failed');
+            await expect(tx).to.be.revertedWith('match-orders-failed');
 
             // Restore original facet
             await diamondCut.diamondCut(
