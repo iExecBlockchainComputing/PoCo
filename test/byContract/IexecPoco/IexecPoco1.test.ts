@@ -738,7 +738,7 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when dataset has other bits set that are not ignored', async () => {
-            // Dataset order with bit 5 set (not ignored): 0b10001 = 0x11
+            // Dataset order with bit 4 set (not ignored): 0b10001 = 0x11
             orders.dataset.tag = TAG_BIT_4_AND_TEE;
             orders.workerpool.tag = TAG_TEE;
             orders.app.tag = TAG_TEE;
@@ -1377,7 +1377,7 @@ describe('IexecPoco1', () => {
             });
         });
 
-        it('Should revert when dataset has bit 5 set (not masked) and deal does not', async () => {
+        it('Should revert when dataset has bit 4 set (not masked) and deal does not', async () => {
             // Create a deal with TEE only (0b0001 = 0x1)
             const teeOnlyOrders = buildOrders({
                 assets: { ...ordersAssets, dataset: ZeroAddress },
@@ -1394,7 +1394,7 @@ describe('IexecPoco1', () => {
             const teeOnlyDealId = getDealId(iexecWrapper.getDomain(), teeOnlyOrders.requester);
             await iexecPocoAsRequester.matchOrders(...teeOnlyOrders.toArray());
 
-            // Create dataset order with bit 5 set (0b10001 = 0x11)
+            // Create dataset order with bit 4 set (0b10001 = 0x11)
             const bit5DatasetOrder = {
                 ...compatibleDatasetOrder,
                 tag: TAG_BIT_4_AND_TEE,
@@ -1402,7 +1402,7 @@ describe('IexecPoco1', () => {
             };
             await signOrder(iexecWrapper.getDomain(), bit5DatasetOrder, datasetProvider);
 
-            // Should revert because bit 5 is NOT masked and the deal doesn't have it
+            // Should revert because bit 4 is NOT masked and the deal doesn't have it
             await expect(iexecPoco.assertDatasetDealCompatibility(bit5DatasetOrder, teeOnlyDealId))
                 .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
                 .withArgs('Tag compatibility not satisfied');
