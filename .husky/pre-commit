@@ -1,6 +1,1 @@
 npx lint-staged
-
-# Update Solidity documentation only if .sol files were changed.
-if git diff --cached --name-only | grep -E '\.sol$' > /dev/null; then
-  npm run doc
-fi

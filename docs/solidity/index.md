@@ -1,5 +1,21 @@
 # Solidity API
 
+## IexecInterfaceNative
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in native mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
+## IexecInterfaceToken
+
+A global interface that aggregates all the interfaces needed to interact with
+the PoCo contracts in token mode.
+
+_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
+Changing the name or the path would cause a breaking change in the SDK._
+
 ## FacetBase
 
 _Every facet must inherit from this contract._
@@ -40,6 +56,94 @@ function increaseAllowance(address spender, uint256 addedValue) external returns
 
 ```solidity
 function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
+```
+
+## IexecCategoryManagerFacet
+
+### createCategory
+
+```solidity
+function createCategory(string name, string description, uint256 workClockTimeRef) external returns (uint256)
+```
+
+Methods
+
+## IexecConfigurationExtraFacet
+
+### changeRegistries
+
+```solidity
+function changeRegistries(address _appregistryAddress, address _datasetregistryAddress, address _workerpoolregistryAddress) external
+```
+
+## IexecConfigurationFacet
+
+### configure
+
+```solidity
+function configure(address _token, string _name, string _symbol, uint8 _decimal, address _appregistryAddress, address _datasetregistryAddress, address _workerpoolregistryAddress, address _v3_iexecHubAddress) external
+```
+
+### domain
+
+```solidity
+function domain() external view returns (struct IexecLibOrders_v5.EIP712Domain)
+```
+
+### updateDomainSeparator
+
+```solidity
+function updateDomainSeparator() external
+```
+
+### importScore
+
+```solidity
+function importScore(address _worker) external
+```
+
+### setTeeBroker
+
+```solidity
+function setTeeBroker(address _teebroker) external
+```
+
+### setCallbackGas
+
+```solidity
+function setCallbackGas(uint256 _callbackgas) external
+```
+
+## IexecEscrow
+
+### Transfer
+
+```solidity
+event Transfer(address from, address to, uint256 value)
+```
+
+### Lock
+
+```solidity
+event Lock(address owner, uint256 amount)
+```
+
+### Unlock
+
+```solidity
+event Unlock(address owner, uint256 amount)
+```
+
+### Reward
+
+```solidity
+event Reward(address owner, uint256 amount, bytes32 ref)
+```
+
+### Seize
+
+```solidity
+event Seize(address owner, uint256 amount, bytes32 ref)
 ```
 
 ## IexecEscrowNativeFacet
@@ -145,342 +249,38 @@ function recover() external returns (uint256)
 ### receiveApproval
 
 ```solidity
-function receiveApproval(address sender, uint256 amount, address token, bytes) external returns (bool)
+function receiveApproval(address sender, uint256 amount, address token, bytes data) external returns (bool)
 ```
 
-## IexecLibCore_v5
-
-### Account
-
-Tools
-
-```solidity
-struct Account {
-  uint256 stake;
-  uint256 locked;
-}
-```
-
-### Category
-
-```solidity
-struct Category {
-  string name;
-  string description;
-  uint256 workClockTimeRef;
-}
-```
-
-### DatasetInfo
-
-```solidity
-struct DatasetInfo {
-  address owner;
-  string m_datasetName;
-  bytes m_datasetMultiaddr;
-  bytes32 m_datasetChecksum;
-}
-```
-
-### AppInfo
-
-```solidity
-struct AppInfo {
-  address owner;
-  string m_appName;
-  string m_appType;
-  bytes m_appMultiaddr;
-  bytes32 m_appChecksum;
-  bytes m_appMREnclave;
-}
-```
-
-### WorkerpoolInfo
-
-```solidity
-struct WorkerpoolInfo {
-  address owner;
-  string m_workerpoolDescription;
-  uint256 m_workerStakeRatioPolicy;
-  uint256 m_schedulerRewardRatioPolicy;
-}
-```
-
-### Resource
-
-Clerk - Deals
-
-```solidity
-struct Resource {
-  address pointer;
-  address owner;
-  uint256 price;
-}
-```
-
-### Deal
-
-```solidity
-struct Deal {
-  struct IexecLibCore_v5.Resource app;
-  struct IexecLibCore_v5.Resource dataset;
-  struct IexecLibCore_v5.Resource workerpool;
-  uint256 trust;
-  uint256 category;
-  bytes32 tag;
-  address requester;
-  address beneficiary;
-  address callback;
-  string params;
-  uint256 startTime;
-  uint256 botFirst;
-  uint256 botSize;
-  uint256 workerStake;
-  uint256 schedulerRewardRatio;
-  address sponsor;
-}
-```
-
-### DealBoost
-
-Simplified deals for PoCo Boost module.
-
-```solidity
-struct DealBoost {
-  address appOwner;
-  uint96 appPrice;
-  address datasetOwner;
-  uint96 datasetPrice;
-  address workerpoolOwner;
-  uint96 workerpoolPrice;
-  address requester;
-  uint96 workerReward;
-  address callback;
-  uint40 deadline;
-  uint16 botFirst;
-  uint16 botSize;
-  bytes3 shortTag;
-  address sponsor;
-}
-```
-
-### TaskStatusEnum
-
-Tasks
-
-```solidity
-enum TaskStatusEnum {
-  UNSET,
-  ACTIVE,
-  REVEALING,
-  COMPLETED,
-  FAILED
-}
-```
-
-### Task
-
-```solidity
-struct Task {
-  enum IexecLibCore_v5.TaskStatusEnum status;
-  bytes32 dealid;
-  uint256 idx;
-  uint256 timeref;
-  uint256 contributionDeadline;
-  uint256 revealDeadline;
-  uint256 finalDeadline;
-  bytes32 consensusValue;
-  uint256 revealCounter;
-  uint256 winnerCounter;
-  address[] contributors;
-  bytes32 resultDigest;
-  bytes results;
-  uint256 resultsTimestamp;
-  bytes resultsCallback;
-}
-```
-
-### Consensus
-
-Consensus
-
-```solidity
-struct Consensus {
-  mapping(bytes32 => uint256) group;
-  uint256 total;
-}
-```
-
-### ContributionStatusEnum
-
-Consensus
-
-```solidity
-enum ContributionStatusEnum {
-  UNSET,
-  CONTRIBUTED,
-  PROVED,
-  REJECTED
-}
-```
-
-### Contribution
-
-```solidity
-struct Contribution {
-  enum IexecLibCore_v5.ContributionStatusEnum status;
-  bytes32 resultHash;
-  bytes32 resultSeal;
-  address enclaveChallenge;
-  uint256 weight;
-}
-```
-
-## PocoStorageLib
-
-### PocoStorage
-
-```solidity
-struct PocoStorage {
-  contract IRegistry m_appregistry;
-  contract IRegistry m_datasetregistry;
-  contract IRegistry m_workerpoolregistry;
-  contract IERC20 m_baseToken;
-  string m_name;
-  string m_symbol;
-  uint8 m_decimals;
-  uint256 m_totalSupply;
-  mapping(address => uint256) m_balances;
-  mapping(address => uint256) m_frozens;
-  mapping(address => mapping(address => uint256)) m_allowances;
-  bytes32 m_eip712DomainSeparator;
-  mapping(bytes32 => address) m_presigned;
-  mapping(bytes32 => uint256) m_consumed;
-  mapping(bytes32 => struct IexecLibCore_v5.Deal) m_deals;
-  mapping(bytes32 => struct IexecLibCore_v5.Task) m_tasks;
-  mapping(bytes32 => struct IexecLibCore_v5.Consensus) m_consensus;
-  mapping(bytes32 => mapping(address => struct IexecLibCore_v5.Contribution)) m_contributions;
-  mapping(address => uint256) m_workerScores;
-  address m_teebroker;
-  uint256 m_callbackgas;
-  struct IexecLibCore_v5.Category[] m_categories;
-  contract IexecHubV3Interface m_v3_iexecHub;
-  mapping(address => bool) m_v3_scoreImported;
-  mapping(bytes32 => struct IexecLibCore_v5.DealBoost) m_dealsBoost;
-}
-```
-
-## IRegistry
-
-### isRegistered
-
-```solidity
-function isRegistered(address _entry) external view returns (bool)
-```
-
-## IexecInterfaceNative
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in native mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-## IexecInterfaceToken
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in token mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-## IexecCategoryManagerFacet
-
-### createCategory
-
-```solidity
-function createCategory(string name, string description, uint256 workClockTimeRef) external returns (uint256)
-```
-
-Methods
-
-## IexecConfigurationExtraFacet
-
-### changeRegistries
-
-```solidity
-function changeRegistries(address _appregistryAddress, address _datasetregistryAddress, address _workerpoolregistryAddress) external
-```
-
-## IexecConfigurationFacet
-
-### configure
-
-```solidity
-function configure(address _token, string _name, string _symbol, uint8 _decimal, address _appregistryAddress, address _datasetregistryAddress, address _workerpoolregistryAddress, address _v3_iexecHubAddress) external
-```
-
-### domain
-
-```solidity
-function domain() external view returns (struct IexecLibOrders_v5.EIP712Domain)
-```
-
-### updateDomainSeparator
-
-```solidity
-function updateDomainSeparator() external
-```
-
-### importScore
-
-```solidity
-function importScore(address _worker) external
-```
-
-### setTeeBroker
-
-```solidity
-function setTeeBroker(address _teebroker) external
-```
-
-### setCallbackGas
-
-```solidity
-function setCallbackGas(uint256 _callbackgas) external
-```
-
-## IexecEscrow
-
-### Transfer
-
-```solidity
-event Transfer(address from, address to, uint256 value)
-```
-
-### Lock
-
-```solidity
-event Lock(address owner, uint256 amount)
-```
-
-### Unlock
-
-```solidity
-event Unlock(address owner, uint256 amount)
-```
-
-### Reward
-
-```solidity
-event Reward(address owner, uint256 amount, bytes32 ref)
-```
-
-### Seize
-
-```solidity
-event Seize(address owner, uint256 amount, bytes32 ref)
-```
+Receives approval, deposit and optionally matches orders in one transaction
+
+Usage patterns:
+1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
+2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedOrders)
+
+The `data` parameter should be ABI-encoded orders if matching is desired:
+abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+
+_Important notes:
+- Match orders sponsoring is NOT supported. The requester (sender) always pays for the deal.
+- Clients must compute the exact deal cost and deposit the right amount for the deal to be matched.
+  The deal cost = (appPrice + datasetPrice + workerpoolPrice) * volume.
+- If insufficient funds are deposited, the match will fail._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| sender | address | The address that approved tokens (must be requester if matching) |
+| amount | uint256 | Amount of tokens approved and to be deposited |
+| token | address | Address of the token (must be RLC) |
+| data | bytes | Optional: ABI-encoded orders for matching |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | success True if operation succeeded @custom:example ```solidity // Compute deal cost uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume; // Encode orders bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder); // One transaction does it all RLC(token).approveAndCall(iexecProxy, dealCost, data); ``` |
 
 ## IexecOrderManagementFacet
 
@@ -574,6 +374,11 @@ function matchOrders(struct IexecLibOrders_v5.AppOrder _apporder, struct IexecLi
 ```
 
 Match orders. The requester gets debited.
+
+This function does not use `msg.sender` to determine who pays for the deal.
+The sponsor is always set to `_requestorder.requester`, regardless of who calls this function.
+This design allows the function to be safely called via delegatecall from other facets
+(e.g., IexecEscrowTokenFacet.receiveApproval) without security concerns.
 
 #### Parameters
 
@@ -1062,6 +867,194 @@ function broadcastWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrder _work
 function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestorder) external
 ```
 
+## IexecLibCore_v5
+
+### Account
+
+Tools
+
+```solidity
+struct Account {
+  uint256 stake;
+  uint256 locked;
+}
+```
+
+### Category
+
+```solidity
+struct Category {
+  string name;
+  string description;
+  uint256 workClockTimeRef;
+}
+```
+
+### DatasetInfo
+
+```solidity
+struct DatasetInfo {
+  address owner;
+  string m_datasetName;
+  bytes m_datasetMultiaddr;
+  bytes32 m_datasetChecksum;
+}
+```
+
+### AppInfo
+
+```solidity
+struct AppInfo {
+  address owner;
+  string m_appName;
+  string m_appType;
+  bytes m_appMultiaddr;
+  bytes32 m_appChecksum;
+  bytes m_appMREnclave;
+}
+```
+
+### WorkerpoolInfo
+
+```solidity
+struct WorkerpoolInfo {
+  address owner;
+  string m_workerpoolDescription;
+  uint256 m_workerStakeRatioPolicy;
+  uint256 m_schedulerRewardRatioPolicy;
+}
+```
+
+### Resource
+
+Clerk - Deals
+
+```solidity
+struct Resource {
+  address pointer;
+  address owner;
+  uint256 price;
+}
+```
+
+### Deal
+
+```solidity
+struct Deal {
+  struct IexecLibCore_v5.Resource app;
+  struct IexecLibCore_v5.Resource dataset;
+  struct IexecLibCore_v5.Resource workerpool;
+  uint256 trust;
+  uint256 category;
+  bytes32 tag;
+  address requester;
+  address beneficiary;
+  address callback;
+  string params;
+  uint256 startTime;
+  uint256 botFirst;
+  uint256 botSize;
+  uint256 workerStake;
+  uint256 schedulerRewardRatio;
+  address sponsor;
+}
+```
+
+### DealBoost
+
+Simplified deals for PoCo Boost module.
+
+```solidity
+struct DealBoost {
+  address appOwner;
+  uint96 appPrice;
+  address datasetOwner;
+  uint96 datasetPrice;
+  address workerpoolOwner;
+  uint96 workerpoolPrice;
+  address requester;
+  uint96 workerReward;
+  address callback;
+  uint40 deadline;
+  uint16 botFirst;
+  uint16 botSize;
+  bytes3 shortTag;
+  address sponsor;
+}
+```
+
+### TaskStatusEnum
+
+Tasks
+
+```solidity
+enum TaskStatusEnum {
+  UNSET,
+  ACTIVE,
+  REVEALING,
+  COMPLETED,
+  FAILED
+}
+```
+
+### Task
+
+```solidity
+struct Task {
+  enum IexecLibCore_v5.TaskStatusEnum status;
+  bytes32 dealid;
+  uint256 idx;
+  uint256 timeref;
+  uint256 contributionDeadline;
+  uint256 revealDeadline;
+  uint256 finalDeadline;
+  bytes32 consensusValue;
+  uint256 revealCounter;
+  uint256 winnerCounter;
+  address[] contributors;
+  bytes32 resultDigest;
+  bytes results;
+  uint256 resultsTimestamp;
+  bytes resultsCallback;
+}
+```
+
+### Consensus
+
+Consensus
+
+```solidity
+struct Consensus {
+  mapping(bytes32 => uint256) group;
+  uint256 total;
+}
+```
+
+### ContributionStatusEnum
+
+Consensus
+
+```solidity
+enum ContributionStatusEnum {
+  UNSET,
+  CONTRIBUTED,
+  PROVED,
+  REJECTED
+}
+```
+
+### Contribution
+
+```solidity
+struct Contribution {
+  enum IexecLibCore_v5.ContributionStatusEnum status;
+  bytes32 resultHash;
+  bytes32 resultSeal;
+  address enclaveChallenge;
+  uint256 weight;
+}
+```
+
 ## IexecLibOrders_v5
 
 ### EIP712DOMAIN_TYPEHASH
@@ -1305,6 +1298,178 @@ function hash(struct IexecLibOrders_v5.WorkerpoolOrderOperation _workerpoolorder
 function hash(struct IexecLibOrders_v5.RequestOrderOperation _requestorderoperation) public pure returns (bytes32)
 ```
 
+## PocoStorageLib
+
+### PocoStorage
+
+```solidity
+struct PocoStorage {
+  contract IRegistry m_appregistry;
+  contract IRegistry m_datasetregistry;
+  contract IRegistry m_workerpoolregistry;
+  contract IERC20 m_baseToken;
+  string m_name;
+  string m_symbol;
+  uint8 m_decimals;
+  uint256 m_totalSupply;
+  mapping(address => uint256) m_balances;
+  mapping(address => uint256) m_frozens;
+  mapping(address => mapping(address => uint256)) m_allowances;
+  bytes32 m_eip712DomainSeparator;
+  mapping(bytes32 => address) m_presigned;
+  mapping(bytes32 => uint256) m_consumed;
+  mapping(bytes32 => struct IexecLibCore_v5.Deal) m_deals;
+  mapping(bytes32 => struct IexecLibCore_v5.Task) m_tasks;
+  mapping(bytes32 => struct IexecLibCore_v5.Consensus) m_consensus;
+  mapping(bytes32 => mapping(address => struct IexecLibCore_v5.Contribution)) m_contributions;
+  mapping(address => uint256) m_workerScores;
+  address m_teebroker;
+  uint256 m_callbackgas;
+  struct IexecLibCore_v5.Category[] m_categories;
+  contract IexecHubV3Interface m_v3_iexecHub;
+  mapping(address => bool) m_v3_scoreImported;
+  mapping(bytes32 => struct IexecLibCore_v5.DealBoost) m_dealsBoost;
+}
+```
+
+## IRegistry
+
+### isRegistered
+
+```solidity
+function isRegistered(address _entry) external view returns (bool)
+```
+
+## IApp
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+### m_appName
+
+```solidity
+function m_appName() external view returns (string)
+```
+
+### m_appType
+
+```solidity
+function m_appType() external view returns (string)
+```
+
+### m_appMultiaddr
+
+```solidity
+function m_appMultiaddr() external view returns (bytes)
+```
+
+### m_appChecksum
+
+```solidity
+function m_appChecksum() external view returns (bytes32)
+```
+
+### m_appMREnclave
+
+```solidity
+function m_appMREnclave() external view returns (bytes)
+```
+
+## IDataset
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+### m_datasetName
+
+```solidity
+function m_datasetName() external view returns (string)
+```
+
+### m_datasetMultiaddr
+
+```solidity
+function m_datasetMultiaddr() external view returns (bytes)
+```
+
+### m_datasetChecksum
+
+```solidity
+function m_datasetChecksum() external view returns (bytes32)
+```
+
+## IWorkerpool
+
+### owner
+
+```solidity
+function owner() external view returns (address)
+```
+
+### m_workerpoolDescription
+
+```solidity
+function m_workerpoolDescription() external view returns (string)
+```
+
+### m_schedulerRewardRatioPolicy
+
+```solidity
+function m_schedulerRewardRatioPolicy() external view returns (uint256)
+```
+
+### m_workerStakeRatioPolicy
+
+```solidity
+function m_workerStakeRatioPolicy() external view returns (uint256)
+```
+
+## IexecERC20Core
+
+## IexecERC20Facet
+
+### transfer
+
+```solidity
+function transfer(address recipient, uint256 amount) external returns (bool)
+```
+
+### approve
+
+```solidity
+function approve(address spender, uint256 value) external returns (bool)
+```
+
+### approveAndCall
+
+```solidity
+function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
+```
+
+### transferFrom
+
+```solidity
+function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
+```
+
+### increaseAllowance
+
+```solidity
+function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
+```
+
+### decreaseAllowance
+
+```solidity
+function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
+```
+
 ## Registry
 
 ### master
@@ -1477,44 +1642,6 @@ function createApp(address _appOwner, string _appName, string _appType, bytes _a
 function predictApp(address _appOwner, string _appName, string _appType, bytes _appMultiaddr, bytes32 _appChecksum, bytes _appMREnclave) external view returns (contract App)
 ```
 
-## IApp
-
-### owner
-
-```solidity
-function owner() external view returns (address)
-```
-
-### m_appName
-
-```solidity
-function m_appName() external view returns (string)
-```
-
-### m_appType
-
-```solidity
-function m_appType() external view returns (string)
-```
-
-### m_appMultiaddr
-
-```solidity
-function m_appMultiaddr() external view returns (bytes)
-```
-
-### m_appChecksum
-
-```solidity
-function m_appChecksum() external view returns (bytes32)
-```
-
-### m_appMREnclave
-
-```solidity
-function m_appMREnclave() external view returns (bytes)
-```
-
 ## Dataset
 
 _Referenced in the SDK with the current path `contracts/registries/datasets/Dataset.sol`.
@@ -1571,32 +1698,6 @@ function createDataset(address _datasetOwner, string _datasetName, bytes _datase
 
 ```solidity
 function predictDataset(address _datasetOwner, string _datasetName, bytes _datasetMultiaddr, bytes32 _datasetChecksum) external view returns (contract Dataset)
-```
-
-## IDataset
-
-### owner
-
-```solidity
-function owner() external view returns (address)
-```
-
-### m_datasetName
-
-```solidity
-function m_datasetName() external view returns (string)
-```
-
-### m_datasetMultiaddr
-
-```solidity
-function m_datasetMultiaddr() external view returns (bytes)
-```
-
-### m_datasetChecksum
-
-```solidity
-function m_datasetChecksum() external view returns (bytes32)
 ```
 
 ## Address
@@ -1665,32 +1766,6 @@ fallback() external payable
 
 _Fallback function.
 Implemented entirely in `_fallback`._
-
-## IWorkerpool
-
-### owner
-
-```solidity
-function owner() external view returns (address)
-```
-
-### m_workerpoolDescription
-
-```solidity
-function m_workerpoolDescription() external view returns (string)
-```
-
-### m_schedulerRewardRatioPolicy
-
-```solidity
-function m_schedulerRewardRatioPolicy() external view returns (uint256)
-```
-
-### m_workerStakeRatioPolicy
-
-```solidity
-function m_workerStakeRatioPolicy() external view returns (uint256)
-```
 
 ## Workerpool
 
