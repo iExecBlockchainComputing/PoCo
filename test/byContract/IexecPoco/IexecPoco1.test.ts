@@ -16,7 +16,19 @@ import {
     IexecPocoAccessors__factory,
     OwnableMock__factory,
 } from '../../../typechain';
-import { TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
+import {
+    TAG_ALL_TEE_FRAMEWORKS,
+    TAG_BIT_2,
+    TAG_BIT_3,
+    TAG_BIT_4,
+    TAG_BIT_5,
+    TAG_BIT_5_AND_TEE,
+    TAG_STANDARD,
+    TAG_TEE,
+    TAG_TEE_GRAMINE,
+    TAG_TEE_SCONE,
+    TAG_TEE_TDX,
+} from '../../../utils/constants';
 import {
     IexecOrders,
     OrdersActors,
@@ -627,6 +639,44 @@ describe('IexecPoco1', () => {
             );
         });
 
+        [
+            {
+                datasetTag: TAG_TEE_SCONE,
+                workerpoolTag: TAG_TEE_TDX,
+                description: 'Scone tag (0x3) and workerpool has TDX tag (0x9)',
+            },
+            {
+                datasetTag: TAG_TEE_GRAMINE,
+                workerpoolTag: TAG_TEE_TDX,
+                description: 'Gramine tag (0x5) and workerpool has TDX tag (0x9)',
+            },
+            {
+                datasetTag: TAG_TEE_TDX,
+                workerpoolTag: TAG_TEE_SCONE,
+                description: 'TDX tag (0x9) and workerpool has Scone tag (0x3)',
+            },
+            {
+                datasetTag: TAG_ALL_TEE_FRAMEWORKS,
+                workerpoolTag: TAG_TEE,
+                description: 'all TEE framework bits (0xF) and workerpool has TEE only (0x1)',
+            },
+        ].forEach(({ datasetTag, workerpoolTag, description }) => {
+            it(`Should match orders when dataset has ${description}`, async () => {
+                orders.dataset.tag = datasetTag;
+                orders.workerpool.tag = workerpoolTag;
+                orders.app.tag = TAG_TEE;
+                orders.requester.tag = TAG_TEE;
+
+                await depositForRequesterAndSchedulerWithDefaultPrices(volume);
+                await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+
+                await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
+                    iexecPoco,
+                    'OrdersMatched',
+                );
+            });
+        });
+
         // TODO add success tests for:
         //   - identity groups
         //   - pre-signatures
@@ -680,151 +730,35 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when workerpool tag does not satisfy app, dataset and request requirements', async () => {
-            orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000001'; // 0b0001
-            orders.dataset.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
-            orders.requester.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
-            // Workerpool order is supposed to satisfy conditions of all actors.
-            // Bad tag, correct tag should be 0b0011.
-            orders.workerpool.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000004'; // 0b0100
-            // Match orders.
+            orders.app.tag = TAG_TEE;
+            orders.dataset.tag = TAG_BIT_2; // 0b0010
+            orders.requester.tag = TAG_BIT_3; // 0b0011
+            orders.workerpool.tag = TAG_BIT_4; // 0b0100 - does not satisfy last bits of app, dataset, request
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
+                'iExecV5-matchOrders-0x06',
+            );
+        });
+
+        it('Should fail when dataset has other bits set that are not ignored', async () => {
+            // Dataset order with bit 5 set (not ignored): 0b10001 = 0x11
+            orders.dataset.tag = TAG_BIT_5_AND_TEE;
+            orders.workerpool.tag = TAG_TEE;
+            orders.app.tag = TAG_TEE;
+            orders.requester.tag = TAG_TEE;
+
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x06',
             );
         });
 
         it('Should fail when the last bit of app tag does not satisfy dataset or request requirements', async () => {
-            // The last bit of dataset and request tag is 1, but app tag does not set it
-            orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000002'; // 0b0010
-            orders.dataset.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
-            orders.requester.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
+            orders.app.tag = TAG_BIT_2; // 0b0010
+            orders.dataset.tag = TAG_BIT_3; // 0b0011
+            orders.requester.tag = TAG_BIT_3;
             // Set the workerpool tag in a way to pass first tag check.
-            orders.workerpool.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
-            // Match orders.
+            orders.workerpool.tag = TAG_BIT_3;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x07',
-            );
-        });
-
-        it('Should match orders when dataset has Scone tag (0x3) and workerpool has TDX tag (0x9)', async () => {
-            // Dataset order with Scone (TEE + Scone framework): 0b0011 = 0x3
-            orders.dataset.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000003';
-            // Workerpool with TDX (TEE + TDX framework): 0b1001 = 0x9
-            orders.workerpool.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000009';
-            // App and request with TEE only: 0b0001 = 0x1
-            orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            orders.requester.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000001';
-
-            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
-            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            const dealId = getDealId(iexecWrapper.getDomain(), orders.requester);
-
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
-                .to.emit(iexecPoco, 'OrdersMatched')
-                .withArgs(
-                    dealId,
-                    iexecWrapper.hashOrder(orders.app),
-                    iexecWrapper.hashOrder(orders.dataset),
-                    iexecWrapper.hashOrder(orders.workerpool),
-                    iexecWrapper.hashOrder(orders.requester),
-                    volume,
-                );
-
-            // Verify the deal was created.
-            // The deal tag is computed as: app.tag | maskedDatasetTag | requester.tag
-            // = 0x1 | (0x3 & 0xFFF...FF1) | 0x1 = 0x1 | 0x1 | 0x1 = 0x1
-            // So the final deal tag is 0x1 (TEE only), not 0x9.
-            const deal = await iexecPoco.viewDeal(dealId);
-            expect(deal.tag).to.equal(
-                '0x0000000000000000000000000000000000000000000000000000000000000001',
-            ); // TEE tag only (bits 2-4 from dataset were masked out)
-        });
-
-        it('Should match orders when dataset has Gramine tag (0x5) and workerpool has TDX tag (0x9)', async () => {
-            // Dataset order with Gramine (TEE + Gramine framework): 0b0101 = 0x5
-            orders.dataset.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000005';
-            // Workerpool with TDX (TEE + TDX framework): 0b1001 = 0x9
-            orders.workerpool.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000009';
-            // App and request with TEE only: 0b0001 = 0x1
-            orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            orders.requester.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000001';
-
-            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
-            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
-                iexecPoco,
-                'OrdersMatched',
-            );
-        });
-
-        it('Should match orders when dataset has TDX tag (0x9) and workerpool has Scone tag (0x3)', async () => {
-            // Dataset order with TDX (TEE + TDX framework): 0b1001 = 0x9
-            orders.dataset.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000009';
-            // Workerpool with Scone (TEE + Scone framework): 0b0011 = 0x3
-            orders.workerpool.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000003';
-            // App and request with TEE only: 0b0001 = 0x1
-            orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            orders.requester.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000001';
-
-            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
-            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
-                iexecPoco,
-                'OrdersMatched',
-            );
-        });
-
-        it('Should match orders when dataset bits 2-4 are set but only bit 1 (TEE) is considered', async () => {
-            // Dataset order with bits 2, 3, 4 set: 0b1111 = 0xF
-            orders.dataset.tag =
-                '0x000000000000000000000000000000000000000000000000000000000000000F';
-            // Workerpool with just TEE: 0b0001 = 0x1 (should work since dataset bits 2-4 are ignored)
-            orders.workerpool.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000001';
-            // App and request with TEE only: 0b0001 = 0x1
-            orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            orders.requester.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000001';
-
-            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
-            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
-                iexecPoco,
-                'OrdersMatched',
-            );
-        });
-
-        it('Should fail when dataset has other bits set that are not ignored', async () => {
-            // Dataset order with bit 5 set (not ignored): 0b10001 = 0x11
-            orders.dataset.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000011';
-            // Workerpool with just TEE: 0b0001 = 0x1
-            orders.workerpool.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000001';
-            // App and request with TEE only: 0b0001 = 0x1
-            orders.app.tag = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            orders.requester.tag =
-                '0x0000000000000000000000000000000000000000000000000000000000000001';
-
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x06',
             );
         });
 
@@ -1374,7 +1308,7 @@ describe('IexecPoco1', () => {
             // Create dataset order with incompatible tag
             const incompatibleTagDatasetOrder = {
                 ...compatibleDatasetOrder,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000010', // Different tag
+                tag: TAG_BIT_5, // Different tag
             };
             await signOrder(iexecWrapper.getDomain(), incompatibleTagDatasetOrder, datasetProvider);
             await expect(
@@ -1387,122 +1321,62 @@ describe('IexecPoco1', () => {
                 .withArgs('Tag compatibility not satisfied');
         });
 
-        it('Should not revert when dataset has Scone tag (0x3) and deal has TDX tag (0x9)', async () => {
-            // Create a deal with TDX tag (0b1001 = 0x9)
-            const tdxOrders = buildOrders({
-                assets: { ...ordersAssets, dataset: ZeroAddress },
-                prices: ordersPrices,
-                requester: requester.address,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000009', // TDX
-                volume: volume,
+        // Cross-framework compatibility tests for assertDatasetDealCompatibility
+        [
+            {
+                datasetTag: TAG_TEE_SCONE,
+                dealTag: TAG_TEE_TDX,
+                description: 'Scone tag (0x3) and deal has TDX tag (0x9)',
+                saltPrefix: 'scone-tdx',
+            },
+            {
+                datasetTag: TAG_TEE_GRAMINE,
+                dealTag: TAG_TEE_TDX,
+                description: 'Gramine tag (0x5) and deal has TDX tag (0x9)',
+                saltPrefix: 'gramine-tdx',
+            },
+            {
+                datasetTag: TAG_TEE_TDX,
+                dealTag: TAG_TEE_SCONE,
+                description: 'TDX tag (0x9) and deal has Scone tag (0x3)',
+                saltPrefix: 'tdx-scone',
+            },
+            {
+                datasetTag: TAG_ALL_TEE_FRAMEWORKS,
+                dealTag: TAG_TEE,
+                description: 'all TEE framework bits (0xF) and deal has TEE only (0x1)',
+                saltPrefix: 'all-frameworks-tee',
+            },
+        ].forEach(({ datasetTag, dealTag, description, saltPrefix }) => {
+            it(`Should not revert when dataset has ${description}`, async () => {
+                // Create a deal with the specified tag
+                const dealOrders = buildOrders({
+                    assets: { ...ordersAssets, dataset: ZeroAddress },
+                    prices: ordersPrices,
+                    requester: requester.address,
+                    tag: dealTag,
+                    volume: volume,
+                });
+                dealOrders.app.salt = ethers.id(`${saltPrefix}-app-salt`);
+                dealOrders.workerpool.salt = ethers.id(`${saltPrefix}-workerpool-salt`);
+                dealOrders.requester.salt = ethers.id(`${saltPrefix}-requester-salt`);
+                await depositForRequesterAndSchedulerWithDefaultPrices(volume);
+                await signOrders(iexecWrapper.getDomain(), dealOrders, ordersActors);
+                const dealId = getDealId(iexecWrapper.getDomain(), dealOrders.requester);
+                await iexecPocoAsRequester.matchOrders(...dealOrders.toArray());
+
+                // Create dataset order with the specified tag
+                const datasetOrder = {
+                    ...compatibleDatasetOrder,
+                    tag: datasetTag,
+                    salt: ethers.id(`${saltPrefix}-dataset-salt`),
+                };
+                await signOrder(iexecWrapper.getDomain(), datasetOrder, datasetProvider);
+
+                // Should not revert because bits 2-4 of dataset tag are ignored
+                await expect(iexecPoco.assertDatasetDealCompatibility(datasetOrder, dealId)).to.not
+                    .be.reverted;
             });
-            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
-            await signOrders(iexecWrapper.getDomain(), tdxOrders, ordersActors);
-            const tdxDealId = getDealId(iexecWrapper.getDomain(), tdxOrders.requester);
-            await iexecPocoAsRequester.matchOrders(...tdxOrders.toArray());
-
-            // Create dataset order with Scone tag (0b0011 = 0x3)
-            const sconeDatasetOrder = {
-                ...compatibleDatasetOrder,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000003', // Scone
-                salt: ethers.id('scone-dataset-salt'),
-            };
-            await signOrder(iexecWrapper.getDomain(), sconeDatasetOrder, datasetProvider);
-
-            // Should not revert because bits 2-4 of dataset tag are ignored
-            await expect(iexecPoco.assertDatasetDealCompatibility(sconeDatasetOrder, tdxDealId)).to
-                .not.be.reverted;
-        });
-
-        it('Should not revert when dataset has Gramine tag (0x5) and deal has TDX tag (0x9)', async () => {
-            // Create a deal with TDX tag (0b1001 = 0x9)
-            const tdxOrders = buildOrders({
-                assets: { ...ordersAssets, dataset: ZeroAddress },
-                prices: ordersPrices,
-                requester: requester.address,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000009', // TDX
-                volume: volume,
-            });
-            tdxOrders.app.salt = ethers.id('tdx-gramine-app-salt');
-            tdxOrders.workerpool.salt = ethers.id('tdx-gramine-workerpool-salt');
-            tdxOrders.requester.salt = ethers.id('tdx-gramine-requester-salt');
-            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
-            await signOrders(iexecWrapper.getDomain(), tdxOrders, ordersActors);
-            const tdxDealId = getDealId(iexecWrapper.getDomain(), tdxOrders.requester);
-            await iexecPocoAsRequester.matchOrders(...tdxOrders.toArray());
-
-            // Create dataset order with Gramine tag (0b0101 = 0x5)
-            const gramineDatasetOrder = {
-                ...compatibleDatasetOrder,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000005', // Gramine
-                salt: ethers.id('gramine-dataset-salt'),
-            };
-            await signOrder(iexecWrapper.getDomain(), gramineDatasetOrder, datasetProvider);
-
-            // Should not revert because bits 2-4 of dataset tag are ignored
-            await expect(iexecPoco.assertDatasetDealCompatibility(gramineDatasetOrder, tdxDealId))
-                .to.not.be.reverted;
-        });
-
-        it('Should not revert when dataset has TDX tag (0x9) and deal has Scone tag (0x3)', async () => {
-            // Create a deal with Scone tag (0b0011 = 0x3)
-            const sconeOrders = buildOrders({
-                assets: { ...ordersAssets, dataset: ZeroAddress },
-                prices: ordersPrices,
-                requester: requester.address,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000003', // Scone
-                volume: volume,
-            });
-            sconeOrders.app.salt = ethers.id('scone-tdx-app-salt');
-            sconeOrders.workerpool.salt = ethers.id('scone-tdx-workerpool-salt');
-            sconeOrders.requester.salt = ethers.id('scone-tdx-requester-salt');
-            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
-            await signOrders(iexecWrapper.getDomain(), sconeOrders, ordersActors);
-            const sconeDealId = getDealId(iexecWrapper.getDomain(), sconeOrders.requester);
-            await iexecPocoAsRequester.matchOrders(...sconeOrders.toArray());
-
-            // Create dataset order with TDX tag (0b1001 = 0x9)
-            const tdxDatasetOrder = {
-                ...compatibleDatasetOrder,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000009', // TDX
-                salt: ethers.id('tdx-dataset-salt'),
-            };
-            await signOrder(iexecWrapper.getDomain(), tdxDatasetOrder, datasetProvider);
-
-            // Should not revert because bits 2-4 of dataset tag are ignored
-            await expect(iexecPoco.assertDatasetDealCompatibility(tdxDatasetOrder, sconeDealId)).to
-                .not.be.reverted;
-        });
-
-        it('Should not revert when dataset has all TEE framework bits (0xF) and deal has TEE only (0x1)', async () => {
-            // Create a deal with TEE only (0b0001 = 0x1)
-            const teeOnlyOrders = buildOrders({
-                assets: { ...ordersAssets, dataset: ZeroAddress },
-                prices: ordersPrices,
-                requester: requester.address,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000001', // TEE only
-                volume: volume,
-            });
-            teeOnlyOrders.app.salt = ethers.id('tee-only-app-salt');
-            teeOnlyOrders.workerpool.salt = ethers.id('tee-only-workerpool-salt');
-            teeOnlyOrders.requester.salt = ethers.id('tee-only-requester-salt');
-            await depositForRequesterAndSchedulerWithDefaultPrices(volume);
-            await signOrders(iexecWrapper.getDomain(), teeOnlyOrders, ordersActors);
-            const teeOnlyDealId = getDealId(iexecWrapper.getDomain(), teeOnlyOrders.requester);
-            await iexecPocoAsRequester.matchOrders(...teeOnlyOrders.toArray());
-
-            // Create dataset order with all framework bits (0b1111 = 0xF)
-            const allFrameworksDatasetOrder = {
-                ...compatibleDatasetOrder,
-                tag: '0x000000000000000000000000000000000000000000000000000000000000000F',
-                salt: ethers.id('all-frameworks-dataset-salt'),
-            };
-            await signOrder(iexecWrapper.getDomain(), allFrameworksDatasetOrder, datasetProvider);
-
-            // Should not revert because bits 2-4 of dataset tag are ignored, leaving only TEE bit
-            await expect(
-                iexecPoco.assertDatasetDealCompatibility(allFrameworksDatasetOrder, teeOnlyDealId),
-            ).to.not.be.reverted;
         });
 
         it('Should revert when dataset has bit 5 set (not masked) and deal does not', async () => {
@@ -1511,7 +1385,7 @@ describe('IexecPoco1', () => {
                 assets: { ...ordersAssets, dataset: ZeroAddress },
                 prices: ordersPrices,
                 requester: requester.address,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000001', // TEE only
+                tag: TAG_TEE, // TEE only
                 volume: volume,
             });
             teeOnlyOrders.app.salt = ethers.id('tee-bit5-app-salt');
@@ -1525,7 +1399,7 @@ describe('IexecPoco1', () => {
             // Create dataset order with bit 5 set (0b10001 = 0x11)
             const bit5DatasetOrder = {
                 ...compatibleDatasetOrder,
-                tag: '0x0000000000000000000000000000000000000000000000000000000000000011',
+                tag: TAG_BIT_5_AND_TEE,
                 salt: ethers.id('bit5-dataset-salt'),
             };
             await signOrder(iexecWrapper.getDomain(), bit5DatasetOrder, datasetProvider);
