@@ -252,35 +252,43 @@ function recover() external returns (uint256)
 function receiveApproval(address sender, uint256 amount, address token, bytes data) external returns (bool)
 ```
 
-Receives approval, deposit and optionally matches orders in one transaction
+Receives approval, deposit and optionally executes an operation in one transaction
 
 Usage patterns:
 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
-2. Deposit + match: RLC.approveAndCall(escrow, amount, encodedOrders)
+2. Deposit + operation: RLC.approveAndCall(escrow, amount, encodedOperation)
 
-The `data` parameter should be ABI-encoded orders if matching is desired:
-abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder)
+The `data` parameter should include a function selector (first 4 bytes) to identify
+the operation, followed by ABI-encoded parameters. Supported operations:
+- matchOrders: Validates sender is requester, then matches orders
 
-_Important notes:
-- Match orders sponsoring is NOT supported. The requester (sender) always pays for the deal.
-- Clients must compute the exact deal cost and deposit the right amount for the deal to be matched.
-  The deal cost = (appPrice + datasetPrice + workerpoolPrice) * volume.
-- If insufficient funds are deposited, the match will fail._
+_Implementation details:
+- Deposits tokens first, then executes the operation if data is provided
+- Extracts function selector from data to determine which operation
+- Each operation has a validator (_validateMatchOrders, etc.) for preconditions
+- After validation, _executeOperation performs the delegatecall
+- Error handling is generalized: bubbles up revert reasons or returns 'operation-failed'
+- Future operations can be added by implementing a validator and adding a selector case
+
+matchOrders specific notes:
+- Sponsoring is NOT supported. The requester (sender) always pays for the deal.
+- Clients must compute the exact deal cost and deposit the right amount.
+  The deal cost = (appPrice + datasetPrice + workerpoolPrice) * volume._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| sender | address | The address that approved tokens (must be requester if matching) |
+| sender | address | The address that approved tokens |
 | amount | uint256 | Amount of tokens approved and to be deposited |
 | token | address | Address of the token (must be RLC) |
-| data | bytes | Optional: ABI-encoded orders for matching |
+| data | bytes | Optional: Function selector + ABI-encoded parameters for operation |
 
 #### Return Values
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| [0] | bool | success True if operation succeeded @custom:example ```solidity // Compute deal cost uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume; // Encode orders bytes memory data = abi.encode(appOrder, datasetOrder, workerpoolOrder, requestOrder); // One transaction does it all RLC(token).approveAndCall(iexecProxy, dealCost, data); ``` |
+| [0] | bool | success True if operation succeeded @custom:example ```solidity // Compute deal cost uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume; // Encode matchOrders operation with selector bytes memory data = abi.encodeWithSelector(     IexecPoco1.matchOrders.selector,     appOrder,     datasetOrder,     workerpoolOrder,     requestOrder ); // One transaction does it all: approve, deposit, and match RLC(token).approveAndCall(iexecProxy, dealCost, data); ``` |
 
 ## IexecOrderManagementFacet
 
