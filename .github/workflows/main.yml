@@ -26,8 +26,12 @@ jobs:
           cache: 'npm' # Cache dependencies
       - name: Install dependencies
         run: npm ci
+      - name: Check code formatting
+        run: npm run check-format
       - name: Build
         run: npm run build
+      - name: Check documentation is up-to-date
+        run: npm run check-doc
       - name: Check storage layout
         run: npm run check-storage-layout
       - name: Test deployment
