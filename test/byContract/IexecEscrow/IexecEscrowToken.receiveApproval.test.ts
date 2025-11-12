@@ -145,17 +145,6 @@ describe('IexecEscrowToken-receiveApproval', () => {
     });
 
     describe('receiveApproval with generalized operation execution', () => {
-        /**
-         * These tests demonstrate the generalized receiveApproval implementation:
-         *
-         * 1. receiveApproval deposits tokens and then checks if data is provided
-         * 2. If data exists, it extracts the function selector (first 4 bytes)
-         * 3. The selector determines which operation to execute via _executeOperation
-         * 4. Currently supports: matchOrders (with sender validation)
-         * 5. Unsupported selectors trigger 'unsupported-operation' error
-         * 6. This design allows future operations to be added by extending _executeOperation
-         */
-
         it('Should approve, deposit and execute matchOrders operation with all assets', async () => {
             const orders = buildOrders({
                 assets: ordersAssets,
@@ -471,7 +460,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(0n);
         });
 
-        it('Should revert with match-orders-failed when delegatecall fails silently', async () => {
+        it('Should revert with operation-failed when delegatecall fails silently', async () => {
             // Deploy the mock helper contract that fails silently
             // This tests that the generalized _executeOperation properly handles
             // delegatecall failures and bubbles up errors
@@ -522,7 +511,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 depositAmount,
                 encodedOrders,
             );
-            await expect(tx).to.be.revertedWith('match-orders-failed');
+            await expect(tx).to.be.revertedWith('operation-failed');
 
             // Restore original facet
             await diamondCut.diamondCut(

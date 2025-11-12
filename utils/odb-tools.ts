@@ -174,7 +174,7 @@ export function hashStruct(
  * The encoded data includes the function selector as the first 4 bytes, which allows
  * the generalized receiveApproval implementation to:
  * 1. Extract the selector to identify the operation (matchOrders in this case)
- * 2. Route to the appropriate handler (_executeMatchOrders)
+ * 2. Call the appropriate validator (_validateMatchOrders for permission checks)
  *
  * @param appOrder App order struct
  * @param datasetOrder Dataset order struct
