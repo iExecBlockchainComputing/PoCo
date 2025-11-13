@@ -3,14 +3,15 @@
 
 pragma solidity ^0.8.0;
 
-import {PocoStorageLib, IRegistry} from "../libs/PocoStorageLib.v8.sol";
-import {FacetBase} from "./FacetBase.v8.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IDataset} from "../registries/datasets/IDataset.v8.sol";
 import {IApp} from "../registries/apps/IApp.v8.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
+import {IRegistry} from "../registries/IRegistry.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.sol";
 

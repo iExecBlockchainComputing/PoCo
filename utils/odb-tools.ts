@@ -3,6 +3,7 @@
 
 import { TypedDataDomain, TypedDataEncoder, TypedDataField, ethers } from 'ethers';
 import hre from 'hardhat';
+import { IexecPoco1Facet__factory } from '../typechain';
 
 interface WalletInfo {
     privateKey?: string;
@@ -166,4 +167,47 @@ export function hashStruct(
     };
 
     return TypedDataEncoder.hash(typedDataDomain, types, message);
+}
+
+/**
+ * Encode orders with matchOrders selector for receiveApproval callback.
+ *
+ * The encoded data includes the function selector as the first 4 bytes, which allows
+ * the generalized receiveApproval implementation to:
+ * 1. Extract the selector to identify the operation (matchOrders in this case)
+ * 2. Call the appropriate validator (_validateMatchOrders for permission checks)
+ *
+ * @param appOrder App order struct
+ * @param datasetOrder Dataset order struct
+ * @param workerpoolOrder Workerpool order struct
+ * @param requestOrder Request order struct
+ * @returns ABI-encoded calldata with matchOrders selector + encoded order structs
+ */
+export function encodeOrders(
+    appOrder: Record<string, any>,
+    datasetOrder: Record<string, any>,
+    workerpoolOrder: Record<string, any>,
+    requestOrder: Record<string, any>,
+): string {
+    // These types match the typechain-generated structs in IexecLibOrders_v5
+    // AppOrderStruct, DatasetOrderStruct, WorkerpoolOrderStruct, RequestOrderStruct
+    // By using named tuple components, ethers can encode objects with named properties
+    const appOrderType =
+        'tuple(address app, uint256 appprice, uint256 volume, bytes32 tag, address datasetrestrict, address workerpoolrestrict, address requesterrestrict, bytes32 salt, bytes sign)';
+    const datasetOrderType =
+        'tuple(address dataset, uint256 datasetprice, uint256 volume, bytes32 tag, address apprestrict, address workerpoolrestrict, address requesterrestrict, bytes32 salt, bytes sign)';
+    const workerpoolOrderType =
+        'tuple(address workerpool, uint256 workerpoolprice, uint256 volume, bytes32 tag, uint256 category, uint256 trust, address apprestrict, address datasetrestrict, address requesterrestrict, bytes32 salt, bytes sign)';
+    const requestOrderType =
+        'tuple(address app, uint256 appmaxprice, address dataset, uint256 datasetmaxprice, address workerpool, uint256 workerpoolmaxprice, address requester, uint256 volume, bytes32 tag, uint256 category, uint256 trust, address beneficiary, address callback, string params, bytes32 salt, bytes sign)';
+
+    // Encode the function parameters (without selector)
+    const encodedParams = ethers.AbiCoder.defaultAbiCoder().encode(
+        [appOrderType, datasetOrderType, workerpoolOrderType, requestOrderType],
+        [appOrder, datasetOrder, workerpoolOrder, requestOrder],
+    );
+    const matchOrdersSelector =
+        IexecPoco1Facet__factory.createInterface().getFunction('matchOrders')!.selector;
+
+    return matchOrdersSelector + encodedParams.slice(2);
 }

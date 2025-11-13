@@ -8,7 +8,6 @@ import {IexecCategoryManager} from "./interfaces/IexecCategoryManager.sol";
 import {IexecConfiguration} from "./interfaces/IexecConfiguration.sol";
 import {IexecConfigurationExtra} from "./interfaces/IexecConfigurationExtra.sol";
 import {IexecERC20} from "./interfaces/IexecERC20.sol";
-import {IexecERC20Common} from "./interfaces/IexecERC20Common.sol";
 import {IexecEscrowToken} from "./interfaces/IexecEscrowToken.sol";
 import {IexecOrderManagement} from "./interfaces/IexecOrderManagement.sol";
 import {IexecPoco1} from "./interfaces/IexecPoco1.sol";
@@ -36,7 +35,6 @@ interface IexecInterfaceToken is
     IexecConfiguration,
     IexecConfigurationExtra,
     IexecERC20,
-    IexecERC20Common,
     IexecEscrowToken,
     IexecOrderManagement,
     IexecPoco1,

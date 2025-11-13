@@ -3,22 +3,22 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
-import {ECDSA} from "@openzeppelin/contracts-v5/utils/cryptography/ECDSA.sol";
-import {MessageHashUtils} from "@openzeppelin/contracts-v5/utils/cryptography/MessageHashUtils.sol";
-import {Math} from "@openzeppelin/contracts-v5/utils/math/Math.sol";
-import {SafeCast} from "@openzeppelin/contracts-v5/utils/math/SafeCast.sol";
+import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import {IOracleConsumer} from "../external/interfaces/IOracleConsumer.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
-import {FacetBase} from "./FacetBase.v8.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {SignatureVerifier} from "./SignatureVerifier.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
 
 //
 // Not deployed yet!

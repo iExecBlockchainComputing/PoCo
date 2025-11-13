@@ -1,29 +1,44 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
-import "@iexec/solidity/contracts/Upgradeability/InitializableUpgradeabilityProxy.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Create2.sol";
-import "./IRegistry.sol";
+import {InitializableUpgradeabilityProxy} from "./proxy/InitializableUpgradeabilityProxy.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
+import {IRegistry} from "./IRegistry.sol";
+import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-abstract contract Registry is IRegistry, ERC721, Ownable {
+// Note: this version of this contract that has been migrated to solidity v0.8 is not the
+// same version that is currently deployed on live networks. The reason being, registries
+// are not upgradable thus we don't mind having a mismatch between the deployed version
+// and the latest version in the codebase.
+
+abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
     address public master;
     bytes public proxyCode;
     bytes32 public proxyCodeHash;
     IRegistry public previous;
     bool public initialized;
+    string private _baseUri;
 
     constructor(
         address _master,
         string memory _name,
         string memory _symbol
-    ) public ERC721(_name, _symbol) {
+    ) ERC721(_name, _symbol) Ownable(msg.sender) {
         master = _master;
         proxyCode = type(InitializableUpgradeabilityProxy).creationCode;
         proxyCodeHash = keccak256(proxyCode);
+    }
+
+    // TEMPORARY MIGRATION FIX: Override _checkOwner to catch custom errors and throw string errors for backward compatibility
+    // TODO: Remove this override in the next major version
+    function _checkOwner() internal view override {
+        if (owner() != _msgSender()) {
+            revert("Ownable: caller is not the owner");
+        }
     }
 
     function initialize(address _previous) external onlyOwner {
@@ -32,14 +47,24 @@ abstract contract Registry is IRegistry, ERC721, Ownable {
         previous = IRegistry(_previous);
     }
 
-    function setBaseURI(string calldata _baseURI) external onlyOwner {
-        _setBaseURI(_baseURI);
+    function setBaseURI(string calldata baseUri) external onlyOwner {
+        _baseUri = baseUri;
+    }
+
+    /**
+     * @dev Added for retrocompatibility!
+     *
+     * @dev Returns the base URI set via {setBaseURI}. This will be
+     * automatically added as a prefix in {tokenURI} to each token's ID.
+     */
+    function baseURI() public view returns (string memory) {
+        return _baseURI();
     }
 
     /* Interface */
     function isRegistered(address _entry) external view override returns (bool) {
         return
-            _exists(uint256(_entry)) ||
+            _ownerOf(uint256(uint160(_entry))) != address(0) ||
             (address(previous) != address(0) && previous.isRegistered(_entry));
     }
 
@@ -56,21 +81,34 @@ abstract contract Registry is IRegistry, ERC721, Ownable {
     }
 
     /* Factory */
-    function _mintCreate(address _owner, bytes memory _args) internal returns (uint256) {
+    function _mintCreate(address _owner, bytes memory _args) internal returns (address) {
+        // TEMPORARY MIGRATION FIX: Check if contract already exists to revert without custom error for backward compatibility
+        // TODO: Remove this in the next major version
+        address entry = _mintPredict(_owner, _args);
+        if (entry.code.length > 0) {
+            revert("Create2: Failed on deploy");
+        }
         // Create entry (proxy)
-        address entry = Create2.deploy(0, keccak256(abi.encodePacked(_args, _owner)), proxyCode);
-        // Initialize entry (casting to address payable is a pain in ^0.5.0)
+        entry = Create2.deploy(0, keccak256(abi.encodePacked(_args, _owner)), proxyCode);
         InitializableUpgradeabilityProxy(payable(entry)).initialize(master, _args);
         // Mint corresponding token
-        _mint(_owner, uint256(entry));
-        return uint256(entry);
+        _mint(_owner, uint256(uint160(entry)));
+        return entry;
     }
 
-    function _mintPredict(address _owner, bytes memory _args) internal view returns (uint256) {
+    function _mintPredict(address _owner, bytes memory _args) internal view returns (address) {
         address entry = Create2.computeAddress(
             keccak256(abi.encodePacked(_args, _owner)),
             proxyCodeHash
         );
-        return uint256(entry);
+        return entry;
+    }
+
+    /**
+     * Overridden to use `_baseUri`.
+     * @dev See {ERC721-_baseURI}.
+     */
+    function _baseURI() internal view override returns (string memory) {
+        return _baseUri;
     }
 }

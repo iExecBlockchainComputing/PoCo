@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {LibDiamond} from "@mudgen/diamond-1/contracts/libraries/LibDiamond.sol";
-import {PocoStorageLib} from "../../libs/PocoStorageLib.v8.sol";
+import {PocoStorageLib} from "../../libs/PocoStorageLib.sol";
 
 // /!\ These contracts are only used to generate storage diagrams, they are not meant
 // to be deployed or used in any way.

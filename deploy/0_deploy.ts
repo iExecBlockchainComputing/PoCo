@@ -19,7 +19,6 @@ import {
     IexecCategoryManager__factory,
     IexecConfigurationExtraFacet__factory,
     IexecConfigurationFacet__factory,
-    IexecERC20Facet__factory,
     IexecEscrowNativeFacet__factory,
     IexecEscrowTokenFacet__factory,
     IexecLibOrders_v5__factory,
@@ -31,12 +30,12 @@ import {
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet__factory,
     IexecRelayFacet__factory,
+    Ownable__factory,
     OwnershipFacet__factory,
     RLC__factory,
     WorkerpoolRegistry__factory,
 } from '../typechain';
 import { DiamondArgsStruct } from '../typechain/contracts/Diamond';
-import { Ownable__factory } from '../typechain/factories/@openzeppelin/contracts/access';
 import { FactoryDeployer } from '../utils/FactoryDeployer';
 import config, { isArbitrumChainId, isArbitrumSepoliaChainId } from '../utils/config';
 import { getDeployerAndOwnerSigners } from '../utils/deploy-tools';
@@ -100,7 +99,6 @@ export default async function deploy() {
         new IexecCategoryManagerFacet__factory(),
         new IexecConfigurationExtraFacet__factory(),
         new IexecConfigurationFacet__factory(iexecLibOrders),
-        new IexecERC20Facet__factory(),
         isTokenMode ? new IexecEscrowTokenFacet__factory() : new IexecEscrowNativeFacet__factory(),
         new IexecOrderManagementFacet__factory(iexecLibOrders),
         new IexecPoco1Facet__factory(iexecLibOrders),

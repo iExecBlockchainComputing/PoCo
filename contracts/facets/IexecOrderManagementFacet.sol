@@ -3,11 +3,11 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC5313} from "@openzeppelin/contracts-v5/interfaces/IERC5313.sol";
+import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
 import {SignatureVerifier} from "./SignatureVerifier.sol";
-import {FacetBase} from "./FacetBase.v8.sol";
 import {IexecOrderManagement} from "../interfaces/IexecOrderManagement.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.v8.sol";
+import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, SignatureVerifier {
