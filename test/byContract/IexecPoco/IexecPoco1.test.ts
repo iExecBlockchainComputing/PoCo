@@ -728,8 +728,8 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when workerpool tag does not satisfy app, dataset and request requirements', async () => {
-            orders.app.tag = TAG_TEE;
-            orders.dataset.tag = TAG_TEE_SCONE; // 0b0010
+            orders.app.tag = TAG_TEE; //0b0001
+            orders.dataset.tag = TAG_TEE_SCONE; // 0b0011
             orders.requester.tag = TAG_TEE_SCONE; // 0b0011
             orders.workerpool.tag = TAG_BIT_2; // 0b0100 - does not satisfy last bits of app, dataset, request
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
@@ -738,8 +738,7 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when dataset has other bits set that are not ignored', async () => {
-            // Dataset order with bit 4 set (not ignored): 0b10001 = 0x11
-            orders.dataset.tag = TAG_BIT_4_AND_TEE;
+            orders.dataset.tag = TAG_BIT_4_AND_TEE; // 0b10001 bit 4 set (not ignored)
             orders.workerpool.tag = TAG_TEE;
             orders.app.tag = TAG_TEE;
             orders.requester.tag = TAG_TEE;
@@ -750,11 +749,11 @@ describe('IexecPoco1', () => {
         });
 
         it('Should fail when the last bit of app tag does not satisfy dataset or request requirements', async () => {
-            orders.app.tag = TAG_STANDARD; // 0b0000
-            orders.dataset.tag = TAG_TEE_SCONE; // 0b0011
-            orders.requester.tag = TAG_TEE_SCONE;
+            orders.app.tag = TAG_BIT_2; // 0b0100
+            orders.dataset.tag = TAG_TEE_GRAMINE; // 0b0101
+            orders.requester.tag = TAG_TEE_GRAMINE;
             // Set the workerpool tag in a way to pass first tag check.
-            orders.workerpool.tag = TAG_TEE_SCONE;
+            orders.workerpool.tag = TAG_TEE_GRAMINE;
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
                 'iExecV5-matchOrders-0x07',
             );
@@ -1319,7 +1318,6 @@ describe('IexecPoco1', () => {
                 .withArgs('Tag compatibility not satisfied');
         });
 
-        // Cross-framework compatibility tests for assertDatasetDealCompatibility
         [
             {
                 datasetTag: TAG_TEE_SCONE,
@@ -1386,24 +1384,24 @@ describe('IexecPoco1', () => {
                 tag: TAG_TEE, // TEE only
                 volume: volume,
             });
-            teeOnlyOrders.app.salt = ethers.id('tee-bit5-app-salt');
-            teeOnlyOrders.workerpool.salt = ethers.id('tee-bit5-workerpool-salt');
-            teeOnlyOrders.requester.salt = ethers.id('tee-bit5-requester-salt');
+            teeOnlyOrders.app.salt = ethers.id('tee-bit4-app-salt');
+            teeOnlyOrders.workerpool.salt = ethers.id('tee-bit4-workerpool-salt');
+            teeOnlyOrders.requester.salt = ethers.id('tee-bit4-requester-salt');
             await depositForRequesterAndSchedulerWithDefaultPrices(volume);
             await signOrders(iexecWrapper.getDomain(), teeOnlyOrders, ordersActors);
             const teeOnlyDealId = getDealId(iexecWrapper.getDomain(), teeOnlyOrders.requester);
             await iexecPocoAsRequester.matchOrders(...teeOnlyOrders.toArray());
 
             // Create dataset order with bit 4 set (0b10001 = 0x11)
-            const bit5DatasetOrder = {
+            const bit4DatasetOrder = {
                 ...compatibleDatasetOrder,
                 tag: TAG_BIT_4_AND_TEE,
-                salt: ethers.id('bit5-dataset-salt'),
+                salt: ethers.id('bit4-dataset-salt'),
             };
-            await signOrder(iexecWrapper.getDomain(), bit5DatasetOrder, datasetProvider);
+            await signOrder(iexecWrapper.getDomain(), bit4DatasetOrder, datasetProvider);
 
             // Should revert because bit 4 is NOT masked and the deal doesn't have it
-            await expect(iexecPoco.assertDatasetDealCompatibility(bit5DatasetOrder, teeOnlyDealId))
+            await expect(iexecPoco.assertDatasetDealCompatibility(bit4DatasetOrder, teeOnlyDealId))
                 .to.be.revertedWithCustomError(iexecPoco, 'IncompatibleDatasetOrder')
                 .withArgs('Tag compatibility not satisfied');
         });
