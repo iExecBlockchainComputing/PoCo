@@ -246,7 +246,7 @@ contract IexecPoco1Facet is
         // The workerpool tag should include all tag bits of dataset, app, and requester orders.
         // For dataset orders: ignore Scone, Gramine, and TDX framework bits to allow
         // dataset orders from SGX workerpools to be consumed on TDX workerpools and vice versa.
-        // Bit positions (0-indexed): bit 0 = TEE, bit 1 = Scone, bit 2 = Gramine, bit 3 = TDX
+        // Bit positions: bit 0 = TEE, bit 1 = Scone, bit 2 = Gramine, bit 3 = TDX
         // Mask: ~(BIT_SCONE | BIT_GRAMINE | BIT_TDX) = ~0xE = 0xFFF...FF1
         bytes32 maskedDatasetTag = _datasetorder.tag &
             0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;

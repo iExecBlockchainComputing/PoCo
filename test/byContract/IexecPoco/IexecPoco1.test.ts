@@ -1369,7 +1369,7 @@ describe('IexecPoco1', () => {
                 };
                 await signOrder(iexecWrapper.getDomain(), datasetOrder, datasetProvider);
 
-                // Should not revert because bits 1-4 of dataset tag are ignored
+                // Should not revert because bits 1-3 of dataset tag are ignored
                 await expect(iexecPoco.assertDatasetDealCompatibility(datasetOrder, dealId)).to.not
                     .be.reverted;
             });

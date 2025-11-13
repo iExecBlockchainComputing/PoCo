@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * Tag constants (0-indexed bit positions):
+ * Tag constants:
  * - Bit 0: TEE
  * - Bit 1: Scone
  * - Bit 2: Gramine
