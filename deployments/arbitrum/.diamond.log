@@ -1,40 +1,31 @@
-
-💎 Diamond proxy has 15 facets with 102 total functions.
+💎 Diamond proxy has 14 facets with 98 total functions.
 Facets:
    - DiamondCutFacet: 0x6A4ccf4414c438424d3FB5183f9048EDfbB47847
    - DiamondLoupeFacet: 0xf509a2221FCB63645d5b24c3740E35f219f30db9
    - IexecAccessorsABILegacyFacet: 0x56CDC32332648b1220a89172191798852706EB35
-   - IexecAccessorsFacet: 0xEa232be31ab0112916505Aeb7A2a94b5571DCc6b
    - IexecCategoryManagerFacet: 0x5f0483b9D7f959816A5CDD4C49E5C91C24561B43
    - IexecConfigurationExtraFacet: 0x7Ff117E7385Ac3E207AF1791fE7e66C7802aeCCd
    - IexecConfigurationFacet: 0x88eb05e62434057d3AA9e41FdaF7300A586b314D
    - IexecERC20Facet: 0xB0152eC6f48E64a92B66D4736aFA1b02d8D45169
    - IexecEscrowTokenFacet: 0xd9EB17A161581FBBAD2Ae998c0C19746EaAD0D6E
    - IexecOrderManagementFacet: 0x541d532E6C195Ba044a75325F367342f523627fB
-   - IexecPoco1Facet: 0x46b555fE117DFd8D4eAC2470FA2d739c6c3a0152
+   - IexecPoco1Facet: 0x5331c0FC7DD0Cc08047B546675cd1d6d47152AEb
    - IexecPoco2Facet: 0x5c7B589E6807B554ed278f335215B93bCB692162
-   - IexecPocoAccessorsFacet: 0xeb40697b275413241d9b31dE568C98B3EA12FFF0
+   - IexecPocoAccessorsFacet: 0x9BCaCA06d5173f4bA02F8ECcb28E227333F1606F
    - IexecRelayFacet: 0x8cBf58265F74b77f0D9cCA9f7e14685205496d8f
    - OwnershipFacet: 0x606CfE8BabBd286329281f14895634F913BfdB76
 Functions:
-   - 0x4ec3b9e3 -> IexecAccessorsABILegacyFacet
-   - 0x51152de1 -> IexecAccessorsABILegacyFacet
-   - 0x5fde601d -> IexecAccessorsABILegacyFacet
-   - 0x68a9ef1c -> IexecAccessorsABILegacyFacet
-   - 0x7b244832 -> IexecAccessorsABILegacyFacet
-   - 0x90fc26b1 -> IexecAccessorsABILegacyFacet
-   - 0x9e986e81 -> IexecAccessorsABILegacyFacet
-   - 0xe2e7a8c1 -> IexecAccessorsABILegacyFacet
-   - allowance -> IexecAccessorsFacet
-   - appregistry -> IexecAccessorsFacet
+   - allowance -> IexecPocoAccessorsFacet
+   - appregistry -> IexecPocoAccessorsFacet
    - approve -> IexecERC20Facet
    - approveAndCall -> IexecERC20Facet
-   - balanceOf -> IexecAccessorsFacet
+   - assertDatasetDealCompatibility -> IexecPoco1Facet
+   - balanceOf -> IexecPocoAccessorsFacet
    - broadcastAppOrder -> IexecRelayFacet
    - broadcastDatasetOrder -> IexecRelayFacet
    - broadcastRequestOrder -> IexecRelayFacet
    - broadcastWorkerpoolOrder -> IexecRelayFacet
-   - callbackgas -> IexecAccessorsFacet
+   - callbackgas -> IexecPocoAccessorsFacet
    - changeRegistries -> IexecConfigurationExtraFacet
    - claim -> IexecPoco2Facet
    - claimArray -> IexecPoco2Facet
@@ -42,57 +33,57 @@ Functions:
    - configure -> IexecConfigurationFacet
    - contribute -> IexecPoco2Facet
    - contributeAndFinalize -> IexecPoco2Facet
-   - contribution_deadline_ratio -> IexecAccessorsFacet
-   - countCategory -> IexecAccessorsFacet
+   - contribution_deadline_ratio -> IexecPocoAccessorsFacet
+   - countCategory -> IexecPocoAccessorsFacet
    - createCategory -> IexecCategoryManagerFacet
-   - datasetregistry -> IexecAccessorsFacet
-   - decimals -> IexecAccessorsFacet
+   - datasetregistry -> IexecPocoAccessorsFacet
+   - decimals -> IexecPocoAccessorsFacet
    - decreaseAllowance -> IexecERC20Facet
    - deposit -> IexecEscrowTokenFacet
    - depositFor -> IexecEscrowTokenFacet
    - depositForArray -> IexecEscrowTokenFacet
    - diamondCut -> DiamondCutFacet
    - domain -> IexecConfigurationFacet
-   - eip712domain_separator -> IexecAccessorsFacet
+   - eip712domain_separator -> IexecPocoAccessorsFacet
    - facetAddress -> DiamondLoupeFacet
    - facetAddresses -> DiamondLoupeFacet
    - facetFunctionSelectors -> DiamondLoupeFacet
    - facets -> DiamondLoupeFacet
    - fallback -> IexecEscrowTokenFacet
-   - final_deadline_ratio -> IexecAccessorsFacet
+   - final_deadline_ratio -> IexecPocoAccessorsFacet
    - finalize -> IexecPoco2Facet
-   - frozenOf -> IexecAccessorsFacet
-   - groupmember_purpose -> IexecAccessorsFacet
+   - frozenOf -> IexecPocoAccessorsFacet
+   - groupmember_purpose -> IexecPocoAccessorsFacet
    - importScore -> IexecConfigurationFacet
    - increaseAllowance -> IexecERC20Facet
    - initialize -> IexecPoco2Facet
    - initializeAndClaimArray -> IexecPoco2Facet
    - initializeArray -> IexecPoco2Facet
-   - kitty_address -> IexecAccessorsFacet
-   - kitty_min -> IexecAccessorsFacet
-   - kitty_ratio -> IexecAccessorsFacet
+   - kitty_address -> IexecPocoAccessorsFacet
+   - kitty_min -> IexecPocoAccessorsFacet
+   - kitty_ratio -> IexecPocoAccessorsFacet
    - manageAppOrder -> IexecOrderManagementFacet
    - manageDatasetOrder -> IexecOrderManagementFacet
    - manageRequestOrder -> IexecOrderManagementFacet
    - manageWorkerpoolOrder -> IexecOrderManagementFacet
    - matchOrders -> IexecPoco1Facet
-   - name -> IexecAccessorsFacet
+   - name -> IexecPocoAccessorsFacet
    - owner -> OwnershipFacet
    - receive -> IexecEscrowTokenFacet
    - receiveApproval -> IexecEscrowTokenFacet
    - recover -> IexecEscrowTokenFacet
    - reopen -> IexecPoco2Facet
-   - resultFor -> IexecAccessorsFacet
+   - resultFor -> IexecPocoAccessorsFacet
    - reveal -> IexecPoco2Facet
-   - reveal_deadline_ratio -> IexecAccessorsFacet
+   - reveal_deadline_ratio -> IexecPocoAccessorsFacet
    - setCallbackGas -> IexecConfigurationFacet
    - setTeeBroker -> IexecConfigurationFacet
    - sponsorMatchOrders -> IexecPoco1Facet
    - supportsInterface -> DiamondLoupeFacet
-   - symbol -> IexecAccessorsFacet
-   - teebroker -> IexecAccessorsFacet
-   - token -> IexecAccessorsFacet
-   - totalSupply -> IexecAccessorsFacet
+   - symbol -> IexecPocoAccessorsFacet
+   - teebroker -> IexecPocoAccessorsFacet
+   - token -> IexecPocoAccessorsFacet
+   - totalSupply -> IexecPocoAccessorsFacet
    - transfer -> IexecERC20Facet
    - transferFrom -> IexecERC20Facet
    - transferOwnership -> OwnershipFacet
@@ -100,22 +91,25 @@ Functions:
    - verifyPresignature -> IexecPoco1Facet
    - verifyPresignatureOrSignature -> IexecPoco1Facet
    - verifySignature -> IexecPoco1Facet
-   - viewAccount -> IexecAccessorsFacet
+   - viewAccount -> IexecPocoAccessorsFacet
    - viewAccountABILegacy -> IexecAccessorsABILegacyFacet
-   - viewCategory -> IexecAccessorsFacet
+   - viewApp -> IexecPocoAccessorsFacet
+   - viewCategory -> IexecPocoAccessorsFacet
    - viewCategoryABILegacy -> IexecAccessorsABILegacyFacet
    - viewConfigABILegacy -> IexecAccessorsABILegacyFacet
-   - viewConsumed -> IexecAccessorsFacet
-   - viewContribution -> IexecAccessorsFacet
+   - viewConsumed -> IexecPocoAccessorsFacet
+   - viewContribution -> IexecPocoAccessorsFacet
    - viewContributionABILegacy -> IexecAccessorsABILegacyFacet
-   - viewDeal -> IexecAccessorsFacet
+   - viewDataset -> IexecPocoAccessorsFacet
+   - viewDeal -> IexecPocoAccessorsFacet
    - viewDealABILegacy_pt1 -> IexecAccessorsABILegacyFacet
    - viewDealABILegacy_pt2 -> IexecAccessorsABILegacyFacet
-   - viewPresigned -> IexecAccessorsFacet
-   - viewScore -> IexecAccessorsFacet
-   - viewTask -> IexecAccessorsFacet
+   - viewPresigned -> IexecPocoAccessorsFacet
+   - viewScore -> IexecPocoAccessorsFacet
+   - viewTask -> IexecPocoAccessorsFacet
    - viewTaskABILegacy -> IexecAccessorsABILegacyFacet
+   - viewWorkerpool -> IexecPocoAccessorsFacet
    - withdraw -> IexecEscrowTokenFacet
    - withdrawTo -> IexecEscrowTokenFacet
-   - workerpool_stake_ratio -> IexecAccessorsFacet
-   - workerpoolregistry -> IexecAccessorsFacet
+   - workerpool_stake_ratio -> IexecPocoAccessorsFacet
+   - workerpoolregistry -> IexecPocoAccessorsFacet
