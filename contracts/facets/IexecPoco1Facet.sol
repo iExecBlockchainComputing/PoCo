@@ -126,10 +126,15 @@ contract IexecPoco1Facet is
             revert IncompatibleDatasetOrder("Requester restriction not satisfied");
         }
         // The deal's tag should include all tag bits of the dataset order.
-        // Deal: 0b0101, Dataset: 0b0101 => ok
-        // Deal: 0b0101, Dataset: 0b0001 => ok
-        // Deal: 0b0101, Dataset: 0b0010 => !ok
-        if ((deal.tag & datasetOrder.tag) != datasetOrder.tag) {
+        // For dataset orders: ignore Scone, Gramine, and TDX framework bits to allow
+        // dataset orders from SGX workerpools to be consumed on TDX workerpools and vice versa.
+        // Examples after masking:
+        // Deal: 0b0101, Dataset: 0b0101 => Masked Dataset: 0b0001 => ok
+        // Deal: 0b0101, Dataset: 0b0001 => Masked Dataset: 0b0001 => ok
+        // Deal: 0b1001 (TDX), Dataset: 0b0011 (Scone) => Masked Dataset: 0b0001 => ok (cross-framework compatibility)
+        bytes32 maskedDatasetTag = datasetOrder.tag &
+            0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
+        if ((deal.tag & maskedDatasetTag) != maskedDatasetTag) {
             revert IncompatibleDatasetOrder("Tag compatibility not satisfied");
         }
     }
@@ -239,7 +244,13 @@ contract IexecPoco1Facet is
             "iExecV5-matchOrders-0x05"
         );
         // The workerpool tag should include all tag bits of dataset, app, and requester orders.
-        bytes32 tag = _apporder.tag | _datasetorder.tag | _requestorder.tag;
+        // For dataset orders: ignore Scone, Gramine, and TDX framework bits to allow
+        // dataset orders from SGX workerpools to be consumed on TDX workerpools and vice versa.
+        // Bit positions: bit 0 = TEE, bit 1 = Scone, bit 2 = Gramine, bit 3 = TDX
+        // Mask: ~(BIT_SCONE | BIT_GRAMINE | BIT_TDX) = ~0xE = 0xFFF...FF1
+        bytes32 maskedDatasetTag = _datasetorder.tag &
+            0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
+        bytes32 tag = _apporder.tag | maskedDatasetTag | _requestorder.tag;
         require(tag & ~_workerpoolorder.tag == 0x0, "iExecV5-matchOrders-0x06");
         require((tag ^ _apporder.tag)[31] & 0x01 == 0x0, "iExecV5-matchOrders-0x07");
 
