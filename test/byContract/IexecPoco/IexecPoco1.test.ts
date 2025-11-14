@@ -1318,6 +1318,7 @@ describe('IexecPoco1', () => {
                 .withArgs('Tag compatibility not satisfied');
         });
 
+        // TODO: Add more test cases for tag compatibility
         [
             {
                 datasetTag: TAG_TEE_SCONE,
