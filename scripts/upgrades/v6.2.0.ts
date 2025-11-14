@@ -14,7 +14,6 @@ import {
     IexecPocoAccessorsFacet__factory,
     IexecRelayFacet__factory,
 } from '../../typechain';
-import { getChainConfig, isNativeChain } from '../../utils/config';
 import {
     FacetDetails,
     deployFacets,
@@ -31,10 +30,6 @@ async function main() {
     console.log('Performing Solidity v8 migration upgrade (v6.2.0)...');
     const { chainId, networkName, deployer, proxyOwner, proxyAddress, iexecLibOrders } =
         await getUpgradeContext();
-
-    // Determine if this is a native or token chain
-    const chainConfig = getChainConfig(chainId);
-    const isNative = isNativeChain(chainConfig);
 
     // Define all facets to remove (all existing facets except core diamond facets)
     const facetAddressesPerChain: { [key: string]: { [key: string]: string } } = {
@@ -102,8 +97,8 @@ async function main() {
             factory: null,
         },
         {
-            name: isNative ? 'IexecEscrowNativeFacet' : 'IexecEscrowTokenFacet',
-            address: addresses['IexecEscrowTokenFacet'], // Both chains use token mode
+            name: 'IexecEscrowTokenFacet',
+            address: addresses['IexecEscrowTokenFacet'],
             factory: null,
         },
         {
