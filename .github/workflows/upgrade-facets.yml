@@ -33,7 +33,7 @@ jobs:
       contents: write # Required to commit artifacts.
       pull-requests: write # Required to create pull requests.
     env:
-      UPGRADE_SCRIPT: 'v6.1.0-bulk-processing.ts' # Update this for each specific upgrade.
+      UPGRADE_SCRIPT: 'v6.2.0.ts' # Update this for each specific upgrade.
       COMMIT_MESSAGE: 'chore: Save upgrade artifacts - ${{ inputs.network }} (runId:${{ github.run_id }})'
       GHA_BOT_NAME: 'GitHub Actions Bot'
       GHA_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
