@@ -132,7 +132,7 @@ async function main() {
         {
             name: 'IexecAccessorsABILegacyFacet',
             address: null,
-            factory: new IexecAccessorsABILegacyFacet__factory(),
+            factory: new IexecAccessorsABILegacyFacet__factory(), // TODO: Check with middleware team if this facet is still needed.
         },
         {
             name: 'IexecCategoryManagerFacet',
