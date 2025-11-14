@@ -6,7 +6,6 @@ import {
     IexecCategoryManagerFacet__factory,
     IexecConfigurationExtraFacet__factory,
     IexecConfigurationFacet__factory,
-    IexecEscrowNativeFacet__factory,
     IexecEscrowTokenFacet__factory,
     IexecOrderManagementFacet__factory,
     IexecPoco1Facet__factory,
@@ -151,11 +150,9 @@ async function main() {
             factory: new IexecConfigurationFacet__factory(iexecLibOrders),
         },
         {
-            name: isNative ? 'IexecEscrowNativeFacet' : 'IexecEscrowTokenFacet',
+            name: 'IexecEscrowTokenFacet',
             address: null,
-            factory: isNative
-                ? new IexecEscrowNativeFacet__factory()
-                : new IexecEscrowTokenFacet__factory(),
+            factory: new IexecEscrowTokenFacet__factory(),
         },
         {
             name: 'IexecOrderManagementFacet',
