@@ -1301,7 +1301,7 @@ describe('IexecPoco1', () => {
                 .withArgs('Requester restriction not satisfied');
         });
 
-        it('Should revert when tag compatibility is not satisfied', async () => {
+        it('Should revert when tag compatibility with deal is not satisfied', async () => {
             // Create dataset order with incompatible tag
             const incompatibleTagDatasetOrder = {
                 ...compatibleDatasetOrder,
