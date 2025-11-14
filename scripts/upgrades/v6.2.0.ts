@@ -190,6 +190,7 @@ async function main() {
     await printOnchainDiamondDescription(proxyAddress);
     await linkFacetsToDiamond(proxyAddress, proxyOwner, facetsToAdd);
     await printOnchainDiamondDescription(proxyAddress);
+    console.log('Upgrade performed successfully!');
     await saveOnchainDiamondDescription(proxyAddress, networkName);
     await removeDanglingFacetDeploymentArtifacts(proxyAddress);
     await tryVerify(facetsToAdd.map((facet) => facet.name));
