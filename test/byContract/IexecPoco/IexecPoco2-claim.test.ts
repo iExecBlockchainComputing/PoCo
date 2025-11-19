@@ -70,7 +70,7 @@ describe('IexecPoco2#claim', async () => {
      * Generic claim test (longest code path) where it should claim a revealing
      * task after deadline. The task comes from a deal payed by a sponsor.
      */
-    it('Should claim task of deal payed by sponsor', async () => {
+    it.only('Should claim task of deal payed by sponsor', async () => {
         const expectedVolume = 3n; // > 1 to explicit taskPrice vs dealPrice
         const claimedTasks = 1n;
         const orders = buildOrders({

@@ -106,6 +106,9 @@ const config: HardhatUserConfig = {
                     url: 'https://bellecour.iex.ec',
                 },
                 chainId: 134,
+                accounts: {
+                    mnemonic: process.env.MNEMONIC_FORK || HARDHAT_NETWORK_MNEMONIC,
+                },
             }),
             ...(isArbitrumSepoliaFork && {
                 forking: {
