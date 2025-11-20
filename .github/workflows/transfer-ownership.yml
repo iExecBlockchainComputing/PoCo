@@ -2,7 +2,7 @@ name: Transfer Ownership
 
 on:
   workflow_dispatch:
-    inputs:
+        inputs:
       network:
         description: 'Network'
         required: true
@@ -115,3 +115,4 @@ jobs:
             echo "- Dataset Registry" >> $GITHUB_STEP_SUMMARY
             echo "- Workerpool Registry" >> $GITHUB_STEP_SUMMARY
           fi
+
