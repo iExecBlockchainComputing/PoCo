@@ -6,6 +6,8 @@ pragma solidity ^0.8.0;
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 interface IexecOrderManagement {
+    error InvalidSenderOrSignature();
+
     event SignedAppOrder(bytes32 appHash);
     event SignedDatasetOrder(bytes32 datasetHash);
     event SignedWorkerpoolOrder(bytes32 workerpoolHash);

@@ -11,7 +11,6 @@ import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
-import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {SignatureVerifier} from "./SignatureVerifier.sol";
@@ -27,14 +26,7 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is
-    IexecPoco1,
-    IexecPoco1Errors,
-    FacetBase,
-    IexecEscrow,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPoco1Facet is IexecPoco1, FacetBase, IexecEscrow, SignatureVerifier, IexecPocoCommon {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
@@ -231,18 +223,28 @@ contract IexecPoco1Facet is
          */
 
         // computation environment & allowed enough funds
-        require(_requestorder.category == _workerpoolorder.category, "iExecV5-matchOrders-0x00");
-        require(_requestorder.category < $.m_categories.length, "iExecV5-matchOrders-0x01");
-        require(_requestorder.trust <= _workerpoolorder.trust, "iExecV5-matchOrders-0x02");
-        require(_requestorder.appmaxprice >= _apporder.appprice, "iExecV5-matchOrders-0x03");
-        require(
-            _requestorder.datasetmaxprice >= _datasetorder.datasetprice,
-            "iExecV5-matchOrders-0x04"
-        );
-        require(
-            _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
-            "iExecV5-matchOrders-0x05"
-        );
+        if (_requestorder.category != _workerpoolorder.category) {
+            revert CategoryMismatch(_requestorder.category, _workerpoolorder.category);
+        }
+        if (_requestorder.category >= $.m_categories.length) {
+            revert UnknownCategory(_requestorder.category, $.m_categories.length);
+        }
+        if (_requestorder.trust > _workerpoolorder.trust) {
+            revert TrustMismatch(_requestorder.trust, _workerpoolorder.trust);
+        }
+
+        if (_requestorder.appmaxprice < _apporder.appprice) {
+            revert AppPriceTooHigh(_apporder.appprice, _requestorder.appmaxprice);
+        }
+        if (_requestorder.datasetmaxprice < _datasetorder.datasetprice) {
+            revert DatasetPriceTooHigh(_datasetorder.datasetprice, _requestorder.datasetmaxprice);
+        }
+        if (_requestorder.workerpoolmaxprice < _workerpoolorder.workerpoolprice) {
+            revert WorkerpoolPriceTooHigh(
+                _workerpoolorder.workerpoolprice,
+                _requestorder.workerpoolmaxprice
+            );
+        }
         // The workerpool tag should include all tag bits of dataset, app, and requester orders.
         // For dataset orders: ignore Scone, Gramine, and TDX framework bits to allow
         // dataset orders from SGX workerpools to be consumed on TDX workerpools and vice versa.
@@ -251,70 +253,171 @@ contract IexecPoco1Facet is
         bytes32 maskedDatasetTag = _datasetorder.tag &
             0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
         bytes32 tag = _apporder.tag | maskedDatasetTag | _requestorder.tag;
-        require(tag & ~_workerpoolorder.tag == 0x0, "iExecV5-matchOrders-0x06");
-        require((tag ^ _apporder.tag)[31] & 0x01 == 0x0, "iExecV5-matchOrders-0x07");
+        if (tag & ~_workerpoolorder.tag != 0x0) {
+            revert TagMismatch(tag, _workerpoolorder.tag);
+        }
+        if ((tag ^ _apporder.tag)[31] & 0x01 != 0x0) {
+            revert AppTagMismatch(_requestorder.tag, _apporder.tag);
+        }
 
         // Check matching and restrictions
-        require(_requestorder.app == _apporder.app, "iExecV5-matchOrders-0x10");
-        require(_requestorder.dataset == _datasetorder.dataset, "iExecV5-matchOrders-0x11");
-        require(
-            _isAccountAuthorizedByRestriction(
+        if (_requestorder.app != _apporder.app) {
+            revert AppMismatch(_requestorder.app, _apporder.app);
+        }
+
+        if (_requestorder.dataset != _datasetorder.dataset) {
+            revert DatasetMismatch(_requestorder.dataset, _datasetorder.dataset);
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
                 _requestorder.workerpool,
                 _workerpoolorder.workerpool
-            ),
-            "iExecV5-matchOrders-0x12"
-        ); // requestorder.workerpool is a restriction
-        require(
-            _isAccountAuthorizedByRestriction(_apporder.datasetrestrict, _datasetorder.dataset),
-            "iExecV5-matchOrders-0x13"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(
+            )
+        ) {
+            revert WorkerpoolMismatch(_requestorder.workerpool, _workerpoolorder.workerpool);
+        } // requestorder.workerpool is a restriction
+        if (!_isAccountAuthorizedByRestriction(_apporder.datasetrestrict, _datasetorder.dataset)) {
+            revert DatasetRestrictionMismatch(_apporder.datasetrestrict, _datasetorder.dataset);
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
                 _apporder.workerpoolrestrict,
                 _workerpoolorder.workerpool
-            ),
-            "iExecV5-matchOrders-0x14"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(_apporder.requesterrestrict, _requestorder.requester),
-            "iExecV5-matchOrders-0x15"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(_datasetorder.apprestrict, _apporder.app),
-            "iExecV5-matchOrders-0x16"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(
+            )
+        ) {
+            revert WorkerpoolRestrictionMismatch(
+                _apporder.workerpoolrestrict,
+                _workerpoolorder.workerpool
+            );
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(_apporder.requesterrestrict, _requestorder.requester)
+        ) {
+            revert RequesterRestrictionMismatch(
+                _apporder.requesterrestrict,
+                _requestorder.requester
+            );
+        }
+        if (!_isAccountAuthorizedByRestriction(_datasetorder.apprestrict, _apporder.app)) {
+            revert AppRestrictionMismatch(_datasetorder.apprestrict, _apporder.app);
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
                 _datasetorder.workerpoolrestrict,
                 _workerpoolorder.workerpool
-            ),
-            "iExecV5-matchOrders-0x17"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(
+            )
+        ) {
+            revert WorkerpoolRestrictionMismatch(
+                _datasetorder.workerpoolrestrict,
+                _workerpoolorder.workerpool
+            );
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
                 _datasetorder.requesterrestrict,
                 _requestorder.requester
-            ),
-            "iExecV5-matchOrders-0x18"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(_workerpoolorder.apprestrict, _apporder.app),
-            "iExecV5-matchOrders-0x19"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(
+            )
+        ) {
+            revert RequesterRestrictionMismatch(
+                _datasetorder.requesterrestrict,
+                _requestorder.requester
+            );
+        }
+        if (!_isAccountAuthorizedByRestriction(_workerpoolorder.apprestrict, _apporder.app)) {
+            revert AppRestrictionMismatch(_workerpoolorder.apprestrict, _apporder.app);
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
                 _workerpoolorder.datasetrestrict,
                 _datasetorder.dataset
-            ),
-            "iExecV5-matchOrders-0x1a"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(
+            )
+        ) {
+            revert DatasetRestrictionMismatch(
+                _workerpoolorder.datasetrestrict,
+                _datasetorder.dataset
+            );
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
                 _workerpoolorder.requesterrestrict,
                 _requestorder.requester
-            ),
-            "iExecV5-matchOrders-0x1b"
-        );
+            )
+        ) {
+            revert RequesterRestrictionMismatch(
+                _workerpoolorder.requesterrestrict,
+                _requestorder.requester
+            );
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
+                _datasetorder.workerpoolrestrict,
+                _workerpoolorder.workerpool
+            )
+        ) {
+            revert WorkerpoolRestrictionMismatch(
+                _datasetorder.workerpoolrestrict,
+                _workerpoolorder.workerpool
+            );
+        }
+
+        if (
+            !_isAccountAuthorizedByRestriction(
+                _datasetorder.requesterrestrict,
+                _requestorder.requester
+            )
+        ) {
+            revert RequesterRestrictionMismatch(
+                _datasetorder.requesterrestrict,
+                _requestorder.requester
+            );
+        }
+        if (!_isAccountAuthorizedByRestriction(_workerpoolorder.apprestrict, _apporder.app)) {
+            revert AppRestrictionMismatch(_workerpoolorder.apprestrict, _apporder.app);
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
+                _workerpoolorder.datasetrestrict,
+                _datasetorder.dataset
+            )
+        ) {
+            revert DatasetRestrictionMismatch(
+                _workerpoolorder.datasetrestrict,
+                _datasetorder.dataset
+            );
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
+                _workerpoolorder.requesterrestrict,
+                _requestorder.requester
+            )
+        ) {
+            revert RequesterRestrictionMismatch(
+                _workerpoolorder.requesterrestrict,
+                _requestorder.requester
+            );
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
+                _workerpoolorder.datasetrestrict,
+                _datasetorder.dataset
+            )
+        ) {
+            revert DatasetRestrictionMismatch(
+                _workerpoolorder.datasetrestrict,
+                _datasetorder.dataset
+            );
+        }
+        if (
+            !_isAccountAuthorizedByRestriction(
+                _workerpoolorder.requesterrestrict,
+                _requestorder.requester
+            )
+        ) {
+            revert RequesterRestrictionMismatch(
+                _workerpoolorder.requesterrestrict,
+                _requestorder.requester
+            );
+        }
 
         /**
          * Check orders authenticity
@@ -327,11 +430,12 @@ contract IexecPoco1Facet is
         ids.apporderHash = _toTypedDataHash(_apporder.hash());
         ids.appOwner = IERC5313(_apporder.app).owner();
 
-        require($.m_appregistry.isRegistered(_apporder.app), "iExecV5-matchOrders-0x20");
-        require(
-            _verifySignatureOrPresignature(ids.appOwner, ids.apporderHash, _apporder.sign),
-            "iExecV5-matchOrders-0x21"
-        );
+        if (!$.m_appregistry.isRegistered(_apporder.app)) {
+            revert AppNotRegistered(_apporder.app);
+        }
+        if (!_verifySignatureOrPresignature(ids.appOwner, ids.apporderHash, _apporder.sign)) {
+            revert InvalidAppOrderSignature(ids.appOwner, ids.apporderHash);
+        }
 
         // dataset
         if (ids.hasDataset) {
@@ -339,47 +443,47 @@ contract IexecPoco1Facet is
             ids.datasetorderHash = _toTypedDataHash(_datasetorder.hash());
             ids.datasetOwner = IERC5313(_datasetorder.dataset).owner();
 
-            require(
-                $.m_datasetregistry.isRegistered(_datasetorder.dataset),
-                "iExecV5-matchOrders-0x30"
-            );
-            require(
-                _verifySignatureOrPresignature(
+            if (!$.m_datasetregistry.isRegistered(_datasetorder.dataset)) {
+                revert DatasetNotRegistered(_datasetorder.dataset);
+            }
+            if (
+                !_verifySignatureOrPresignature(
                     ids.datasetOwner,
                     ids.datasetorderHash,
                     _datasetorder.sign
-                ),
-                "iExecV5-matchOrders-0x31"
-            );
+                )
+            ) {
+                revert InvalidDatasetOrderSignature(ids.datasetOwner, ids.datasetorderHash);
+            }
         }
 
         // workerpool
         ids.workerpoolorderHash = _toTypedDataHash(_workerpoolorder.hash());
         ids.workerpoolOwner = IERC5313(_workerpoolorder.workerpool).owner();
-
-        require(
-            $.m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool),
-            "iExecV5-matchOrders-0x40"
-        );
-        require(
-            _verifySignatureOrPresignature(
+        if (!$.m_workerpoolregistry.isRegistered(_workerpoolorder.workerpool)) {
+            revert WorkerpoolNotRegistered(_workerpoolorder.workerpool);
+        }
+        if (
+            !_verifySignatureOrPresignature(
                 ids.workerpoolOwner,
                 ids.workerpoolorderHash,
                 _workerpoolorder.sign
-            ),
-            "iExecV5-matchOrders-0x41"
-        );
+            )
+        ) {
+            revert InvalidWorkerpoolOrderSignature(ids.workerpoolOwner, ids.workerpoolorderHash);
+        }
 
         // request
         ids.requestorderHash = _toTypedDataHash(_requestorder.hash());
-        require(
-            _verifySignatureOrPresignature(
+        if (
+            !_verifySignatureOrPresignature(
                 _requestorder.requester,
                 ids.requestorderHash,
                 _requestorder.sign
-            ),
-            "iExecV5-matchOrders-0x50"
-        );
+            )
+        ) {
+            revert InvalidRequestOrderSignature(_requestorder.requester, ids.requestorderHash);
+        }
 
         /**
          * Check availability
@@ -395,7 +499,9 @@ contract IexecPoco1Facet is
             _requestorder.volume,
             ids.requestorderHash
         );
-        require(volume > 0, "iExecV5-matchOrders-0x60");
+        if (volume == 0) {
+            revert OrdersConsumed();
+        }
 
         /**
          * Record

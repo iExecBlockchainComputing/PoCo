@@ -15,6 +15,7 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
+import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
 import {IexecPocoCommon} from "./IexecPocoCommon.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
@@ -134,124 +135,154 @@ contract IexecPocoBoostFacet is
 
         // Ensure the trust level is within the acceptable range.
         // Only accept tasks with no replication [trust <= 1].
-        require(requestOrder.trust <= 1, "PocoBoost: Bad trust level");
+        if (requestOrder.trust > 1) {
+            revert PocoBoost__BadTrustLevel(requestOrder.trust);
+        }
 
         // @dev An intermediate variable stored in the stack consumes
         // less gas than accessing calldata each time.
         uint256 category = requestOrder.category;
         // Check if the requested category is matched.
-        require(category == workerpoolOrder.category, "PocoBoost: Category mismatch");
+        if (category != workerpoolOrder.category) {
+            revert PocoBoost__CategoryMismatch(category, workerpoolOrder.category);
+        }
         // Check if the requested category is valid.
-        require(category < $.m_categories.length, "PocoBoost: Unknown category");
+        if (category >= $.m_categories.length) {
+            revert PocoBoost__UnknownCategory(category, $.m_categories.length);
+        }
         uint256 appPrice = appOrder.appprice;
         // Check if the app, dataset, and workerpool prices are within requester price limits.
-        require(requestOrder.appmaxprice >= appPrice, "PocoBoost: Overpriced app");
+        if (requestOrder.appmaxprice < appPrice) {
+            revert PocoBoost__AppPriceTooHigh(appPrice, requestOrder.appmaxprice);
+        }
         uint256 datasetPrice = datasetOrder.datasetprice;
-        require(requestOrder.datasetmaxprice >= datasetPrice, "PocoBoost: Overpriced dataset");
+        if (requestOrder.datasetmaxprice < datasetPrice) {
+            revert PocoBoost__DatasetPriceTooHigh(datasetPrice, requestOrder.datasetmaxprice);
+        }
         uint256 workerpoolPrice = workerpoolOrder.workerpoolprice;
-        require(
-            requestOrder.workerpoolmaxprice >= workerpoolPrice,
-            "PocoBoost: Overpriced workerpool"
-        );
+        if (requestOrder.workerpoolmaxprice < workerpoolPrice) {
+            revert PocoBoost__WorkerpoolPriceTooHigh(
+                workerpoolPrice,
+                requestOrder.workerpoolmaxprice
+            );
+        }
         bytes32 appOrderTag = appOrder.tag;
         bytes32 tag = appOrderTag | datasetOrder.tag | requestOrder.tag;
-        require(
-            tag & ~workerpoolOrder.tag == 0x0,
-            "PocoBoost: Workerpool tag does not match demand"
-        );
-        require((tag ^ appOrderTag)[31] & 0x01 == 0x0, "PocoBoost: App tag does not match demand");
+        if (tag & ~workerpoolOrder.tag != 0x0) {
+            revert PocoBoost__TagMismatch(tag, workerpoolOrder.tag);
+        }
+        if ((tag ^ appOrderTag)[31] & 0x01 != 0x0) {
+            revert PocoBoost__AppTagMismatch(tag, appOrderTag);
+        }
         // Verify that app and dataset match requester order.
         address app = appOrder.app;
-        require(requestOrder.app == app, "PocoBoost: App mismatch");
+        if (requestOrder.app != app) {
+            revert PocoBoost__AppMismatch(requestOrder.app, app);
+        }
         address dataset = datasetOrder.dataset;
-        require(requestOrder.dataset == dataset, "PocoBoost: Dataset mismatch");
+        if (requestOrder.dataset != dataset) {
+            revert PocoBoost__DatasetMismatch(requestOrder.dataset, dataset);
+        }
         // Check all possible restrictions.
         address workerpool = workerpoolOrder.workerpool;
-        require(
-            _isAccountAuthorizedByRestriction(requestOrder.workerpool, workerpool),
-            "PocoBoost: Workerpool restricted by request order"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(appOrder.datasetrestrict, dataset),
-            "PocoBoost: Dataset restricted by app order"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(appOrder.workerpoolrestrict, workerpool),
-            "PocoBoost: Workerpool restricted by app order"
-        );
+        if (!_isAccountAuthorizedByRestriction(requestOrder.workerpool, workerpool)) {
+            revert PocoBoost__WorkerpoolRestrictionMismatch(requestOrder.workerpool, workerpool);
+        }
+        if (!_isAccountAuthorizedByRestriction(appOrder.datasetrestrict, dataset)) {
+            revert PocoBoost__DatasetRestrictionMismatch(appOrder.datasetrestrict, dataset);
+        }
+        if (!_isAccountAuthorizedByRestriction(appOrder.workerpoolrestrict, workerpool)) {
+            revert PocoBoost__WorkerpoolRestrictionMismatch(
+                appOrder.workerpoolrestrict,
+                workerpool
+            );
+        }
         address requester = requestOrder.requester;
-        require(
-            _isAccountAuthorizedByRestriction(appOrder.requesterrestrict, requester),
-            "PocoBoost: Requester restricted by app order"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(datasetOrder.apprestrict, app),
-            "PocoBoost: App restricted by dataset order"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(datasetOrder.workerpoolrestrict, workerpool),
-            "PocoBoost: Workerpool restricted by dataset order"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, requester),
-            "PocoBoost: Requester restricted by dataset order"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(workerpoolOrder.apprestrict, app),
-            "PocoBoost: App restricted by workerpool order"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(workerpoolOrder.datasetrestrict, dataset),
-            "PocoBoost: Dataset restricted by workerpool order"
-        );
-        require(
-            _isAccountAuthorizedByRestriction(workerpoolOrder.requesterrestrict, requester),
-            "PocoBoost: Requester restricted by workerpool order"
-        );
+        if (!_isAccountAuthorizedByRestriction(appOrder.requesterrestrict, requester)) {
+            revert PocoBoost__RequesterRestrictionMismatch(appOrder.requesterrestrict, requester);
+        }
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, app)) {
+            revert PocoBoost__AppRestrictionMismatch(datasetOrder.apprestrict, app);
+        }
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.workerpoolrestrict, workerpool)) {
+            revert PocoBoost__WorkerpoolRestrictionMismatch(
+                datasetOrder.workerpoolrestrict,
+                workerpool
+            );
+        }
+        if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, requester)) {
+            revert PocoBoost__RequesterRestrictionMismatch(
+                datasetOrder.requesterrestrict,
+                requester
+            );
+        }
+        if (!_isAccountAuthorizedByRestriction(workerpoolOrder.apprestrict, app)) {
+            revert PocoBoost__AppRestrictionMismatch(workerpoolOrder.apprestrict, app);
+        }
+        if (!_isAccountAuthorizedByRestriction(workerpoolOrder.datasetrestrict, dataset)) {
+            revert PocoBoost__DatasetRestrictionMismatch(workerpoolOrder.datasetrestrict, dataset);
+        }
+        if (!_isAccountAuthorizedByRestriction(workerpoolOrder.requesterrestrict, requester)) {
+            revert PocoBoost__RequesterRestrictionMismatch(
+                workerpoolOrder.requesterrestrict,
+                requester
+            );
+        }
         // Check ownership, registration, and signatures for app and dataset.
-        require($.m_appregistry.isRegistered(app), "PocoBoost: App not registered");
+        if (!$.m_appregistry.isRegistered(app)) {
+            revert PocoBoost__AppNotRegistered(app);
+        }
         address appOwner = IERC5313(app).owner();
         bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
-        require(
-            _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, appOrder.sign),
-            "PocoBoost: Invalid app order signature"
-        );
+        if (!_verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, appOrder.sign)) {
+            revert PocoBoost__InvalidAppOrderSignature(appOwner, appOrderTypedDataHash);
+        }
         bool hasDataset = dataset != address(0);
         address datasetOwner;
         bytes32 datasetOrderTypedDataHash;
         if (hasDataset) {
-            require($.m_datasetregistry.isRegistered(dataset), "PocoBoost: Dataset not registered");
+            if (!$.m_datasetregistry.isRegistered(dataset)) {
+                revert PocoBoost__DatasetNotRegistered(dataset);
+            }
             datasetOwner = IERC5313(dataset).owner();
             datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
-            require(
-                _verifySignatureOrPresignature(
+            if (
+                !_verifySignatureOrPresignature(
                     datasetOwner,
                     datasetOrderTypedDataHash,
                     datasetOrder.sign
-                ),
-                "PocoBoost: Invalid dataset order signature"
-            );
+                )
+            ) {
+                revert PocoBoost__InvalidDatasetOrderSignature(
+                    datasetOwner,
+                    datasetOrderTypedDataHash
+                );
+            }
         }
         // Check ownership, registration, and signatures for workerpool.
-        require(
-            $.m_workerpoolregistry.isRegistered(workerpool),
-            "PocoBoost: Workerpool not registered"
-        );
+        if (!$.m_workerpoolregistry.isRegistered(workerpool)) {
+            revert PocoBoost__WorkerpoolNotRegistered(workerpool);
+        }
         address workerpoolOwner = IERC5313(workerpool).owner();
         bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(workerpoolOrder.hash());
-        require(
-            _verifySignatureOrPresignature(
+        if (
+            !_verifySignatureOrPresignature(
                 workerpoolOwner,
                 workerpoolOrderTypedDataHash,
                 workerpoolOrder.sign
-            ),
-            "PocoBoost: Invalid workerpool order signature"
-        );
+            )
+        ) {
+            revert PocoBoost__InvalidWorkerpoolOrderSignature(
+                workerpoolOwner,
+                workerpoolOrderTypedDataHash
+            );
+        }
         bytes32 requestOrderTypedDataHash = _toTypedDataHash(requestOrder.hash());
-        require(
-            _verifySignatureOrPresignature(requester, requestOrderTypedDataHash, requestOrder.sign),
-            "PocoBoost: Invalid request order signature"
-        );
+        if (
+            !_verifySignatureOrPresignature(requester, requestOrderTypedDataHash, requestOrder.sign)
+        ) {
+            revert PocoBoost__InvalidRequestOrderSignature(requester, requestOrderTypedDataHash);
+        }
 
         uint256 requestOrderConsumed = $.m_consumed[requestOrderTypedDataHash];
         uint256 appOrderConsumed = $.m_consumed[appOrderTypedDataHash];
@@ -286,7 +317,9 @@ contract IexecPocoBoostFacet is
             requestOrder.volume,
             requestOrderTypedDataHash
         );
-        require(volume > 0, "PocoBoost: One or more orders consumed");
+        if (volume == 0) {
+            revert PocoBoost__OrdersConsumed();
+        }
         // Store deal (all). Write all parts of the same storage slot together
         // for gas optimization purposes.
         IexecLibCore_v5.DealBoost storage deal = $.m_dealsBoost[dealId];
@@ -392,41 +425,44 @@ contract IexecPocoBoostFacet is
         IexecLibCore_v5.Task storage task = $.m_tasks[taskId];
         // Ensure that the task exists and is in the correct state
         requireTaskExistsAndUnset(task.status, index, deal.botSize);
-        require(block.timestamp < deal.deadline, "PocoBoost: Deadline reached");
+        if (block.timestamp >= deal.deadline) {
+            revert PocoBoost__DeadlineReached(deal.deadline, block.timestamp);
+        }
         // Check that the enclave challenge is present for TEE tasks
-        require(
-            enclaveChallenge != address(0) || deal.shortTag[2] & 0x01 == 0,
-            "PocoBoost: Tag requires enclave challenge"
-        );
+        if (enclaveChallenge == address(0) && deal.shortTag[2] & 0x01 != 0) {
+            revert PocoBoost__TagRequiresEnclaveChallenge();
+        }
         address workerpoolOwner = deal.workerpoolOwner;
         // Check scheduler or TEE broker signature
-        require(
-            _verifySignatureOfEthSignedMessage(
+        if (
+            !_verifySignatureOfEthSignedMessage(
                 enclaveChallenge != address(0) && $.m_teebroker != address(0)
                     ? $.m_teebroker
                     : workerpoolOwner,
                 abi.encodePacked(msg.sender, taskId, enclaveChallenge),
                 authorizationSign
-            ),
-            "PocoBoost: Invalid contribution authorization signature"
-        );
+            )
+        ) {
+            revert PocoBoost__InvalidContributionAuthorizationSignature();
+        }
         address target = deal.callback;
         // Check enclave signature
-        require(
-            enclaveChallenge == address(0) ||
-                _verifySignatureOfEthSignedMessage(
-                    enclaveChallenge,
-                    abi.encodePacked(
-                        msg.sender,
-                        taskId,
-                        // Result digest
-                        /// @dev extracting it in a variable causes "Stack too deep" error.
-                        keccak256(target == address(0) ? results : resultsCallback)
-                    ),
-                    enclaveSign
+        if (
+            enclaveChallenge != address(0) &&
+            !_verifySignatureOfEthSignedMessage(
+                enclaveChallenge,
+                abi.encodePacked(
+                    msg.sender,
+                    taskId,
+                    // Result digest
+                    /// @dev extracting it in a variable causes "Stack too deep" error.
+                    keccak256(target == address(0) ? results : resultsCallback)
                 ),
-            "PocoBoost: Invalid enclave signature"
-        );
+                enclaveSign
+            )
+        ) {
+            revert PocoBoost__InvalidEnclaveSignature();
+        }
 
         /**
          * @dev Prevent reentrancy before external call
@@ -477,10 +513,12 @@ contract IexecPocoBoostFacet is
         emit ResultPushedBoost(dealId, index, results);
 
         if (target != address(0)) {
-            require(resultsCallback.length > 0, "PocoBoost: Callback requires data");
+            if (resultsCallback.length == 0) {
+                revert PocoBoost__CallbackRequiresData();
+            }
             /*
              * The caller (worker) must be able to complete the task even if the external
-             * call reverts, hence we don't check the success of the call.
+             * call revert  PocoBoost__, hence we don't check the success of the call.
              * See Halborn audit report for details.
              */
             //slither-disable-next-line low-level-calls
@@ -489,7 +527,9 @@ contract IexecPocoBoostFacet is
             );
             //slither-disable-next-line redundant-statements
             success; // silent unused variable warning
-            require(gasleft() > $.m_callbackgas / 63, "PocoBoost: Not enough gas after callback");
+            if (gasleft() <= $.m_callbackgas / 63) {
+                revert PocoBoost__NotEnoughGasAfterCallback();
+            }
         }
     }
 
@@ -507,7 +547,9 @@ contract IexecPocoBoostFacet is
         // Ensure that the task exists and has the unset status.
         requireTaskExistsAndUnset(task.status, index, deal.botSize);
         // Check if the current time has reached or passed the deadline of the deal.
-        require(deal.deadline <= block.timestamp, "PocoBoost: Deadline not reached");
+        if (deal.deadline > block.timestamp) {
+            revert PocoBoost__DeadlineNotReached(deal.deadline, block.timestamp);
+        }
         // Mark the task as failed since it was not completed within the deadline.
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
         // Calculate workerpool price and task stake.
@@ -540,16 +582,17 @@ contract IexecPocoBoostFacet is
         uint16 botSize
     ) private pure {
         // If deal not found then index < 0.
-        require(taskIndex < botSize, "PocoBoost: Unknown task");
+        if (taskIndex >= botSize) {
+            revert PocoBoost__UnknownTask(taskIndex, botSize);
+        }
         /***
          * @dev The calling method (A) must call this current method (B), then
          * it must update task to a higher status in (A), to prevent an account
          * to trigger (A) multiple times. Without that precaution, the contract
          * could be drained by calling (A) multiple times.
          */
-        require(
-            taskStatus == IexecLibCore_v5.TaskStatusEnum.UNSET,
-            "PocoBoost: Task status not unset"
-        );
+        if (taskStatus != IexecLibCore_v5.TaskStatusEnum.UNSET) {
+            revert PocoBoost__TaskStatusNotUnset(uint8(taskStatus));
+        }
     }
 }

@@ -6,6 +6,26 @@ pragma solidity ^0.8.0;
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 interface IexecConfiguration {
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CONFIGURATION ERRORS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /**
+     * @notice Contract already configured with EIP-712 domain separator
+     */
+    error AlreadyConfigured();
+
+    /**
+     * @notice Contract not yet configured
+     */
+    error NotConfigured();
+
+    /**
+     * @notice Worker score already imported from v3
+     * @param worker The worker address
+     */
+    error ScoreAlreadyImported(address worker);
+
     function configure(
         address,
         string calldata,

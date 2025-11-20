@@ -8,6 +8,7 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
 
 interface IexecPocoAccessors {
+    error TaskNotCompleted(bytes32 taskId, uint8 status);
     // ========= Deal and Task Accessors =========
     function viewDeal(bytes32 id) external view returns (IexecLibCore_v5.Deal memory);
 

@@ -11,6 +11,11 @@ import {IERC734} from "../external/interfaces/IERC734.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
 contract SignatureVerifier is FacetBase {
+    /**
+     * @notice Invalid signature format
+     */
+    error InvalidSignatureFormat();
+
     using ECDSA for bytes32;
 
     /**
@@ -77,7 +82,7 @@ contract SignatureVerifier is FacetBase {
                     bytes32(signature[32:])
                 );
         } else {
-            revert("invalid-signature-format");
+            revert InvalidSignatureFormat();
         }
         return recoveredAddress == account;
     }

@@ -16,7 +16,10 @@ import {SignatureVerifier} from "./SignatureVerifier.sol";
 contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifier {
     modifier onlyScheduler(bytes32 _taskId) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require(_msgSender() == $.m_deals[$.m_tasks[_taskId].dealid].workerpool.owner);
+        address workerpoolOwner = $.m_deals[$.m_tasks[_taskId].dealid].workerpool.owner;
+        if (_msgSender() != workerpoolOwner) {
+            revert NotWorkerpoolOwner(_msgSender(), workerpoolOwner);
+        }
         _;
     }
 
@@ -81,12 +84,15 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Deal memory deal = $.m_deals[_dealid];
 
-        require(idx >= deal.botFirst);
-        require(idx < deal.botFirst + deal.botSize);
+        if (idx < deal.botFirst || idx >= deal.botFirst + deal.botSize) {
+            revert TaskIndexOutOfBounds(idx, deal.botFirst, deal.botSize);
+        }
 
         bytes32 taskid = keccak256(abi.encodePacked(_dealid, idx));
         IexecLibCore_v5.Task storage task = $.m_tasks[taskid];
-        require(task.status == IexecLibCore_v5.TaskStatusEnum.UNSET);
+        if (task.status != IexecLibCore_v5.TaskStatusEnum.UNSET) {
+            revert TaskAlreadyInitialized(taskid, uint8(task.status));
+        }
 
         task.status = IexecLibCore_v5.TaskStatusEnum.ACTIVE;
         task.dealid = _dealid;
@@ -118,33 +124,45 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         ];
         IexecLibCore_v5.Deal memory deal = $.m_deals[task.dealid];
 
-        require(task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE);
-        require(task.contributionDeadline > block.timestamp);
-        require(contribution.status == IexecLibCore_v5.ContributionStatusEnum.UNSET);
+        if (task.status != IexecLibCore_v5.TaskStatusEnum.ACTIVE) {
+            revert TaskNotActive(_taskid, uint8(task.status));
+        }
+        if (task.contributionDeadline <= block.timestamp) {
+            revert ContributionDeadlineExpired(_taskid, task.contributionDeadline, block.timestamp);
+        }
+        if (contribution.status != IexecLibCore_v5.ContributionStatusEnum.UNSET) {
+            revert ContributionAlreadyExists(_taskid, _msgSender());
+        }
 
         // need enclave challenge if tag is set
-        require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
+        if (_enclaveChallenge == address(0) && (deal.tag[31] & 0x01 != 0)) {
+            revert EnclaveRequired(_taskid);
+        }
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
-        require(
-            _verifySignatureOfEthSignedMessage(
+        if (
+            !_verifySignatureOfEthSignedMessage(
                 (_enclaveChallenge != address(0) && $.m_teebroker != address(0))
                     ? $.m_teebroker
                     : deal.workerpool.owner,
                 abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge),
                 _authorizationSign
             )
-        );
+        ) {
+            revert InvalidAuthorizationSignature(_msgSender(), _taskid);
+        }
 
         // Check enclave signature
-        require(
-            _enclaveChallenge == address(0) ||
-                _verifySignatureOfEthSignedMessage(
-                    _enclaveChallenge,
-                    abi.encodePacked(_resultHash, _resultSeal),
-                    _enclaveSign
-                )
-        );
+        if (
+            _enclaveChallenge != address(0) &&
+            !_verifySignatureOfEthSignedMessage(
+                _enclaveChallenge,
+                abi.encodePacked(_resultHash, _resultSeal),
+                _enclaveSign
+            )
+        ) {
+            revert InvalidEnclaveSignature(_enclaveChallenge, _taskid);
+        }
 
         // Update contribution entry
         contribution.status = IexecLibCore_v5.ContributionStatusEnum.CONTRIBUTED;
@@ -196,42 +214,58 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         ];
         IexecLibCore_v5.Deal memory deal = $.m_deals[task.dealid];
 
-        require(task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE);
-        require(task.contributionDeadline > block.timestamp);
-        require(task.contributors.length == 0);
-        require(deal.trust == 1); // TODO / FUTURE FEATURE: consider sender's score ?
+        if (task.status != IexecLibCore_v5.TaskStatusEnum.ACTIVE) {
+            revert TaskNotActive(_taskid, uint8(task.status));
+        }
+        if (task.contributionDeadline <= block.timestamp) {
+            revert ContributionDeadlineExpired(_taskid, task.contributionDeadline, block.timestamp);
+        }
+        if (task.contributors.length != 0) {
+            revert ContributorListNotEmpty(_taskid, task.contributors.length);
+        }
+        if (deal.trust != 1) {
+            revert InvalidTrustForFastFinalize(_taskid, deal.trust);
+        }
 
         bytes32 resultHash = keccak256(abi.encodePacked(_taskid, _resultDigest));
         bytes32 resultSeal = keccak256(abi.encodePacked(_msgSender(), _taskid, _resultDigest));
 
-        require(
-            (deal.callback == address(0) && _resultsCallback.length == 0) ||
-                keccak256(_resultsCallback) == _resultDigest
-        );
+        if (
+            !(deal.callback == address(0) && _resultsCallback.length == 0) &&
+            keccak256(_resultsCallback) != _resultDigest
+        ) {
+            revert CallbackDigestMismatch(_taskid, _resultDigest, keccak256(_resultsCallback));
+        }
 
         // need enclave challenge if tag is set
-        require(_enclaveChallenge != address(0) || (deal.tag[31] & 0x01 == 0));
+        if (_enclaveChallenge == address(0) && (deal.tag[31] & 0x01 != 0)) {
+            revert EnclaveRequired(_taskid);
+        }
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
-        require(
-            _verifySignatureOfEthSignedMessage(
+        if (
+            !_verifySignatureOfEthSignedMessage(
                 (_enclaveChallenge != address(0) && $.m_teebroker != address(0))
                     ? $.m_teebroker
                     : deal.workerpool.owner,
                 abi.encodePacked(_msgSender(), _taskid, _enclaveChallenge),
                 _authorizationSign
             )
-        );
+        ) {
+            revert InvalidAuthorizationSignature(_msgSender(), _taskid);
+        }
 
         // Check enclave signature
-        require(
-            _enclaveChallenge == address(0) ||
-                _verifySignatureOfEthSignedMessage(
-                    _enclaveChallenge,
-                    abi.encodePacked(resultHash, resultSeal),
-                    _enclaveSign
-                )
-        );
+        if (
+            _enclaveChallenge != address(0) &&
+            !_verifySignatureOfEthSignedMessage(
+                _enclaveChallenge,
+                abi.encodePacked(resultHash, resultSeal),
+                _enclaveSign
+            )
+        ) {
+            revert InvalidEnclaveSignature(_enclaveChallenge, _taskid);
+        }
 
         contribution.status = IexecLibCore_v5.ContributionStatusEnum.PROVED;
         contribution.resultHash = resultHash;
@@ -265,15 +299,36 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         IexecLibCore_v5.Contribution storage contribution = $.m_contributions[_taskid][
             _msgSender()
         ];
-        require(task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
-        require(task.revealDeadline > block.timestamp);
-        require(contribution.status == IexecLibCore_v5.ContributionStatusEnum.CONTRIBUTED);
-        require(contribution.resultHash == task.consensusValue);
-        require(contribution.resultHash == keccak256(abi.encodePacked(_taskid, _resultDigest)));
-        require(
-            contribution.resultSeal ==
-                keccak256(abi.encodePacked(_msgSender(), _taskid, _resultDigest))
+        if (task.status != IexecLibCore_v5.TaskStatusEnum.REVEALING) {
+            revert TaskNotRevealing(_taskid, uint8(task.status));
+        }
+        if (task.revealDeadline <= block.timestamp) {
+            revert DeadlineReached(task.revealDeadline, block.timestamp);
+        }
+        if (contribution.status != IexecLibCore_v5.ContributionStatusEnum.CONTRIBUTED) {
+            revert ContributionNotContributed(_taskid, _msgSender(), uint8(contribution.status));
+        }
+        if (contribution.resultHash != task.consensusValue) {
+            revert ContributionResultHashMismatch(
+                _taskid,
+                task.consensusValue,
+                contribution.resultHash
+            );
+        }
+        bytes32 expectedResultHash = keccak256(abi.encodePacked(_taskid, _resultDigest));
+        if (contribution.resultHash != expectedResultHash) {
+            revert ContributionResultHashMismatch(
+                _taskid,
+                expectedResultHash,
+                contribution.resultHash
+            );
+        }
+        bytes32 expectedResultSeal = keccak256(
+            abi.encodePacked(_msgSender(), _taskid, _resultDigest)
         );
+        if (contribution.resultSeal != expectedResultSeal) {
+            revert ContributionResultSealMismatch(_taskid);
+        }
 
         contribution.status = IexecLibCore_v5.ContributionStatusEnum.PROVED;
         task.revealCounter = task.revealCounter + 1;
@@ -285,9 +340,15 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
     function reopen(bytes32 _taskid) external override onlyScheduler(_taskid) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
-        require(task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
-        require(task.finalDeadline > block.timestamp);
-        require(task.revealDeadline <= block.timestamp && task.revealCounter == 0);
+        if (task.status != IexecLibCore_v5.TaskStatusEnum.REVEALING) {
+            revert TaskNotRevealing(_taskid, uint8(task.status));
+        }
+        if (task.finalDeadline <= block.timestamp) {
+            revert DeadlineReached(task.finalDeadline, block.timestamp);
+        }
+        if (!(task.revealDeadline <= block.timestamp && task.revealCounter == 0)) {
+            revert InvalidReopenConditions(_taskid);
+        }
 
         for (uint256 i = 0; i < task.contributors.length; ++i) {
             address worker = task.contributors[i];
@@ -319,17 +380,25 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
         IexecLibCore_v5.Deal memory deal = $.m_deals[task.dealid];
 
-        require(task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING);
-        require(task.finalDeadline > block.timestamp);
-        require(
-            task.revealCounter == task.winnerCounter ||
-                (task.revealCounter > 0 && task.revealDeadline <= block.timestamp)
-        );
+        if (task.status != IexecLibCore_v5.TaskStatusEnum.REVEALING) {
+            revert TaskNotRevealing(_taskid, uint8(task.status));
+        }
+        if (task.finalDeadline <= block.timestamp) {
+            revert DeadlineReached(task.finalDeadline, block.timestamp);
+        }
+        if (
+            !(task.revealCounter == task.winnerCounter ||
+                (task.revealCounter > 0 && task.revealDeadline <= block.timestamp))
+        ) {
+            revert InvalidRevealConditions(_taskid);
+        }
 
-        require(
-            (deal.callback == address(0) && _resultsCallback.length == 0) ||
-                keccak256(_resultsCallback) == task.resultDigest
-        );
+        if (
+            !(deal.callback == address(0) && _resultsCallback.length == 0) &&
+            keccak256(_resultsCallback) != task.resultDigest
+        ) {
+            revert CallbackDigestMismatch(_taskid, task.resultDigest, keccak256(_resultsCallback));
+        }
 
         task.status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
         task.results = _results;
@@ -352,11 +421,15 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
     function claim(bytes32 _taskid) public override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[_taskid];
-        require(
-            task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE ||
-                task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING
-        );
-        require(task.finalDeadline <= block.timestamp);
+        if (
+            !(task.status == IexecLibCore_v5.TaskStatusEnum.ACTIVE ||
+                task.status == IexecLibCore_v5.TaskStatusEnum.REVEALING)
+        ) {
+            revert TaskNotClaimable(_taskid, uint8(task.status));
+        }
+        if (task.finalDeadline > block.timestamp) {
+            revert DeadlineNotReached(task.finalDeadline, block.timestamp);
+        }
 
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
 
@@ -555,7 +628,9 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         bytes32[] calldata _dealid,
         uint256[] calldata _idx
     ) external override returns (bool) {
-        require(_dealid.length == _idx.length);
+        if (_dealid.length != _idx.length) {
+            revert ArrayLengthMismatch(_dealid.length, _idx.length);
+        }
         for (uint i = 0; i < _dealid.length; ++i) {
             initialize(_dealid[i], _idx[i]);
         }
@@ -573,7 +648,9 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
         bytes32[] calldata _dealid,
         uint256[] calldata _idx
     ) external override returns (bool) {
-        require(_dealid.length == _idx.length);
+        if (_dealid.length != _idx.length) {
+            revert ArrayLengthMismatch(_dealid.length, _idx.length);
+        }
         for (uint i = 0; i < _dealid.length; ++i) {
             claim(initialize(_dealid[i], _idx[i]));
         }

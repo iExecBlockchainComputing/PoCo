@@ -105,7 +105,9 @@ contract IexecPocoAccessorsFacet is
     function resultFor(bytes32 id) external view returns (bytes memory) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         IexecLibCore_v5.Task storage task = $.m_tasks[id];
-        require(task.status == IexecLibCore_v5.TaskStatusEnum.COMPLETED, "task-pending");
+        if (task.status != IexecLibCore_v5.TaskStatusEnum.COMPLETED) {
+            revert TaskNotCompleted(id, uint8(task.status));
+        }
         return task.resultsCallback; // Expansion - result separation
     }
 

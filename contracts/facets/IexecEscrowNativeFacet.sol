@@ -34,7 +34,9 @@ contract IexecEscrowNativeFacet is IexecEscrowNative, IexecERC20Base {
         uint256[] calldata amounts,
         address[] calldata targets
     ) external payable override returns (bool) {
-        require(amounts.length == targets.length, "invalid-array-length");
+        if (amounts.length != targets.length) {
+            revert InvalidArrayLength(amounts.length, targets.length);
+        }
         uint256 remaining = msg.value;
         for (uint i = 0; i < amounts.length; ++i) {
             _mint(targets[i], amounts[i]);
@@ -70,6 +72,8 @@ contract IexecEscrowNativeFacet is IexecEscrowNative, IexecERC20Base {
 
     function _withdraw(address to, uint256 value) internal {
         (bool success, ) = to.call{value: value}("");
-        require(success, "native-transfer-failed");
+        if (!success) {
+            revert NativeTransferFailed(to, value);
+        }
     }
 }

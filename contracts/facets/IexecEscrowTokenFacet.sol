@@ -15,11 +15,11 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
      *                         Escrow methods: public                          *
      ***************************************************************************/
     receive() external payable override {
-        revert("fallback-disabled");
+        revert FallbackDisabled();
     }
 
     fallback() external payable override {
-        revert("fallback-disabled");
+        revert FallbackDisabled();
     }
 
     function deposit(uint256 amount) external override returns (bool) {
@@ -38,7 +38,9 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
         uint256[] calldata amounts,
         address[] calldata targets
     ) external override returns (bool) {
-        require(amounts.length == targets.length, "invalid-array-length");
+        if (amounts.length != targets.length) {
+            revert InvalidArrayLength(amounts.length, targets.length);
+        }
         for (uint i = 0; i < amounts.length; ++i) {
             _deposit(_msgSender(), amounts[i]);
             _mint(targets[i], amounts[i]);
@@ -125,7 +127,9 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
         bytes calldata data
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require(token == address($.m_baseToken), "wrong-token");
+        if (token != address($.m_baseToken)) {
+            revert WrongToken(token, address($.m_baseToken));
+        }
         _deposit(sender, amount);
         _mint(sender, amount);
 
@@ -143,7 +147,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
         if (selector == IexecPoco1.matchOrders.selector) {
             _validateMatchOrders(sender, data);
         } else {
-            revert("unsupported-operation");
+            revert UnsupportedOperation();
         }
 
         // Execute the operation via delegatecall
@@ -160,7 +164,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
                     revert(add(result, 32), returndata_size)
                 }
             } else {
-                revert("operation-failed");
+                revert OperationFailed();
             }
         }
     }
@@ -190,12 +194,15 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
 
         // Validate that sender is the requester
         // This ensures the caller is authorized to create this deal
-        if (requestorder.requester != sender) revert("caller-must-be-requester");
+        if (requestorder.requester != sender)
+            revert CallerMustBeRequester(sender, requestorder.requester);
     }
 
     function _deposit(address from, uint256 amount) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require($.m_baseToken.transferFrom(from, address(this), amount), "failed-transferFrom");
+        if (!$.m_baseToken.transferFrom(from, address(this), amount)) {
+            revert TransferFromFailed(from, address(this), amount);
+        }
     }
 
     function _withdraw(address to, uint256 amount) internal {

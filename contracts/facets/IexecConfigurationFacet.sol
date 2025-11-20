@@ -27,7 +27,9 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
         address _v3_iexecHubAddress
     ) external override onlyOwner {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require($.m_eip712DomainSeparator == bytes32(0), "already-configured");
+        if ($.m_eip712DomainSeparator != bytes32(0)) {
+            revert AlreadyConfigured();
+        }
         $.m_eip712DomainSeparator = _domain().hash();
         $.m_baseToken = IERC20(_token);
         $.m_name = _name;
@@ -46,13 +48,17 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
 
     function updateDomainSeparator() external override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require($.m_eip712DomainSeparator != bytes32(0), "not-configured");
+        if ($.m_eip712DomainSeparator == bytes32(0)) {
+            revert NotConfigured();
+        }
         $.m_eip712DomainSeparator = _domain().hash();
     }
 
     function importScore(address _worker) external override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        require(!$.m_v3_scoreImported[_worker], "score-already-imported");
+        if ($.m_v3_scoreImported[_worker]) {
+            revert ScoreAlreadyImported(_worker);
+        }
         $.m_workerScores[_worker] = Math.max(
             $.m_workerScores[_worker],
             $.m_v3_iexecHub.viewScore(_worker)

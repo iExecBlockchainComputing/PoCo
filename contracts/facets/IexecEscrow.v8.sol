@@ -9,6 +9,24 @@ import {FacetBase} from "../abstract/FacetBase.sol";
  * @title Manage (lock/unlock/reward/seize) user funds.
  */
 contract IexecEscrow is FacetBase {
+    /**
+     * @notice Transfer from zero address is not allowed
+     */
+    error TransferFromZeroAddress();
+
+    /**
+     * @notice Transfer to zero address is not allowed
+     */
+    error TransferToZeroAddress();
+
+    /**
+     * @notice Insufficient balance for transfer
+     * @param from Source address
+     * @param available Available balance
+     * @param required Required amount
+     */
+    error InsufficientBalance(address from, uint256 available, uint256 required);
+
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Lock(address owner, uint256 amount);
     event Unlock(address owner, uint256 amount);
@@ -76,11 +94,17 @@ contract IexecEscrow is FacetBase {
      * @param value The value to transfer.
      */
     function _transfer(address from, address to, uint256 value) private {
-        require(from != address(0), "IexecEscrow: Transfer from empty address");
-        require(to != address(0), "IexecEscrow: Transfer to empty address");
+        if (from == address(0)) {
+            revert TransferFromZeroAddress();
+        }
+        if (to == address(0)) {
+            revert TransferToZeroAddress();
+        }
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         uint256 fromBalance = $.m_balances[from];
-        require(value <= fromBalance, "IexecEscrow: Transfer amount exceeds balance");
+        if (value > fromBalance) {
+            revert InsufficientBalance(from, fromBalance, value);
+        }
         // This block is guaranteed to not underflow because we check the from balance
         // and guaranteed to not overflow because the total supply is capped and there
         // is no minting involved.

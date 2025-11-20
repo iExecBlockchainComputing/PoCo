@@ -28,15 +28,16 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     ) external override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         address owner = IERC5313(_apporderoperation.order.app).owner();
-        require(
-            owner == _msgSender() ||
+        if (
+            !(owner == _msgSender() ||
                 _verifySignature(
                     owner,
                     _toTypedDataHash(_apporderoperation.hash()),
                     _apporderoperation.sign
-                ),
-            "invalid-sender-or-signature"
-        );
+                ))
+        ) {
+            revert InvalidSenderOrSignature();
+        }
 
         bytes32 apporderHash = _toTypedDataHash(_apporderoperation.order.hash());
         if (_apporderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
@@ -53,15 +54,16 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     ) external override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         address owner = IERC5313(_datasetorderoperation.order.dataset).owner();
-        require(
-            owner == _msgSender() ||
+        if (
+            !(owner == _msgSender() ||
                 _verifySignature(
                     owner,
                     _toTypedDataHash(_datasetorderoperation.hash()),
                     _datasetorderoperation.sign
-                ),
-            "invalid-sender-or-signature"
-        );
+                ))
+        ) {
+            revert InvalidSenderOrSignature();
+        }
 
         bytes32 datasetorderHash = _toTypedDataHash(_datasetorderoperation.order.hash());
         if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
@@ -78,15 +80,16 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     ) external override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         address owner = IERC5313(_workerpoolorderoperation.order.workerpool).owner();
-        require(
-            owner == _msgSender() ||
+        if (
+            !(owner == _msgSender() ||
                 _verifySignature(
                     owner,
                     _toTypedDataHash(_workerpoolorderoperation.hash()),
                     _workerpoolorderoperation.sign
-                ),
-            "invalid-sender-or-signature"
-        );
+                ))
+        ) {
+            revert InvalidSenderOrSignature();
+        }
 
         bytes32 workerpoolorderHash = _toTypedDataHash(_workerpoolorderoperation.order.hash());
         if (_workerpoolorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
@@ -105,15 +108,16 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, Signature
     ) external override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         address owner = _requestorderoperation.order.requester;
-        require(
-            owner == _msgSender() ||
+        if (
+            !(owner == _msgSender() ||
                 _verifySignature(
                     owner,
                     _toTypedDataHash(_requestorderoperation.hash()),
                     _requestorderoperation.sign
-                ),
-            "invalid-sender-or-signature"
-        );
+                ))
+        ) {
+            revert InvalidSenderOrSignature();
+        }
 
         bytes32 requestorderHash = _toTypedDataHash(_requestorderoperation.order.hash());
         if (_requestorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {

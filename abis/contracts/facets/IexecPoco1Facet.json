@@ -2,12 +2,401 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "requestApp",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "orderApp",
+        "type": "address"
+      }
+    ],
+    "name": "AppMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "app",
+        "type": "address"
+      }
+    ],
+    "name": "AppNotRegistered",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "appPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "AppPriceTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "restriction",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "actual",
+        "type": "address"
+      }
+    ],
+    "name": "AppRestrictionMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "requestTag",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "appTag",
+        "type": "bytes32"
+      }
+    ],
+    "name": "AppTagMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "trust",
+        "type": "uint256"
+      }
+    ],
+    "name": "BadTrustLevel",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestCategory",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "workerpoolCategory",
+        "type": "uint256"
+      }
+    ],
+    "name": "CategoryMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "requestDataset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "orderDataset",
+        "type": "address"
+      }
+    ],
+    "name": "DatasetMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "dataset",
+        "type": "address"
+      }
+    ],
+    "name": "DatasetNotRegistered",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "datasetPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "DatasetPriceTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "restriction",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "actual",
+        "type": "address"
+      }
+    ],
+    "name": "DatasetRestrictionMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "reason",
         "type": "string"
       }
     ],
     "name": "IncompatibleDatasetOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "available",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "required",
+        "type": "uint256"
+      }
+    ],
+    "name": "InsufficientBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "appOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "apporderHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "InvalidAppOrderSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "datasetOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "datasetorderHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "InvalidDatasetOrderSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "requester",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "requestorderHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "InvalidRequestOrderSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSignatureFormat",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "workerpoolOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "workerpoolorderHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "InvalidWorkerpoolOrderSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OrdersConsumed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "restriction",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "actual",
+        "type": "address"
+      }
+    ],
+    "name": "RequesterRestrictionMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "requiredTag",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "workerpoolTag",
+        "type": "bytes32"
+      }
+    ],
+    "name": "TagMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TransferFromZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TransferToZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestTrust",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "workerpoolTrust",
+        "type": "uint256"
+      }
+    ],
+    "name": "TrustMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "category",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxCategory",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnknownCategory",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "requestWorkerpool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "orderWorkerpool",
+        "type": "address"
+      }
+    ],
+    "name": "WorkerpoolMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "workerpool",
+        "type": "address"
+      }
+    ],
+    "name": "WorkerpoolNotRegistered",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "workerpoolPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "WorkerpoolPriceTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "restriction",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "actual",
+        "type": "address"
+      }
+    ],
+    "name": "WorkerpoolRestrictionMismatch",
     "type": "error"
   },
   {

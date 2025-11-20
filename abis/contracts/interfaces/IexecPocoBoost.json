@@ -1,5 +1,474 @@
 [
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "requestApp",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "orderApp",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__AppMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "app",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__AppNotRegistered",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "appPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__AppPriceTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "restriction",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "actual",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__AppRestrictionMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "requestTag",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "appTag",
+        "type": "bytes32"
+      }
+    ],
+    "name": "PocoBoost__AppTagMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "trust",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__BadTrustLevel",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PocoBoost__CallbackRequiresData",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestCategory",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "workerpoolCategory",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__CategoryMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "requestDataset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "orderDataset",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__DatasetMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "dataset",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__DatasetNotRegistered",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "datasetPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__DatasetPriceTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "restriction",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "actual",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__DatasetRestrictionMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__DeadlineNotReached",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__DeadlineReached",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "PocoBoost__IncompatibleDatasetOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "appOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "apporderHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "PocoBoost__InvalidAppOrderSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PocoBoost__InvalidContributionAuthorizationSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "datasetOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "datasetorderHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "PocoBoost__InvalidDatasetOrderSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PocoBoost__InvalidEnclaveSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "requester",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "requestorderHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "PocoBoost__InvalidRequestOrderSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "signer",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "hash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "PocoBoost__InvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PocoBoost__InvalidSignatureFormat",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "workerpoolOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "workerpoolorderHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "PocoBoost__InvalidWorkerpoolOrderSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PocoBoost__NotEnoughGasAfterCallback",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PocoBoost__OrdersConsumed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "restriction",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "actual",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__RequesterRestrictionMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "requiredTag",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "workerpoolTag",
+        "type": "bytes32"
+      }
+    ],
+    "name": "PocoBoost__TagMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PocoBoost__TagRequiresEnclaveChallenge",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "status",
+        "type": "uint8"
+      }
+    ],
+    "name": "PocoBoost__TaskStatusNotUnset",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestTrust",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "workerpoolTrust",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__TrustMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "category",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxCategory",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__UnknownCategory",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "botSize",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__UnknownTask",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "requestWorkerpool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "orderWorkerpool",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__WorkerpoolMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "workerpool",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__WorkerpoolNotRegistered",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "workerpoolPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "PocoBoost__WorkerpoolPriceTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "restriction",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "actual",
+        "type": "address"
+      }
+    ],
+    "name": "PocoBoost__WorkerpoolRestrictionMismatch",
+    "type": "error"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {

@@ -11,7 +11,6 @@ import {IexecERC20} from "./interfaces/IexecERC20.sol";
 import {IexecEscrowNative} from "./interfaces/IexecEscrowNative.sol";
 import {IexecOrderManagement} from "./interfaces/IexecOrderManagement.sol";
 import {IexecPoco1} from "./interfaces/IexecPoco1.sol";
-import {IexecPoco1Errors} from "./interfaces/IexecPoco1Errors.sol";
 import {IexecPoco2} from "./interfaces/IexecPoco2.sol";
 import {IexecPocoAccessors} from "./interfaces/IexecPocoAccessors.sol";
 import {IexecRelay} from "./interfaces/IexecRelay.sol";
@@ -35,7 +34,6 @@ interface IexecInterfaceNative is
     IexecEscrowNative,
     IexecOrderManagement,
     IexecPoco1,
-    IexecPoco1Errors,
     IexecPoco2,
     IexecPocoAccessors,
     IexecRelay,
