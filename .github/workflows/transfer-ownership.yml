@@ -9,11 +9,8 @@ on:
         type: choice
         options:
           - arbitrumSepolia
+          - arbitrum
         default: 'arbitrumSepolia'
-      new-owner:
-        description: 'New Owner Address (0x...)'
-        required: true
-        type: string
       dry-run:
         description: 'Dry Run (fork test only, no actual transfer)'
         required: true
@@ -31,12 +28,28 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Validate new owner address
+      - name: Determine new owner address
+        id: owner
         run: |
-          if ! [[ "${{ inputs.new-owner }}" =~ ^0x[a-fA-F0-9]{40}$ ]]; then
-            echo "Error: Invalid Ethereum address format. Expected 0x followed by 40 hexadecimal characters."
+          # Get new owner from GitHub variable
+          NEW_OWNER="${{ vars.NEW_OWNER }}"
+
+          # Validate that we have an address
+          if [ -z "$NEW_OWNER" ]; then
+            echo "Error: NEW_OWNER variable not set in GitHub."
+            echo "Please set the NEW_OWNER variable in Settings → Secrets and variables → Actions → Variables"
             exit 1
           fi
+
+          # Validate address format
+          if ! [[ "$NEW_OWNER" =~ ^0x[a-fA-F0-9]{40}$ ]]; then
+            echo "Error: Invalid Ethereum address format: $NEW_OWNER"
+            echo "Expected 0x followed by 40 hexadecimal characters."
+            exit 1
+          fi
+
+          echo "new_owner=$NEW_OWNER" >> $GITHUB_OUTPUT
+          echo "New owner address: $NEW_OWNER"
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,11 +72,11 @@ jobs:
           # Note: it is required to define both private key env variables when calling Hardhat.
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
-          NEW_OWNER: ${{ inputs.new-owner }}
+          NEW_OWNER: ${{ steps.owner.outputs.new_owner }}
         run: |
           echo "Running ownership transfer in fork test mode (dry run)..."
           echo "Network: ${{ inputs.network }}"
-          echo "New Owner: ${{ inputs.new-owner }}"
+          echo "New Owner: ${{ steps.owner.outputs.new_owner }}"
           if [ "${{ inputs.network }}" == "arbitrumSepolia" ]; then
             export ARBITRUM_SEPOLIA_FORK=true
           elif [ "${{ inputs.network }}" == "arbitrum" ]; then
@@ -87,11 +100,11 @@ jobs:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           ADMIN_PRIVATE_KEY: ${{ secrets.ADMIN_PRIVATE_KEY }}
           RPC_URL: ${{ secrets.RPC_URL }}
-          NEW_OWNER: ${{ inputs.new-owner }}
+          NEW_OWNER: ${{ steps.owner.outputs.new_owner }}
         run: |
           echo "⚠️  WARNING: Executing LIVE ownership transfer!"
           echo "Network: ${{ inputs.network }}"
-          echo "New Owner: ${{ inputs.new-owner }}"
+          echo "New Owner: ${{ steps.owner.outputs.new_owner }}"
           echo "This action is IRREVERSIBLE. Proceeding in 5 seconds..."
           sleep 5
           npx hardhat run scripts/transfer-ownership.ts --network ${{ inputs.network }}
@@ -102,7 +115,7 @@ jobs:
           echo "## Ownership Transfer Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Network**: ${{ inputs.network }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **New Owner**: \`${{ inputs.new-owner }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **New Owner**: \`${{ steps.owner.outputs.new_owner }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Mode**: ${{ inputs.dry-run == true && 'Dry Run (Fork Test)' || '🔴 LIVE EXECUTION' }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
