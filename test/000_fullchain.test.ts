@@ -649,9 +649,11 @@ describe('Integration tests', function () {
             );
         }
         // verify that the bad worker can't reveal.
-        await expect(
-            iexecPoco.connect(losingWorker).reveal(taskId, badResultDigest),
-        ).to.be.revertedWithoutReason();
+        const task = await iexecPoco.viewTask(taskId);
+        const contribution = await iexecPoco.viewContribution(taskId, losingWorker.address);
+        await expect(iexecPoco.connect(losingWorker).reveal(taskId, badResultDigest))
+            .to.be.revertedWithCustomError(iexecPoco, 'ContributionResultHashMismatch')
+            .withArgs(taskId, task.consensusValue, contribution.resultHash);
         for (const winningWorker of winningWorkers) {
             await iexecPoco
                 .connect(winningWorker)

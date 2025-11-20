@@ -122,7 +122,9 @@ describe('IexecPoco2#reveal', () => {
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).equal(TaskStatusEnum.ACTIVE);
 
-        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest)).to.be.revertedWithoutReason(); // require#1
+        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest))
+            .to.be.revertedWithCustomError(iexecPoco, 'TaskNotRevealing')
+            .withArgs(taskId, TaskStatusEnum.ACTIVE);
     });
 
     it('Should not reveal after deadline', async () => {
@@ -141,7 +143,9 @@ describe('IexecPoco2#reveal', () => {
         await time.setNextBlockTimestamp(task.revealDeadline);
         // revealing task
         // but after deadline
-        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest)).to.be.revertedWithoutReason(); // require#2
+        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest))
+            .to.be.revertedWithCustomError(iexecPoco, 'DeadlineReached')
+            .withArgs(task.revealDeadline, task.revealDeadline);
     });
 
     it('Should not reveal when did not contribute', async () => {
@@ -161,9 +165,9 @@ describe('IexecPoco2#reveal', () => {
         expect(contribution.status).equal(ContributionStatusEnum.UNSET);
         // revealing task, before deadline
         // but worker2 did not contribute before revealing
-        await expect(
-            iexecPoco.connect(worker2).reveal(taskId, resultDigest),
-        ).to.be.revertedWithoutReason(); // require#3
+        await expect(iexecPoco.connect(worker2).reveal(taskId, resultDigest))
+            .to.be.revertedWithCustomError(iexecPoco, 'ContributionNotContributed')
+            .withArgs(taskId, worker2.address, ContributionStatusEnum.UNSET);
     });
 
     it('Should not reveal twice', async () => {
@@ -184,7 +188,9 @@ describe('IexecPoco2#reveal', () => {
         expect(contribution.status).equal(ContributionStatusEnum.PROVED);
         // revealing task, before deadline
         // but contribution status not contributed anymore (since already proved)
-        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest)).to.be.revertedWithoutReason(); // require#3
+        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest))
+            .to.be.revertedWithCustomError(iexecPoco, 'ContributionNotContributed')
+            .withArgs(taskId, worker.address, ContributionStatusEnum.PROVED);
     });
 
     it('Should not reveal when outside consensus', async () => {
@@ -244,9 +250,9 @@ describe('IexecPoco2#reveal', () => {
         expect(contribution.resultHash).not.equal(task.consensusValue);
         // revealing task, before deadline, contribution status is contributed
         // but contribution outside consensus
-        await expect(
-            iexecPoco.connect(loosingWorker).reveal(taskId, resultDigest),
-        ).to.be.revertedWithoutReason(); // require#4
+        await expect(iexecPoco.connect(loosingWorker).reveal(taskId, resultDigest))
+            .to.be.revertedWithCustomError(iexecPoco, 'ContributionResultHashMismatch')
+            .withArgs(taskId, task.consensusValue, contribution.resultHash);
     });
 
     it('Should not reveal when unable to prove result value', async () => {
@@ -269,9 +275,10 @@ describe('IexecPoco2#reveal', () => {
         // revealing task, before deadline, contribution status is contributed
         // contribution is part of the consensus
         // but unable to prove result value
-        await expect(
-            iexecPocoAsWorker.reveal(taskId, badResultDigest),
-        ).to.be.revertedWithoutReason(); // require#5
+        const wrongResultHash = buildResultHash(taskId, badResultDigest);
+        await expect(iexecPocoAsWorker.reveal(taskId, badResultDigest))
+            .to.be.revertedWithCustomError(iexecPoco, 'ContributionResultHashMismatch')
+            .withArgs(taskId, wrongResultHash, contribution.resultHash);
     });
 
     it('Should not reveal when unable to prove result ownership', async () => {
@@ -298,6 +305,8 @@ describe('IexecPoco2#reveal', () => {
         // revealing task, before deadline, contribution status is contributed
         // contribution is part of the consensus, result proof is valid
         // but unable to prove result ownership
-        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest)).to.be.revertedWithoutReason(); // require#6
+        await expect(iexecPocoAsWorker.reveal(taskId, resultDigest))
+            .to.be.revertedWithCustomError(iexecPoco, 'ContributionResultSealMismatch')
+            .withArgs(taskId);
     });
 });

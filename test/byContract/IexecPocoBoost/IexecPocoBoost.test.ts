@@ -889,9 +889,9 @@ describe('IexecPocoBoost', function () {
             });
             // Set bad trust (> 1).
             orders.requester.trust = 2n;
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Bad trust level');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__BadTrustLevel')
+                .withArgs(orders.requester.trust);
         });
 
         it('Should fail when categories are different', async function () {
@@ -902,9 +902,12 @@ describe('IexecPocoBoost', function () {
             // Set different categories
             orders.requester.category = 1;
             orders.workerpool.category = 2;
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Category mismatch');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__CategoryMismatch',
+                )
+                .withArgs(orders.requester.category, orders.workerpool.category);
         });
 
         it('Should fail when category unknown', async function () {
@@ -915,9 +918,9 @@ describe('IexecPocoBoost', function () {
             // Unknown category
             orders.requester.category = 5;
             orders.workerpool.category = 5;
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Unknown category');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__UnknownCategory')
+                .withArgs(5, 4);
         });
 
         it('Should fail when app max price is less than app price', async function () {
@@ -927,9 +930,9 @@ describe('IexecPocoBoost', function () {
             });
             orders.app.appprice = 200n;
             orders.requester.appmaxprice = 100n;
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Overpriced app');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__AppPriceTooHigh')
+                .withArgs(orders.app.appprice, orders.requester.appmaxprice);
         });
 
         it('Should fail when dataset max price is less than dataset price', async function () {
@@ -940,9 +943,12 @@ describe('IexecPocoBoost', function () {
             // Set dataset price higher than dataset max price
             orders.dataset.datasetprice = 300n;
             orders.requester.datasetmaxprice = 200n;
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Overpriced dataset');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__DatasetPriceTooHigh',
+                )
+                .withArgs(orders.dataset.datasetprice, orders.requester.datasetmaxprice);
         });
 
         it('Should fail when workerpool max price is less than workerpool price', async function () {
@@ -953,9 +959,12 @@ describe('IexecPocoBoost', function () {
             // Set workerpool price higher than workerpool max price
             orders.workerpool.workerpoolprice = 400n;
             orders.requester.workerpoolmaxprice = 300n;
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Overpriced workerpool');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__WorkerpoolPriceTooHigh',
+                )
+                .withArgs(orders.workerpool.workerpoolprice, orders.requester.workerpoolmaxprice);
         });
 
         it('Should fail when workerpool tag does not satisfy app, dataset and request requirements', async function () {
@@ -973,9 +982,12 @@ describe('IexecPocoBoost', function () {
             // Set the workerpool tag to a different value
             orders.workerpool.tag =
                 '0x0000000000000000000000000000000000000000000000000000000000000004'; // 0b0100
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Workerpool tag does not match demand');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__TagMismatch')
+                .withArgs(
+                    '0x0000000000000000000000000000000000000000000000000000000000000003',
+                    orders.workerpool.tag,
+                );
         });
 
         it('Should fail when the last bit of app tag does not satisfy dataset or request requirements', async function () {
@@ -994,9 +1006,12 @@ describe('IexecPocoBoost', function () {
             // Set the workerpool tag to pass first tag check
             orders.workerpool.tag =
                 '0x0000000000000000000000000000000000000000000000000000000000000003'; // 0b0011
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: App tag does not match demand');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__AppTagMismatch')
+                .withArgs(
+                    '0x0000000000000000000000000000000000000000000000000000000000000003',
+                    orders.app.tag,
+                );
         });
 
         it('Should fail when app are different', async function () {
@@ -1006,9 +1021,9 @@ describe('IexecPocoBoost', function () {
             });
             // Request another app address
             orders.requester.app = '0x0000000000000000000000000000000000000001';
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: App mismatch');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__AppMismatch')
+                .withArgs(orders.requester.app, orders.app.app);
         });
 
         it('Should fail when dataset are different', async function () {
@@ -1018,9 +1033,9 @@ describe('IexecPocoBoost', function () {
             });
             // Request another dataset address
             orders.requester.dataset = '0x0000000000000000000000000000000000000001';
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Dataset mismatch');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__DatasetMismatch')
+                .withArgs(orders.requester.dataset, orders.dataset.dataset);
         });
 
         it('Should fail when request order workerpool mismatches workerpool order workerpool (EOA, SC)', async function () {
@@ -1030,14 +1045,20 @@ describe('IexecPocoBoost', function () {
             });
             // EOA
             orders.requester.workerpool = randomEOAAddress;
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__WorkerpoolRestrictionMismatch',
+                )
+                .withArgs(orders.requester.workerpool, orders.workerpool.workerpool);
             // SC
             orders.requester.workerpool = someContractAddress;
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Workerpool restricted by request order');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__WorkerpoolRestrictionMismatch',
+                )
+                .withArgs(orders.requester.workerpool, orders.workerpool.workerpool);
         });
 
         /**
@@ -1054,7 +1075,7 @@ describe('IexecPocoBoost', function () {
                 it(`Should fail when ${orderName} order mismatch ${assetName} restriction (EOA, SC)`, async function () {
                     const capitalizedAssetName =
                         assetName.charAt(0).toUpperCase() + assetName.substring(1); // app => App
-                    const revertMessage = `PocoBoost: ${capitalizedAssetName} restricted by ${orderName} order`;
+                    const errorName = `PocoBoost__${capitalizedAssetName}RestrictionMismatch`;
                     const orders = buildOrders({
                         assets: ordersAssets,
                         requester: requester.address,
@@ -1063,15 +1084,25 @@ describe('IexecPocoBoost', function () {
                     // E.g. changes orders['app']['apprestrict'] = 0xAddress
                     // @ts-ignore
                     orders[orderName][assetName + 'restrict'] = randomEOAAddress;
-                    await expect(
-                        iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-                    ).to.be.revertedWith(revertMessage);
+                    await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                        .to.be.revertedWithCustomError(iexecPocoBoostInstance, errorName)
+                        .withArgs(
+                            // @ts-ignore
+                            orders[orderName][assetName + 'restrict'],
+                            // @ts-ignore
+                            orders[assetName][assetName],
+                        );
                     // SC
                     // @ts-ignore
                     orders[orderName][assetName + 'restrict'] = someContractAddress;
-                    await expect(
-                        iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-                    ).to.be.revertedWith(revertMessage);
+                    await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                        .to.be.revertedWithCustomError(iexecPocoBoostInstance, errorName)
+                        .withArgs(
+                            // @ts-ignore
+                            orders[orderName][assetName + 'restrict'],
+                            // @ts-ignore
+                            orders[assetName][assetName],
+                        );
                 });
             });
         });
@@ -1087,9 +1118,12 @@ describe('IexecPocoBoost', function () {
             });
             await signOrder(domain, orders.app, anyone);
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: App not registered');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__AppNotRegistered',
+                )
+                .withArgs(someContractAddress);
         });
 
         it('Should fail when invalid app order signature from EOA', async function () {
@@ -1099,9 +1133,12 @@ describe('IexecPocoBoost', function () {
             });
             await signOrder(domain, orders.app, anyone);
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Invalid app order signature');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__InvalidAppOrderSignature',
+                )
+                .withArgs(appProvider.address, hashOrder(domain, orders.app));
         });
 
         it('Should fail when invalid app order signature from contract', async function () {
@@ -1115,9 +1152,12 @@ describe('IexecPocoBoost', function () {
             });
             orders.app.sign = someSignature;
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Invalid app order signature');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__InvalidAppOrderSignature',
+                )
+                .withArgs(erc1271Address, hashOrder(domain, orders.app));
         });
 
         it('Should fail when dataset not registered', async function () {
@@ -1131,9 +1171,12 @@ describe('IexecPocoBoost', function () {
             });
             await signOrders(domain, orders, ordersActors);
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Dataset not registered');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__DatasetNotRegistered',
+                )
+                .withArgs(someContractAddress);
         });
 
         it('Should fail when invalid dataset order signature from EOA', async function () {
@@ -1144,9 +1187,12 @@ describe('IexecPocoBoost', function () {
             await signOrder(domain, orders.app, appProvider);
             await signOrder(domain, orders.dataset, anyone);
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Invalid dataset order signature');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__InvalidDatasetOrderSignature',
+                )
+                .withArgs(datasetProvider.address, hashOrder(domain, orders.dataset));
         });
 
         it('Should fail when invalid dataset order signature from contract', async function () {
@@ -1164,9 +1210,12 @@ describe('IexecPocoBoost', function () {
             await signOrder(domain, orders.app, appProvider);
             orders.dataset.sign = someSignature;
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Invalid dataset order signature');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__InvalidDatasetOrderSignature',
+                )
+                .withArgs(erc1271Address, hashOrder(domain, orders.dataset));
         });
 
         it('Should fail when workerpool not registered', async function () {
@@ -1180,9 +1229,12 @@ describe('IexecPocoBoost', function () {
             });
             await signOrders(domain, orders, ordersActors);
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Workerpool not registered');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__WorkerpoolNotRegistered',
+                )
+                .withArgs(someContractAddress);
         });
 
         it('Should fail when invalid workerpool order signature from EOA', async function () {
@@ -1194,9 +1246,12 @@ describe('IexecPocoBoost', function () {
             await signOrder(domain, orders.dataset, datasetProvider);
             await signOrder(domain, orders.workerpool, anyone);
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Invalid workerpool order signature');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__InvalidWorkerpoolOrderSignature',
+                )
+                .withArgs(scheduler.address, hashOrder(domain, orders.workerpool));
         });
 
         it('Should fail when invalid workerpool order signature from contract', async function () {
@@ -1212,9 +1267,12 @@ describe('IexecPocoBoost', function () {
             await signOrder(domain, orders.dataset, datasetProvider);
             orders.workerpool.sign = someSignature;
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Invalid workerpool order signature');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__InvalidWorkerpoolOrderSignature',
+                )
+                .withArgs(erc1271Address, hashOrder(domain, orders.workerpool));
         });
 
         it('Should fail when invalid request order signature from EOA', async function () {
@@ -1227,9 +1285,12 @@ describe('IexecPocoBoost', function () {
             await signOrder(domain, orders.workerpool, scheduler);
             await signOrder(domain, orders.requester, anyone);
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Invalid request order signature');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__InvalidRequestOrderSignature',
+                )
+                .withArgs(requester.address, hashOrder(domain, orders.requester));
         });
 
         it('Should fail when invalid request order signature from contract', async function () {
@@ -1243,9 +1304,12 @@ describe('IexecPocoBoost', function () {
             await signOrder(domain, orders.workerpool, scheduler);
             orders.requester.sign = someSignature;
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: Invalid request order signature');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__InvalidRequestOrderSignature',
+                )
+                .withArgs(erc1271Address, hashOrder(domain, orders.requester));
         });
 
         it('Should fail if one or more orders are consumed', async function () {
@@ -1257,9 +1321,9 @@ describe('IexecPocoBoost', function () {
             orders.app.volume = 0; // nothing to consume
             await signOrders(domain, orders, ordersActors);
 
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('PocoBoost: One or more orders consumed');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__OrdersConsumed')
+                .withArgs();
         });
 
         it('Should fail when requester has insufficient balance', async () => {
@@ -1275,9 +1339,9 @@ describe('IexecPocoBoost', function () {
             expect(await iexecPocoAccessor.balanceOf(requester.address)).to.be.lessThan(dealPrice);
 
             await signOrders(domain, orders, ordersActors);
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'InsufficientBalance')
+                .withArgs(requester.address, initialRequesterBalance, dealPrice);
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
@@ -1306,9 +1370,9 @@ describe('IexecPocoBoost', function () {
             );
 
             await signOrders(domain, orders, ordersActors);
-            await expect(
-                iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            await expect(iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'InsufficientBalance')
+                .withArgs(scheduler.address, initialSchedulerBalance, schedulerStake);
         });
         it('Should fail when sponsor has insufficient balance', async () => {
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
@@ -1327,7 +1391,9 @@ describe('IexecPocoBoost', function () {
                 iexecPocoBoostInstance
                     .connect(sponsor)
                     .sponsorMatchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            )
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'InsufficientBalance')
+                .withArgs(sponsor.address, initialSponsorBalance, dealPrice);
         });
     });
 
@@ -1768,7 +1834,9 @@ describe('IexecPocoBoost', function () {
                         ZeroAddress,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Unknown task');
+            )
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__UnknownTask')
+                .withArgs(taskIndex, 0);
         });
 
         it('Should not push result if out-of-range task index', async function () {
@@ -1792,7 +1860,9 @@ describe('IexecPocoBoost', function () {
                     ZeroAddress,
                     constants.NULL.SIGNATURE,
                 ),
-            ).to.be.revertedWith('PocoBoost: Unknown task');
+            )
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__UnknownTask')
+                .withArgs(1, volume);
         });
 
         it('Should not push result twice', async function () {
@@ -1829,7 +1899,12 @@ describe('IexecPocoBoost', function () {
             // Push result
             await expect(pushResultBoost()).to.emit(iexecPocoBoostInstance, 'ResultPushedBoost');
             // Push result a second time
-            await expect(pushResultBoost()).to.be.revertedWith('PocoBoost: Task status not unset');
+            await expect(pushResultBoost())
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__TaskStatusNotUnset',
+                )
+                .withArgs(TaskStatusEnum.COMPLETED);
         });
 
         it('Should not push result after deadline', async function () {
@@ -1856,7 +1931,9 @@ describe('IexecPocoBoost', function () {
                         enclave.address,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Deadline reached');
+            )
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__DeadlineReached')
+                .withArgs(startTime + 7n * categoryTime, startTime + 7n * categoryTime);
         });
 
         it('Should not push result without enclave challenge for TEE task', async function () {
@@ -1883,7 +1960,10 @@ describe('IexecPocoBoost', function () {
                         ZeroAddress,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Tag requires enclave challenge');
+            ).to.be.revertedWithCustomError(
+                iexecPocoBoostInstance,
+                'PocoBoost__TagRequiresEnclaveChallenge',
+            );
         });
 
         it('Should not push result with invalid scheduler signature', async function () {
@@ -1909,7 +1989,10 @@ describe('IexecPocoBoost', function () {
                         enclave.address,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Invalid contribution authorization signature');
+            ).to.be.revertedWithCustomError(
+                iexecPocoBoostInstance,
+                'PocoBoost__InvalidContributionAuthorizationSignature',
+            );
         });
 
         it('Should not push result with invalid broker signature', async function () {
@@ -1937,7 +2020,10 @@ describe('IexecPocoBoost', function () {
                         enclave.address,
                         constants.NULL.SIGNATURE,
                     ),
-            ).to.be.revertedWith('PocoBoost: Invalid contribution authorization signature');
+            ).to.be.revertedWithCustomError(
+                iexecPocoBoostInstance,
+                'PocoBoost__InvalidContributionAuthorizationSignature',
+            );
         });
 
         it('Should not push result with invalid enclave signature', async function () {
@@ -1972,7 +2058,10 @@ describe('IexecPocoBoost', function () {
                         enclave.address,
                         anyoneSignature,
                     ),
-            ).to.be.revertedWith('PocoBoost: Invalid enclave signature');
+            ).to.be.revertedWithCustomError(
+                iexecPocoBoostInstance,
+                'PocoBoost__InvalidEnclaveSignature',
+            );
         });
 
         it('Should not push result with missing data for callback', async function () {
@@ -2014,7 +2103,10 @@ describe('IexecPocoBoost', function () {
                         enclave.address,
                         enclaveSignature,
                     ),
-            ).to.be.revertedWith('PocoBoost: Callback requires data');
+            ).to.be.revertedWithCustomError(
+                iexecPocoBoostInstance,
+                'PocoBoost__CallbackRequiresData',
+            );
         });
 
         it('Should not push result without enough gas for callback', async function () {
@@ -2060,9 +2152,12 @@ describe('IexecPocoBoost', function () {
                 await expect(pushResultBoost).to.be.revertedWithoutReason();
                 return;
             }
-            await expect(pushResultBoost).to.be.revertedWith(
-                'PocoBoost: Not enough gas after callback',
-            );
+            await expect(pushResultBoost)
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__NotEnoughGasAfterCallback',
+                )
+                .withArgs();
         });
     });
 
@@ -2277,7 +2372,9 @@ describe('IexecPocoBoost', function () {
                         '0x00000000000000000000000000000000000000000000000000000000fac6dea1',
                         0,
                     ),
-            ).to.be.revertedWith('PocoBoost: Unknown task');
+            )
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__UnknownTask')
+                .withArgs(0n, 0n);
         });
 
         it('Should not claim if out-of-range task index', async function () {
@@ -2296,7 +2393,9 @@ describe('IexecPocoBoost', function () {
                     dealId, // existing deal
                     1, // only task index 0 would be authorized with this deal volume of 1
                 ),
-            ).to.be.revertedWith('PocoBoost: Unknown task');
+            )
+                .to.be.revertedWithCustomError(iexecPocoBoostInstance, 'PocoBoost__UnknownTask')
+                .withArgs(1n, volume);
         });
 
         // Different test than other `Should not claim if task not unset` test
@@ -2317,9 +2416,12 @@ describe('IexecPocoBoost', function () {
                 iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex),
             ).to.emit(iexecPocoBoostInstance, 'TaskClaimed');
             // Claim a second time
-            await expect(
-                iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex),
-            ).to.be.revertedWith('PocoBoost: Task status not unset');
+            await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__TaskStatusNotUnset',
+                )
+                .withArgs(TaskStatusEnum.FAILED);
         });
 
         it('Should not claim if task not unset', async function () {
@@ -2351,9 +2453,12 @@ describe('IexecPocoBoost', function () {
                     constants.NULL.SIGNATURE,
                 );
 
-            await expect(
-                iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex),
-            ).to.be.revertedWith('PocoBoost: Task status not unset');
+            await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__TaskStatusNotUnset',
+                )
+                .withArgs(TaskStatusEnum.COMPLETED);
         });
 
         it('Should not claim before deadline', async function () {
@@ -2373,9 +2478,12 @@ describe('IexecPocoBoost', function () {
                     1n, // just before deadline
             );
 
-            await expect(
-                iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex),
-            ).to.be.revertedWith('PocoBoost: Deadline not reached');
+            await expect(iexecPocoBoostInstance.connect(worker).claimBoost(dealId, taskIndex))
+                .to.be.revertedWithCustomError(
+                    iexecPocoBoostInstance,
+                    'PocoBoost__DeadlineNotReached',
+                )
+                .withArgs(startTime + 7n * categoryTime, startTime + 7n * categoryTime - 1n);
         });
     });
 });

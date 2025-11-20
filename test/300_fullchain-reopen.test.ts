@@ -166,7 +166,9 @@ describe('Integration tests', function () {
                         '0x',
                         schedulerSignature,
                     ),
-            ).to.revertedWithoutReason();
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'ContributionAlreadyExists')
+                .withArgs(taskId, contributor.address);
         }
         // Contribute and reveal with new workers.
         for (const contributor of secondContributors) {

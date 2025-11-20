@@ -57,7 +57,7 @@ describe('IexecEscrowToken', () => {
                     to: proxyAddress,
                     value: amount,
                 }),
-            ).to.be.revertedWith('fallback-disabled');
+            ).to.be.revertedWithCustomError(iexecPoco, 'FallbackDisabled');
         });
         it('Should revert on fallback', async () => {
             const randomData = ethers.hexlify(
@@ -69,7 +69,7 @@ describe('IexecEscrowToken', () => {
                     value: amount,
                     data: randomData,
                 }),
-            ).to.be.revertedWith('fallback-disabled');
+            ).to.be.revertedWithCustomError(iexecPoco, 'FallbackDisabled');
         });
     });
 
@@ -246,9 +246,12 @@ describe('IexecEscrowToken', () => {
             await rlcInstanceAsAccountA
                 .approve(proxyAddress, depositTotalAmount)
                 .then((tx) => tx.wait());
-            await expect(
-                iexecPocoAsAccountA.depositForArray(...depositForArrayArgs),
-            ).to.be.revertedWith('invalid-array-length');
+            await expect(iexecPocoAsAccountA.depositForArray(...depositForArrayArgs))
+                .to.be.revertedWithCustomError(iexecPoco, 'InvalidArrayLength')
+                .withArgs(
+                    depositForArrayParams.amounts.length,
+                    depositForArrayParams.targets.length,
+                );
         });
         it('Should not deposit tokens for multiple accounts with address zero in target', async () => {
             const depositForArrayParams = {

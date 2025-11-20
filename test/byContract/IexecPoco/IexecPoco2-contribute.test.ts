@@ -5,7 +5,12 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { assert, expect } from 'chai';
 import { ZeroAddress } from 'ethers';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import {
+    IexecInterfaceNative,
+    IexecInterfaceNative__factory,
+    IexecPoco2Facet,
+    IexecPoco2Facet__factory,
+} from '../../../typechain';
 import config from '../../../utils/config';
 import { NULL, TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -33,6 +38,7 @@ const emptyEnclaveSignature = NULL.SIGNATURE;
 describe('IexecPoco2#contribute', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsWorker]: IexecInterfaceNative[] = [];
+    let iexecPoco2: IexecPoco2Facet;
     let iexecWrapper: IexecWrapper;
     let [
         anyone,
@@ -72,6 +78,7 @@ describe('IexecPoco2#contribute', () => {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco2 = IexecPoco2Facet__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
         const appPrice = 1000n;
         const datasetPrice = 1_000_000n;
@@ -293,7 +300,9 @@ describe('IexecPoco2#contribute', () => {
                         scheduler,
                     ),
                 ),
-            ).to.be.revertedWithoutReason(); // require#1
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'TaskNotActive')
+                .withArgs(taskId, TaskStatusEnum.UNSET); // require#1
         });
 
         it('Should not contribute after deadline', async () => {
@@ -304,6 +313,7 @@ describe('IexecPoco2#contribute', () => {
             expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
             const task = await iexecPoco.viewTask(taskId);
             await time.setNextBlockTimestamp(task.contributionDeadline);
+            const currentTimestamp = task.contributionDeadline;
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,
@@ -325,7 +335,9 @@ describe('IexecPoco2#contribute', () => {
                         scheduler,
                     ),
                 ),
-            ).to.be.revertedWithoutReason(); // require#2
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'ContributionDeadlineExpired')
+                .withArgs(taskId, task.contributionDeadline, currentTimestamp); // require#2
         });
 
         it('Should not contribute twice', async () => {
@@ -383,7 +395,9 @@ describe('IexecPoco2#contribute', () => {
                         scheduler,
                     ),
                 ),
-            ).to.be.revertedWithoutReason(); // require#3
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'ContributionAlreadyExists')
+                .withArgs(taskId, worker.address); // require#3
         });
 
         it('Should not contribute when enclave challenge for TEE task is missing', async () => {
@@ -419,7 +433,9 @@ describe('IexecPoco2#contribute', () => {
                         scheduler,
                     ),
                 ),
-            ).to.be.revertedWithoutReason(); // require#4
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'EnclaveRequired')
+                .withArgs(taskId); // require#4
         });
 
         it('Should not contribute when scheduler signature is invalid', async () => {
@@ -448,7 +464,9 @@ describe('IexecPoco2#contribute', () => {
                         anyone, // authorization not signed by scheduler
                     ),
                 ),
-            ).to.be.revertedWithoutReason(); // require#5
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'InvalidAuthorizationSignature')
+                .withArgs(worker.address, taskId); // require#5
         });
 
         it('Should not contribute when enclave signature is invalid', async () => {
@@ -489,7 +507,9 @@ describe('IexecPoco2#contribute', () => {
                         scheduler,
                     ),
                 ),
-            ).to.be.revertedWithoutReason(); // require#6
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'InvalidEnclaveSignature')
+                .withArgs(enclave.address, taskId); // require#6
         });
 
         it('Should not contribute when no deposit', async () => {
@@ -497,6 +517,9 @@ describe('IexecPoco2#contribute', () => {
                 ...defaultOrders.toArray(),
             );
             await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
+            const workerTaskStake = await iexecPoco
+                .viewDeal(dealId)
+                .then((deal) => deal.workerStake);
             const { resultHash, resultSeal } = buildResultHashAndResultSeal(
                 taskId,
                 resultDigest,
@@ -519,7 +542,9 @@ describe('IexecPoco2#contribute', () => {
                         scheduler,
                     ),
                 ),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            )
+                .to.be.revertedWithCustomError(iexecPoco2, 'InsufficientBalance')
+                .withArgs(worker.address, 0n, workerTaskStake);
         });
     });
 });

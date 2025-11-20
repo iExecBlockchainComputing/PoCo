@@ -148,7 +148,7 @@ contract IexecPocoBoostFacet is
         }
         // Check if the requested category is valid.
         if (category >= $.m_categories.length) {
-            revert PocoBoost__UnknownCategory(category, $.m_categories.length);
+            revert PocoBoost__UnknownCategory(category, $.m_categories.length - 1);
         }
         uint256 appPrice = appOrder.appprice;
         // Check if the app, dataset, and workerpool prices are within requester price limits.

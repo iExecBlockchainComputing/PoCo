@@ -656,10 +656,10 @@ describe('IexecPoco2#finalize', async () => {
         );
         const deal = await iexecPoco.viewDeal(dealId);
         expect(deal.workerpool.owner).to.equal(scheduler.address).not.equal(anyone.address);
-        // caller is not scheduler
-        await expect(
-            iexecPoco.connect(anyone).finalize(taskId, results, '0x'),
-        ).to.be.revertedWithoutReason(); // onlyScheduler modifier
+        // caller is not scheduler (task not initialized, so workerpool owner is zero address)
+        await expect(iexecPoco.connect(anyone).finalize(taskId, results, '0x'))
+            .to.be.revertedWithCustomError(iexecPoco, 'NotWorkerpoolOwner')
+            .withArgs(anyone.address, ZeroAddress); // onlyScheduler modifier
     });
 
     it('Should not finalize task when task status is not revealing', async () => {
@@ -674,9 +674,9 @@ describe('IexecPoco2#finalize', async () => {
         expect(task.status).to.equal(TaskStatusEnum.ACTIVE);
         // caller is scheduler
         // but task status is not revealing
-        await expect(
-            iexecPocoAsScheduler.finalize(taskId, results, '0x'),
-        ).to.be.revertedWithoutReason(); // require#1
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
+            .to.be.revertedWithCustomError(iexecPoco, 'TaskNotRevealing')
+            .withArgs(taskId, TaskStatusEnum.ACTIVE); // require#1
     });
 
     it('Should not finalize task after final deadline', async () => {
@@ -714,11 +714,12 @@ describe('IexecPoco2#finalize', async () => {
         const task = await iexecPoco.viewTask(taskId);
         expect(task.status).to.equal(TaskStatusEnum.REVEALING);
         await time.setNextBlockTimestamp(task.finalDeadline);
+        const currentTimestamp = task.finalDeadline;
         // caller is scheduler, task status is revealing
         // but after final deadline
-        await expect(
-            iexecPocoAsScheduler.finalize(taskId, results, '0x'),
-        ).to.be.revertedWithoutReason(); // require#2
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
+            .to.be.revertedWithCustomError(iexecPoco, 'DeadlineReached')
+            .withArgs(task.finalDeadline, currentTimestamp); // require#2
     });
 
     it('Should not finalize when winner counter is not reached nor at least one worker revealed', async () => {
@@ -764,9 +765,9 @@ describe('IexecPoco2#finalize', async () => {
         // caller is scheduler, task status is revealing, before final deadline
         // winner counter is not reached and reveal deadline is reached but not
         // even one worker revealed
-        await expect(
-            iexecPocoAsScheduler.finalize(taskId, results, '0x'),
-        ).to.be.revertedWithoutReason(); // require#3
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, '0x'))
+            .to.be.revertedWithCustomError(iexecPoco, 'InvalidRevealConditions')
+            .withArgs(taskId); // require#3
     });
 
     it('Should not finalize task when resultsCallback is not expected', async () => {
@@ -810,10 +811,12 @@ describe('IexecPoco2#finalize', async () => {
         expect(task.revealCounter).to.equal(1);
         // caller is scheduler, task status is revealing, before final deadline,
         // reveal counter is reached
-        // but resultsCallback is not expected
-        await expect(
-            iexecPocoAsScheduler.finalize(taskId, results, '0x01'),
-        ).to.be.revertedWithoutReason(); // require#4
+        // but resultsCallback is not expected (no callback address but data provided)
+        const badCallbackData = '0x01';
+        const callbackHash = ethers.keccak256(badCallbackData);
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, badCallbackData))
+            .to.be.revertedWithCustomError(iexecPoco, 'CallbackDigestMismatch')
+            .withArgs(taskId, task.resultDigest, callbackHash); // require#4
     });
 
     it('Should not finalize task when result callback is bad', async () => {
@@ -868,9 +871,10 @@ describe('IexecPoco2#finalize', async () => {
         // reveal counter is reached
         // but resultsCallback is bad
         const { resultsCallback } = buildResultCallbackAndDigest(567);
-        await expect(
-            iexecPocoAsScheduler.finalize(taskId, results, resultsCallback),
-        ).to.be.revertedWithoutReason(); // require#4 (part 2)
+        const callbackHash = ethers.keccak256(resultsCallback);
+        await expect(iexecPocoAsScheduler.finalize(taskId, results, resultsCallback))
+            .to.be.revertedWithCustomError(iexecPoco, 'CallbackDigestMismatch')
+            .withArgs(taskId, task.resultDigest, callbackHash); // require#4 (part 2)
     });
 
     async function setWorkerScoreInStorage(worker: string, score: number) {

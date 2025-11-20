@@ -124,7 +124,10 @@ describe('IexecPoco2#initialize', async () => {
             expect((await iexecPoco.viewDeal(dealId1)).botFirst).equal(1);
 
             // Will fail since passed taskIndex is below deal1.botFirst
-            await expect(iexecPocoAsAnyone.initialize(dealId1, 0)).to.be.revertedWithoutReason();
+            const deal1 = await iexecPoco.viewDeal(dealId1);
+            await expect(iexecPocoAsAnyone.initialize(dealId1, 0))
+                .to.be.revertedWithCustomError(iexecPoco, 'TaskIndexOutOfBounds')
+                .withArgs(0, deal1.botFirst, deal1.botSize);
         });
 
         it('Should not initialize since index is too high', async function () {
@@ -139,7 +142,9 @@ describe('IexecPoco2#initialize', async () => {
             expect(deal.botSize).equal(1);
 
             // Will fail since passed taskIndex is above offset + bot size
-            await expect(iexecPocoAsAnyone.initialize(dealId, 1)).to.be.revertedWithoutReason();
+            await expect(iexecPocoAsAnyone.initialize(dealId, 1))
+                .to.be.revertedWithCustomError(iexecPoco, 'TaskIndexOutOfBounds')
+                .withArgs(1, deal.botFirst, deal.botSize);
         });
 
         it('Should not initialize twice', async function () {
@@ -153,10 +158,11 @@ describe('IexecPoco2#initialize', async () => {
             );
             await iexecPocoAsAnyone.initialize(dealId, taskIndex).then((tx) => tx.wait());
             expect((await iexecPoco.viewTask(taskId)).status).equal(TaskStatusEnum.ACTIVE);
+            const task = await iexecPoco.viewTask(taskId);
 
-            await expect(
-                iexecPocoAsAnyone.initialize(dealId, taskIndex),
-            ).to.be.revertedWithoutReason();
+            await expect(iexecPocoAsAnyone.initialize(dealId, taskIndex))
+                .to.be.revertedWithCustomError(iexecPoco, 'TaskAlreadyInitialized')
+                .withArgs(taskId, task.status);
         });
     });
 
@@ -191,9 +197,9 @@ describe('IexecPoco2#initialize', async () => {
 
         it('Should not initialize array if incompatible length of inputs', async function () {
             const dealId = ethers.hashMessage('dealId');
-            await expect(
-                iexecPoco.initializeArray([dealId, dealId], [0]),
-            ).to.be.revertedWithoutReason();
+            await expect(iexecPoco.initializeArray([dealId, dealId], [0]))
+                .to.be.revertedWithCustomError(iexecPoco, 'ArrayLengthMismatch')
+                .withArgs(2, 1);
         });
 
         it('Should not initialize array if one specific fails', async function () {
@@ -206,14 +212,16 @@ describe('IexecPoco2#initialize', async () => {
             const { dealId } = await iexecWrapper.signAndMatchOrders(...orders.toArray());
             const taskIndex0 = 0;
             const taskIndex1 = 1;
+            const taskId0 = getTaskId(dealId, BigInt(taskIndex0));
             await iexecPocoAsAnyone // Make first task already initialized
                 .initialize(dealId, taskIndex0)
                 .then((tx) => tx.wait());
+            const task0 = await iexecPoco.viewTask(taskId0);
 
             // Will fail since first task is already initialized
-            await expect(
-                iexecPoco.initializeArray([dealId, dealId], [taskIndex0, taskIndex1]),
-            ).to.be.revertedWithoutReason();
+            await expect(iexecPoco.initializeArray([dealId, dealId], [taskIndex0, taskIndex1]))
+                .to.be.revertedWithCustomError(iexecPoco, 'TaskAlreadyInitialized')
+                .withArgs(taskId0, task0.status);
         });
     });
 });

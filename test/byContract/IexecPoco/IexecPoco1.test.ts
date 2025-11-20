@@ -9,9 +9,13 @@ import { ethers } from 'hardhat';
 import {
     ERC1271Mock__factory,
     IERC721__factory,
+    IexecEscrow,
+    IexecEscrow__factory,
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
     IexecLibOrders_v5,
+    IexecPoco2Facet,
+    IexecPoco2Facet__factory,
     IexecPocoAccessors,
     IexecPocoAccessors__factory,
     OwnableMock__factory,
@@ -68,6 +72,8 @@ describe('IexecPoco1', () => {
     let proxyAddress: string;
     let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
     let iexecPocoAsSponsor: IexecInterfaceNative;
+    let iexecPoco2Facet: IexecPoco2Facet;
+    let iexecEscrow: IexecEscrow;
     let iexecPocoAccessors: IexecPocoAccessors;
     let iexecPocoContract: Contract;
     let iexecWrapper: IexecWrapper;
@@ -116,6 +122,8 @@ describe('IexecPoco1', () => {
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
         iexecPocoAsSponsor = iexecPoco.connect(sponsor);
+        iexecPoco2Facet = IexecPoco2Facet__factory.connect(proxyAddress, anyone);
+        iexecEscrow = IexecEscrow__factory.connect(proxyAddress, anyone);
         iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);
         iexecPocoContract = iexecPoco as unknown as Contract;
         ordersActors = {
@@ -219,7 +227,7 @@ describe('IexecPoco1', () => {
                         ethers.hashMessage(someMessage),
                         '0x01', // bad signature format
                     ),
-                ).to.be.revertedWith('invalid-signature-format');
+                ).to.be.revertedWithCustomError(iexecPoco2Facet, 'InvalidSignatureFormat');
             });
 
             it(`Should fail to ${verifySignatureFunction} of EoA when bad signer`, async () => {
@@ -685,46 +693,47 @@ describe('IexecPoco1', () => {
 
         it('Should fail when categories are different', async () => {
             orders.requester.category = BigInt(orders.workerpool.category) + 1n; // Valid but different category.
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x00',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'CategoryMismatch')
+                .withArgs(orders.requester.category, orders.workerpool.category);
         });
 
         it('Should fail when category is unknown', async () => {
             const lastCategoryIndex = (await iexecPoco.countCategory()) - 1n;
+            const categoriesCount = await iexecPoco.countCategory();
             orders.requester.category = lastCategoryIndex + 1n;
             orders.workerpool.category = lastCategoryIndex + 1n;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x01',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'UnknownCategory')
+                .withArgs(orders.requester.category, categoriesCount);
         });
 
         it('Should fail when requested trust is above workerpool trust', async () => {
             orders.requester.trust = BigInt(orders.workerpool.trust) + 1n;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x02',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'TrustMismatch')
+                .withArgs(orders.requester.trust, orders.workerpool.trust);
         });
 
         it('Should fail when app max price is less than app price', async () => {
             orders.requester.appmaxprice = BigInt(orders.app.appprice) - 1n;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x03',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'AppPriceTooHigh')
+                .withArgs(orders.app.appprice, orders.requester.appmaxprice);
         });
 
         it('Should fail when dataset max price is less than dataset price', async () => {
             orders.requester.datasetmaxprice = BigInt(orders.dataset.datasetprice) - 1n;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x04',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'DatasetPriceTooHigh')
+                .withArgs(orders.dataset.datasetprice, orders.requester.datasetmaxprice);
         });
 
         it('Should fail when workerpool max price is less than workerpool price', async () => {
             orders.requester.workerpoolmaxprice = BigInt(orders.workerpool.workerpoolprice) - 1n;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x05',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'WorkerpoolPriceTooHigh')
+                .withArgs(orders.workerpool.workerpoolprice, orders.requester.workerpoolmaxprice);
         });
 
         it('Should fail when workerpool tag does not satisfy app, dataset and request requirements', async () => {
@@ -732,9 +741,9 @@ describe('IexecPoco1', () => {
             orders.dataset.tag = TAG_TEE_SCONE; // 0b0011
             orders.requester.tag = TAG_TEE_SCONE; // 0b0011
             orders.workerpool.tag = TAG_BIT_2; // 0b0100 - does not satisfy last bits of app, dataset, request
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x06',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'TagMismatch')
+                .withArgs(orders.requester.tag, orders.workerpool.tag);
         });
 
         it('Should fail when dataset has other bits set that are not ignored', async () => {
@@ -742,10 +751,14 @@ describe('IexecPoco1', () => {
             orders.workerpool.tag = TAG_TEE;
             orders.app.tag = TAG_TEE;
             orders.requester.tag = TAG_TEE;
-
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x06',
-            );
+            // tag = app.tag | (dataset.tag & mask) | requester.tag = 0x01 | 0x11 | 0x01 = 0x11
+            const expectedTag =
+                ethers.toBigInt(orders.app.tag) |
+                ethers.toBigInt(orders.dataset.tag) |
+                ethers.toBigInt(orders.requester.tag);
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'TagMismatch')
+                .withArgs(ethers.toBeHex(expectedTag, 32), orders.workerpool.tag);
         });
 
         it('Should fail when the last bit of app tag does not satisfy dataset or request requirements', async () => {
@@ -754,34 +767,34 @@ describe('IexecPoco1', () => {
             orders.requester.tag = TAG_TEE_GRAMINE;
             // Set the workerpool tag in a way to pass first tag check.
             orders.workerpool.tag = TAG_TEE_GRAMINE;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x07',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'AppTagMismatch')
+                .withArgs(orders.requester.tag, orders.app.tag);
         });
 
         it('Should fail when apps are different', async () => {
             orders.requester.app = randomAddress;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x10',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'AppMismatch')
+                .withArgs(orders.requester.app, orders.app.app);
         });
 
         it('Should fail when datasets are different', async () => {
             orders.requester.dataset = randomAddress;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x11',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'DatasetMismatch')
+                .withArgs(orders.requester.dataset, orders.dataset.dataset);
         });
 
         it('Should fail when request order mismatches workerpool restriction (EOA, SC)', async () => {
             orders.requester.workerpool = randomAddress;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x12',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'WorkerpoolMismatch')
+                .withArgs(orders.requester.workerpool, orders.workerpool.workerpool);
             orders.requester.workerpool = randomContractAddress;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x12',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'WorkerpoolMismatch')
+                .withArgs(orders.requester.workerpool, orders.workerpool.workerpool);
         });
 
         /**
@@ -790,21 +803,21 @@ describe('IexecPoco1', () => {
          * Note: Workerpool is the only restriction in request order and it is
          * tested elsewhere.
          */
-        const revertMessages: { [key: string]: { [key: string]: string } } = {
+        const errorMapping: { [key: string]: { [key: string]: string } } = {
             app: {
-                dataset: 'iExecV5-matchOrders-0x13',
-                workerpool: 'iExecV5-matchOrders-0x14',
-                requester: 'iExecV5-matchOrders-0x15',
+                dataset: 'DatasetRestrictionMismatch',
+                workerpool: 'WorkerpoolRestrictionMismatch',
+                requester: 'RequesterRestrictionMismatch',
             },
             dataset: {
-                app: 'iExecV5-matchOrders-0x16',
-                workerpool: 'iExecV5-matchOrders-0x17',
-                requester: 'iExecV5-matchOrders-0x18',
+                app: 'AppRestrictionMismatch',
+                workerpool: 'WorkerpoolRestrictionMismatch',
+                requester: 'RequesterRestrictionMismatch',
             },
             workerpool: {
-                app: 'iExecV5-matchOrders-0x19',
-                dataset: 'iExecV5-matchOrders-0x1a',
-                requester: 'iExecV5-matchOrders-0x1b',
+                app: 'AppRestrictionMismatch',
+                dataset: 'DatasetRestrictionMismatch',
+                requester: 'RequesterRestrictionMismatch',
             },
         };
         ['app', 'dataset', 'workerpool'].forEach((orderName) => {
@@ -814,19 +827,19 @@ describe('IexecPoco1', () => {
                     return;
                 }
                 it(`Should fail when ${orderName} order mismatches ${assetName} restriction (EOA, SC)`, async () => {
-                    const message = revertMessages[orderName][assetName];
+                    const errorName = errorMapping[orderName][assetName];
                     // EOA
                     // @ts-ignore
                     orders[orderName][assetName + 'restrict'] = randomAddress; // e.g. orders.app.datasetrestrict = 0xEOA
-                    await expect(iexecPoco.matchOrders(...orders.toArray())).to.be.revertedWith(
-                        message,
-                    );
+                    await expect(iexecPoco.matchOrders(...orders.toArray()))
+                        .to.be.revertedWithCustomError(iexecPoco, errorName)
+                        .withArgs(randomAddress, orders[assetName][assetName]);
                     // SC
                     // @ts-ignore
                     orders[orderName][assetName + 'restrict'] = randomContractAddress; // e.g. orders.app.datasetrestrict = 0xSC
-                    await expect(iexecPoco.matchOrders(...orders.toArray())).to.be.revertedWith(
-                        message,
-                    );
+                    await expect(iexecPoco.matchOrders(...orders.toArray()))
+                        .to.be.revertedWithCustomError(iexecPoco, errorName)
+                        .withArgs(randomContractAddress, orders[assetName][assetName]);
                 });
             });
         });
@@ -834,17 +847,17 @@ describe('IexecPoco1', () => {
         it('Should fail when app is not registered', async () => {
             orders.app.app = randomContractAddress; // Must be an Ownable contract.
             orders.requester.app = randomContractAddress;
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x20',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'AppNotRegistered')
+                .withArgs(randomContractAddress);
         });
 
         it('Should fail when invalid app order signature from EOA', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.app.sign = randomSignature; // Override signature.
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x21',
-            );
+            await expect(
+                iexecPocoAsRequester.matchOrders(...orders.toArray()),
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidAppOrderSignature');
         });
 
         it('Should fail when invalid app order signature from SC', async () => {
@@ -865,26 +878,26 @@ describe('IexecPoco1', () => {
             );
             expect(signerAddress).to.not.equal(erc1271MockContractAddress); // owner of app.
             // Match orders.
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x21',
-            );
+            await expect(
+                iexecPocoAsRequester.matchOrders(...orders.toArray()),
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidAppOrderSignature');
         });
 
         it('Should fail when dataset is not registered', async () => {
             orders.dataset.dataset = randomContractAddress; // Must be an Ownable contract.
             orders.requester.dataset = randomContractAddress;
             await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x30',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'DatasetNotRegistered')
+                .withArgs(randomContractAddress);
         });
 
         it('Should fail when invalid dataset order signature from EOA', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.dataset.sign = randomSignature; // Override signature.
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x31',
-            );
+            await expect(
+                iexecPocoAsRequester.matchOrders(...orders.toArray()),
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidDatasetOrderSignature');
         });
 
         it('Should fail when invalid dataset order signature from SC', async () => {
@@ -905,9 +918,9 @@ describe('IexecPoco1', () => {
             );
             expect(signerAddress).to.not.equal(erc1271MockContractAddress); // owner of dataset.
             // Match orders.
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x31',
-            );
+            await expect(
+                iexecPocoAsRequester.matchOrders(...orders.toArray()),
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidDatasetOrderSignature');
         });
 
         it('Should fail when workerpool is not registered', async () => {
@@ -915,17 +928,17 @@ describe('IexecPoco1', () => {
             orders.requester.workerpool = randomContractAddress;
             await signOrder(iexecWrapper.getDomain(), orders.app, appProvider);
             await signOrder(iexecWrapper.getDomain(), orders.dataset, datasetProvider);
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x40',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecPoco, 'WorkerpoolNotRegistered')
+                .withArgs(randomContractAddress);
         });
 
         it('Should fail when invalid workerpool order signature from EOA', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.workerpool.sign = randomSignature; // Override signature.
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x41',
-            );
+            await expect(
+                iexecPocoAsRequester.matchOrders(...orders.toArray()),
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidWorkerpoolOrderSignature');
         });
 
         it('Should fail when invalid workerpool order signature from SC', async () => {
@@ -946,17 +959,17 @@ describe('IexecPoco1', () => {
             );
             expect(signerAddress).to.not.equal(erc1271MockContractAddress); // owner of workerpool.
             // Match orders.
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x41',
-            );
+            await expect(
+                iexecPocoAsRequester.matchOrders(...orders.toArray()),
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidWorkerpoolOrderSignature');
         });
 
         it('Should fail when invalid request order signature from EOA', async () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             orders.requester.sign = randomSignature; // Override signature.
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x50',
-            );
+            await expect(
+                iexecPocoAsRequester.matchOrders(...orders.toArray()),
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidRequestOrderSignature');
         });
 
         it('Should fail when invalid request order signature from SC', async () => {
@@ -971,9 +984,9 @@ describe('IexecPoco1', () => {
             );
             expect(signerAddress).to.not.equal(erc1271MockContractAddress); // Requester.
             // Match orders.
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x50',
-            );
+            await expect(
+                iexecPocoAsRequester.matchOrders(...orders.toArray()),
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidRequestOrderSignature');
         });
 
         it('Should fail if one or more orders are consumed', async () => {
@@ -996,9 +1009,9 @@ describe('IexecPoco1', () => {
             // );
             await depositForRequesterAndSchedulerWithDefaultPrices(botVolume);
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'iExecV5-matchOrders-0x60',
-            );
+            await expect(
+                iexecPocoAsRequester.matchOrders(...orders.toArray()),
+            ).to.be.revertedWithCustomError(iexecPoco, 'OrdersConsumed');
         });
 
         it('Should fail when requester has insufficient balance', async () => {
@@ -1008,14 +1021,15 @@ describe('IexecPoco1', () => {
                 volume,
             );
             // Deposit less than deal price in the requester's account.
-            await iexecWrapper.depositInIexecAccount(requester, dealPrice - 1n);
+            const insufficientBalance = dealPrice - 1n;
+            await iexecWrapper.depositInIexecAccount(requester, insufficientBalance);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             expect(await iexecPoco.balanceOf(requester.address)).to.be.lessThan(dealPrice);
             expect(await iexecPoco.balanceOf(scheduler.address)).to.equal(schedulerStake);
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecEscrow, 'InsufficientBalance')
+                .withArgs(requester.address, insufficientBalance, dealPrice);
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
@@ -1026,13 +1040,14 @@ describe('IexecPoco1', () => {
             );
             await iexecWrapper.depositInIexecAccount(requester, dealPrice);
             // Deposit less than stake value in the scheduler's account.
-            await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake - 1n);
+            const insufficientBalance = schedulerStake - 1n;
+            await iexecWrapper.depositInIexecAccount(scheduler, insufficientBalance);
             expect(await iexecPoco.balanceOf(requester.address)).to.equal(dealPrice);
             expect(await iexecPoco.balanceOf(scheduler.address)).to.be.lessThan(schedulerStake);
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
-            );
+            await expect(iexecPocoAsRequester.matchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecEscrow, 'InsufficientBalance')
+                .withArgs(scheduler.address, insufficientBalance, schedulerStake);
         });
     });
 
@@ -1108,13 +1123,14 @@ describe('IexecPoco1', () => {
                 volume,
             );
             // Deposit less than deal price in the sponsor's account.
-            await iexecWrapper.depositInIexecAccount(sponsor, dealPrice - 1n);
+            const insufficientBalance = dealPrice - 1n;
+            await iexecWrapper.depositInIexecAccount(sponsor, insufficientBalance);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
             // Sign and match orders.
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-            await expect(
-                iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            await expect(iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray()))
+                .to.be.revertedWithCustomError(iexecEscrow, 'InsufficientBalance')
+                .withArgs(sponsor.address, insufficientBalance, dealPrice);
         });
     });
 

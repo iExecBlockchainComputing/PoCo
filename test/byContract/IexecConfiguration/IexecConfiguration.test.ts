@@ -81,9 +81,9 @@ describe('IexecConfiguration', async () => {
             );
         });
         it('Should not configure when already configured', async () => {
-            await expect(iexecPocoAsAdmin.configure(...configureArgs)).to.be.revertedWith(
-                'already-configured',
-            );
+            await expect(
+                iexecPocoAsAdmin.configure(...configureArgs),
+            ).to.be.revertedWithCustomError(iexecPocoAsAdmin, 'AlreadyConfigured');
         });
     });
 
@@ -108,7 +108,10 @@ describe('IexecConfiguration', async () => {
         });
         it('Should not update domain separator when not configured', async () => {
             await clearDomainSeparator();
-            await expect(iexecPoco.updateDomainSeparator()).to.be.revertedWith('not-configured');
+            await expect(iexecPoco.updateDomainSeparator()).to.be.revertedWithCustomError(
+                iexecPoco,
+                'NotConfigured',
+            );
         });
     });
 
@@ -137,9 +140,9 @@ describe('IexecConfiguration', async () => {
                 workerScoreImportedSlot,
                 '0x01', // true: score already imported
             );
-            await expect(iexecPoco.importScore(worker.address)).to.be.revertedWith(
-                'score-already-imported',
-            );
+            await expect(iexecPoco.importScore(worker.address))
+                .to.be.revertedWithCustomError(iexecPoco, 'ScoreAlreadyImported')
+                .withArgs(worker.address);
         });
     });
 

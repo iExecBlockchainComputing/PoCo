@@ -141,7 +141,9 @@ describe('IexecPoco2#reopen', async () => {
         expect(latestBlockTimestamp).to.be.lessThan(task.finalDeadline); // require 2
         expect(latestBlockTimestamp).to.be.greaterThanOrEqual(task.revealDeadline); // require 3.1
         expect(task.revealCounter).to.equal(0); // require 3.2
-        await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
+        await expect(iexecPoco.reopen(taskId))
+            .to.be.revertedWithCustomError(iexecPoco, 'NotWorkerpoolOwner')
+            .withArgs(anyone.address, scheduler.address);
     });
 
     it('Should not reopen task when status is before revealing', async () => {
@@ -152,7 +154,9 @@ describe('IexecPoco2#reopen', async () => {
         expect(task.status).to.be.lessThan(TaskStatusEnum.REVEALING); // require 1 <--
         expect(await time.latest()).to.be.lessThan(task.finalDeadline); // require 2
         expect(task.revealCounter).to.equal(0); // require 3.2
-        await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
+        await expect(iexecPocoAsScheduler.reopen(taskId))
+            .to.be.revertedWithCustomError(iexecPoco, 'TaskNotRevealing')
+            .withArgs(taskId, task.status);
     });
 
     it('Should not reopen task when status is after revealing', async () => {
@@ -169,7 +173,9 @@ describe('IexecPoco2#reopen', async () => {
         expect(task.status).to.be.greaterThan(TaskStatusEnum.REVEALING); // require 1 <--
         expect(latestBlockTimestamp).to.be.lessThan(task.finalDeadline); // require 2
         expect(latestBlockTimestamp).to.be.greaterThanOrEqual(task.revealDeadline); // require 3.1
-        await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
+        await expect(iexecPocoAsScheduler.reopen(taskId))
+            .to.be.revertedWithCustomError(iexecPoco, 'TaskNotRevealing')
+            .withArgs(taskId, task.status);
     });
 
     it('Should not reopen task after final deadline', async () => {
@@ -183,7 +189,9 @@ describe('IexecPoco2#reopen', async () => {
         expect(latestBlockTimestamp).to.be.greaterThan(task.finalDeadline); // require 2 <--
         expect(latestBlockTimestamp).to.be.greaterThan(task.revealDeadline); // require 3.1
         expect(task.revealCounter).to.equal(0); // require 3.2
-        await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
+        await expect(iexecPocoAsScheduler.reopen(taskId))
+            .to.be.revertedWithCustomError(iexecPoco, 'DeadlineReached')
+            .withArgs(task.finalDeadline, BigInt(latestBlockTimestamp) + 1n);
     });
 
     it('Should not reopen task before reveal deadline', async () => {
@@ -196,7 +204,9 @@ describe('IexecPoco2#reopen', async () => {
         expect(latestBlockTimestamp).to.be.lessThan(task.finalDeadline); // require 2
         expect(latestBlockTimestamp).to.be.lessThan(task.revealDeadline); // require 3.1 <--
         expect(task.revealCounter).to.equal(0); // require 3.2
-        await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
+        await expect(iexecPocoAsScheduler.reopen(taskId))
+            .to.be.revertedWithCustomError(iexecPoco, 'InvalidReopenConditions')
+            .withArgs(taskId);
     });
 
     it('Should not reopen task with at least 1 reveal', async () => {
@@ -216,7 +226,9 @@ describe('IexecPoco2#reopen', async () => {
         expect(latestBlockTimestamp).to.be.lessThan(task.finalDeadline); // require 2
         expect(latestBlockTimestamp).to.be.greaterThanOrEqual(task.revealDeadline); // require 3.1
         expect(task.revealCounter).to.be.greaterThan(0); // require 3.2 <--
-        await expect(iexecPoco.reopen(taskId)).to.revertedWithoutReason();
+        await expect(iexecPocoAsScheduler.reopen(taskId))
+            .to.be.revertedWithCustomError(iexecPoco, 'InvalidReopenConditions')
+            .withArgs(taskId);
     });
 
     /**

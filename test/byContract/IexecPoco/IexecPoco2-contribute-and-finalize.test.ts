@@ -8,6 +8,8 @@ import { Wallet, ZeroAddress, ethers } from 'ethers';
 import {
     IexecInterfaceNative,
     IexecInterfaceNative__factory,
+    IexecPoco2Facet,
+    IexecPoco2Facet__factory,
     TestClient__factory,
 } from '../../../typechain';
 import config from '../../../utils/config';
@@ -42,6 +44,7 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
 let [iexecPoco, iexecPocoAsWorker]: IexecInterfaceNative[] = [];
+let iexecPoco2: IexecPoco2Facet;
 let iexecWrapper: IexecWrapper;
 let [
     requester,
@@ -71,6 +74,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
         iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco2 = IexecPoco2Facet__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
         const appPrice = 1000n;
         const datasetPrice = 1_000_000n;
@@ -310,7 +314,9 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                         scheduler,
                     ),
                 ),
-        ).to.be.revertedWithoutReason(); // require#1
+        )
+            .to.be.revertedWithCustomError(iexecPoco, 'TaskNotActive')
+            .withArgs(taskId, TaskStatusEnum.UNSET); // require#1
     });
 
     it('Should not contributeAndFinalize after deadline', async () => {
@@ -328,6 +334,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         const task = await iexecPoco.viewTask(taskId);
         await time.setNextBlockTimestamp(task.contributionDeadline);
+        const currentTimestamp = task.contributionDeadline;
         // Task is active but after deadline.
         await expect(
             iexecPoco
@@ -346,7 +353,9 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                         scheduler,
                     ),
                 ),
-        ).to.be.revertedWithoutReason(); // require#2
+        )
+            .to.be.revertedWithCustomError(iexecPoco, 'ContributionDeadlineExpired')
+            .withArgs(taskId, task.contributionDeadline, currentTimestamp); // require#2
     });
 
     it.skip('[TODO] Should not contributeAndFinalize when someone else has already contributed', async () => {
@@ -383,7 +392,9 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                         scheduler,
                     ),
                 ),
-        ).to.be.revertedWithoutReason(); // require#4
+        )
+            .to.be.revertedWithCustomError(iexecPoco, 'InvalidTrustForFastFinalize')
+            .withArgs(taskId, 3n); // require#4
     });
 
     it('Should not contributeAndFinalize when result digest does not match callback data hash', async () => {
@@ -402,12 +413,14 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         await iexecPoco.initialize(dealId, taskIndex).then((tx) => tx.wait());
         // Task active, before deadline, good trust, but bad callback data.
         const { callbackResultDigest: resultsCallbackDigest } = buildResultCallbackAndDigest(123);
+        const badCallbackData = ethers.hexlify(ethers.randomBytes(32));
+        const expectedCallbackHash = ethers.keccak256(badCallbackData);
         await expect(
             iexecPoco.connect(worker).contributeAndFinalize(
                 taskId,
                 resultsCallbackDigest,
                 noResultsData,
-                ethers.hexlify(ethers.randomBytes(32)), // Bad callback data.
+                badCallbackData, // Bad callback data.
                 emptyEnclaveAddress,
                 emptyEnclaveSignature,
                 await buildAndSignContributionAuthorizationMessage(
@@ -417,7 +430,9 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                     scheduler,
                 ),
             ),
-        ).to.be.revertedWithoutReason(); // require#5
+        )
+            .to.be.revertedWithCustomError(iexecPoco, 'CallbackDigestMismatch')
+            .withArgs(taskId, resultsCallbackDigest, expectedCallbackHash); // require#5
     });
 
     it('Should not contributeAndFinalize when enclave challenge is missing (TEE)', async () => {
@@ -450,7 +465,9 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                         scheduler,
                     ),
                 ),
-        ).to.be.revertedWithoutReason(); // require#6
+        )
+            .to.be.revertedWithCustomError(iexecPoco, 'EnclaveRequired')
+            .withArgs(taskId); // require#6
     });
 
     it('Should not contributeAndFinalize when scheduler signature is invalid', async () => {
@@ -476,7 +493,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                 emptyEnclaveSignature,
                 '0xbadd', // Bad scheduler signature
             ),
-        ).to.be.revertedWith('invalid-signature-format'); // require#7
+        ).to.be.revertedWithCustomError(iexecPoco2, 'InvalidSignatureFormat'); // require#7
     });
 
     it('Should not contributeAndFinalize when authorization is not signed by TEE broker', async () => {
@@ -513,7 +530,9 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                     scheduler, // Signed by schedule when it must be signed by the sms.
                 ),
             ),
-        ).to.be.revertedWithoutReason(); // require#7
+        )
+            .to.be.revertedWithCustomError(iexecPoco, 'InvalidAuthorizationSignature')
+            .withArgs(worker.address, taskId); // require#7
     });
 
     it('Should not contributeAndFinalize when enclave signature is invalid (TEE)', async () => {
@@ -544,6 +563,6 @@ describe('IexecPoco2#contributeAndFinalize', () => {
                     scheduler,
                 ),
             ),
-        ).to.be.revertedWith('invalid-signature-format'); // require#8
+        ).to.be.revertedWithCustomError(iexecPoco2, 'InvalidSignatureFormat'); // require#8
     });
 });

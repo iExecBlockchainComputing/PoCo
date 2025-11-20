@@ -218,9 +218,9 @@ if (config.isNativeChain()) {
                     { value: nativeDepositTotalAmount },
                 ] as [bigint[], string[], { value: bigint }];
 
-                await expect(
-                    iexecPocoAsAccountA.depositForArray(...depositForArrayArgs),
-                ).to.be.revertedWith('invalid-array-length');
+                await expect(iexecPocoAsAccountA.depositForArray(...depositForArrayArgs))
+                    .to.be.revertedWithCustomError(iexecPoco, 'InvalidArrayLength')
+                    .withArgs(depositAmounts.length, targets.length);
             });
         });
 

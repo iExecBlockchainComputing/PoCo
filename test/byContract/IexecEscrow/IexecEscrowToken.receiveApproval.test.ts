@@ -8,6 +8,8 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
+    IexecEscrow,
+    IexecEscrow__factory,
     IexecInterfaceToken,
     IexecInterfaceToken__factory,
     RLC,
@@ -38,6 +40,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
     let proxyAddress: string;
     let iexecPoco: IexecInterfaceToken;
     let iexecPocoAsRequester: IexecInterfaceToken;
+    let iexecEscrow: IexecEscrow;
     let rlcInstance: RLC;
     let rlcInstanceAsRequester: RLC;
     let [
@@ -65,6 +68,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
         iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
+        iexecEscrow = IexecEscrow__factory.connect(proxyAddress, anyone);
 
         rlcInstance = RLC__factory.connect(await iexecPoco.token(), anyone);
         rlcInstanceAsRequester = rlcInstance.connect(requester);
@@ -310,7 +314,9 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             await expect(
                 rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders),
-            ).to.be.revertedWith('caller-must-be-requester');
+            )
+                .to.be.revertedWithCustomError(iexecPoco, 'CallerMustBeRequester')
+                .withArgs(requester.address, anyone.address);
         });
 
         it('Should bubble up error when matchOrders fails', async () => {
@@ -342,7 +348,9 @@ describe('IexecEscrowToken-receiveApproval', () => {
                     insufficientAmount,
                     encodedOrders,
                 ),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            )
+                .to.be.revertedWithCustomError(iexecEscrow, 'InsufficientBalance')
+                .withArgs(requester.address, insufficientAmount, dealCost);
         });
 
         it('Should revert with unsupported-operation for unknown function selector', async () => {
@@ -355,7 +363,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             await expect(
                 rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, invalidData),
-            ).to.be.revertedWith('unsupported-operation');
+            ).to.be.revertedWithCustomError(iexecPoco, 'UnsupportedOperation');
         });
 
         it('Should not match orders with invalid calldata', async () => {
@@ -511,7 +519,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 depositAmount,
                 encodedOrders,
             );
-            await expect(tx).to.be.revertedWith('operation-failed');
+            await expect(tx).to.be.revertedWithCustomError(iexecPoco, 'OperationFailed');
 
             // Restore original facet
             await diamondCut.diamondCut(

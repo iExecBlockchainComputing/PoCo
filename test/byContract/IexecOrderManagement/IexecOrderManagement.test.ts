@@ -316,7 +316,7 @@ describe('OrderManagement', async () => {
                     operation: OrderOperationEnum.SIGN, // any is fine
                     sign: someSignature,
                 }),
-            ).to.be.revertedWith('invalid-sender-or-signature');
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidSenderOrSignature');
         });
         it('Should not manage dataset order when invalid sender or signature', async () => {
             await expect(
@@ -325,7 +325,7 @@ describe('OrderManagement', async () => {
                     operation: OrderOperationEnum.SIGN, // any is fine
                     sign: someSignature,
                 }),
-            ).to.be.revertedWith('invalid-sender-or-signature');
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidSenderOrSignature');
         });
         it('Should not manage workerpool order when invalid sender or signature', async () => {
             await expect(
@@ -334,7 +334,7 @@ describe('OrderManagement', async () => {
                     operation: OrderOperationEnum.SIGN, // any is fine
                     sign: someSignature,
                 }),
-            ).to.be.revertedWith('invalid-sender-or-signature');
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidSenderOrSignature');
         });
         it('Should not manage request order when invalid sender or signature', async () => {
             await expect(
@@ -343,7 +343,7 @@ describe('OrderManagement', async () => {
                     operation: OrderOperationEnum.SIGN, // any is fine
                     sign: someSignature,
                 }),
-            ).to.be.revertedWith('invalid-sender-or-signature');
+            ).to.be.revertedWithCustomError(iexecPoco, 'InvalidSenderOrSignature');
         });
     });
 });

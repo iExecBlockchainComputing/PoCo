@@ -384,5 +384,7 @@ async function createDeal(volume: bigint = 1n) {
 async function verifyTaskStatusAndResult(taskId: string, expectedStatus: number) {
     const task = await iexecPoco.viewTask(taskId);
     expect(task.status).to.equal(expectedStatus);
-    await expect(iexecPoco.resultFor(taskId)).to.be.revertedWith('task-pending');
+    await expect(iexecPoco.resultFor(taskId))
+        .to.be.revertedWithCustomError(iexecPoco, 'TaskNotCompleted')
+        .withArgs(taskId, expectedStatus);
 }
