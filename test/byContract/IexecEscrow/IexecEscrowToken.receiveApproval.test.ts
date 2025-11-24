@@ -8,11 +8,12 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
+    DiamondCutFacet__factory,
     IexecInterfaceToken,
     IexecInterfaceToken__factory,
+    MatchOrdersFacetMock__factory,
     RLC,
     RLC__factory,
-    ReceiveApprovalTestHelper__factory,
 } from '../../../typechain';
 import { TAG_TEE } from '../../../utils/constants';
 import {
@@ -464,23 +465,18 @@ describe('IexecEscrowToken-receiveApproval', () => {
             // Deploy the mock helper contract that fails silently
             // This tests that the generalized _executeOperation properly handles
             // delegatecall failures and bubbles up errors
-            const mockFacet = await new ReceiveApprovalTestHelper__factory()
+            const mockFacetAddress = await new MatchOrdersFacetMock__factory()
                 .connect(iexecAdmin)
                 .deploy()
-                .then((tx) => tx.waitForDeployment());
-
-            const mockFacetAddress = await mockFacet.getAddress();
-
-            const mockFactory = new ReceiveApprovalTestHelper__factory();
-            const matchOrdersSelector = getFunctionSelectors(mockFactory)[0]; // matchOrders is the only function
+                .then((tx) => tx.waitForDeployment())
+                .then((contract) => contract.getAddress());
+            const matchOrdersSelector = getFunctionSelectors(
+                new MatchOrdersFacetMock__factory(),
+            )[0]; // matchOrders is the only function
 
             const diamondLoupe = await ethers.getContractAt('DiamondLoupeFacet', proxyAddress);
             const originalFacetAddress = await diamondLoupe.facetAddress(matchOrdersSelector);
-            const diamondCut = await ethers.getContractAt(
-                'DiamondCutFacet',
-                proxyAddress,
-                iexecAdmin,
-            );
+            const diamondCut = DiamondCutFacet__factory.connect(proxyAddress, iexecAdmin);
 
             await diamondCut.diamondCut(
                 [
