@@ -37,7 +37,7 @@ contract IexecConfigurationFacet is IexecConfiguration, FacetBase {
         $.m_datasetregistry = IRegistry(_datasetregistryAddress);
         $.m_workerpoolregistry = IRegistry(_workerpoolregistryAddress);
         $.m_v3_iexecHub = IexecHubV3Interface(_v3_iexecHubAddress);
-        $.m_callbackgas = 100000;
+        $.m_callbackgas = 200000;
     }
 
     function domain() external view override returns (IexecLibOrders_v5.EIP712Domain memory) {
