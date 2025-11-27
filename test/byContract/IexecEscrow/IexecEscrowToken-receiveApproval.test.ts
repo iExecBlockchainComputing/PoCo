@@ -302,7 +302,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             await expect(
                 rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders),
-            ).to.be.revertedWith('caller-must-be-requester');
+            ).to.be.revertedWithCustomError(iexecPoco, 'CallerIsNotTheRequester');
         });
 
         it('Should bubble up error when matchOrders fails', async () => {
@@ -337,7 +337,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
 
-        it('Should revert with unsupported-operation for unknown function selector', async () => {
+        it('Should revert with unsupported operation error for unknown function selector', async () => {
             const dealCost = 1000n;
             // Create calldata with an unsupported function selector (not matchOrders)
             // Using a random selector that doesn't exist
@@ -345,17 +345,18 @@ describe('IexecEscrowToken-receiveApproval', () => {
             const dummyData = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [42]);
             const invalidData = unsupportedSelector + dummyData.slice(2);
 
-            await expect(
-                rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, invalidData),
-            ).to.be.revertedWith('unsupported-operation');
+            await expect(rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, invalidData))
+                .to.be.revertedWithCustomError(iexecPoco, 'UnsupportedOperation')
+                .withArgs(unsupportedSelector);
         });
 
         it('Should not match orders with invalid calldata', async () => {
             const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const invalidData = '0x1234'; // Too short to be valid
 
-            await expect(rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, invalidData))
-                .to.be.reverted; // Will fail during abi.decode
+            await expect(
+                rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, invalidData),
+            ).to.be.revertedWithoutReason(); // Will fail during abi.decode
         });
 
         it('Should handle multiple sequential approveAndCall operations', async () => {
@@ -452,7 +453,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             expect(await iexecPoco.frozenOf(requester.address)).to.equal(0n);
         });
 
-        it('Should revert with operation-failed when delegatecall fails silently', async () => {
+        it('Should revert with operation failed error when delegatecall fails silently', async () => {
             // Deploy the mock helper contract that fails silently
             // This tests that the generalized _executeOperation properly handles
             // delegatecall failures and bubbles up errors
@@ -498,7 +499,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 depositAmount,
                 encodedOrders,
             );
-            await expect(tx).to.be.revertedWith('operation-failed');
+            await expect(tx).to.be.revertedWithCustomError(iexecPoco, 'OperationFailed');
 
             // Restore original facet
             await diamondCut.diamondCut(

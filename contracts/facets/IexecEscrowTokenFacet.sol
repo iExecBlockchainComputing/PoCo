@@ -85,7 +85,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
      * - Extracts function selector from data to determine the operation
      * - Each operation has a validator (_validateMatchOrders, etc.) to check preconditions
      * - After validation, _executeOperation performs the delegatecall
-     * - Error handling is generalized: reverts are bubbled up with revert reasons or the message 'operation-failed'
+     * - Error handling is generalized: reverts are bubbled up with revert reasons or custom errors
      * - Future operations can be added by implementing a validator and adding a selector case
      *
      * @dev matchOrders specific notes:
@@ -146,7 +146,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
         if (selector == IexecPoco1.matchOrders.selector) {
             _validateMatchOrders(sender, data);
         } else {
-            revert("unsupported-operation");
+            revert UnsupportedOperation(selector);
         }
         // Execute the operation via delegatecall
         // This preserves `msg.sender` context and allows the operation to access
@@ -158,7 +158,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
         }
         // Handle failure and bubble up revert reason
         if (result.length == 0) {
-            revert("operation-failed");
+            revert OperationFailed();
         }
         // Decode and revert with the original error
         assembly {
@@ -184,7 +184,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
             )
         );
         if (requestorder.requester != sender) {
-            revert("caller-must-be-requester");
+            revert CallerIsNotTheRequester();
         }
     }
 

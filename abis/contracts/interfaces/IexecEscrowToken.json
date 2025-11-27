@@ -1,5 +1,26 @@
 [
   {
+    "inputs": [],
+    "name": "CallerIsNotTheRequester",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OperationFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "selector",
+        "type": "bytes4"
+      }
+    ],
+    "name": "UnsupportedOperation",
+    "type": "error"
+  },
+  {
     "stateMutability": "payable",
     "type": "fallback"
   },
