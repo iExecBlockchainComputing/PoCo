@@ -10,7 +10,7 @@ import {FacetBase} from "../abstract/FacetBase.sol";
 import {IERC734} from "../external/interfaces/IERC734.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
-contract SignatureVerifier is FacetBase {
+abstract contract SignatureVerifier is FacetBase {
     using ECDSA for bytes32;
 
     /**

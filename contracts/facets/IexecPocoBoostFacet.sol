@@ -16,9 +16,9 @@ import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "./IexecEscrow.v8.sol";
-import {IexecPocoCommon} from "./IexecPocoCommon.sol";
+import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {SignatureVerifier} from "./SignatureVerifier.sol";
+import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 
 //
 // Not deployed yet!

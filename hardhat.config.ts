@@ -237,13 +237,12 @@ const config: HardhatUserConfig = {
         outputDir: 'docs/solidity',
         templates: 'docs/solidity/templates',
         exclude: [
+            'abstract/IexecPocoCommon.sol', // contains only internal/private
+            'abstract/SignatureVerifier.sol', // contains only internal/private
             'external',
-            'facets/FacetBase.sol', // duplicated in FacetBase.v8.sol
             'facets/IexecAccessorsABILegacyFacet.sol', // not relevant
             // kept for events 'facets/IexecERC20Core.sol', // contains only internal/private
             // kept for events 'facets/IexecEscrow.v8.sol', // contains only internal/private
-            'facets/IexecPocoCommon.sol', // contains only internal/private
-            'facets/SignatureVerifier.sol', // contains only internal/private
             'interfaces', // interesting for events but too much doc duplication if enabled
             'tools',
             'Diamond.sol', // not relevant
