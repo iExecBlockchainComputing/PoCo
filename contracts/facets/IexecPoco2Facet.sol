@@ -10,7 +10,7 @@ import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecPoco2} from "../interfaces/IexecPoco2.sol";
-import {IexecEscrow} from "./IexecEscrow.v8.sol";
+import {IexecEscrow} from "./IexecEscrow.sol";
 import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 
 contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifier {

@@ -15,7 +15,7 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
-import {IexecEscrow} from "./IexecEscrow.v8.sol";
+import {IexecEscrow} from "./IexecEscrow.sol";
 import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";

@@ -242,7 +242,7 @@ const config: HardhatUserConfig = {
             'external',
             'facets/IexecAccessorsABILegacyFacet.sol', // not relevant
             // kept for events 'facets/IexecERC20Core.sol', // contains only internal/private
-            // kept for events 'facets/IexecEscrow.v8.sol', // contains only internal/private
+            // kept for events 'facets/IexecEscrow.sol', // contains only internal/private
             'interfaces', // interesting for events but too much doc duplication if enabled
             'tools',
             'Diamond.sol', // not relevant
