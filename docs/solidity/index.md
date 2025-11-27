@@ -58,6 +58,38 @@ function increaseAllowance(address spender, uint256 addedValue) external returns
 function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
 ```
 
+## IexecEscrow
+
+### Transfer
+
+```solidity
+event Transfer(address from, address to, uint256 value)
+```
+
+### Lock
+
+```solidity
+event Lock(address owner, uint256 amount)
+```
+
+### Unlock
+
+```solidity
+event Unlock(address owner, uint256 amount)
+```
+
+### Reward
+
+```solidity
+event Reward(address owner, uint256 amount, bytes32 ref)
+```
+
+### Seize
+
+```solidity
+event Seize(address owner, uint256 amount, bytes32 ref)
+```
+
 ## IexecCategoryManagerFacet
 
 ### createCategory
@@ -112,38 +144,6 @@ function setTeeBroker(address _teebroker) external
 
 ```solidity
 function setCallbackGas(uint256 _callbackgas) external
-```
-
-## IexecEscrow
-
-### Transfer
-
-```solidity
-event Transfer(address from, address to, uint256 value)
-```
-
-### Lock
-
-```solidity
-event Lock(address owner, uint256 amount)
-```
-
-### Unlock
-
-```solidity
-event Unlock(address owner, uint256 amount)
-```
-
-### Reward
-
-```solidity
-event Reward(address owner, uint256 amount, bytes32 ref)
-```
-
-### Seize
-
-```solidity
-event Seize(address owner, uint256 amount, bytes32 ref)
 ```
 
 ## IexecEscrowNativeFacet
