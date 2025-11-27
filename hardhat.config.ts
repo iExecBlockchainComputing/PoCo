@@ -241,7 +241,7 @@ const config: HardhatUserConfig = {
             'abstract/SignatureVerifier.sol', // contains only internal/private
             'external/',
             'facets/IexecAccessorsABILegacyFacet.sol', // not relevant
-            // kept for events 'facets/IexecERC20Core.sol', // contains only internal/private
+            // TODO: put all events and soldoc inside interfaces and use them instead of contracts.
             'interfaces/', // interesting for events but too much doc duplication if enabled
             'tools/',
             'Diamond.sol', // not relevant
