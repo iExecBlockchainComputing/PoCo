@@ -3,12 +3,12 @@
 
 pragma solidity ^0.8.0;
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {FacetBase} from "../abstract/FacetBase.sol";
+import {FacetBase} from "./FacetBase.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.
  */
-contract IexecEscrow is FacetBase {
+abstract contract IexecEscrow is FacetBase {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Lock(address owner, uint256 amount);
     event Unlock(address owner, uint256 amount);

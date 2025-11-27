@@ -12,8 +12,8 @@ import {IApp} from "../registries/apps/IApp.v8.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
-import {IexecPocoCommon} from "./IexecPocoCommon.sol";
-import {SignatureVerifier} from "./SignatureVerifier.sol";
+import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
+import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 
 /**
  * @title Getters contract for PoCo facets.

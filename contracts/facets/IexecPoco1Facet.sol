@@ -12,9 +12,9 @@ import {FacetBase} from "../abstract/FacetBase.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
-import {IexecEscrow} from "./IexecEscrow.v8.sol";
-import {IexecPocoCommon} from "./IexecPocoCommon.sol";
-import {SignatureVerifier} from "./SignatureVerifier.sol";
+import {IexecEscrow} from "../abstract/IexecEscrow.sol";
+import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
+import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 
 struct Matching {
     bytes32 apporderHash;
