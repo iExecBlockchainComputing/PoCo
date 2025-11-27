@@ -7,12 +7,9 @@ import {IexecLibOrders_v5} from "../../libs/IexecLibOrders_v5.sol";
 
 /**
  * @notice Helper contract to test edge cases in receiveApproval function
- * @dev This contract simulates a matchOrders that fails silently (no error data)
+ * @dev This contract simulates a matchOrders that fails with empty error data.
  */
 contract MatchOrdersFacetMock {
-    /**
-     * @notice Mock matchOrders function that fails with empty error data
-     */
     function matchOrders(
         IexecLibOrders_v5.AppOrder calldata,
         IexecLibOrders_v5.DatasetOrder calldata,
