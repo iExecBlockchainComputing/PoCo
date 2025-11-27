@@ -187,10 +187,11 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
                 IexecLibOrders_v5.RequestOrder
             )
         );
-
         // Validate that sender is the requester
         // This ensures the caller is authorized to create this deal
-        if (requestorder.requester != sender) revert("caller-must-be-requester");
+        if (requestorder.requester != sender) {
+            revert("caller-must-be-requester");
+        }
     }
 
     function _deposit(address from, uint256 amount) internal {
