@@ -1,14 +1,8 @@
 // SPDX-FileCopyrightText: 2020-2025 IEXEC BLOCKCHAIN TECH <contact@iex.ec>
 // SPDX-License-Identifier: Apache-2.0
 
-import { TypedDataDomain, TypedDataEncoder, TypedDataField, ethers } from 'ethers';
-import hre from 'hardhat';
-import { IexecInterfaceToken__factory, IexecLibOrders_v5 } from '../typechain';
-
-interface WalletInfo {
-    privateKey?: string;
-    address?: string;
-}
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
+import { TypedDataDomain, TypedDataEncoder, TypedDataField } from 'ethers';
 
 interface Types {
     [key: string]: Array<TypedDataField>;
@@ -103,52 +97,14 @@ function buildTypes(primaryType: string): Types {
     return types;
 }
 
-async function eth_signTypedData(
-    primaryType: string,
-    message: Record<string, any>,
-    domain: TypedDataDomain,
-    wallet: WalletInfo,
-): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const typedDataDomain = {
-            name: domain.name,
-            version: domain.version,
-            chainId: domain.chainId,
-            verifyingContract: domain.verifyingContract,
-        };
-        const types = buildTypes(primaryType);
-
-        let signerPromise;
-
-        if (wallet.privateKey) {
-            const walletInstance = new ethers.Wallet(wallet.privateKey, hre.ethers.provider);
-            signerPromise = Promise.resolve(walletInstance);
-        } else {
-            if (wallet.address) {
-                signerPromise = hre.ethers.getSigner(wallet.address);
-            } else {
-                reject(new Error('Wallet address is undefined'));
-                return;
-            }
-        }
-
-        signerPromise
-            .then((signer) => signer.signTypedData(typedDataDomain, types, message))
-            .then(resolve)
-            .catch(reject);
-    });
-}
-
 export async function signStruct(
     primaryType: string,
     message: Record<string, any>,
     domain: TypedDataDomain,
-    wallet: WalletInfo,
-): Promise<Record<string, any>> {
-    return eth_signTypedData(primaryType, message, domain, wallet).then((sign) => {
-        message.sign = sign;
-        return message;
-    });
+    signer: SignerWithAddress,
+): Promise<string> {
+    const types = buildTypes(primaryType);
+    return await signer.signTypedData(domain, types, message);
 }
 
 export function hashStruct(
@@ -167,32 +123,4 @@ export function hashStruct(
     };
 
     return TypedDataEncoder.hash(typedDataDomain, types, message);
-}
-
-/**
- * Encode orders with matchOrders selector for receiveApproval callback.
- *
- * The encoded data includes the function selector as the first 4 bytes, which allows
- * the generalized receiveApproval implementation to:
- * 1. Extract the selector to identify the operation (matchOrders in this case)
- * 2. Call the appropriate validator (_validateMatchOrders for permission checks)
- *
- * @param appOrder App order struct
- * @param datasetOrder Dataset order struct
- * @param workerpoolOrder Workerpool order struct
- * @param requestOrder Request order struct
- * @returns ABI-encoded calldata with matchOrders selector + encoded order structs
- */
-export function encodeMatchOrdersCalldata(
-    appOrder: IexecLibOrders_v5.AppOrderStruct,
-    datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
-    workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
-    requestOrder: IexecLibOrders_v5.RequestOrderStruct,
-): string {
-    return IexecInterfaceToken__factory.createInterface().encodeFunctionData('matchOrders', [
-        appOrder,
-        datasetOrder,
-        workerpoolOrder,
-        requestOrder,
-    ]);
 }
