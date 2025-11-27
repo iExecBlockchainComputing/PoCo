@@ -239,12 +239,11 @@ const config: HardhatUserConfig = {
         exclude: [
             'abstract/IexecPocoCommon.sol', // contains only internal/private
             'abstract/SignatureVerifier.sol', // contains only internal/private
-            'external',
+            'external/',
             'facets/IexecAccessorsABILegacyFacet.sol', // not relevant
             // kept for events 'facets/IexecERC20Core.sol', // contains only internal/private
-            // kept for events 'facets/IexecEscrow.sol', // contains only internal/private
-            'interfaces', // interesting for events but too much doc duplication if enabled
-            'tools',
+            'interfaces/', // interesting for events but too much doc duplication if enabled
+            'tools/',
             'Diamond.sol', // not relevant
         ],
     },
