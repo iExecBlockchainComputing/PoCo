@@ -183,7 +183,7 @@ export function hashStruct(
  * @param requestOrder Request order struct
  * @returns ABI-encoded calldata with matchOrders selector + encoded order structs
  */
-export function encodeOrders(
+export function encodeMatchOrdersCalldata(
     appOrder: IexecLibOrders_v5.AppOrderStruct,
     datasetOrder: IexecLibOrders_v5.DatasetOrderStruct,
     workerpoolOrder: IexecLibOrders_v5.WorkerpoolOrderStruct,
