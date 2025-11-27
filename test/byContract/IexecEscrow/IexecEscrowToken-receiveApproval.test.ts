@@ -17,7 +17,6 @@ import {
 } from '../../../typechain';
 import { TAG_TEE } from '../../../utils/constants';
 import {
-    IexecOrders,
     OrdersActors,
     OrdersAssets,
     OrdersPrices,
@@ -35,26 +34,19 @@ const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 const volume = 1n;
 
-describe('IexecEscrowToken-receiveApproval', () => {
-    let proxyAddress: string;
-    let iexecPoco: IexecInterfaceToken;
-    let iexecPocoAsRequester: IexecInterfaceToken;
-    let rlcInstance: RLC;
-    let rlcInstanceAsRequester: RLC;
-    let [
-        iexecAdmin,
-        requester,
-        scheduler,
-        appProvider,
-        datasetProvider,
-        anyone,
-    ]: SignerWithAddress[] = [];
-    let iexecWrapper: IexecWrapper;
-    let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
-    let ordersActors: OrdersActors;
-    let ordersAssets: OrdersAssets;
-    let ordersPrices: OrdersPrices;
+let proxyAddress: string;
+let iexecPoco: IexecInterfaceToken;
+let rlcInstance: RLC;
+let rlcInstanceAsRequester: RLC;
+let [iexecAdmin, requester, scheduler, appProvider, datasetProvider, anyone]: SignerWithAddress[] =
+    [];
+let iexecWrapper: IexecWrapper;
+let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
+let ordersActors: OrdersActors;
+let ordersAssets: OrdersAssets;
+let ordersPrices: OrdersPrices;
 
+describe('IexecEscrowToken-receiveApproval', () => {
     beforeEach('Deploy', async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
         await loadFixture(initFixture);
@@ -65,7 +57,6 @@ describe('IexecEscrowToken-receiveApproval', () => {
         ({ iexecAdmin, requester, scheduler, appProvider, datasetProvider, anyone } = accounts);
 
         iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
-        iexecPocoAsRequester = iexecPoco.connect(requester);
 
         rlcInstance = RLC__factory.connect(await iexecPoco.token(), anyone);
         rlcInstanceAsRequester = rlcInstance.connect(requester);
@@ -155,7 +146,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 volume: volume,
             });
 
-            await signAndPrepareOrders(orders);
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
 
             const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
@@ -169,7 +160,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             const initialTotalSupply = await iexecPoco.totalSupply();
 
             // Encode the matchOrders operation with its selector
-            const encodedOrders = encodeOrdersForCallback(orders);
+            const encodedOrders = encodeOrders(...orders.toArray());
 
             const tx = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
@@ -225,7 +216,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 volume: volume,
             });
 
-            await signAndPrepareOrders(ordersWithoutDataset);
+            await signOrders(iexecWrapper.getDomain(), ordersWithoutDataset, ordersActors);
 
             const dealCost = (appPrice + workerpoolPrice) * volume;
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
@@ -239,7 +230,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 iexecWrapper.hashOrders(ordersWithoutDataset);
 
             const dealId = getDealId(iexecWrapper.getDomain(), ordersWithoutDataset.requester);
-            const encodedOrders = encodeOrdersForCallback(ordersWithoutDataset);
+            const encodedOrders = encodeOrders(...ordersWithoutDataset.toArray());
 
             const tx = rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders);
 
@@ -278,7 +269,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 volume: volume,
             });
 
-            await signAndPrepareOrders(orders);
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
 
             const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
@@ -289,7 +280,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
 
             const initialBalance = await iexecPoco.balanceOf(requester.address);
-            const encodedOrders = encodeOrdersForCallback(orders);
+            const encodedOrders = encodeOrders(...orders.toArray());
             await rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders);
 
             // The available balance remains unchanged because the deposit is immediately frozen
@@ -307,7 +298,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             });
 
             const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
-            const encodedOrders = encodeOrdersForCallback(orders);
+            const encodedOrders = encodeOrders(...orders.toArray());
 
             await expect(
                 rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, encodedOrders),
@@ -323,7 +314,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 volume: volume,
             });
 
-            await signAndPrepareOrders(orders);
+            await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
 
             const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(
@@ -334,7 +325,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
 
             const insufficientAmount = dealCost - 1n;
-            const encodedOrders = encodeOrdersForCallback(orders);
+            const encodedOrders = encodeOrders(...orders.toArray());
 
             // Should revert from matchOrders due to insufficient balance
             await expect(
@@ -387,9 +378,9 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 salt: ethers.hexlify(ethers.randomBytes(32)),
             });
 
-            await signAndPrepareOrders(orders1);
+            await signOrders(iexecWrapper.getDomain(), orders1, ordersActors);
 
-            const encodedOrders1 = encodeOrdersForCallback(orders1);
+            const encodedOrders1 = encodeOrders(...orders1.toArray());
 
             const tx1 = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
@@ -412,9 +403,9 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 salt: ethers.hexlify(ethers.randomBytes(32)),
             });
 
-            await signAndPrepareOrders(orders2);
+            await signOrders(iexecWrapper.getDomain(), orders2, ordersActors);
 
-            const encodedOrders2 = encodeOrdersForCallback(orders2);
+            const encodedOrders2 = encodeOrders(...orders2.toArray());
 
             const tx2 = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
@@ -440,13 +431,13 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 volume: volume,
             });
 
-            await signAndPrepareOrders(ordersZeroPrice);
+            await signOrders(iexecWrapper.getDomain(), ordersZeroPrice, ordersActors);
 
             const schedulerStake = await iexecWrapper.computeSchedulerDealStake(0n, volume);
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
 
             const dealCost = 0n;
-            const encodedOrders = encodeOrdersForCallback(ordersZeroPrice);
+            const encodedOrders = encodeOrders(...ordersZeroPrice.toArray());
 
             const tx = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
@@ -500,7 +491,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 volume: volume,
             });
 
-            const encodedOrders = encodeOrdersForCallback(orders);
+            const encodedOrders = encodeOrders(...orders.toArray());
 
             const tx = rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
@@ -523,12 +514,4 @@ describe('IexecEscrowToken-receiveApproval', () => {
             );
         });
     });
-
-    async function signAndPrepareOrders(orders: IexecOrders): Promise<void> {
-        await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-    }
-
-    function encodeOrdersForCallback(orders: IexecOrders): string {
-        return encodeOrders(orders.app, orders.dataset, orders.workerpool, orders.requester);
-    }
 });
