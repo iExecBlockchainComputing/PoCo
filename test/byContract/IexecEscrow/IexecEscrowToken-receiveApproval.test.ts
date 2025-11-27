@@ -17,13 +17,13 @@ import {
 } from '../../../typechain';
 import { TAG_TEE } from '../../../utils/constants';
 import {
+    IexecOrders,
     OrdersActors,
     OrdersAssets,
     OrdersPrices,
     buildOrders,
     signOrders,
 } from '../../../utils/createOrders';
-import { encodeMatchOrdersCalldata } from '../../../utils/odb-tools';
 import { getDealId, getIexecAccounts } from '../../../utils/poco-tools';
 import { getFunctionSelectors } from '../../../utils/proxy-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
@@ -159,13 +159,10 @@ describe('IexecEscrowToken-receiveApproval', () => {
             const initialBalance = await iexecPoco.balanceOf(requester.address);
             const initialTotalSupply = await iexecPoco.totalSupply();
 
-            // Encode the matchOrders operation with its selector
-            const matchOrdersCalldata = encodeMatchOrdersCalldata(...orders.toArray());
-
             const tx = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
                 dealCost,
-                matchOrdersCalldata,
+                await matchOrdersCalldata(orders),
             );
 
             // Verify RLC transfer from requester to proxy
@@ -230,14 +227,10 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 iexecWrapper.hashOrders(ordersWithoutDataset);
 
             const dealId = getDealId(iexecWrapper.getDomain(), ordersWithoutDataset.requester);
-            const matchOrdersCalldata = encodeMatchOrdersCalldata(
-                ...ordersWithoutDataset.toArray(),
-            );
-
-            const tx = rlcInstanceAsRequester.approveAndCall(
+            const tx = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
                 dealCost,
-                matchOrdersCalldata,
+                await matchOrdersCalldata(ordersWithoutDataset),
             );
 
             await expect(tx)
@@ -286,11 +279,10 @@ describe('IexecEscrowToken-receiveApproval', () => {
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
 
             const initialBalance = await iexecPoco.balanceOf(requester.address);
-            const matchOrdersCalldata = encodeMatchOrdersCalldata(...orders.toArray());
             await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
                 dealCost,
-                matchOrdersCalldata,
+                await matchOrdersCalldata(orders),
             );
 
             // The available balance remains unchanged because the deposit is immediately frozen
@@ -308,10 +300,13 @@ describe('IexecEscrowToken-receiveApproval', () => {
             });
 
             const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
-            const matchOrdersCalldata = encodeMatchOrdersCalldata(...orders.toArray());
 
             await expect(
-                rlcInstanceAsRequester.approveAndCall(proxyAddress, dealCost, matchOrdersCalldata),
+                rlcInstanceAsRequester.approveAndCall(
+                    proxyAddress,
+                    dealCost,
+                    await matchOrdersCalldata(orders),
+                ),
             ).to.be.revertedWithCustomError(iexecPoco, 'CallerIsNotTheRequester');
         });
 
@@ -335,14 +330,13 @@ describe('IexecEscrowToken-receiveApproval', () => {
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
 
             const insufficientAmount = dealCost - 1n;
-            const matchOrdersCalldata = encodeMatchOrdersCalldata(...orders.toArray());
 
             // Should revert from matchOrders due to insufficient balance
             await expect(
                 rlcInstanceAsRequester.approveAndCall(
                     proxyAddress,
                     insufficientAmount,
-                    matchOrdersCalldata,
+                    await matchOrdersCalldata(orders),
                 ),
             ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
@@ -391,12 +385,10 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             await signOrders(iexecWrapper.getDomain(), orders1, ordersActors);
 
-            const calldata1 = encodeMatchOrdersCalldata(...orders1.toArray());
-
             const tx1 = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
                 dealCost,
-                calldata1,
+                await matchOrdersCalldata(orders1),
             );
 
             const dealId1 = getDealId(iexecWrapper.getDomain(), orders1.requester);
@@ -416,12 +408,10 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
             await signOrders(iexecWrapper.getDomain(), orders2, ordersActors);
 
-            const calldata2 = encodeMatchOrdersCalldata(...orders2.toArray());
-
             const tx2 = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
                 dealCost,
-                calldata2,
+                await matchOrdersCalldata(orders2),
             );
 
             const dealId2 = getDealId(iexecWrapper.getDomain(), orders2.requester);
@@ -448,12 +438,11 @@ describe('IexecEscrowToken-receiveApproval', () => {
             await iexecWrapper.depositInIexecAccount(scheduler, schedulerStake);
 
             const dealCost = 0n;
-            const matchOrdersCalldata = encodeMatchOrdersCalldata(...ordersZeroPrice.toArray());
 
             const tx = await rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
                 dealCost,
-                matchOrdersCalldata,
+                await matchOrdersCalldata(ordersZeroPrice),
             );
 
             await expect(tx)
@@ -502,12 +491,10 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 volume: volume,
             });
 
-            const matchOrdersCalldata = encodeMatchOrdersCalldata(...orders.toArray());
-
             const tx = rlcInstanceAsRequester.approveAndCall(
                 proxyAddress,
                 depositAmount,
-                matchOrdersCalldata,
+                await matchOrdersCalldata(orders),
             );
             await expect(tx).to.be.revertedWithCustomError(iexecPoco, 'OperationFailed');
 
@@ -526,3 +513,14 @@ describe('IexecEscrowToken-receiveApproval', () => {
         });
     });
 });
+
+/**
+ * Helper function to simplify matchOrders calldata creation.
+ */
+async function matchOrdersCalldata(orders: IexecOrders) {
+    // Calldata can also be created using
+    // IexecInterfaceToken__factory.createInterface().encodeFunctionData('matchOrders', orders);
+    return await iexecPoco.matchOrders
+        .populateTransaction(...orders.toArray())
+        .then((tx) => tx.data);
+}
