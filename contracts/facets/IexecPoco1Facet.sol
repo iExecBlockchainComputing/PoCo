@@ -125,16 +125,17 @@ contract IexecPoco1Facet is
         if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
             revert IncompatibleDatasetOrder("Requester restriction not satisfied");
         }
-        // The deal's tag should include all tag bits of the dataset order.
-        // For dataset orders: ignore Scone, Gramine, and TDX framework bits to allow
-        // dataset orders from SGX workerpools to be consumed on TDX workerpools and vice versa.
-        // Examples after masking:
-        // Deal: 0b0101, Dataset: 0b0101 => Masked Dataset: 0b0001 => ok
-        // Deal: 0b0101, Dataset: 0b0001 => Masked Dataset: 0b0001 => ok
-        // Deal: 0b1001 (TDX), Dataset: 0b0011 (Scone) => Masked Dataset: 0b0001 => ok (cross-framework compatibility)
-        bytes32 maskedDatasetTag = datasetOrder.tag &
-            0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
-        if ((deal.tag & maskedDatasetTag) != maskedDatasetTag) {
+        // The deal's tag should include all activated tag bits of the dataset order.
+        // For the dataset tag, bits of TEE frameworks (Scone, Gramine, and TDX) must be ignored
+        // to allow existing dataset orders with SGX tags to be consumed on TDX workerpools.
+        // Examples:
+        // Deal: 0b0101, Dataset: 0b0101 (final: 0b0001) => ok
+        // Deal: 0b0101, Dataset: 0b0001 (final: 0b0001) => ok
+        // Deal: 0b0000, Dataset: 0b0001 (final: 0b0001) => !ok
+        // Cross-framework examples:
+        // Deal: 0b1001 (TDX), Dataset: 0b0011 (Scone) (final: 0b0001) => ok
+        bytes32 finalDatasetTag = _ignoreTeeFramework(datasetOrder.tag);
+        if ((deal.tag & finalDatasetTag) != finalDatasetTag) {
             revert IncompatibleDatasetOrder("Tag compatibility not satisfied");
         }
     }
@@ -229,8 +230,7 @@ contract IexecPoco1Facet is
         /**
          * Check orders compatibility
          */
-
-        // computation environment & allowed enough funds
+        // Check computation environment & prices.
         require(_requestorder.category == _workerpoolorder.category, "iExecV5-matchOrders-0x00");
         require(_requestorder.category < $.m_categories.length, "iExecV5-matchOrders-0x01");
         require(_requestorder.trust <= _workerpoolorder.trust, "iExecV5-matchOrders-0x02");
@@ -243,14 +243,11 @@ contract IexecPoco1Facet is
             _requestorder.workerpoolmaxprice >= _workerpoolorder.workerpoolprice,
             "iExecV5-matchOrders-0x05"
         );
-        // The workerpool tag should include all tag bits of dataset, app, and requester orders.
-        // For dataset orders: ignore Scone, Gramine, and TDX framework bits to allow
-        // dataset orders from SGX workerpools to be consumed on TDX workerpools and vice versa.
-        // Bit positions: bit 0 = TEE, bit 1 = Scone, bit 2 = Gramine, bit 3 = TDX
-        // Mask: ~(BIT_SCONE | BIT_GRAMINE | BIT_TDX) = ~0xE = 0xFFF...FF1
-        bytes32 maskedDatasetTag = _datasetorder.tag &
-            0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
-        bytes32 tag = _apporder.tag | maskedDatasetTag | _requestorder.tag;
+        // Check tags compatibility:
+        // - The workerpool tag should include all activated tag bits of dataset, app, and requester orders.
+        // - For the dataset tag, bits of TEE frameworks (Scone, Gramine, and TDX) must be ignored
+        //   to allow existing dataset orders with SGX tags to be consumed on TDX workerpools.
+        bytes32 tag = _apporder.tag | _ignoreTeeFramework(_datasetorder.tag) | _requestorder.tag;
         require(tag & ~_workerpoolorder.tag == 0x0, "iExecV5-matchOrders-0x06");
         require((tag ^ _apporder.tag)[31] & 0x01 == 0x0, "iExecV5-matchOrders-0x07");
 
@@ -473,5 +470,26 @@ contract IexecPoco1Facet is
         );
 
         return dealid;
+    }
+
+    /**
+     * Ignore TEE framework bits (Scone, Gramine, TDX) in the provided tag to allow
+     * cross-framework compatibility.
+     *
+     * Ignored bit positions in the tag:
+     *   0b(31 bytes...)1111
+     *                  ||||
+     *                  |||└─ bit 0: TEE
+     *                  ||└── bit 1: Scone (ignored)
+     *                  |└─── bit 2: Gramine (ignored)
+     *                  └──── bit 3: TDX (ignored)
+     *
+     * @param tag original tag
+     * @return tag with TEE framework bits ignored
+     */
+    function _ignoreTeeFramework(bytes32 tag) private pure returns (bytes32) {
+        // (BIT_SCONE | BIT_GRAMINE | BIT_TDX) → 0b 0000 1110 = 0x0E
+        // Mask = ~0x0E = 0xF1 → 0xFFF...FF1
+        return tag & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1;
     }
 }
