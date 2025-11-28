@@ -343,7 +343,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
 
         it('Should revert with unsupported operation error for unknown function selector', async () => {
             const dealCost = 1000n;
-            // Create matchOrdersCalldata with an unsupported function selector (not matchOrders)
+            // Create calldata with an unsupported function selector (not matchOrders)
             // Using a random selector that doesn't exist
             const unsupportedSelector = '0x12345678';
             const dummyData = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [42]);
@@ -354,7 +354,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                 .withArgs(unsupportedSelector);
         });
 
-        it('Should not match orders with invalid matchOrdersCalldata', async () => {
+        it('Should not match orders with invalid calldata', async () => {
             const dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume;
             const invalidData = '0x1234'; // Too short to be valid
 
