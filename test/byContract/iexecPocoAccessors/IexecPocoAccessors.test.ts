@@ -249,7 +249,7 @@ describe('IexecPocoAccessors', async () => {
     });
 
     it('callbackGas', async function () {
-        expect(await iexecPoco.callbackgas()).to.equal(100_000n);
+        expect(await iexecPoco.callbackgas()).to.equal(200_000n);
     });
 
     it('viewDataset', async function () {

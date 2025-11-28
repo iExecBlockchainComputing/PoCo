@@ -73,7 +73,7 @@ describe('IexecConfiguration', async () => {
             expect(await iexecPoco.datasetregistry()).equal(configureParams.datasetregistry);
             expect(await iexecPoco.workerpoolregistry()).equal(configureParams.workerpoolregistry);
             // no getter for m_v3_iexecHub
-            expect(await iexecPoco.callbackgas()).equal(100000);
+            expect(await iexecPoco.callbackgas()).equal(200_000);
         });
         it('Should not configure when sender is not owner', async () => {
             await expect(iexecPoco.configure(...configureArgs)).to.be.revertedWith(
