@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { BytesLike, TypedDataDomain, ZeroAddress } from 'ethers';
-import hre, { ethers } from 'hardhat';
+import { ethers } from 'hardhat';
 import {
     ERC1271Mock__factory,
     ERC734Mock,
@@ -2055,11 +2055,6 @@ describe('IexecPocoBoost', function () {
             const pushResultBoost = iexecPocoBoostInstance
                 .connect(worker)
                 .pushResultBoost(...pushResultArgs, { gasLimit: failingTxGaslimit });
-            // TODO: Remove logic specific to `coverage`
-            if ((hre as any).__SOLIDITY_COVERAGE_RUNNING) {
-                await expect(pushResultBoost).to.be.revertedWithoutReason();
-                return;
-            }
             await expect(pushResultBoost).to.be.revertedWith(
                 'PocoBoost: Not enough gas after callback',
             );

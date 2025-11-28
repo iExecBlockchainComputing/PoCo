@@ -4,6 +4,10 @@
 pragma solidity ^0.8.0;
 
 interface IexecEscrowToken {
+    error UnsupportedOperation(bytes4 selector);
+    error OperationFailed();
+    error CallerIsNotTheRequester();
+
     receive() external payable;
     fallback() external payable;
     function deposit(uint256) external returns (bool);

@@ -275,8 +275,8 @@ export async function signOrder(
     domain: TypedDataDomain,
     order: Record<string, any>,
     signer: SignerWithAddress,
-) {
-    return signStruct(getTypeOf(order), order, domain, signer);
+): Promise<void> {
+    order.sign = await signStruct(getTypeOf(order), order, domain, signer);
 }
 
 /**
@@ -287,8 +287,8 @@ export async function signOrderOperation(
     domain: TypedDataDomain,
     orderOperation: OrderOperation,
     signer: SignerWithAddress,
-) {
-    return signStruct(
+): Promise<void> {
+    orderOperation.sign = await signStruct(
         getTypeOf(orderOperation.order) + 'Operation',
         orderOperation,
         domain,

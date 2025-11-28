@@ -66,11 +66,11 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
     }
 
     /***************************************************************************
-     *            Token Spender: Atomic Deposit+Match                  *
+     *            Token Spender: Atomic Deposit + Match                        *
      ***************************************************************************/
 
     /**
-     * @notice Receives approval, deposit and optionally executes an operation in one transaction
+     * @notice Receives approval, deposit and optionally executes a supported operation in one transaction.
      *
      * Usage patterns:
      * 1. Simple deposit: RLC.approveAndCall(escrow, amount, "")
@@ -82,21 +82,21 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
      *
      * @dev Implementation details:
      * - Deposits tokens first, then executes the operation if data is provided
-     * - Extracts function selector from data to determine which operation
-     * - Each operation has a validator (_validateMatchOrders, etc.) for preconditions
+     * - Extracts function selector from data to determine the operation
+     * - Each operation has a validator (_validateMatchOrders, etc.) to check preconditions
      * - After validation, _executeOperation performs the delegatecall
-     * - Error handling is generalized: bubbles up revert reasons or returns 'operation-failed'
+     * - Error handling is generalized: reverts are bubbled up with revert reasons or custom errors
      * - Future operations can be added by implementing a validator and adding a selector case
      *
      * @dev matchOrders specific notes:
-     * - Sponsoring is NOT supported. The requester (sender) always pays for the deal.
+     * - Sponsoring is NOT supported. The requester (specified in the request order) always pays for the deal.
      * - Clients must compute the exact deal cost and deposit the right amount.
      *   The deal cost = (appPrice + datasetPrice + workerpoolPrice) * volume.
      *
      * @param sender The address that approved tokens
      * @param amount Amount of tokens approved and to be deposited
      * @param token Address of the token (must be RLC)
-     * @param data Optional: Function selector + ABI-encoded parameters for operation
+     * @param data Optional: Function selector + ABI-encoded parameters
      * @return success True if operation succeeded
      *
      *
@@ -114,7 +114,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
      *     requestOrder
      * );
      *
-     * // One transaction does it all: approve, deposit, and match
+     * // Call the RLC contract with the encoded data.
      * RLC(token).approveAndCall(iexecProxy, dealCost, data);
      * ```
      */
@@ -128,56 +128,52 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
         require(token == address($.m_baseToken), "wrong-token");
         _deposit(sender, amount);
         _mint(sender, amount);
-
         if (data.length > 0) {
             _executeOperation(sender, data);
         }
         return true;
     }
 
+    /**
+     * Executes a supported operation after depositing tokens.
+     * @param sender The address that approved tokens and initiated the operation
+     * @param data ABI-encoded function selector and parameters of the operation
+     */
     function _executeOperation(address sender, bytes calldata data) internal {
         // Extract the function selector (first 4 bytes)
         bytes4 selector = bytes4(data[:4]);
-
         // Validate operation-specific preconditions before execution
         if (selector == IexecPoco1.matchOrders.selector) {
             _validateMatchOrders(sender, data);
         } else {
-            revert("unsupported-operation");
+            revert UnsupportedOperation(selector);
         }
-
         // Execute the operation via delegatecall
-        // This preserves msg.sender context and allows the operation to access
-        // the diamond's storage and functions
+        // This preserves `msg.sender` context and allows the operation to access
+        // the diamond's storage and functions.
+        // Note: here `msg.sender` is the RLC token contract.
         (bool success, bytes memory result) = address(this).delegatecall(data);
-
+        if (success) {
+            return;
+        }
         // Handle failure and bubble up revert reason
-        if (!success) {
-            if (result.length > 0) {
-                // Decode and revert with the original error
-                assembly {
-                    let returndata_size := mload(result)
-                    revert(add(result, 32), returndata_size)
-                }
-            } else {
-                revert("operation-failed");
-            }
+        if (result.length == 0) {
+            revert OperationFailed();
+        }
+        // Decode and revert with the original error
+        assembly {
+            let returndata_size := mload(result)
+            revert(add(result, 32), returndata_size)
         }
     }
-
-    /******************************************************************************
-     *        Token Spender: Atomic Deposit+Match if used with RLC.approveAndCall *
-     *****************************************************************************/
 
     /**
      * @dev Validates matchOrders preconditions
      * @param sender The user who deposited (must be the requester)
-     * @param data ABI-encoded matchOrders call with orders
+     * @param data matchOrders calldata
      */
     function _validateMatchOrders(address sender, bytes calldata data) internal pure {
-        // Decode only the request order to validate the requester
-        // Full decoding: (AppOrder, DatasetOrder, WorkerpoolOrder, RequestOrder)
-        // We only need to check requestorder.requester
+        // Decode orders and check that the sender is the requester.
         (, , , IexecLibOrders_v5.RequestOrder memory requestorder) = abi.decode(
             data[4:],
             (
@@ -187,10 +183,8 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecERC2
                 IexecLibOrders_v5.RequestOrder
             )
         );
-        // Validate that sender is the requester
-        // This ensures the caller is authorized to create this deal
         if (requestorder.requester != sender) {
-            revert("caller-must-be-requester");
+            revert CallerIsNotTheRequester();
         }
     }
 
