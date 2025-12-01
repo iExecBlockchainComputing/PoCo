@@ -1164,9 +1164,9 @@ describe('IexecPoco1', () => {
                         volume: volume,
                     });
                     // Override salts to avoid order consumption conflicts.
-                    newDealOrders.app.salt = ethers.id('some-salt');
-                    newDealOrders.workerpool.salt = ethers.id('some-salt');
-                    newDealOrders.requester.salt = ethers.id('some-salt');
+                    newDealOrders.app.salt = ethers.id('app-salt');
+                    newDealOrders.workerpool.salt = ethers.id('workerpool-salt');
+                    newDealOrders.requester.salt = ethers.id('requester-salt');
                     await depositForRequesterAndSchedulerWithDefaultPrices(volume);
                     await signOrders(iexecWrapper.getDomain(), newDealOrders, ordersActors);
                     const dealId = getDealId(iexecWrapper.getDomain(), newDealOrders.requester);
@@ -1177,7 +1177,7 @@ describe('IexecPoco1', () => {
                     const datasetOrder = {
                         ...compatibleDatasetOrder,
                         tag: datasetTag,
-                        salt: ethers.id('some-salt'),
+                        salt: ethers.id('dataset-salt'),
                     };
                     await signOrder(iexecWrapper.getDomain(), datasetOrder, datasetProvider);
 
