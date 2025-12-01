@@ -17,10 +17,12 @@ import {
     OwnableMock__factory,
 } from '../../../typechain';
 import {
+    ALL_TEE_TAGS,
     TAG_ALL_TEE_FRAMEWORKS,
     TAG_BIT_2,
     TAG_BIT_4,
     TAG_BIT_4_AND_TEE,
+    TAG_NAMES,
     TAG_STANDARD,
     TAG_TEE,
     TAG_TEE_GRAMINE,
@@ -635,6 +637,29 @@ describe('IexecPoco1', () => {
                 iexecPoco,
                 'OrdersMatched',
             );
+        });
+
+        /**
+         * Successful match orders with all combinations of TEE tags in dataset and workerpool orders.
+         * Validates ignored dataset tag bits.
+         */
+        ALL_TEE_TAGS.forEach((datasetTag) => {
+            ALL_TEE_TAGS.forEach((workerpoolTag) => {
+                it(`Should match orders with compatible TEE tags [dataset:${TAG_NAMES[datasetTag]}, workerpool:${TAG_NAMES[workerpoolTag]}]`, async () => {
+                    orders.dataset.tag = datasetTag;
+                    orders.workerpool.tag = workerpoolTag;
+                    orders.app.tag = TAG_TEE;
+                    orders.requester.tag = TAG_TEE;
+
+                    await depositForRequesterAndSchedulerWithDefaultPrices(volume);
+                    await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
+
+                    await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
+                        iexecPoco,
+                        'OrdersMatched',
+                    );
+                });
+            });
         });
 
         [
