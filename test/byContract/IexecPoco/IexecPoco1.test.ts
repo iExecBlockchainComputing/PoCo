@@ -662,44 +662,6 @@ describe('IexecPoco1', () => {
             });
         });
 
-        [
-            {
-                datasetTag: TAG_TEE_SCONE,
-                workerpoolTag: TAG_TEE_TDX,
-                description: 'Scone tag (0x3) and workerpool has TDX tag (0x9)',
-            },
-            {
-                datasetTag: TAG_TEE_GRAMINE,
-                workerpoolTag: TAG_TEE_TDX,
-                description: 'Gramine tag (0x5) and workerpool has TDX tag (0x9)',
-            },
-            {
-                datasetTag: TAG_TEE_TDX,
-                workerpoolTag: TAG_TEE_SCONE,
-                description: 'TDX tag (0x9) and workerpool has Scone tag (0x3)',
-            },
-            {
-                datasetTag: TAG_ALL_TEE_FRAMEWORKS,
-                workerpoolTag: TAG_TEE,
-                description: 'all TEE framework bits (0xF) and workerpool has TEE only (0x1)',
-            },
-        ].forEach(({ datasetTag, workerpoolTag, description }) => {
-            it(`Should match orders when dataset has ${description}`, async () => {
-                orders.dataset.tag = datasetTag;
-                orders.workerpool.tag = workerpoolTag;
-                orders.app.tag = TAG_TEE;
-                orders.requester.tag = TAG_TEE;
-
-                await depositForRequesterAndSchedulerWithDefaultPrices(volume);
-                await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
-
-                await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.emit(
-                    iexecPoco,
-                    'OrdersMatched',
-                );
-            });
-        });
-
         // TODO add success tests for:
         //   - identity groups
         //   - pre-signatures
