@@ -10,7 +10,7 @@
 * `v6.2.0` upgrade script ([#329](https://github.com/iExecBlockchainComputing/PoCo/issues/329)) ([564ae6b](https://github.com/iExecBlockchainComputing/PoCo/commit/564ae6b709f9861e5fa86c3b961fc4be24bfa51b))
 * Ignore TEE framework bits in dataset tags for cross-framework compatibility ([#325](https://github.com/iExecBlockchainComputing/PoCo/issues/325)) ([2349970](https://github.com/iExecBlockchainComputing/PoCo/commit/234997096c4e915a4f719872fe70f5eeac9014ea))
 * Use custom errors when receiveApproval fails and set callbackgas to 200k ([#331](https://github.com/iExecBlockchainComputing/PoCo/issues/331)) ([81778ee](https://github.com/iExecBlockchainComputing/PoCo/commit/81778ee095ecf219ce163158a5eb36ec2b6140f8))
-* Enable deposit and match orders in a single tx ([#316](https://github.com/iExecBlockchainComputing/PoCo/issues/316)) ([xxx](https://github.com/iExecBlockchainComputing/PoCo/commit/))
+* Enable deposit and match orders in a single tx ([#316](https://github.com/iExecBlockchainComputing/PoCo/issues/316)) ([4100b90](https://github.com/iExecBlockchainComputing/PoCo/commit/4100b90fe76f717152ff8742dc419deea021879b))
 * Upgrade all contracts to Solidity v0.8.0 ([#287](https://github.com/iExecBlockchainComputing/PoCo/issues/287)) ([55729ad](https://github.com/iExecBlockchainComputing/PoCo/commit/55729ad8e2a53fb24ed8d8b3405147baec9d6d9f))
 
 ### ✍️ Changed
