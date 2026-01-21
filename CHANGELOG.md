@@ -2,7 +2,7 @@
 
 ## vNEXT
 
-## [6.2.0](https://github.com/iExecBlockchainComputing/PoCo/compare/poco-v6.1.0...poco-v6.2.0) (2026-01-21)
+## [6.2.0](https://github.com/iExecBlockchainComputing/PoCo/compare/v6.1.0...v6.2.0) (2026-01-21)
 
 
 ### 🚀 Added
@@ -28,7 +28,7 @@
 * Save upgrade artifacts - arbitrum (runId:21206392301) ([#337](https://github.com/iExecBlockchainComputing/PoCo/issues/337)) ([55c668a](https://github.com/iExecBlockchainComputing/PoCo/commit/55c668ab65ca94505c077c443e9a59de0b168b30))
 * Save upgrade artifacts - arbitrumSepolia (runId:20332201318) ([#336](https://github.com/iExecBlockchainComputing/PoCo/issues/336)) ([5b1ec5d](https://github.com/iExecBlockchainComputing/PoCo/commit/5b1ec5dbf98ea6acbe958313d8f454cd3718465c))
 
-## [6.1.0](https://github.com/iExecBlockchainComputing/PoCo/compare/poco-v6.0.0...poco-v6.1.0) (2025-11-13)
+## [6.1.0](https://github.com/iExecBlockchainComputing/PoCo/compare/v6.0.0...v6.1.0) (2025-11-13)
 
 
 ### 🚀 Added
