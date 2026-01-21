@@ -20,7 +20,7 @@ a safe, traceable, and reproducible upgrade to the PoCo Diamond proxy.
    Use the script [./dry-run.sh](./dry-run.sh) and check the logs and deployment files diff.
 
 4. **Check the owner's balance:**<br>
-   Make sure the owner wallet has enough ETH for the hole deployment.
+   Make sure the owner wallet has enough ETH for the whole deployment.
 
 5. **Update GitHub Actions**:<br>
    Modify `upgrade-facets.yml` workflow to call the new upgrade script.<br>
