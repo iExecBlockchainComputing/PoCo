@@ -22,7 +22,7 @@ a safe, traceable, and reproducible upgrade to the PoCo Diamond proxy.
 4. **Check the owner's balance:**<br>
    Make sure the owner wallet has enough ETH for the hole deployment.
 
-4. **Update GitHub Actions**:<br>
+5. **Update GitHub Actions**:<br>
    Modify `upgrade-facets.yml` workflow to call the new upgrade script.<br>
    Note: to run the upgrade script manually (for testing), use:
 
@@ -30,24 +30,26 @@ a safe, traceable, and reproducible upgrade to the PoCo Diamond proxy.
     npx hardhat run scripts/upgrades/vX.Y.Z-upgrade-name.ts --network <network>
     ```
 
-5. **Upgrade on Testnet**:
+6. **Upgrade on Testnet**:
+
     - ⚠️ Always upgrade on the testnet first.
     - Trigger the upgrade workflow on GitHub and choose the testnet network.
     - Start with a **dry run** to simulate the upgrade.
     - Once verified, apply the upgrade on the live testnet.
 
-6. **Upgrade on Mainnet**:
+7. **Upgrade on Mainnet**:
+
     - Trigger the upgrade workflow on GitHub and choose the mainnet network.
     - Perform a **dry run** first.
     - Apply the upgrade on the mainnet.
     - Merge the artifacts PR after successful execution.
 
-7. **Refresh the proxy facets on Etherscan**:<br>
+8. **Refresh the proxy facets on Etherscan**:<br>
    Go to the Etherscan explorer and follow the steps of "Is this a proxy?" to
    refresh the facets list.
 
-7. **Update upgrade report**:<br>
+9. **Update upgrade report**:<br>
    Fill in all required information in `vX.Y.Z-upgrade-name.ts` (tx hashes, logs, ...).
 
-8. **Create a release**
+10. **Create a release**
     - Use **Release Please** to tag the upgraded version and create the release on GitHub.
