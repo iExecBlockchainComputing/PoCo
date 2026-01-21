@@ -9,7 +9,7 @@ a safe, traceable, and reproducible upgrade to the PoCo Diamond proxy.
    Run the full test suite to make sure everything is working before starting an upgrade.
 
 1. **Create a new upgrade script**:<br>
-   Name the script using the version and upgrade name format `vX.Y.Z-upgrade-name.ts` and
+   Name the script using the version and upgrade name format `vX.Y.Z.ts` and
    implement the upgrade logic.
 
 2. **Create a corresponding Markdown report**:<br>
@@ -17,7 +17,10 @@ a safe, traceable, and reproducible upgrade to the PoCo Diamond proxy.
    The name should be of the form `vX.Y.Z-upgrade-name.md`.
 
 3. **Test dry-runs locally**:<br>
-   Use the script [./dry-run.sh](./dry-run.sh) and check the logs.
+   Use the script [./dry-run.sh](./dry-run.sh) and check the logs and deployment files diff.
+
+4. **Check the owner's balance:**<br>
+   Make sure the owner wallet has enough ETH for the hole deployment.
 
 4. **Update GitHub Actions**:<br>
    Modify `upgrade-facets.yml` workflow to call the new upgrade script.<br>
@@ -28,18 +31,20 @@ a safe, traceable, and reproducible upgrade to the PoCo Diamond proxy.
     ```
 
 5. **Upgrade on Testnet**:
-
     - ⚠️ Always upgrade on the testnet first.
     - Trigger the upgrade workflow on GitHub and choose the testnet network.
     - Start with a **dry run** to simulate the upgrade.
     - Once verified, apply the upgrade on the live testnet.
 
 6. **Upgrade on Mainnet**:
-
     - Trigger the upgrade workflow on GitHub and choose the mainnet network.
-    - Perform a dry run first.
+    - Perform a **dry run** first.
     - Apply the upgrade on the mainnet.
     - Merge the artifacts PR after successful execution.
+
+7. **Refresh the proxy facets on Etherscan**:<br>
+   Go to the Etherscan explorer and follow the steps of "Is this a proxy?" to
+   refresh the facets list.
 
 7. **Update upgrade report**:<br>
    Fill in all required information in `vX.Y.Z-upgrade-name.ts` (tx hashes, logs, ...).
