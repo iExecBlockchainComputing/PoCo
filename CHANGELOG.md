@@ -2,6 +2,14 @@
 
 ## vNEXT
 
+## [6.2.1](https://github.com/iExecBlockchainComputing/PoCo/compare/v6.2.0...v6.2.1) (2026-01-28)
+
+
+### 📋 Misc
+
+* Fix release please config and changelog file ([#338](https://github.com/iExecBlockchainComputing/PoCo/issues/338)) ([0a033f4](https://github.com/iExecBlockchainComputing/PoCo/commit/0a033f4fad3c436c6001d4d45f583b2cc5817108))
+* Update owner address in config after multisig transfer ([#339](https://github.com/iExecBlockchainComputing/PoCo/issues/339)) ([fd0c823](https://github.com/iExecBlockchainComputing/PoCo/commit/fd0c823e03f2fb359420bf0fc9bf18039b7d100d))
+
 ## [6.2.0](https://github.com/iExecBlockchainComputing/PoCo/compare/v6.1.0...v6.2.0) (2026-01-21)
 
 
