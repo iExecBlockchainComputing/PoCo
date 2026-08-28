@@ -19,7 +19,6 @@ import {
     IexecCategoryManager__factory,
     IexecConfigurationExtraFacet__factory,
     IexecConfigurationFacet__factory,
-    IexecEscrowNativeFacet__factory,
     IexecEscrowTokenFacet__factory,
     IexecLibOrders_v5__factory,
     IexecOrderManagementFacet__factory,
@@ -61,10 +60,11 @@ export default async function deploy() {
     const ownerAddress = deploymentOptions.owner;
     factoryDeployer = new FactoryDeployer(deployer, chainId);
     // Deploy RLC
-    const isTokenMode = !config.isNativeChain(deploymentOptions);
-    let rlcInstanceAddress = isTokenMode
-        ? await getOrDeployRlc(deploymentOptions.token!, deployer, ownerAddress) // token
-        : ZeroAddress; // native
+    const rlcInstanceAddress = await getOrDeployRlc(
+        deploymentOptions.token!,
+        deployer,
+        ownerAddress,
+    );
     console.log(`RLC: ${rlcInstanceAddress}`);
     // Prepare transferOwnership call to the deployer.
     // Ownership transfer should be done in the same deployment transaction
@@ -99,7 +99,7 @@ export default async function deploy() {
         new IexecCategoryManagerFacet__factory(),
         new IexecConfigurationExtraFacet__factory(),
         new IexecConfigurationFacet__factory(iexecLibOrders),
-        isTokenMode ? new IexecEscrowTokenFacet__factory() : new IexecEscrowNativeFacet__factory(),
+        new IexecEscrowTokenFacet__factory(),
         new IexecOrderManagementFacet__factory(iexecLibOrders),
         new IexecPoco1Facet__factory(iexecLibOrders),
         new IexecPoco2Facet__factory(),
