@@ -6,8 +6,8 @@ import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { Wallet, ZeroAddress, ethers } from 'ethers';
 import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterfaceToken,
+    IexecInterfaceToken__factory,
     TestClient__factory,
 } from '../../../typechain';
 import config from '../../../utils/config';
@@ -41,7 +41,7 @@ const noResultsData = '0x';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
-let [iexecPoco, iexecPocoAsWorker]: IexecInterfaceNative[] = [];
+let [iexecPoco, iexecPocoAsWorker]: IexecInterfaceToken[] = [];
 let iexecWrapper: IexecWrapper;
 let [
     requester,
@@ -70,7 +70,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
         const appPrice = 1000n;
         const datasetPrice = 1_000_000n;

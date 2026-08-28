@@ -15,8 +15,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterfaceToken,
+    IexecInterfaceToken__factory,
     Workerpool,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
@@ -56,7 +56,7 @@ const createWorkerpoolArgs = Object.values(createWorkerpoolParams) as [string];
 
 describe('Assets', () => {
     let proxyAddress: string;
-    let iexecPoco: IexecInterfaceNative;
+    let iexecPoco: IexecInterfaceToken;
     let [appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let appRegistry: AppRegistry;
@@ -75,7 +75,7 @@ describe('Assets', () => {
     async function initFixture() {
         ({ appProvider, datasetProvider, scheduler, anyone } = await getIexecAccounts());
 
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
 
         appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
         datasetRegistry = DatasetRegistry__factory.connect(

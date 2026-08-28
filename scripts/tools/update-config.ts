@@ -35,7 +35,6 @@ async function update() {
             name: `Chain ${networkName}`,
             deployer: deployer.address,
             owner: owner.address,
-            asset: 'Token', // Default value, update as needed
             v3: {},
             v5: {},
         };

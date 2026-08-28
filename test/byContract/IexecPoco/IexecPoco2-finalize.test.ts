@@ -7,8 +7,8 @@ import { expect } from 'chai';
 import { AbiCoder, Wallet, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterfaceToken,
+    IexecInterfaceToken__factory,
     OwnableMock__factory,
     TestClient__factory,
 } from '../../../typechain';
@@ -38,7 +38,7 @@ const emptyEnclaveSignature = '0x';
 
 describe('IexecPoco2#finalize', async () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsScheduler]: IexecInterfaceNative[] = [];
+    let [iexecPoco, iexecPocoAsScheduler]: IexecInterfaceToken[] = [];
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
@@ -80,7 +80,7 @@ describe('IexecPoco2#finalize', async () => {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
         iexecPocoAsScheduler = iexecPoco.connect(scheduler);
         ordersAssets = {
             app: appAddress,

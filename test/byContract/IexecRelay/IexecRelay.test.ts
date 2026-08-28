@@ -5,8 +5,8 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterfaceToken,
+    IexecInterfaceToken__factory,
     IexecLibOrders_v5,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
@@ -25,7 +25,7 @@ let sign: string;
 
 describe('IexecRelay', async () => {
     let proxyAddress: string;
-    let iexecPoco: IexecInterfaceNative;
+    let iexecPoco: IexecInterfaceToken;
     let [app, dataset, workerpool, requester, beneficiary]: string[] = [];
 
     beforeEach('Deploy', async () => {
@@ -35,7 +35,7 @@ describe('IexecRelay', async () => {
 
     async function initFixture() {
         const accounts = await getIexecAccounts();
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, accounts.anyone);
+        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, accounts.anyone);
         [app, dataset, workerpool, requester, beneficiary] = Array(5).fill(randomAddress());
         sign = await ethers.Wallet.createRandom().signMessage('sign');
     }

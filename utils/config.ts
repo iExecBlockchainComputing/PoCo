@@ -60,8 +60,6 @@ type ChainConfig = {
     _deployerComment?: string;
     owner: string;
     _ownerComment?: string;
-    asset: string;
-    _assetComment?: string;
     token?: string | null; // The token deployed should be compatible with Approve and call
     _tokenComment?: string;
     richman?: string | null; // The richman account is needed if the token is already deployed
