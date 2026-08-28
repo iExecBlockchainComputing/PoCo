@@ -3,37 +3,25 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import {
-    IexecInterfaceNative__factory,
-    IexecInterfaceToken__factory,
-    Registry__factory,
-} from '../../typechain';
+import { IexecInterfaceToken__factory, Registry__factory } from '../../typechain';
 import { getIexecAccounts } from '../../utils/poco-tools';
 
 /**
  * Funds accounts with tokens
  */
-export async function fundAccounts(
-    tokenAddress: string,
-    richmanAddress: string,
-    isNativeMode: boolean,
-) {
+export async function fundAccounts(tokenAddress: string, richmanAddress: string) {
     const accounts = await getIexecAccounts();
-    const otherAccountInitAmount = isNativeMode ? 10 * 10 ** 9 : 10000 * 10 ** 9;
+    const otherAccountInitAmount = 10000 * 10 ** 9;
     const accountsArray = Object.values(accounts) as SignerWithAddress[];
 
-    if (!isNativeMode) {
-        await ethers.provider.send('hardhat_setBalance', [
-            richmanAddress,
-            '0x1000000000000000000', // 1 ETH
-        ]);
-    }
+    await ethers.provider.send('hardhat_setBalance', [
+        richmanAddress,
+        '0x1000000000000000000', // 1 ETH
+    ]);
 
     console.log(`Rich account ${richmanAddress} sending RLCs to other accounts..`);
     const richmanSigner = await ethers.getImpersonatedSigner(richmanAddress);
-    const tokenContract = isNativeMode
-        ? IexecInterfaceNative__factory.connect(tokenAddress, richmanSigner)
-        : IexecInterfaceToken__factory.connect(tokenAddress, richmanSigner);
+    const tokenContract = IexecInterfaceToken__factory.connect(tokenAddress, richmanSigner);
 
     for (let i = 0; i < accountsArray.length; i++) {
         const account = accountsArray[i];
@@ -101,7 +89,7 @@ export async function transferRegistryOwnership(registryName: string, registryAd
  */
 export async function transferProxyOwnership(proxyAddress: string) {
     const accounts = await getIexecAccounts();
-    const iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
+    const iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, ethers.provider);
     const pocoOwner = await iexecPoco.owner();
     const newIexecAdminAddress = accounts.iexecAdmin.address;
 
