@@ -1359,8 +1359,9 @@ function setName(address, string) external
 
 Sets the reverse registration name for a registry contract.
 
-_This function always reverts. It is kept as nonpayable to maintain
-retrocompatibility with the iExec SDK._
+_This functionality is supported only on Bellecour Sidechain, calls on other chains
+will revert. The function is kept as nonpayable to maintain retrocompatibility with the
+iExec SDK._
 
 ## RegistryEntry
 
@@ -1387,8 +1388,9 @@ function setName(address, string) external
 
 Sets the reverse registration name for a registry entry contract.
 
-_This function always reverts. It is kept as nonpayable to maintain
-retrocompatibility with the iExec SDK._
+_This functionality is supported only on Bellecour Sidechain, calls on other chains
+will revert. The function is kept as nonpayable to maintain retrocompatibility with the
+iExec SDK._
 
 ## App
 
