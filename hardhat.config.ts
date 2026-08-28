@@ -118,6 +118,7 @@ const config: HardhatUserConfig = {
                 ...arbitrumBaseConfig,
             }),
         },
+        // TODO rename to dev
         'dev-token': {
             chainId: 65535,
             url: process.env.DEV_NODE || 'http://localhost:8545',

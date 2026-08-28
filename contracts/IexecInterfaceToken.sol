@@ -20,6 +20,7 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
 
 // TODO see if Diamond interfaces should be added here ??
 // IDiamond, IDiamondLoupe, IDiamondCut, IERC165, IERC173 (ownership)
+// TODO rename to IexecInterface
 
 /**
  * A global interface that aggregates all the interfaces needed to interact with
