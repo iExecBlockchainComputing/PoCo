@@ -6,7 +6,7 @@ import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helper
 import { setNextBlockTimestamp } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
 import { expect } from 'chai';
 import { ZeroAddress, ZeroHash } from 'ethers';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import { IexecInterfaceToken, IexecInterfaceToken__factory } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     ContributionStatusEnum,
@@ -27,7 +27,7 @@ const resultDigest = buildUtf8ResultAndDigest('result').resultDigest;
 
 describe('IexecPoco2#reopen', async () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsScheduler, iexecPocoAsWorker]: IexecInterfaceNative[] = [];
+    let [iexecPoco, iexecPocoAsScheduler, iexecPocoAsWorker]: IexecInterfaceToken[] = [];
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
@@ -57,7 +57,7 @@ describe('IexecPoco2#reopen', async () => {
         ({ requester, scheduler, worker, worker1, worker2, worker3, worker4, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
         iexecPocoAsScheduler = iexecPoco.connect(scheduler);
         iexecPocoAsWorker = iexecPoco.connect(worker);
         ordersAssets = {

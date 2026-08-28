@@ -9,8 +9,8 @@ import { ethers } from 'hardhat';
 import {
     ERC1271Mock__factory,
     IERC721__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterfaceToken,
+    IexecInterfaceToken__factory,
     IexecLibOrders_v5,
     IexecPocoAccessors,
     IexecPocoAccessors__factory,
@@ -66,8 +66,8 @@ const someWallet = Wallet.createRandom();
 
 describe('IexecPoco1', () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
-    let iexecPocoAsSponsor: IexecInterfaceNative;
+    let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceToken[] = [];
+    let iexecPocoAsSponsor: IexecInterfaceToken;
     let iexecPocoAccessors: IexecPocoAccessors;
     let iexecPocoContract: Contract;
     let iexecWrapper: IexecWrapper;
@@ -113,7 +113,7 @@ describe('IexecPoco1', () => {
             accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
         iexecPocoAsSponsor = iexecPoco.connect(sponsor);
         iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);

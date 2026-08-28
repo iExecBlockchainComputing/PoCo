@@ -7,8 +7,8 @@ import { expect } from 'chai';
 import { ZeroAddress, ZeroHash } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterfaceToken,
+    IexecInterfaceToken__factory,
     IexecLibOrders_v5,
 } from '../../../typechain';
 import {
@@ -50,7 +50,7 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
 let proxyAddress: string;
-let iexecPoco: IexecInterfaceNative;
+let iexecPoco: IexecInterfaceToken;
 let iexecWrapper: IexecWrapper;
 let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
 let [requester, appProvider, datasetProvider, scheduler, worker1, anyone]: SignerWithAddress[] = [];
@@ -70,7 +70,7 @@ describe('IexecPocoAccessors', async () => {
         ({ requester, appProvider, datasetProvider, scheduler, worker1, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
+        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, ethers.provider);
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,

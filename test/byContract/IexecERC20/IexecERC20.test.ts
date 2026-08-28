@@ -7,8 +7,8 @@ import { expect } from 'chai';
 import { AddressLike, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterfaceToken,
+    IexecInterfaceToken__factory,
     TestReceiver,
     TestReceiver__factory,
 } from '../../../typechain';
@@ -22,7 +22,7 @@ const value = 100n;
 describe('ERC20', async () => {
     let proxyAddress: string;
     let iexecWrapper: IexecWrapper;
-    let [iexecPoco, iexecPocoAsHolder, iexecPocoAsSpender]: IexecInterfaceNative[] = [];
+    let [iexecPoco, iexecPocoAsHolder, iexecPocoAsSpender]: IexecInterfaceToken[] = [];
     let [holder, recipient, spender, anyone, zeroAddressSigner]: SignerWithAddress[] = [];
     let totalSupplyBeforeFirstDeposit: bigint;
 
@@ -41,7 +41,7 @@ describe('ERC20', async () => {
         zeroAddressSigner = await ethers.getImpersonatedSigner(ZeroAddress);
         await setZeroAddressBalance();
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
         iexecPocoAsHolder = iexecPoco.connect(holder);
         iexecPocoAsSpender = iexecPoco.connect(spender);
         totalSupplyBeforeFirstDeposit = await iexecPoco.totalSupply();

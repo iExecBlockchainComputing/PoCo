@@ -13,8 +13,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterfaceToken,
+    IexecInterfaceToken__factory,
     InitializableUpgradeabilityProxy__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
@@ -29,7 +29,7 @@ import { randomAddress } from '../../utils/utils';
 
 describe('Registries', () => {
     let proxyAddress: string;
-    let iexecPoco: IexecInterfaceNative;
+    let iexecPoco: IexecInterfaceToken;
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let [appRegistry, appRegistryAsAdmin]: AppRegistry[] = [];
@@ -48,7 +48,7 @@ describe('Registries', () => {
         ({ iexecAdmin, appProvider, datasetProvider, scheduler, anyone } =
             await getIexecAccounts());
 
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
 
         appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
         appRegistryAddress = await appRegistry.getAddress();
