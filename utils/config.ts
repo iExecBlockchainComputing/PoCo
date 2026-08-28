@@ -3,23 +3,8 @@ import { Category } from './poco-tools';
 
 const config = json as Config;
 
-export function isNativeChain(chain?: ChainConfig) {
-    if (process.env.IS_NATIVE_CHAIN) {
-        return process.env.IS_NATIVE_CHAIN === 'true';
-    }
-    if (chain) {
-        return chain.asset === 'Native';
-    }
-    return false;
-}
-
 export function isFork() {
-    return isLocalFork() || isArbitrumSepoliaFork() || isArbitrumFork();
-}
-
-// TODO remove or rename this function.
-export function isLocalFork() {
-    return process.env.LOCAL_FORK === 'true';
+    return isArbitrumSepoliaFork() || isArbitrumFork();
 }
 
 export function isArbitrumSepoliaFork() {
@@ -95,7 +80,6 @@ type ChainConfig = {
         AppRegistry?: string;
         DatasetRegistry?: string;
         WorkerpoolRegistry?: string;
-        ERC1538Proxy?: string; // Deprecated, use DiamondProxy instead TODO: to remove
         // TODO: check if this is still needed or if hre.deployments.get('Diamond') is enough.
         DiamondProxy?: string;
         // TODO: check if this is still needed or if hre.deployments.get('IexecLibOrders_v5') is enough.
@@ -105,8 +89,6 @@ type ChainConfig = {
 
 export default {
     ...config,
-    isNativeChain,
-    isLocalFork,
     isArbitrumSepoliaFork,
     isArbitrumFork,
     getChainConfig,

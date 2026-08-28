@@ -14,24 +14,8 @@ import 'solidity-docgen';
 import { cleanupDeployments, copyDeployments } from './scripts/tools/copy-deployments';
 import chainConfig from './utils/config';
 
-const isNativeChainType = chainConfig.isNativeChain();
-const isLocalFork = chainConfig.isLocalFork();
 const isArbitrumSepoliaFork = chainConfig.isArbitrumSepoliaFork();
 const isArbitrumFork = chainConfig.isArbitrumFork();
-const bellecourBlockscoutUrl = 'https://blockscout.bellecour.iex.ec';
-
-/**
- * @dev Native mode. As close as possible to the iExec Bellecour blockchain.
- * @note Any fresh version of Hardhat uses for its default
- * hardhat network a configuration from a recent Ethereum
- * fork. EIPs brought by such recent fork are not necessarily
- * supported by the iExec Bellecour blockchain.
- */
-const bellecourBaseConfig = {
-    hardfork: 'berlin', // No EIP-1559 before London fork
-    gasPrice: 0,
-    blockGasLimit: 6_700_000,
-};
 
 // Arbitrum Sepolia specific configuration
 const arbitrumSepoliaBaseConfig = {
@@ -84,13 +68,11 @@ const config: HardhatUserConfig = {
     namedAccounts: {
         deployer: {
             default: 0,
-            bellecour: chainConfig.chains['134'].deployer,
             arbitrum: chainConfig.chains['42161'].deployer,
             arbitrumSepolia: chainConfig.chains['421614'].deployer,
         },
         owner: {
             default: 0, // TODO change this to 1 and update admin tests.
-            bellecour: chainConfig.chains['134'].owner,
             arbitrum: chainConfig.chains['42161'].owner,
             arbitrumSepolia: chainConfig.chains['421614'].owner,
         },
@@ -100,13 +82,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            ...((isNativeChainType || isLocalFork) && bellecourBaseConfig),
-            ...(isLocalFork && {
-                forking: {
-                    url: 'https://bellecour.iex.ec',
-                },
-                chainId: 134,
-            }),
             ...(isArbitrumSepoliaFork && {
                 forking: {
                     url:
@@ -134,11 +109,6 @@ const config: HardhatUserConfig = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || HARDHAT_NETWORK_MNEMONIC,
             },
-            ...((isNativeChainType || isLocalFork) && bellecourBaseConfig),
-            ...(isLocalFork && {
-                accounts: 'remote', // Override defaults accounts for impersonation
-                chainId: 134,
-            }),
             ...(isArbitrumSepoliaFork && {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 ...arbitrumSepoliaBaseConfig,
@@ -147,14 +117,6 @@ const config: HardhatUserConfig = {
                 accounts: 'remote', // Override defaults accounts for impersonation
                 ...arbitrumBaseConfig,
             }),
-        },
-        'dev-native': {
-            chainId: 65535,
-            url: process.env.DEV_NODE || 'http://localhost:8545',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-            gasPrice: bellecourBaseConfig.gasPrice, // Get closer to Bellecour network
         },
         'dev-token': {
             chainId: 65535,
@@ -183,32 +145,10 @@ const config: HardhatUserConfig = {
             accounts: _getPrivateKeys(),
             ...arbitrumSepoliaBaseConfig,
         },
-        bellecour: {
-            chainId: 134,
-            url: 'https://bellecour.iex.ec',
-            accounts: _getPrivateKeys(),
-            ...bellecourBaseConfig,
-            verify: {
-                etherscan: {
-                    apiUrl: bellecourBlockscoutUrl,
-                    apiKey: '<>',
-                },
-            },
-        },
     },
     etherscan: {
         // Using Etherscan V2 API for unified multichain support
         apiKey: process.env.EXPLORER_API_KEY || '',
-        customChains: [
-            {
-                network: 'bellecour',
-                chainId: 134,
-                urls: {
-                    apiURL: `${bellecourBlockscoutUrl}/api`,
-                    browserURL: bellecourBlockscoutUrl,
-                },
-            },
-        ],
     },
     sourcify: {
         enabled: true,
