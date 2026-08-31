@@ -3,18 +3,14 @@
 
 pragma solidity ^0.8.0;
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {IexecERC20Events} from "../interfaces/IexecERC20Events.sol";
+import {IexecEscrowEvents} from "../interfaces/IexecEscrowEvents.sol";
 import {FacetBase} from "./FacetBase.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.
  */
-abstract contract IexecEscrow is FacetBase {
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Lock(address owner, uint256 amount);
-    event Unlock(address owner, uint256 amount);
-    event Reward(address owner, uint256 amount, bytes32 ref);
-    event Seize(address owner, uint256 amount, bytes32 ref);
-
+abstract contract IexecEscrow is FacetBase, IexecERC20Events, IexecEscrowEvents {
     /**
      * Lock some value of an account.
      * @param account The account where the value should be locked.

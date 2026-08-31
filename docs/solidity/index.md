@@ -14,36 +14,6 @@ _Every facet must inherit from this contract._
 
 ## IexecEscrow
 
-### Transfer
-
-```solidity
-event Transfer(address from, address to, uint256 value)
-```
-
-### Lock
-
-```solidity
-event Lock(address owner, uint256 amount)
-```
-
-### Unlock
-
-```solidity
-event Unlock(address owner, uint256 amount)
-```
-
-### Reward
-
-```solidity
-event Reward(address owner, uint256 amount, bytes32 ref)
-```
-
-### Seize
-
-```solidity
-event Seize(address owner, uint256 amount, bytes32 ref)
-```
-
 ## IexecCategoryManagerFacet
 
 ### createCategory

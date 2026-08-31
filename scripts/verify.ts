@@ -12,7 +12,7 @@ import { Deployment } from 'hardhat-deploy/dist/types';
  *                    will verify all contracts from the deployments/{network} directory.
  */
 async function verify(contractNames?: string[]): Promise<void> {
-    const skippedNetworks: string[] = ['hardhat', 'localhost', 'external-hardhat', 'dev-token'];
+    const skippedNetworks: string[] = ['hardhat', 'localhost', 'external-hardhat'];
     if (skippedNetworks.includes(hre.network.name)) {
         console.log(`\nSkipping verification on development network: ${hre.network.name}`);
         return;
