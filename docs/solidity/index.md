@@ -1351,18 +1351,6 @@ automatically added as a prefix in {tokenURI} to each token's ID._
 function isRegistered(address _entry) external view returns (bool)
 ```
 
-### setName
-
-```solidity
-function setName(address, string) external
-```
-
-Sets the reverse registration name for a registry contract.
-
-_This functionality is supported only on Bellecour Sidechain, calls on other chains
-will revert. The function is kept as nonpayable to maintain retrocompatibility with the
-iExec SDK._
-
 ## RegistryEntry
 
 _Referenced in the SDK with the current path `contracts/registries/RegistryEntry.sol`.
@@ -1379,18 +1367,6 @@ contract IRegistry registry
 ```solidity
 function owner() public view returns (address)
 ```
-
-### setName
-
-```solidity
-function setName(address, string) external
-```
-
-Sets the reverse registration name for a registry entry contract.
-
-_This functionality is supported only on Bellecour Sidechain, calls on other chains
-will revert. The function is kept as nonpayable to maintain retrocompatibility with the
-iExec SDK._
 
 ## App
 
