@@ -38,8 +38,8 @@
 <title>4</title>
 <polygon fill="#f2f2f2" stroke="black" points="432.71,-263.5 432.71,-430.7 764.77,-430.7 764.77,-263.5 432.71,-263.5"/>
 <text text-anchor="middle" x="598.74" y="-414.1" font-family="Times,serif" font-size="14.00">&lt;&lt;Abstract&gt;&gt;</text>
-<text text-anchor="middle" x="598.74" y="-397.3" font-family="Times,serif" font-size="14.00">IexecEscrow</text>
-<text text-anchor="middle" x="598.74" y="-380.5" font-family="Times,serif" font-size="14.00">contracts/abstract/IexecEscrow.sol</text>
+<text text-anchor="middle" x="598.74" y="-397.3" font-family="Times,serif" font-size="14.00">IexecEscrowBase</text>
+<text text-anchor="middle" x="598.74" y="-380.5" font-family="Times,serif" font-size="14.00">contracts/abstract/IexecEscrowBase.sol</text>
 <polyline fill="none" stroke="black" points="432.71,-372.3 764.77,-372.3 "/>
 <text text-anchor="start" x="440.71" y="-355.7" font-family="Times,serif" font-size="14.00">Internal:</text>
 <text text-anchor="start" x="440.71" y="-338.9" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;lock(account: address, value: uint256)</text>
@@ -71,9 +71,9 @@
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M486.64,-430.89C455.23,-455.28 421.54,-482.58 391.74,-509.2 344.71,-551.22 295.14,-601.9 257.12,-642.32"/>
 <polygon fill="none" stroke="black" points="249.23,-635.39 236.45,-664.49 264.59,-649.71 249.23,-635.39"/>
 </g>
-<!-- 27 -->
+<!-- 28 -->
 <g id="node8" class="node">
-<title>27</title>
+<title>28</title>
 <polygon fill="#f2f2f2" stroke="black" points="401.11,-639.7 401.11,-790.1 806.37,-790.1 806.37,-639.7 401.11,-639.7"/>
 <text text-anchor="middle" x="603.74" y="-773.5" font-family="Times,serif" font-size="14.00">&lt;&lt;Interface&gt;&gt;</text>
 <text text-anchor="middle" x="603.74" y="-756.7" font-family="Times,serif" font-size="14.00">IexecEscrowEvents</text>
@@ -85,9 +85,9 @@
 <text text-anchor="start" x="409.11" y="-664.7" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&lt;&lt;event&gt;&gt; Reward(owner: address, amount: uint256, ref: bytes32)</text>
 <text text-anchor="start" x="409.11" y="-647.9" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&lt;&lt;event&gt;&gt; Seize(owner: address, amount: uint256, ref: bytes32)</text>
 </g>
-<!-- 4&#45;&gt;27 -->
+<!-- 4&#45;&gt;28 -->
 <g id="edge3" class="edge">
-<title>4&#45;&gt;27</title>
+<title>4&#45;&gt;28</title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M599.87,-431.11C600.6,-483.9 601.54,-552.7 602.31,-609.23"/>
 <polygon fill="none" stroke="black" points="591.82,-609.75 602.72,-639.6 612.81,-609.46 591.82,-609.75"/>
 </g>

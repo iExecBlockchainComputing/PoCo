@@ -38,8 +38,8 @@
 <title>4</title>
 <polygon fill="#f2f2f2" stroke="black" points="1439.78,-549.1 1439.78,-716.3 1771.84,-716.3 1771.84,-549.1 1439.78,-549.1"/>
 <text text-anchor="middle" x="1605.81" y="-699.7" font-family="Times,serif" font-size="14.00">&lt;&lt;Abstract&gt;&gt;</text>
-<text text-anchor="middle" x="1605.81" y="-682.9" font-family="Times,serif" font-size="14.00">IexecEscrow</text>
-<text text-anchor="middle" x="1605.81" y="-666.1" font-family="Times,serif" font-size="14.00">contracts/abstract/IexecEscrow.sol</text>
+<text text-anchor="middle" x="1605.81" y="-682.9" font-family="Times,serif" font-size="14.00">IexecEscrowBase</text>
+<text text-anchor="middle" x="1605.81" y="-666.1" font-family="Times,serif" font-size="14.00">contracts/abstract/IexecEscrowBase.sol</text>
 <polyline fill="none" stroke="black" points="1439.78,-657.9 1771.84,-657.9 "/>
 <text text-anchor="start" x="1447.78" y="-641.3" font-family="Times,serif" font-size="14.00">Internal:</text>
 <text text-anchor="start" x="1447.78" y="-624.5" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;lock(account: address, value: uint256)</text>
@@ -71,9 +71,9 @@
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M1554.29,-716.46C1502.27,-800.03 1422.63,-927.97 1372.43,-1008.61"/>
 <polygon fill="none" stroke="black" points="1363.4,-1003.25 1356.46,-1034.27 1381.23,-1014.35 1363.4,-1003.25"/>
 </g>
-<!-- 27 -->
+<!-- 28 -->
 <g id="node9" class="node">
-<title>27</title>
+<title>28</title>
 <polygon fill="#f2f2f2" stroke="black" points="1535.18,-1009.3 1535.18,-1159.7 1940.45,-1159.7 1940.45,-1009.3 1535.18,-1009.3"/>
 <text text-anchor="middle" x="1737.81" y="-1143.1" font-family="Times,serif" font-size="14.00">&lt;&lt;Interface&gt;&gt;</text>
 <text text-anchor="middle" x="1737.81" y="-1126.3" font-family="Times,serif" font-size="14.00">IexecEscrowEvents</text>
@@ -85,9 +85,9 @@
 <text text-anchor="start" x="1543.18" y="-1034.3" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&lt;&lt;event&gt;&gt; Reward(owner: address, amount: uint256, ref: bytes32)</text>
 <text text-anchor="start" x="1543.18" y="-1017.5" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&lt;&lt;event&gt;&gt; Seize(owner: address, amount: uint256, ref: bytes32)</text>
 </g>
-<!-- 4&#45;&gt;27 -->
+<!-- 4&#45;&gt;28 -->
 <g id="edge3" class="edge">
-<title>4&#45;&gt;27</title>
+<title>4&#45;&gt;28</title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M1630.1,-716.46C1651.91,-790.79 1684.03,-900.22 1707.51,-980.25"/>
 <polygon fill="none" stroke="black" points="1697.45,-983.25 1715.97,-1009.08 1717.6,-977.34 1697.45,-983.25"/>
 </g>

@@ -16,7 +16,7 @@ let iexecEscrow: IexecEscrowTestContract;
 let iexecEscrowAddress: string;
 let account: SignerWithAddress;
 
-describe('IexecEscrow', function () {
+describe('IexecEscrowBase', function () {
     beforeEach('Deploy', async () => {
         // Initialize test environment
         await loadFixture(initFixture);

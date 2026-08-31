@@ -5,11 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { Wallet, ZeroAddress, ethers } from 'ethers';
-import {
-    IexecInterfaceToken,
-    IexecInterfaceToken__factory,
-    TestClient__factory,
-} from '../../../typechain';
+import { IexecInterface, IexecInterface__factory, TestClient__factory } from '../../../typechain';
 import config from '../../../utils/config';
 import { TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -41,7 +37,7 @@ const noResultsData = '0x';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
-let [iexecPoco, iexecPocoAsWorker]: IexecInterfaceToken[] = [];
+let [iexecPoco, iexecPocoAsWorker]: IexecInterface[] = [];
 let iexecWrapper: IexecWrapper;
 let [
     requester,
@@ -70,7 +66,7 @@ describe('IexecPoco2#contributeAndFinalize', () => {
             accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
-        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
         const appPrice = 1000n;
         const datasetPrice = 1_000_000n;

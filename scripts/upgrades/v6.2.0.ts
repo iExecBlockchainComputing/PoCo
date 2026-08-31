@@ -6,7 +6,7 @@ import {
     IexecCategoryManagerFacet__factory,
     IexecConfigurationExtraFacet__factory,
     IexecConfigurationFacet__factory,
-    IexecEscrowTokenFacet__factory,
+    IexecEscrowFacet__factory,
     IexecOrderManagementFacet__factory,
     IexecPoco1Facet__factory,
     IexecPoco2Facet__factory,
@@ -150,9 +150,11 @@ async function main() {
             factory: new IexecConfigurationFacet__factory(iexecLibOrders),
         },
         {
+            // Deployment name kept as it was recorded on-chain. The contract has
+            // since been renamed to `IexecEscrowFacet`.
             name: 'IexecEscrowTokenFacet',
             address: null,
-            factory: new IexecEscrowTokenFacet__factory(),
+            factory: new IexecEscrowFacet__factory(),
         },
         {
             name: 'IexecOrderManagementFacet',

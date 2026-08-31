@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { IexecInterfaceToken, IexecInterfaceToken__factory } from '../../../typechain';
+import { IexecInterface, IexecInterface__factory } from '../../../typechain';
 import {
     OrdersAssets,
     OrdersPrices,
@@ -23,8 +23,8 @@ const workerpoolPrice = 1_000_000_000n;
 
 describe('IexecPoco2#initialize', async () => {
     let proxyAddress: string;
-    let iexecPoco: IexecInterfaceToken;
-    let iexecPocoAsAnyone: IexecInterfaceToken;
+    let iexecPoco: IexecInterface;
+    let iexecPocoAsAnyone: IexecInterface;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [iexecAdmin, requester, anyone]: SignerWithAddress[] = [];
@@ -44,7 +44,7 @@ describe('IexecPoco2#initialize', async () => {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
-        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, iexecAdmin);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, iexecAdmin);
         iexecPocoAsAnyone = iexecPoco.connect(anyone);
         ordersAssets = {
             app: appAddress,

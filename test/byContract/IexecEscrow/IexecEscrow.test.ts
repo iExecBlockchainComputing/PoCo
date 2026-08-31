@@ -6,21 +6,16 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-    IexecInterfaceToken,
-    IexecInterfaceToken__factory,
-    RLC,
-    RLC__factory,
-} from '../../../typechain';
+import { IexecInterface, IexecInterface__factory, RLC, RLC__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
 import { setZeroAddressBalance } from '../../utils/utils';
 
 const amount = ethers.parseUnits('100', 9);
 
-describe('IexecEscrowToken', () => {
+describe('IexecEscrow', () => {
     let proxyAddress: string;
-    let [iexecPoco, , iexecPocoAsAccountA, iexecPocoAsAdmin]: IexecInterfaceToken[] = [];
+    let [iexecPoco, , iexecPocoAsAccountA, iexecPocoAsAdmin]: IexecInterface[] = [];
     let [iexecAdmin, accountA, accountB, accountC, anyone]: SignerWithAddress[] = [];
     let [rlcInstance, rlcInstanceAsAccountA]: RLC[] = [];
 
@@ -39,7 +34,7 @@ describe('IexecEscrowToken', () => {
             anyone,
         } = accounts);
 
-        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         iexecPocoAsAccountA = iexecPoco.connect(accountA);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
         rlcInstance = RLC__factory.connect(await iexecPoco.token(), anyone);

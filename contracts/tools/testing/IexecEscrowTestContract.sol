@@ -3,14 +3,14 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecEscrow} from "../../abstract/IexecEscrow.sol";
+import {IexecEscrowBase} from "../../abstract/IexecEscrowBase.sol";
 import {PocoStorageLib} from "../../libs/PocoStorageLib.sol";
 
 /**
  * @notice a wrapper contract to make internal functions of
- * IexecEscrow testable.
+ * IexecEscrowBase testable.
  */
-contract IexecEscrowTestContract is IexecEscrow {
+contract IexecEscrowTestContract is IexecEscrowBase {
     function lock_(address account, uint256 value) external {
         lock(account, value);
     }

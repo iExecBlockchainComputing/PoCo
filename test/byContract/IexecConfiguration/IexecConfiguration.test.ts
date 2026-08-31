@@ -9,8 +9,8 @@ import { ethers } from 'hardhat';
 import {
     IexecConfigurationExtra,
     IexecConfigurationExtra__factory,
-    IexecInterfaceToken,
-    IexecInterfaceToken__factory,
+    IexecInterface,
+    IexecInterface__factory,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { getPocoStorageSlotLocation } from '../../../utils/proxy-tools';
@@ -41,7 +41,7 @@ const someDomainSeparator = '0x0000000000000000000000000000000000000000000000000
 
 describe('IexecConfiguration', async () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsAdmin]: IexecInterfaceToken[] = [];
+    let [iexecPoco, iexecPocoAsAdmin]: IexecInterface[] = [];
     let iexecConfigurationExtra: IexecConfigurationExtra;
     let [iexecAdmin, worker, anyone]: SignerWithAddress[] = [];
 
@@ -53,7 +53,7 @@ describe('IexecConfiguration', async () => {
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({ iexecAdmin, worker, anyone } = accounts);
-        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         iexecPocoAsAdmin = iexecPoco.connect(iexecAdmin);
         iexecConfigurationExtra = IexecConfigurationExtra__factory.connect(proxyAddress, anyone);
     }

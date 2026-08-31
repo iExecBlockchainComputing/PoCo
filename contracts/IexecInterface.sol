@@ -8,7 +8,7 @@ import {IexecCategoryManager} from "./interfaces/IexecCategoryManager.sol";
 import {IexecConfiguration} from "./interfaces/IexecConfiguration.sol";
 import {IexecConfigurationExtra} from "./interfaces/IexecConfigurationExtra.sol";
 import {IexecERC20} from "./interfaces/IexecERC20.sol";
-import {IexecEscrowToken} from "./interfaces/IexecEscrowToken.sol";
+import {IexecEscrow} from "./interfaces/IexecEscrow.sol";
 import {IexecOrderManagement} from "./interfaces/IexecOrderManagement.sol";
 import {IexecPoco1} from "./interfaces/IexecPoco1.sol";
 import {IexecPoco1Errors} from "./interfaces/IexecPoco1Errors.sol";
@@ -20,23 +20,23 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
 
 // TODO see if Diamond interfaces should be added here ??
 // IDiamond, IDiamondLoupe, IDiamondCut, IERC165, IERC173 (ownership)
-// TODO rename to IexecInterface
 
 /**
  * A global interface that aggregates all the interfaces needed to interact with
- * the PoCo contracts in token mode.
- * @dev Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
- * Changing the name or the path would cause a breaking change in the SDK.
+ * the PoCo contracts.
+ * @dev Referenced in the SDK. The previous path and name,
+ * `contracts/IexecInterfaceToken.sol` and `IexecInterfaceToken`, were retired
+ * with native mode; the SDK must be updated to this path and name.
  */
 // TODO Remove the interface `IexecAccessorsABILegacy` when it's not used in the middleware anymore.
 // https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
-interface IexecInterfaceToken is
+interface IexecInterface is
     IexecAccessorsABILegacy,
     IexecCategoryManager,
     IexecConfiguration,
     IexecConfigurationExtra,
     IexecERC20,
-    IexecEscrowToken,
+    IexecEscrow,
     IexecOrderManagement,
     IexecPoco1,
     IexecPoco1Errors,

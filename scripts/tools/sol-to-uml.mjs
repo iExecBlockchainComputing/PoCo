@@ -13,7 +13,7 @@ await generateClassDiagramOfDirectory('registries');
 
 await generateClassDiagramOfContracts(['IexecPoco1Facet', 'IexecPoco2Facet'], 'IexecPocoFacets');
 
-await generateClassDiagramOfContracts(['IexecEscrowTokenFacet', 'IexecEscrow'], 'IexecEscrows');
+await generateClassDiagramOfContracts(['IexecEscrowFacet', 'IexecEscrowBase'], 'IexecEscrows');
 
 await generateClassDiagramOfContracts(['IexecPocoBoostFacet'], 'IexecPocoBoostFacet');
 

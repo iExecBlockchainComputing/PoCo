@@ -15,7 +15,7 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
-import {IexecEscrow} from "../abstract/IexecEscrow.sol";
+import {IexecEscrowBase} from "../abstract/IexecEscrowBase.sol";
 import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
@@ -31,7 +31,7 @@ import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 contract IexecPocoBoostFacet is
     IexecPocoBoost,
     FacetBase,
-    IexecEscrow,
+    IexecEscrowBase,
     SignatureVerifier,
     IexecPocoCommon
 {

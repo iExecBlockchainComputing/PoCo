@@ -3,7 +3,7 @@
 
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { deployments, ethers } from 'hardhat';
-import { IexecInterfaceToken__factory, Registry__factory } from '../../typechain';
+import { IexecInterface__factory, Registry__factory } from '../../typechain';
 import { getIexecAccounts } from '../../utils/poco-tools';
 
 /**
@@ -21,7 +21,7 @@ export async function fundAccounts(tokenAddress: string, richmanAddress: string)
 
     console.log(`Rich account ${richmanAddress} sending RLCs to other accounts..`);
     const richmanSigner = await ethers.getImpersonatedSigner(richmanAddress);
-    const tokenContract = IexecInterfaceToken__factory.connect(tokenAddress, richmanSigner);
+    const tokenContract = IexecInterface__factory.connect(tokenAddress, richmanSigner);
 
     for (let i = 0; i < accountsArray.length; i++) {
         const account = accountsArray[i];
@@ -89,7 +89,7 @@ export async function transferRegistryOwnership(registryName: string, registryAd
  */
 export async function transferProxyOwnership(proxyAddress: string) {
     const accounts = await getIexecAccounts();
-    const iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, ethers.provider);
+    const iexecPoco = IexecInterface__factory.connect(proxyAddress, ethers.provider);
     const pocoOwner = await iexecPoco.owner();
     const newIexecAdminAddress = accounts.iexecAdmin.address;
 

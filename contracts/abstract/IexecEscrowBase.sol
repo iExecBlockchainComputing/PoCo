@@ -9,8 +9,10 @@ import {FacetBase} from "./FacetBase.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.
+ * @dev The revert reasons of `_transfer` keep the `IexecEscrow:` prefix on
+ * purpose: they are observable behavior that callers already depend on.
  */
-abstract contract IexecEscrow is FacetBase, IexecERC20Events, IexecEscrowEvents {
+abstract contract IexecEscrowBase is FacetBase, IexecERC20Events, IexecEscrowEvents {
     /**
      * Lock some value of an account.
      * @param account The account where the value should be locked.

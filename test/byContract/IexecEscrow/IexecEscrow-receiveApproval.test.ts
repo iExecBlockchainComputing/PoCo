@@ -9,8 +9,8 @@ import { ethers } from 'hardhat';
 import { FacetCutAction } from 'hardhat-deploy/dist/types';
 import {
     DiamondCutFacet__factory,
-    IexecInterfaceToken,
-    IexecInterfaceToken__factory,
+    IexecInterface,
+    IexecInterface__factory,
     MatchOrdersFacetMock__factory,
     RLC,
     RLC__factory,
@@ -35,7 +35,7 @@ const workerpoolPrice = 1_000_000_000n;
 const volume = 1n;
 
 let proxyAddress: string;
-let iexecPoco: IexecInterfaceToken;
+let iexecPoco: IexecInterface;
 let rlcInstance: RLC;
 let rlcInstanceAsRequester: RLC;
 let [iexecAdmin, requester, scheduler, appProvider, datasetProvider, anyone]: SignerWithAddress[] =
@@ -46,7 +46,7 @@ let ordersActors: OrdersActors;
 let ordersAssets: OrdersAssets;
 let ordersPrices: OrdersPrices;
 
-describe('IexecEscrowToken-receiveApproval', () => {
+describe('IexecEscrow-receiveApproval', () => {
     beforeEach('Deploy', async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
         await loadFixture(initFixture);
@@ -56,7 +56,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
         const accounts = await getIexecAccounts();
         ({ iexecAdmin, requester, scheduler, appProvider, datasetProvider, anyone } = accounts);
 
-        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
 
         rlcInstance = RLC__factory.connect(await iexecPoco.token(), anyone);
         rlcInstanceAsRequester = rlcInstance.connect(requester);
@@ -519,7 +519,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
  */
 async function matchOrdersCalldata(orders: IexecOrders) {
     // Calldata can also be created using
-    // IexecInterfaceToken__factory.createInterface().encodeFunctionData('matchOrders', orders);
+    // IexecInterface__factory.createInterface().encodeFunctionData('matchOrders', orders);
     return await iexecPoco.matchOrders
         .populateTransaction(...orders.toArray())
         .then((tx) => tx.data);
