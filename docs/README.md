@@ -99,7 +99,7 @@ This is the recommended approach for production deployments. GitHub Actions shou
 
 ##### [Optional] Configure a new deployment
 
-Starting from version 5, the PoCo uses a modular design based on [ERC-2535](https://eips.ethereum.org/EIPS/eip-2535). Tests and deployment scripts will use different modules (facets) and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment, and enable native token or ERC20 token based escrow depending on the targeted blockchain. This means that the codebase is the same on public blockchains (ERC20 based RLC) and dedicated Sidechains (Native token based RLC).
+Starting from version 5, the PoCo uses a modular design based on [ERC-2535](https://eips.ethereum.org/EIPS/eip-2535). Tests and deployment scripts will use different modules (facets) and deployment process depending on the required configuration. In particular, the configuration can use a [create2 factory](https://github.com/iExecBlockchainComputing/iexec-solidity/blob/master/contracts/Factory/GenericFactory.sol) for the deployment. The escrow is ERC20 token based (ERC20 based RLC), so the codebase is the same on every supported blockchain.
 
 The configuration file is located in `./config/config.json`.
 
@@ -107,8 +107,7 @@ It contains:
 
 -   A list of categories created during the deployment process. Additional categories can be created by the contract administrator using the `createCategory` function.
 -   For each chain id, a quick configuration:
-    -   **"asset":** can be "Token" or "Native", select which escrow to use.
-    -   **"token":** the address of the token to use. If asset is set to `Token`, and no token address is provided, a mock will be deployed on the fly.
+    -   **"token":** the address of the token to use. If no token address is provided, a mock will be deployed on the fly for dev/fork chains.
     -   **"v3":** a list of resources from a previous (v3) deployment. This allows previous resources to be automatically available. It also enables score transfer from v3 to v5. [optional]
     -   **"v5":** deployment parameters for the new version. If factory address is set, and no salt is provided, `bytes32(0)` will be used by default.
 
@@ -116,11 +115,9 @@ If you want to deploy the iExec PoCo V5 smart contracts on a new blockchain, the
 
 0. Edit the `./config/config.json` file as follows:
 1. Create a new entry under "chains" with your chain id;
-2. Set the asset type depending on your blockchain;
-3. If you are using `"asset": "Token"`, provide the address of the token you want to use;
-4. Unless you know what you are doing, leave all `"v3"` resources to `Null`;
-5. Use the factory with the same salt as the other blockchains, and use the same wallet as previous deployments to have the same deployment address on this new blockchain.
-6. Add the target network config in `hardhat.config.ts`.
+2. Unless you know what you are doing, leave all `"v3"` resources to `Null`;
+3. Use the factory with the same salt as the other blockchains, and use the same wallet as previous deployments to have the same deployment address on this new blockchain.
+4. Add the target network config in `hardhat.config.ts`.
 
 ##### [Optional] Additional configuration & environment variables
 

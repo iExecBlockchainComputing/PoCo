@@ -1,13 +1,5 @@
 # Solidity API
 
-## IexecInterfaceNative
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in native mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
 ## IexecInterfaceToken
 
 A global interface that aggregates all the interfaces needed to interact with
@@ -144,56 +136,6 @@ function setTeeBroker(address _teebroker) external
 
 ```solidity
 function setCallbackGas(uint256 _callbackgas) external
-```
-
-## IexecEscrowNativeFacet
-
-### receive
-
-```solidity
-receive() external payable
-```
-
-### fallback
-
-```solidity
-fallback() external payable
-```
-
-### deposit
-
-```solidity
-function deposit() external payable returns (bool)
-```
-
-### depositFor
-
-```solidity
-function depositFor(address target) external payable returns (bool)
-```
-
-### depositForArray
-
-```solidity
-function depositForArray(uint256[] amounts, address[] targets) external payable returns (bool)
-```
-
-### withdraw
-
-```solidity
-function withdraw(uint256 amount) external returns (bool)
-```
-
-### withdrawTo
-
-```solidity
-function withdrawTo(uint256 amount, address target) external returns (bool)
-```
-
-### recover
-
-```solidity
-function recover() external returns (uint256)
 ```
 
 ## IexecEscrowTokenFacet
