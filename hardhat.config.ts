@@ -118,18 +118,6 @@ const config: HardhatUserConfig = {
                 ...arbitrumBaseConfig,
             }),
         },
-        // TODO rename to dev
-        'dev-token': {
-            chainId: 65535,
-            url: process.env.DEV_NODE || 'http://localhost:8545',
-            accounts: {
-                mnemonic: process.env.MNEMONIC || '',
-            },
-            // When deploying on a blockchain with EIP-1559 enabled and
-            // force-sealing disabled, deployment gets stuck if gasPrice is
-            // not manually set. Other approaches might be considered here.
-            gasPrice: 8_000_000_000, // 8 Gwei
-        },
         arbitrum: {
             url:
                 process.env.ARBITRUM_RPC_URL || // Used in local development
