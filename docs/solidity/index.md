@@ -12,44 +12,6 @@ Changing the name or the path would cause a breaking change in the SDK._
 
 _Every facet must inherit from this contract._
 
-## IexecERC20Base
-
-### transfer
-
-```solidity
-function transfer(address recipient, uint256 amount) external returns (bool)
-```
-
-### approve
-
-```solidity
-function approve(address spender, uint256 value) external returns (bool)
-```
-
-### approveAndCall
-
-```solidity
-function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
-```
-
-### transferFrom
-
-```solidity
-function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
-```
-
-### increaseAllowance
-
-```solidity
-function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
-```
-
-### decreaseAllowance
-
-```solidity
-function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
-```
-
 ## IexecEscrow
 
 ### Transfer
@@ -231,6 +193,42 @@ matchOrders specific notes:
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | [0] | bool | success True if operation succeeded @custom:example ```solidity // Compute deal cost uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume; // Encode matchOrders operation with selector bytes memory data = abi.encodeWithSelector(     IexecPoco1.matchOrders.selector,     appOrder,     datasetOrder,     workerpoolOrder,     requestOrder ); // Call the RLC contract with the encoded data. RLC(token).approveAndCall(iexecProxy, dealCost, data); ``` |
+
+### transfer
+
+```solidity
+function transfer(address recipient, uint256 amount) external returns (bool)
+```
+
+### approve
+
+```solidity
+function approve(address spender, uint256 value) external returns (bool)
+```
+
+### approveAndCall
+
+```solidity
+function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
+```
+
+### transferFrom
+
+```solidity
+function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
+```
+
+### increaseAllowance
+
+```solidity
+function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
+```
+
+### decreaseAllowance
+
+```solidity
+function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
+```
 
 ## IexecOrderManagementFacet
 
