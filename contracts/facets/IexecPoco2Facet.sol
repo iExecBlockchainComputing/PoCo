@@ -63,15 +63,8 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase, IexecEscrow, SignatureVerifie
 
         unlock(deal.sponsor, taskPrice); // Refund the payer of the task
         seize(deal.workerpool.owner, poolstake, _taskid);
-        /**
-         * Reward kitty and lock value on it.
-         * Next lines optimize simple `reward(kitty, ..)` and `lock(kitty, ..)` calls
-         * where functions would together uselessly transfer value from main PoCo
-         * proxy to kitty, then would transfer value back from kitty to main PoCo proxy.
-         */
-        $.m_frozens[KITTY_ADDRESS] += poolstake; // → Kitty / Burn
-        emit Reward(KITTY_ADDRESS, poolstake, _taskid);
-        emit Lock(KITTY_ADDRESS, poolstake);
+        // Reward kitty and lock value on it.
+        rewardAndLock(KITTY_ADDRESS, poolstake, _taskid); // → Kitty / Burn
     }
 
     /***************************************************************************

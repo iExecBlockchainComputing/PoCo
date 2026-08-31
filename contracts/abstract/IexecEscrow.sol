@@ -63,6 +63,22 @@ abstract contract IexecEscrow is FacetBase {
     }
 
     /**
+     * Reward an account and immediately lock the rewarded value.
+     * @notice Equivalent to `reward(account, value, ref)` followed by
+     * `lock(account, value)`, without the two transfers that would move the value
+     * from the proxy to the account and straight back to the proxy.
+     * @param account The account to reward and lock.
+     * @param value The value to reward then lock.
+     * @param ref A reference of the reward context.
+     */
+    function rewardAndLock(address account, uint256 value, bytes32 ref) internal {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        $.m_frozens[account] += value;
+        emit Reward(account, value, ref);
+        emit Lock(account, value);
+    }
+
+    /**
      * Transfer value from a spender account to a receiver account.
      * @notice
      * This function does not check for self-transfers

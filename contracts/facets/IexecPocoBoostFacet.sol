@@ -518,10 +518,7 @@ contract IexecPocoBoostFacet is
         // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        $.m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
-        // Emit events to publish state changes.
-        emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
-        emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
+        rewardAndLock(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit TaskClaimed(taskId);
     }
 
