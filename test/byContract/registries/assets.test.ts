@@ -25,7 +25,6 @@ import {
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { randomAddress } from '../../utils/utils';
 
 const createAppParams = {
     name: 'My app',
@@ -182,23 +181,6 @@ describe('Assets', () => {
                         .changePolicy(100, 150, { from: scheduler.address }),
                 ).to.be.revertedWithoutReason();
             });
-        });
-    });
-
-    describe('Common', () => {
-        it('Should revert when setName is called for reverse registration', async () => {
-            const randomEnsContract = randomAddress();
-            const randomEnsName = 'random.eth';
-            const txs = [
-                app.connect(appProvider).setName(randomEnsContract, randomEnsName),
-                dataset.connect(datasetProvider).setName(randomEnsContract, randomEnsName),
-                workerpool.connect(scheduler).setName(randomEnsContract, randomEnsName),
-            ];
-            await Promise.all(
-                txs.map((tx) =>
-                    expect(tx).to.be.revertedWith('Operation not supported on this chain'),
-                ),
-            );
         });
     });
 

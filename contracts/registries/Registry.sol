@@ -68,18 +68,6 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
             (address(previous) != address(0) && previous.isRegistered(_entry));
     }
 
-    /**
-     * Sets the reverse registration name for a registry contract.
-     * @dev This functionality is supported only on Bellecour Sidechain, calls on other chains
-     * will revert. The function is kept as nonpayable to maintain retrocompatibility with the
-     * iExec SDK.
-     */
-    // TODO remove this function when Bellecour is deprecated.
-    function setName(address /* _ens */, string calldata /* _name */) external onlyOwner {
-        initialized = initialized; // Remove solidity state mutability warning.
-        revert("Operation not supported on this chain");
-    }
-
     /* Factory */
     function _mintCreate(address _owner, bytes memory _args) internal returns (address) {
         // TEMPORARY MIGRATION FIX: Check if contract already exists to revert without custom error for backward compatibility
