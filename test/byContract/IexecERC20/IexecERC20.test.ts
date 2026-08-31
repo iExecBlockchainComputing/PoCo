@@ -87,17 +87,17 @@ describe('ERC20', async () => {
         it('Should not transfer from the zero address', async () => {
             await expect(
                 iexecPoco.connect(zeroAddressSigner).transfer(recipient.address, value),
-            ).to.be.revertedWith('ERC20: transfer from the zero address');
+            ).to.be.revertedWith('IexecEscrow: Transfer from empty address');
         });
         it('Should not transfer to the zero address', async () => {
             await expect(iexecPocoAsHolder.transfer(ZeroAddress, value)).to.be.revertedWith(
-                'ERC20: transfer to the zero address',
+                'IexecEscrow: Transfer to empty address',
             );
         });
         it('Should not transfer when sender balance is too low', async () => {
             await expect(
                 iexecPocoAsHolder.transfer(recipient.address, value + 1n),
-            ).to.be.revertedWithoutReason();
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
     });
 
@@ -191,17 +191,17 @@ describe('ERC20', async () => {
         it('Should not transferFrom when owner is the zero address', async () => {
             await expect(
                 iexecPocoAsSpender.transferFrom(ZeroAddress, spender.address, value),
-            ).to.be.revertedWith('ERC20: transfer from the zero address');
+            ).to.be.revertedWith('IexecEscrow: Transfer from empty address');
         });
         it('Should not transferFrom to the zero address', async () => {
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, ZeroAddress, value),
-            ).to.be.revertedWith('ERC20: transfer to the zero address');
+            ).to.be.revertedWith('IexecEscrow: Transfer to empty address');
         });
         it('Should not transferFrom when owner balance is too low', async () => {
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, spender.address, value + 1n),
-            ).to.be.revertedWithoutReason();
+            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
         });
         it('Should not transferFrom when spender allowance is too low', async () => {
             await iexecPocoAsHolder.approve(spender.address, value - 1n).then((tx) => tx.wait());

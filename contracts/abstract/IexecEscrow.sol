@@ -61,17 +61,17 @@ abstract contract IexecEscrow is FacetBase, IexecERC20Events, IexecEscrowEvents 
     /**
      * Transfer value from a spender account to a receiver account.
      * @notice
-     * This function does not check for self-transfers
-     * because its current usage does not require such verification.
-     * Indeed, all operations that use this function are always between
-     * the proxy contract and another actor of the platform (requester,
-     * owner of dataset/application/workerpool).
+     * This is the single implementation of a balance move over `m_balances`.
+     * It backs both the escrow operations of this contract (lock, unlock,
+     * reward) and the ERC-20 entry points of the escrow facet.
+     *
+     * A self-transfer is a no-op on the balances and is not rejected.
      *
      * @param from The address of the spender account.
      * @param to The address of the receiver account.
      * @param value The value to transfer.
      */
-    function _transfer(address from, address to, uint256 value) private {
+    function _transfer(address from, address to, uint256 value) internal {
         require(from != address(0), "IexecEscrow: Transfer from empty address");
         require(to != address(0), "IexecEscrow: Transfer to empty address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
