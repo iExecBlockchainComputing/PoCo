@@ -131,7 +131,6 @@ describe('IexecPocoAccessors', async () => {
         expect(account.locked).to.equal(dealPrice);
     });
 
-    // TODO test the case where token() == 0x0 in native mode.
     it('token', async function () {
         expect(await iexecPoco.token()).to.equal((await deployments.get('RLC')).address);
     });

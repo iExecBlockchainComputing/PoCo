@@ -8,7 +8,7 @@ import {IexecERC20} from "../interfaces/IexecERC20.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
-// TODO: Merge this abstract contract with IexecEscrowTokenFacet after removing IexecEscrowNativeFacet.
+// TODO: Merge this abstract contract with IexecEscrowTokenFacet, now its only implementer.
 abstract contract IexecERC20Base is IexecERC20, FacetBase {
     function transfer(address recipient, uint256 amount) external override returns (bool) {
         _transfer(_msgSender(), recipient, amount);
