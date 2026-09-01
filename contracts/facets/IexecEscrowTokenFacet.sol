@@ -24,11 +24,7 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
  * escrow itself (lock, unlock, reward, seize) run over the same ledger.
  */
 // TODO rename to IexecEscrowFacet
-// TODO move _mint, _burn and _approve into EscrowLib. This contract inherits the
-// escrow events through IexecEscrowToken and also emits Transfer through the
-// library, so its ABI lists Transfer twice and typechain generates duplicate
-// identifiers for it. Moving the three writers into the library lets
-// IexecEscrowToken drop `is IexecEscrowEvents`, which removes the duplicate.
+// TODO move _mint, _burn and _approve into EscrowLib.
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase {
     /***************************************************************************
      *                     Deposit and withdraw functions                      *
