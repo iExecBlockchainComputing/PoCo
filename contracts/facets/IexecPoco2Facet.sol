@@ -10,7 +10,7 @@ import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IexecPoco2} from "../interfaces/IexecPoco2.sol";
 import {IexecEscrow} from "../abstract/IexecEscrow.sol";
-import {SignatureLib} from "../libs/SignatureLib.sol";
+import {CommonLib} from "../libs/CommonLib.sol";
 
 contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
     modifier onlyScheduler(bytes32 _taskId) {
@@ -119,7 +119,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
         require(
-            SignatureLib.verifySignatureOfEthSignedMessage(
+            CommonLib.verifySignatureOfEthSignedMessage(
                 (_enclaveChallenge != address(0) && $.m_teebroker != address(0))
                     ? $.m_teebroker
                     : deal.workerpool.owner,
@@ -131,7 +131,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
         // Check enclave signature
         require(
             _enclaveChallenge == address(0) ||
-                SignatureLib.verifySignatureOfEthSignedMessage(
+                CommonLib.verifySignatureOfEthSignedMessage(
                     _enclaveChallenge,
                     abi.encodePacked(_resultHash, _resultSeal),
                     _enclaveSign
@@ -206,7 +206,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
         require(
-            SignatureLib.verifySignatureOfEthSignedMessage(
+            CommonLib.verifySignatureOfEthSignedMessage(
                 (_enclaveChallenge != address(0) && $.m_teebroker != address(0))
                     ? $.m_teebroker
                     : deal.workerpool.owner,
@@ -218,7 +218,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
         // Check enclave signature
         require(
             _enclaveChallenge == address(0) ||
-                SignatureLib.verifySignatureOfEthSignedMessage(
+                CommonLib.verifySignatureOfEthSignedMessage(
                     _enclaveChallenge,
                     abi.encodePacked(resultHash, resultSeal),
                     _enclaveSign

@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
-import {SignatureLib} from "../libs/SignatureLib.sol";
+import {CommonLib} from "../libs/CommonLib.sol";
 import {IexecOrderManagement} from "../interfaces/IexecOrderManagement.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
@@ -30,15 +30,15 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase {
         address owner = IERC5313(_apporderoperation.order.app).owner();
         require(
             owner == _msgSender() ||
-                SignatureLib.verifySignature(
+                CommonLib.verifySignature(
                     owner,
-                    SignatureLib.toTypedDataHash(_apporderoperation.hash()),
+                    CommonLib.toTypedDataHash(_apporderoperation.hash()),
                     _apporderoperation.sign
                 ),
             "invalid-sender-or-signature"
         );
 
-        bytes32 apporderHash = SignatureLib.toTypedDataHash(_apporderoperation.order.hash());
+        bytes32 apporderHash = CommonLib.toTypedDataHash(_apporderoperation.order.hash());
         if (_apporderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
             $.m_presigned[apporderHash] = owner;
             emit SignedAppOrder(apporderHash);
@@ -55,17 +55,15 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase {
         address owner = IERC5313(_datasetorderoperation.order.dataset).owner();
         require(
             owner == _msgSender() ||
-                SignatureLib.verifySignature(
+                CommonLib.verifySignature(
                     owner,
-                    SignatureLib.toTypedDataHash(_datasetorderoperation.hash()),
+                    CommonLib.toTypedDataHash(_datasetorderoperation.hash()),
                     _datasetorderoperation.sign
                 ),
             "invalid-sender-or-signature"
         );
 
-        bytes32 datasetorderHash = SignatureLib.toTypedDataHash(
-            _datasetorderoperation.order.hash()
-        );
+        bytes32 datasetorderHash = CommonLib.toTypedDataHash(_datasetorderoperation.order.hash());
         if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
             $.m_presigned[datasetorderHash] = owner;
             emit SignedDatasetOrder(datasetorderHash);
@@ -82,15 +80,15 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase {
         address owner = IERC5313(_workerpoolorderoperation.order.workerpool).owner();
         require(
             owner == _msgSender() ||
-                SignatureLib.verifySignature(
+                CommonLib.verifySignature(
                     owner,
-                    SignatureLib.toTypedDataHash(_workerpoolorderoperation.hash()),
+                    CommonLib.toTypedDataHash(_workerpoolorderoperation.hash()),
                     _workerpoolorderoperation.sign
                 ),
             "invalid-sender-or-signature"
         );
 
-        bytes32 workerpoolorderHash = SignatureLib.toTypedDataHash(
+        bytes32 workerpoolorderHash = CommonLib.toTypedDataHash(
             _workerpoolorderoperation.order.hash()
         );
         if (_workerpoolorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
@@ -111,17 +109,15 @@ contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase {
         address owner = _requestorderoperation.order.requester;
         require(
             owner == _msgSender() ||
-                SignatureLib.verifySignature(
+                CommonLib.verifySignature(
                     owner,
-                    SignatureLib.toTypedDataHash(_requestorderoperation.hash()),
+                    CommonLib.toTypedDataHash(_requestorderoperation.hash()),
                     _requestorderoperation.sign
                 ),
             "invalid-sender-or-signature"
         );
 
-        bytes32 requestorderHash = SignatureLib.toTypedDataHash(
-            _requestorderoperation.order.hash()
-        );
+        bytes32 requestorderHash = CommonLib.toTypedDataHash(_requestorderoperation.order.hash());
         if (_requestorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
             $.m_presigned[requestorderHash] = owner;
             emit SignedRequestOrder(requestorderHash);

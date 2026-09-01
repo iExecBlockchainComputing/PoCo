@@ -14,9 +14,8 @@ import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
  */
 abstract contract FacetBase {
     // TODO move these constants to a ConstantsLib library and reference them as
-    // ConstantsLib.<NAME> in the next PR. A library cannot inherit this contract
-    // and solc rejects FacetBase.<NAME> from outside the contract at any
-    // visibility, which is why SignatureLib redeclares GROUPMEMBER_PURPOSE today.
+    // ConstantsLib.<NAME> in the next PR.
+    // CommonLib redeclares GROUPMEMBER_PURPOSE temporarily.
 
     // Poco - Constants
     uint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;

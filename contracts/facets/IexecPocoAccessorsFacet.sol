@@ -11,9 +11,8 @@ import {IApp} from "../registries/apps/IApp.v8.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
-import {DealVolumeLib} from "../libs/DealVolumeLib.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
-import {SignatureLib} from "../libs/SignatureLib.sol";
+import {CommonLib} from "../libs/CommonLib.sol";
 
 /**
  * @title Getters contract for PoCo facets.
@@ -61,16 +60,16 @@ contract IexecPocoAccessorsFacet is IexecPocoAccessors, FacetBase {
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external view override returns (uint256) {
         return
-            DealVolumeLib.computeDealVolume(
+            CommonLib.computeDealVolume(
                 appOrder.volume,
-                SignatureLib.toTypedDataHash(appOrder.hash()),
+                CommonLib.toTypedDataHash(appOrder.hash()),
                 datasetOrder.dataset != address(0),
                 datasetOrder.volume,
-                SignatureLib.toTypedDataHash(datasetOrder.hash()),
+                CommonLib.toTypedDataHash(datasetOrder.hash()),
                 workerpoolOrder.volume,
-                SignatureLib.toTypedDataHash(workerpoolOrder.hash()),
+                CommonLib.toTypedDataHash(workerpoolOrder.hash()),
                 requestOrder.volume,
-                SignatureLib.toTypedDataHash(requestOrder.hash())
+                CommonLib.toTypedDataHash(requestOrder.hash())
             );
     }
 

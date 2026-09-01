@@ -15,9 +15,8 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "../abstract/IexecEscrow.sol";
-import {DealVolumeLib} from "../libs/DealVolumeLib.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {SignatureLib} from "../libs/SignatureLib.sol";
+import {CommonLib} from "../libs/CommonLib.sol";
 
 //
 // Not deployed yet!
@@ -161,50 +160,44 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
         // Check all possible restrictions.
         address workerpool = workerpoolOrder.workerpool;
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(requestOrder.workerpool, workerpool),
+            CommonLib.isAccountAuthorizedByRestriction(requestOrder.workerpool, workerpool),
             "PocoBoost: Workerpool restricted by request order"
         );
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(appOrder.datasetrestrict, dataset),
+            CommonLib.isAccountAuthorizedByRestriction(appOrder.datasetrestrict, dataset),
             "PocoBoost: Dataset restricted by app order"
         );
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(appOrder.workerpoolrestrict, workerpool),
+            CommonLib.isAccountAuthorizedByRestriction(appOrder.workerpoolrestrict, workerpool),
             "PocoBoost: Workerpool restricted by app order"
         );
         address requester = requestOrder.requester;
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(appOrder.requesterrestrict, requester),
+            CommonLib.isAccountAuthorizedByRestriction(appOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by app order"
         );
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(datasetOrder.apprestrict, app),
+            CommonLib.isAccountAuthorizedByRestriction(datasetOrder.apprestrict, app),
             "PocoBoost: App restricted by dataset order"
         );
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(
-                datasetOrder.workerpoolrestrict,
-                workerpool
-            ),
+            CommonLib.isAccountAuthorizedByRestriction(datasetOrder.workerpoolrestrict, workerpool),
             "PocoBoost: Workerpool restricted by dataset order"
         );
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(
-                datasetOrder.requesterrestrict,
-                requester
-            ),
+            CommonLib.isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by dataset order"
         );
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(workerpoolOrder.apprestrict, app),
+            CommonLib.isAccountAuthorizedByRestriction(workerpoolOrder.apprestrict, app),
             "PocoBoost: App restricted by workerpool order"
         );
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(workerpoolOrder.datasetrestrict, dataset),
+            CommonLib.isAccountAuthorizedByRestriction(workerpoolOrder.datasetrestrict, dataset),
             "PocoBoost: Dataset restricted by workerpool order"
         );
         require(
-            SignatureLib.isAccountAuthorizedByRestriction(
+            CommonLib.isAccountAuthorizedByRestriction(
                 workerpoolOrder.requesterrestrict,
                 requester
             ),
@@ -213,13 +206,9 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
         // Check ownership, registration, and signatures for app and dataset.
         require($.m_appregistry.isRegistered(app), "PocoBoost: App not registered");
         address appOwner = IERC5313(app).owner();
-        bytes32 appOrderTypedDataHash = SignatureLib.toTypedDataHash(appOrder.hash());
+        bytes32 appOrderTypedDataHash = CommonLib.toTypedDataHash(appOrder.hash());
         require(
-            SignatureLib.verifySignatureOrPresignature(
-                appOwner,
-                appOrderTypedDataHash,
-                appOrder.sign
-            ),
+            CommonLib.verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, appOrder.sign),
             "PocoBoost: Invalid app order signature"
         );
         bool hasDataset = dataset != address(0);
@@ -228,9 +217,9 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
         if (hasDataset) {
             require($.m_datasetregistry.isRegistered(dataset), "PocoBoost: Dataset not registered");
             datasetOwner = IERC5313(dataset).owner();
-            datasetOrderTypedDataHash = SignatureLib.toTypedDataHash(datasetOrder.hash());
+            datasetOrderTypedDataHash = CommonLib.toTypedDataHash(datasetOrder.hash());
             require(
-                SignatureLib.verifySignatureOrPresignature(
+                CommonLib.verifySignatureOrPresignature(
                     datasetOwner,
                     datasetOrderTypedDataHash,
                     datasetOrder.sign
@@ -244,18 +233,18 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
             "PocoBoost: Workerpool not registered"
         );
         address workerpoolOwner = IERC5313(workerpool).owner();
-        bytes32 workerpoolOrderTypedDataHash = SignatureLib.toTypedDataHash(workerpoolOrder.hash());
+        bytes32 workerpoolOrderTypedDataHash = CommonLib.toTypedDataHash(workerpoolOrder.hash());
         require(
-            SignatureLib.verifySignatureOrPresignature(
+            CommonLib.verifySignatureOrPresignature(
                 workerpoolOwner,
                 workerpoolOrderTypedDataHash,
                 workerpoolOrder.sign
             ),
             "PocoBoost: Invalid workerpool order signature"
         );
-        bytes32 requestOrderTypedDataHash = SignatureLib.toTypedDataHash(requestOrder.hash());
+        bytes32 requestOrderTypedDataHash = CommonLib.toTypedDataHash(requestOrder.hash());
         require(
-            SignatureLib.verifySignatureOrPresignature(
+            CommonLib.verifySignatureOrPresignature(
                 requester,
                 requestOrderTypedDataHash,
                 requestOrder.sign
@@ -285,7 +274,7 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 volume = DealVolumeLib.computeDealVolume(
+        uint256 volume = CommonLib.computeDealVolume(
             appOrder.volume,
             appOrderTypedDataHash,
             hasDataset,
@@ -411,7 +400,7 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
         address workerpoolOwner = deal.workerpoolOwner;
         // Check scheduler or TEE broker signature
         require(
-            SignatureLib.verifySignatureOfEthSignedMessage(
+            CommonLib.verifySignatureOfEthSignedMessage(
                 enclaveChallenge != address(0) && $.m_teebroker != address(0)
                     ? $.m_teebroker
                     : workerpoolOwner,
@@ -424,7 +413,7 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
         // Check enclave signature
         require(
             enclaveChallenge == address(0) ||
-                SignatureLib.verifySignatureOfEthSignedMessage(
+                CommonLib.verifySignatureOfEthSignedMessage(
                     enclaveChallenge,
                     abi.encodePacked(
                         msg.sender,
