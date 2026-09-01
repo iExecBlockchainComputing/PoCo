@@ -3,6 +3,7 @@
 
 pragma solidity ^0.8.0;
 
+import {ConstantsLib} from "../libs/ConstantsLib.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
 
@@ -13,21 +14,17 @@ import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
  * @dev Every facet must inherit from this contract.
  */
 abstract contract FacetBase {
-    // Poco - Constants
-    uint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;
-    uint256 internal constant REVEAL_DEADLINE_RATIO = 2;
-    uint256 internal constant FINAL_DEADLINE_RATIO = 10;
-    uint256 internal constant WORKERPOOL_STAKE_RATIO = 30;
-    uint256 internal constant KITTY_RATIO = 10;
-    uint256 internal constant KITTY_MIN = 1e9; // ADJUSTEMENT VARIABLE
-
-    // Seized funds of workerpools that do not honor their deals are sent
-    // out to this kitty address.
-    // It is determined with address(uint256(keccak256(bytes('iExecKitty'))) - 1).
-    address internal constant KITTY_ADDRESS = 0x99c2268479b93fDe36232351229815DF80837e23;
-
-    // Used with ERC-734 Key Manager identity contract for authorization management.
-    uint256 internal constant GROUPMEMBER_PURPOSE = 4;
+    // Protocol constants, kept reachable under their bare names by the facets
+    // that inherit this contract. {ConstantsLib} is the single declaration.
+    uint256 internal constant CONTRIBUTION_DEADLINE_RATIO =
+        ConstantsLib.CONTRIBUTION_DEADLINE_RATIO;
+    uint256 internal constant REVEAL_DEADLINE_RATIO = ConstantsLib.REVEAL_DEADLINE_RATIO;
+    uint256 internal constant FINAL_DEADLINE_RATIO = ConstantsLib.FINAL_DEADLINE_RATIO;
+    uint256 internal constant WORKERPOOL_STAKE_RATIO = ConstantsLib.WORKERPOOL_STAKE_RATIO;
+    uint256 internal constant KITTY_RATIO = ConstantsLib.KITTY_RATIO;
+    uint256 internal constant KITTY_MIN = ConstantsLib.KITTY_MIN;
+    address internal constant KITTY_ADDRESS = ConstantsLib.KITTY_ADDRESS;
+    uint256 internal constant GROUPMEMBER_PURPOSE = ConstantsLib.GROUPMEMBER_PURPOSE;
 
     modifier onlyOwner() {
         require(_msgSender() == owner(), "Ownable: caller is not the owner");
