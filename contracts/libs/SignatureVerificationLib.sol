@@ -6,19 +6,23 @@ pragma solidity ^0.8.0;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-import {FacetBase} from "./FacetBase.sol";
 import {IERC734} from "../external/interfaces/IERC734.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {PocoStorageLib} from "./PocoStorageLib.sol";
 
-// TODO convert to library
-abstract contract SignatureVerifier is FacetBase {
+/**
+ * @title Verify order and contribution signatures, presignatures and restrictions.
+ */
+library SignatureVerificationLib {
     using ECDSA for bytes32;
+
+    // Used with ERC-734 Key Manager identity contract for authorization management.
+    uint256 private constant GROUPMEMBER_PURPOSE = 4;
 
     /**
      * Hash a Typed Data using the configured domain.
      * @param structHash The original structure hash.
      */
-    function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
+    function toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return MessageHashUtils.toTypedDataHash($.m_eip712DomainSeparator, structHash);
     }
@@ -29,13 +33,13 @@ abstract contract SignatureVerifier is FacetBase {
      * @param message The original message that was signed.
      * @param signature The signature to be verified.
      */
-    function _verifySignatureOfEthSignedMessage(
+    function verifySignatureOfEthSignedMessage(
         address account,
         bytes memory message,
         bytes calldata signature
     ) internal view returns (bool) {
         return
-            _verifySignature(
+            verifySignature(
                 account,
                 MessageHashUtils.toEthSignedMessageHash(keccak256(message)),
                 signature
@@ -54,7 +58,7 @@ abstract contract SignatureVerifier is FacetBase {
      * @param messageHash The message hash that was signed.
      * @param signature The signature to be verified.
      */
-    function _verifySignature(
+    function verifySignature(
         address account,
         bytes32 messageHash,
         bytes calldata signature
@@ -88,10 +92,7 @@ abstract contract SignatureVerifier is FacetBase {
      * @param account The expected presigner account.
      * @param messageHash The message hash that was presigned.
      */
-    function _verifyPresignature(
-        address account,
-        bytes32 messageHash
-    ) internal view returns (bool) {
+    function verifyPresignature(address account, bytes32 messageHash) internal view returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return account != address(0) && account == $.m_presigned[messageHash];
     }
@@ -102,14 +103,14 @@ abstract contract SignatureVerifier is FacetBase {
      * @param messageHash The message hash that was signed or presigned.
      * @param signature The signature to be verified. Not required for a presignature.
      */
-    function _verifySignatureOrPresignature(
+    function verifySignatureOrPresignature(
         address account,
         bytes32 messageHash,
         bytes calldata signature
     ) internal view returns (bool) {
         return
-            _verifyPresignature(account, messageHash) ||
-            _verifySignature(account, messageHash, signature);
+            verifyPresignature(account, messageHash) ||
+            verifySignature(account, messageHash, signature);
     }
 
     /**
@@ -129,7 +130,7 @@ abstract contract SignatureVerifier is FacetBase {
      * that might whitelist a given address in a group.
      * @param account An address to be checked.
      */
-    function _isAccountAuthorizedByRestriction(
+    function isAccountAuthorizedByRestriction(
         address restriction,
         address account
     ) internal view returns (bool) {

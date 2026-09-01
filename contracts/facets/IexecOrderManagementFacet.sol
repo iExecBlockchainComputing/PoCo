@@ -4,12 +4,13 @@
 pragma solidity ^0.8.0;
 
 import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
-import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
+import {SignatureVerificationLib} from "../libs/SignatureVerificationLib.sol";
 import {IexecOrderManagement} from "../interfaces/IexecOrderManagement.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
-contract IexecOrderManagementFacet is IexecOrderManagement, SignatureVerifier {
+contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase {
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
@@ -29,15 +30,17 @@ contract IexecOrderManagementFacet is IexecOrderManagement, SignatureVerifier {
         address owner = IERC5313(_apporderoperation.order.app).owner();
         require(
             owner == _msgSender() ||
-                _verifySignature(
+                SignatureVerificationLib.verifySignature(
                     owner,
-                    _toTypedDataHash(_apporderoperation.hash()),
+                    SignatureVerificationLib.toTypedDataHash(_apporderoperation.hash()),
                     _apporderoperation.sign
                 ),
             "invalid-sender-or-signature"
         );
 
-        bytes32 apporderHash = _toTypedDataHash(_apporderoperation.order.hash());
+        bytes32 apporderHash = SignatureVerificationLib.toTypedDataHash(
+            _apporderoperation.order.hash()
+        );
         if (_apporderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
             $.m_presigned[apporderHash] = owner;
             emit SignedAppOrder(apporderHash);
@@ -54,15 +57,17 @@ contract IexecOrderManagementFacet is IexecOrderManagement, SignatureVerifier {
         address owner = IERC5313(_datasetorderoperation.order.dataset).owner();
         require(
             owner == _msgSender() ||
-                _verifySignature(
+                SignatureVerificationLib.verifySignature(
                     owner,
-                    _toTypedDataHash(_datasetorderoperation.hash()),
+                    SignatureVerificationLib.toTypedDataHash(_datasetorderoperation.hash()),
                     _datasetorderoperation.sign
                 ),
             "invalid-sender-or-signature"
         );
 
-        bytes32 datasetorderHash = _toTypedDataHash(_datasetorderoperation.order.hash());
+        bytes32 datasetorderHash = SignatureVerificationLib.toTypedDataHash(
+            _datasetorderoperation.order.hash()
+        );
         if (_datasetorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
             $.m_presigned[datasetorderHash] = owner;
             emit SignedDatasetOrder(datasetorderHash);
@@ -79,15 +84,17 @@ contract IexecOrderManagementFacet is IexecOrderManagement, SignatureVerifier {
         address owner = IERC5313(_workerpoolorderoperation.order.workerpool).owner();
         require(
             owner == _msgSender() ||
-                _verifySignature(
+                SignatureVerificationLib.verifySignature(
                     owner,
-                    _toTypedDataHash(_workerpoolorderoperation.hash()),
+                    SignatureVerificationLib.toTypedDataHash(_workerpoolorderoperation.hash()),
                     _workerpoolorderoperation.sign
                 ),
             "invalid-sender-or-signature"
         );
 
-        bytes32 workerpoolorderHash = _toTypedDataHash(_workerpoolorderoperation.order.hash());
+        bytes32 workerpoolorderHash = SignatureVerificationLib.toTypedDataHash(
+            _workerpoolorderoperation.order.hash()
+        );
         if (_workerpoolorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
             $.m_presigned[workerpoolorderHash] = owner;
             emit SignedWorkerpoolOrder(workerpoolorderHash);
@@ -106,15 +113,17 @@ contract IexecOrderManagementFacet is IexecOrderManagement, SignatureVerifier {
         address owner = _requestorderoperation.order.requester;
         require(
             owner == _msgSender() ||
-                _verifySignature(
+                SignatureVerificationLib.verifySignature(
                     owner,
-                    _toTypedDataHash(_requestorderoperation.hash()),
+                    SignatureVerificationLib.toTypedDataHash(_requestorderoperation.hash()),
                     _requestorderoperation.sign
                 ),
             "invalid-sender-or-signature"
         );
 
-        bytes32 requestorderHash = _toTypedDataHash(_requestorderoperation.order.hash());
+        bytes32 requestorderHash = SignatureVerificationLib.toTypedDataHash(
+            _requestorderoperation.order.hash()
+        );
         if (_requestorderoperation.operation == IexecLibOrders_v5.OrderOperationEnum.SIGN) {
             $.m_presigned[requestorderHash] = owner;
             emit SignedRequestOrder(requestorderHash);

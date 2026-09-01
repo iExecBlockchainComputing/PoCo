@@ -12,12 +12,13 @@ import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
 import {DealVolumeLib} from "../libs/DealVolumeLib.sol";
-import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
+import {SignatureVerificationLib} from "../libs/SignatureVerificationLib.sol";
 
 /**
  * @title Getters contract for PoCo facets.
  */
-contract IexecPocoAccessorsFacet is IexecPocoAccessors, SignatureVerifier {
+contract IexecPocoAccessorsFacet is IexecPocoAccessors, FacetBase {
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
@@ -62,14 +63,14 @@ contract IexecPocoAccessorsFacet is IexecPocoAccessors, SignatureVerifier {
         return
             DealVolumeLib.computeDealVolume(
                 appOrder.volume,
-                _toTypedDataHash(appOrder.hash()),
+                SignatureVerificationLib.toTypedDataHash(appOrder.hash()),
                 datasetOrder.dataset != address(0),
                 datasetOrder.volume,
-                _toTypedDataHash(datasetOrder.hash()),
+                SignatureVerificationLib.toTypedDataHash(datasetOrder.hash()),
                 workerpoolOrder.volume,
-                _toTypedDataHash(workerpoolOrder.hash()),
+                SignatureVerificationLib.toTypedDataHash(workerpoolOrder.hash()),
                 requestOrder.volume,
-                _toTypedDataHash(requestOrder.hash())
+                SignatureVerificationLib.toTypedDataHash(requestOrder.hash())
             );
     }
 

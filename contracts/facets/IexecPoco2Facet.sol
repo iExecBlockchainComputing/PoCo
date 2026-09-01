@@ -10,9 +10,9 @@ import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IexecPoco2} from "../interfaces/IexecPoco2.sol";
 import {IexecEscrow} from "../abstract/IexecEscrow.sol";
-import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
+import {SignatureVerificationLib} from "../libs/SignatureVerificationLib.sol";
 
-contract IexecPoco2Facet is IexecPoco2, IexecEscrow, SignatureVerifier {
+contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
     modifier onlyScheduler(bytes32 _taskId) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require(_msgSender() == $.m_deals[$.m_tasks[_taskId].dealid].workerpool.owner);
@@ -119,7 +119,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow, SignatureVerifier {
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
         require(
-            _verifySignatureOfEthSignedMessage(
+            SignatureVerificationLib.verifySignatureOfEthSignedMessage(
                 (_enclaveChallenge != address(0) && $.m_teebroker != address(0))
                     ? $.m_teebroker
                     : deal.workerpool.owner,
@@ -131,7 +131,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow, SignatureVerifier {
         // Check enclave signature
         require(
             _enclaveChallenge == address(0) ||
-                _verifySignatureOfEthSignedMessage(
+                SignatureVerificationLib.verifySignatureOfEthSignedMessage(
                     _enclaveChallenge,
                     abi.encodePacked(_resultHash, _resultSeal),
                     _enclaveSign
@@ -206,7 +206,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow, SignatureVerifier {
 
         // Check that the worker + taskid + enclave combo is authorized to contribute (scheduler signature)
         require(
-            _verifySignatureOfEthSignedMessage(
+            SignatureVerificationLib.verifySignatureOfEthSignedMessage(
                 (_enclaveChallenge != address(0) && $.m_teebroker != address(0))
                     ? $.m_teebroker
                     : deal.workerpool.owner,
@@ -218,7 +218,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow, SignatureVerifier {
         // Check enclave signature
         require(
             _enclaveChallenge == address(0) ||
-                _verifySignatureOfEthSignedMessage(
+                SignatureVerificationLib.verifySignatureOfEthSignedMessage(
                     _enclaveChallenge,
                     abi.encodePacked(resultHash, resultSeal),
                     _enclaveSign
