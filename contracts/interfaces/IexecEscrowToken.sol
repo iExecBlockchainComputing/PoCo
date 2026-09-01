@@ -3,16 +3,9 @@
 
 pragma solidity ^0.8.0;
 
-interface IexecEscrowToken {
-    // ERC20 standard events
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-    // iExec specific events
-    event Reward(address owner, uint256 amount, bytes32 ref);
-    event Seize(address owner, uint256 amount, bytes32 ref);
-    event Lock(address owner, uint256 amount);
-    event Unlock(address owner, uint256 amount);
+import {IexecEscrowEvents} from "./IexecEscrowEvents.sol";
 
+interface IexecEscrowToken is IexecEscrowEvents {
     error UnsupportedOperation(bytes4 selector);
     error OperationFailed();
     error CallerIsNotTheRequester();

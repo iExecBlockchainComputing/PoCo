@@ -4,15 +4,28 @@
 pragma solidity ^0.8.0;
 
 import {FacetBase} from "../abstract/FacetBase.sol";
+import {IexecEscrow} from "../abstract/IexecEscrow.sol";
 import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
-contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase {
+/**
+ * @title Escrow of the PoCo protocol and ERC-20 entry points of its internal token.
+ * @notice Deposits of the base RLC token are held by the proxy and credited 1:1
+ * as sRLC (ERC20 "Staked RLC"), managed by this facet manages. sRLC is not a
+ * standalone contract: its balances, allowances and total supply live in the PoCo
+ * storage, and every account that funds a deal, stakes as a worker or collects a
+ * reward is paid in it.
+ *
+ * `deposit` mints sRLC against transferred RLC, `withdraw` burns it and returns the
+ * RLC, and the ERC-20 methods move it between accounts. The balance moves of the
+ * escrow itself (lock, unlock, reward, seize) run over the same ledger.
+ */
+contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecEscrow {
     /***************************************************************************
-     *                         Escrow methods: public                          *
+     *                     Deposit and withdraw functions                      *
      ***************************************************************************/
     receive() external payable override {
         revert("fallback-disabled");
@@ -257,19 +270,6 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender] - subtractedValue);
         return true;
-    }
-
-    function _transferUnchecked(address sender, address recipient, uint256 amount) internal {
-        require(sender != address(0), "ERC20: transfer from the zero address");
-        require(recipient != address(0), "ERC20: transfer to the zero address");
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        $.m_balances[sender] = $.m_balances[sender] - amount;
-        $.m_balances[recipient] = $.m_balances[recipient] + amount;
-        emit Transfer(sender, recipient, amount);
-    }
-
-    function _transfer(address sender, address recipient, uint256 amount) internal {
-        _transferUnchecked(sender, recipient, amount);
     }
 
     function _mint(address account, uint256 amount) internal {
