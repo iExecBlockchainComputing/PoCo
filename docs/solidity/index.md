@@ -14,36 +14,6 @@ _Every facet must inherit from this contract._
 
 ## IexecEscrow
 
-### Transfer
-
-```solidity
-event Transfer(address from, address to, uint256 value)
-```
-
-### Lock
-
-```solidity
-event Lock(address owner, uint256 amount)
-```
-
-### Unlock
-
-```solidity
-event Unlock(address owner, uint256 amount)
-```
-
-### Reward
-
-```solidity
-event Reward(address owner, uint256 amount, bytes32 ref)
-```
-
-### Seize
-
-```solidity
-event Seize(address owner, uint256 amount, bytes32 ref)
-```
-
 ## IexecCategoryManagerFacet
 
 ### createCategory
@@ -101,6 +71,16 @@ function setCallbackGas(uint256 _callbackgas) external
 ```
 
 ## IexecEscrowTokenFacet
+
+Deposits of the base RLC token are held by the proxy and credited 1:1
+as sRLC (ERC20 "Staked RLC"), managed by this facet manages. sRLC is not a
+standalone contract: its balances, allowances and total supply live in the PoCo
+storage, and every account that funds a deal, stakes as a worker or collects a
+reward is paid in it.
+
+`deposit` mints sRLC against transferred RLC, `withdraw` burns it and returns the
+RLC, and the ERC-20 methods move it between accounts. The balance moves of the
+escrow itself (lock, unlock, reward, seize) run over the same ledger.
 
 ### receive
 
