@@ -12,8 +12,6 @@ Changing the name or the path would cause a breaking change in the SDK._
 
 _Every facet must inherit from this contract._
 
-## IexecEscrow
-
 ## IexecCategoryManagerFacet
 
 ### createCategory
@@ -793,6 +791,45 @@ function broadcastWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrder _work
 
 ```solidity
 function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestorder) external
+```
+
+## EscrowLib
+
+_The events are declared here rather than taken from {IexecEscrowEvents}
+because solc 0.8.21 cannot compile a qualified `emit Other.Event(...)` when
+userdoc is requested, and docgen always requests it. A library publishes an
+event in the ABI of every contract that emits it along an inlined path, so
+{IexecEscrowEvents} stays as the single declaration feeding the aggregate
+interface._
+
+### Transfer
+
+```solidity
+event Transfer(address from, address to, uint256 value)
+```
+
+### Reward
+
+```solidity
+event Reward(address owner, uint256 amount, bytes32 ref)
+```
+
+### Seize
+
+```solidity
+event Seize(address owner, uint256 amount, bytes32 ref)
+```
+
+### Lock
+
+```solidity
+event Lock(address owner, uint256 amount)
+```
+
+### Unlock
+
+```solidity
+event Unlock(address owner, uint256 amount)
 ```
 
 ## IexecLibCore_v5
