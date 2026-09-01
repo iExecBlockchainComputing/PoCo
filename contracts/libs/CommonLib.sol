@@ -11,8 +11,8 @@ import {IERC734} from "../external/interfaces/IERC734.sol";
 import {PocoStorageLib} from "./PocoStorageLib.sol";
 
 /**
- * @title Helpers shared by the PoCo facets: signature verification, address
- * restrictions and deal volume computation.
+ * @title Helpers shared by the PoCo facets (signature verification, address
+ * restriction checks, deal volume computation, ...)
  */
 library CommonLib {
     using ECDSA for bytes32;
