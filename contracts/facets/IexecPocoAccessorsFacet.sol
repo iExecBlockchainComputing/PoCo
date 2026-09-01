@@ -4,7 +4,6 @@
 pragma solidity ^0.8.0;
 
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IDataset} from "../registries/datasets/IDataset.v8.sol";
@@ -18,12 +17,7 @@ import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 /**
  * @title Getters contract for PoCo facets.
  */
-contract IexecPocoAccessorsFacet is
-    IexecPocoAccessors,
-    FacetBase,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPocoAccessorsFacet is IexecPocoAccessors, SignatureVerifier, IexecPocoCommon {
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
