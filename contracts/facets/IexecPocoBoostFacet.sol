@@ -15,7 +15,7 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "../abstract/IexecEscrow.sol";
-import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
+import {DealVolumeLib} from "../libs/DealVolumeLib.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 
@@ -27,7 +27,7 @@ import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
  * @title PoCo Boost to reduce latency and increase throughput of deals.
  * @notice Works for deals with requested trust = 0.
  */
-contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, IexecPocoCommon {
+contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
     using Math for uint256;
@@ -268,7 +268,7 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 volume = _computeDealVolume(
+        uint256 volume = DealVolumeLib.computeDealVolume(
             appOrder.volume,
             appOrderTypedDataHash,
             hasDataset,

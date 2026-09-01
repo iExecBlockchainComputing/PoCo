@@ -12,7 +12,7 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
 import {IexecEscrow} from "../abstract/IexecEscrow.sol";
-import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
+import {DealVolumeLib} from "../libs/DealVolumeLib.sol";
 import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 
 struct Matching {
@@ -26,13 +26,7 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is
-    IexecPoco1,
-    IexecPoco1Errors,
-    IexecEscrow,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, IexecEscrow, SignatureVerifier {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
@@ -379,7 +373,7 @@ contract IexecPoco1Facet is
         /**
          * Check availability
          */
-        uint256 volume = _computeDealVolume(
+        uint256 volume = DealVolumeLib.computeDealVolume(
             _apporder.volume,
             ids.apporderHash,
             ids.hasDataset,

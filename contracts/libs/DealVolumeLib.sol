@@ -4,22 +4,18 @@
 pragma solidity ^0.8.0;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
-import {FacetBase} from "./FacetBase.sol";
+import {PocoStorageLib} from "./PocoStorageLib.sol";
 
-// TODO convert to library
-abstract contract IexecPocoCommon is FacetBase {
+/**
+ * @title Compute the volume of a deal from the volumes of the orders it matches.
+ */
+library DealVolumeLib {
     using Math for uint256;
-    using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
-    using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
-    using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
-    using IexecLibOrders_v5 for IexecLibOrders_v5.RequestOrder;
 
     /**
-     * @notice Internal function to compute the deal volume considering the minimum
-     * remaining volume across all provided orders. This ensures that the deal volume
-     * does not exceed the available volume of any individual order.
+     * @notice Compute the deal volume considering the minimum remaining volume
+     * across all provided orders. This ensures that the deal volume does not
+     * exceed the available volume of any individual order.
      *
      * @param appOrderVolume The volume of the app order.
      * @param appOrderTypedDataHash The typed data hash of the app order.
@@ -32,7 +28,7 @@ abstract contract IexecPocoCommon is FacetBase {
      * @param requestOrderTypedDataHash The typed data hash of the request order.
      * @return The minimum volume available across all orders.
      */
-    function _computeDealVolume(
+    function computeDealVolume(
         uint256 appOrderVolume,
         bytes32 appOrderTypedDataHash,
         bool hasDataset,

@@ -11,13 +11,13 @@ import {IApp} from "../registries/apps/IApp.v8.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
-import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
+import {DealVolumeLib} from "../libs/DealVolumeLib.sol";
 import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 
 /**
  * @title Getters contract for PoCo facets.
  */
-contract IexecPocoAccessorsFacet is IexecPocoAccessors, SignatureVerifier, IexecPocoCommon {
+contract IexecPocoAccessorsFacet is IexecPocoAccessors, SignatureVerifier {
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
@@ -60,7 +60,7 @@ contract IexecPocoAccessorsFacet is IexecPocoAccessors, SignatureVerifier, Iexec
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external view override returns (uint256) {
         return
-            _computeDealVolume(
+            DealVolumeLib.computeDealVolume(
                 appOrder.volume,
                 _toTypedDataHash(appOrder.hash()),
                 datasetOrder.dataset != address(0),
