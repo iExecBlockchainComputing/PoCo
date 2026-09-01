@@ -12,7 +12,7 @@ import {PocoStorageLib} from "./PocoStorageLib.sol";
 /**
  * @title Verify order and contribution signatures, presignatures and restrictions.
  */
-library SignatureVerificationLib {
+library SignatureLib {
     using ECDSA for bytes32;
 
     // Used with ERC-734 Key Manager identity contract for authorization management.

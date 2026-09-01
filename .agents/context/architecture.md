@@ -7,7 +7,7 @@
 -   Protocol logic: `contracts/facets/*Facet.sol`
 -   External API declarations: `contracts/interfaces/`
 -   `contracts/IexecInterfaceToken.sol` aggregates them into the single interface downstream tools compile against
--   Shared helpers: `contracts/abstract/` for inherited bases (`FacetBase`, `IexecEscrow`) and `contracts/libs/` for stateless helper libraries (`DealVolumeLib`, `SignatureVerificationLib`, …)
+-   Shared helpers: `contracts/abstract/` for inherited bases (`FacetBase`, `IexecEscrow`) and `contracts/libs/` for stateless helper libraries (`DealVolumeLib`, `SignatureLib`, …)
 -   Storage lives in one struct accessed through `contracts/libs/PocoStorageLib.sol`, shared by every facet: **never reorder or remove an existing variable, only append**. `npm run check-storage-layout` is the CI gate.
 -   Adding or removing a facet means editing two hand-maintained lists: `utils/proxy-tools.ts#getAllLocalFacetFunctions` (selector-to-name map used by upgrades) and the facet groups in `scripts/tools/sol-to-uml.mjs`.
 

@@ -13,7 +13,7 @@ import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
 import {DealVolumeLib} from "../libs/DealVolumeLib.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
-import {SignatureVerificationLib} from "../libs/SignatureVerificationLib.sol";
+import {SignatureLib} from "../libs/SignatureLib.sol";
 
 /**
  * @title Getters contract for PoCo facets.
@@ -63,14 +63,14 @@ contract IexecPocoAccessorsFacet is IexecPocoAccessors, FacetBase {
         return
             DealVolumeLib.computeDealVolume(
                 appOrder.volume,
-                SignatureVerificationLib.toTypedDataHash(appOrder.hash()),
+                SignatureLib.toTypedDataHash(appOrder.hash()),
                 datasetOrder.dataset != address(0),
                 datasetOrder.volume,
-                SignatureVerificationLib.toTypedDataHash(datasetOrder.hash()),
+                SignatureLib.toTypedDataHash(datasetOrder.hash()),
                 workerpoolOrder.volume,
-                SignatureVerificationLib.toTypedDataHash(workerpoolOrder.hash()),
+                SignatureLib.toTypedDataHash(workerpoolOrder.hash()),
                 requestOrder.volume,
-                SignatureVerificationLib.toTypedDataHash(requestOrder.hash())
+                SignatureLib.toTypedDataHash(requestOrder.hash())
             );
     }
 

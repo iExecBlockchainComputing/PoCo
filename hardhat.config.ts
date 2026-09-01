@@ -171,7 +171,7 @@ const config: HardhatUserConfig = {
             // TODO: put all events and soldoc inside interfaces and use them instead of contracts.
             'interfaces/', // interesting for events but too much doc duplication if enabled
             'libs/DealVolumeLib.sol', // contains only internal/private
-            'libs/SignatureVerificationLib.sol', // contains only internal/private
+            'libs/SignatureLib.sol', // contains only internal/private
             'tools/',
             'Diamond.sol', // not relevant
         ],
