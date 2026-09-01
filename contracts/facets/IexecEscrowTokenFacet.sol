@@ -23,6 +23,7 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
  * RLC, and the ERC-20 methods move it between accounts. The balance moves of the
  * escrow itself (lock, unlock, reward, seize) run over the same ledger.
  */
+// TODO rename to IexecEscrowFacet
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecEscrow {
     /***************************************************************************
      *                     Deposit and withdraw functions                      *
