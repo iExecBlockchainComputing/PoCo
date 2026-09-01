@@ -10,6 +10,7 @@ import {FacetBase} from "./FacetBase.sol";
 import {IERC734} from "../external/interfaces/IERC734.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 
+// TODO convert to library
 abstract contract SignatureVerifier is FacetBase {
     using ECDSA for bytes32;
 

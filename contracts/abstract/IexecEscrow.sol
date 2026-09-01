@@ -6,6 +6,8 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecEscrowEvents} from "../interfaces/IexecEscrowEvents.sol";
 import {FacetBase} from "./FacetBase.sol";
 
+// TODO convert to library
+
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.
  */
