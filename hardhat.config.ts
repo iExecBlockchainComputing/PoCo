@@ -166,12 +166,12 @@ const config: HardhatUserConfig = {
         outputDir: 'docs/solidity',
         templates: 'docs/solidity/templates',
         exclude: [
-            'abstract/IexecPocoCommon.sol', // contains only internal/private
-            'abstract/SignatureVerifier.sol', // contains only internal/private
             'external/',
             'facets/IexecAccessorsABILegacyFacet.sol', // not relevant
             // TODO: put all events and soldoc inside interfaces and use them instead of contracts.
             'interfaces/', // interesting for events but too much doc duplication if enabled
+            'libs/DealVolumeLib.sol', // contains only internal/private
+            'libs/SignatureVerificationLib.sol', // contains only internal/private
             'tools/',
             'Diamond.sol', // not relevant
         ],
