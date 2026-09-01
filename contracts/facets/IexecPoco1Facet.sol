@@ -11,7 +11,8 @@ import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
-import {IexecEscrow} from "../abstract/IexecEscrow.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
+import {EscrowLib} from "../libs/EscrowLib.sol";
 import {CommonLib} from "../libs/CommonLib.sol";
 
 struct Matching {
@@ -25,7 +26,7 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, IexecEscrow {
+contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
@@ -455,9 +456,12 @@ contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, IexecEscrow {
         /**
          * Lock
          */
-        lock(_sponsor, (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume);
+        EscrowLib.lock(
+            _sponsor,
+            (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume
+        );
         //slither-disable-next-line divide-before-multiply
-        lock(
+        EscrowLib.lock(
             deal.workerpool.owner,
             ((deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
         );

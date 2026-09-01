@@ -3,28 +3,28 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecEscrow} from "../../abstract/IexecEscrow.sol";
+import {EscrowLib} from "../../libs/EscrowLib.sol";
 import {PocoStorageLib} from "../../libs/PocoStorageLib.sol";
 
 /**
  * @notice a wrapper contract to make internal functions of
- * IexecEscrow testable.
+ * EscrowLib testable.
  */
-contract IexecEscrowTestContract is IexecEscrow {
+contract IexecEscrowTestContract {
     function lock_(address account, uint256 value) external {
-        lock(account, value);
+        EscrowLib.lock(account, value);
     }
 
     function unlock_(address account, uint256 value) external {
-        unlock(account, value);
+        EscrowLib.unlock(account, value);
     }
 
     function reward_(address account, uint256 value, bytes32 ref) external {
-        reward(account, value, ref);
+        EscrowLib.reward(account, value, ref);
     }
 
     function seize_(address account, uint256 value, bytes32 ref) external {
-        seize(account, value, ref);
+        EscrowLib.seize(account, value, ref);
     }
 
     // Helper functions used in unit tests.

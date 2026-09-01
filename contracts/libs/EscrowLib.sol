@@ -2,16 +2,24 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.0;
-import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {IexecEscrowEvents} from "../interfaces/IexecEscrowEvents.sol";
-import {FacetBase} from "./FacetBase.sol";
-
-// TODO convert to library
+import {PocoStorageLib} from "./PocoStorageLib.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.
+ * @dev The events are declared here rather than taken from {IexecEscrowEvents}
+ * because solc 0.8.21 cannot compile a qualified `emit Other.Event(...)` when
+ * userdoc is requested, and docgen always requests it. A library publishes an
+ * event in the ABI of every contract that emits it along an inlined path, so
+ * {IexecEscrowEvents} stays as the single declaration feeding the aggregate
+ * interface.
  */
-abstract contract IexecEscrow is FacetBase, IexecEscrowEvents {
+library EscrowLib {
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Reward(address owner, uint256 amount, bytes32 ref);
+    event Seize(address owner, uint256 amount, bytes32 ref);
+    event Lock(address owner, uint256 amount);
+    event Unlock(address owner, uint256 amount);
+
     /**
      * Lock some value of an account.
      * @param account The account where the value should be locked.
@@ -19,7 +27,7 @@ abstract contract IexecEscrow is FacetBase, IexecEscrowEvents {
      */
     function lock(address account, uint256 value) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        _transfer(account, address(this), value);
+        transfer(account, address(this), value);
         $.m_frozens[account] += value;
         emit Lock(account, value);
     }
@@ -31,7 +39,7 @@ abstract contract IexecEscrow is FacetBase, IexecEscrowEvents {
      */
     function unlock(address account, uint256 value) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        _transfer(address(this), account, value);
+        transfer(address(this), account, value);
         $.m_frozens[account] -= value;
         emit Unlock(account, value);
     }
@@ -43,7 +51,7 @@ abstract contract IexecEscrow is FacetBase, IexecEscrowEvents {
      * @param ref A reference of the reward context.
      */
     function reward(address account, uint256 value, bytes32 ref) internal {
-        _transfer(address(this), account, value);
+        transfer(address(this), account, value);
         emit Reward(account, value, ref);
     }
 
@@ -79,7 +87,7 @@ abstract contract IexecEscrow is FacetBase, IexecEscrowEvents {
      * Transfer value from a spender account to a receiver account.
      * @notice
      * This is the single implementation of an sRLC balance move. It backs both
-     * the escrow operations declared below (lock, unlock, reward) and the ERC-20
+     * the escrow operations declared above (lock, unlock, reward) and the ERC-20
      * entry points of {IexecEscrowTokenFacet}.
      * A self-transfer is a no-op on the balances and is not rejected.
      *
@@ -87,7 +95,7 @@ abstract contract IexecEscrow is FacetBase, IexecEscrowEvents {
      * @param to The address of the receiver account.
      * @param value The value to transfer.
      */
-    function _transfer(address from, address to, uint256 value) internal {
+    function transfer(address from, address to, uint256 value) internal {
         require(from != address(0), "IexecEscrow: Transfer from empty address");
         require(to != address(0), "IexecEscrow: Transfer to empty address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();

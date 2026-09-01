@@ -14,7 +14,8 @@ import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
-import {IexecEscrow} from "../abstract/IexecEscrow.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
+import {EscrowLib} from "../libs/EscrowLib.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {CommonLib} from "../libs/CommonLib.sol";
 
@@ -26,7 +27,7 @@ import {CommonLib} from "../libs/CommonLib.sol";
  * @title PoCo Boost to reduce latency and increase throughput of deals.
  * @notice Works for deals with requested trust = 0.
  */
-contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
+contract IexecPocoBoostFacet is IexecPocoBoost, FacetBase {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
     using Math for uint256;
@@ -334,12 +335,15 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
         $.m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         $.m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
         // Lock deal price from sponsor balance.
-        lock(sponsor, (appPrice + datasetPrice + workerpoolPrice) * volume);
+        EscrowLib.lock(sponsor, (appPrice + datasetPrice + workerpoolPrice) * volume);
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
         //slither-disable-next-line divide-before-multiply
-        lock(workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
+        EscrowLib.lock(
+            workerpoolOwner,
+            ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume
+        );
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             workerpool,
@@ -440,21 +444,21 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
         uint96 workerPoolPrice = deal.workerpoolPrice;
 
         // Seize requester
-        seize(deal.requester, appPrice + datasetPrice + workerPoolPrice, taskId);
+        EscrowLib.seize(deal.requester, appPrice + datasetPrice + workerPoolPrice, taskId);
         uint96 workerReward = deal.workerReward;
         // Reward worker
-        reward(msg.sender, workerReward, taskId);
+        EscrowLib.reward(msg.sender, workerReward, taskId);
         // Reward app developer
         if (appPrice > 0) {
-            reward(deal.appOwner, appPrice, taskId);
+            EscrowLib.reward(deal.appOwner, appPrice, taskId);
         }
         // Reward dataset provider
         if (datasetPrice > 0) {
-            reward(deal.datasetOwner, datasetPrice, taskId);
+            EscrowLib.reward(deal.datasetOwner, datasetPrice, taskId);
         }
 
         // Unlock scheduler stake
-        unlock(workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
+        EscrowLib.unlock(workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
         // Reward scheduler
         uint256 kitty = $.m_frozens[KITTY_ADDRESS];
         if (kitty > 0) {
@@ -463,9 +467,9 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
                 // @dev As long as `KITTY_RATIO = 10`, we can introduce this small
                 kitty / KITTY_RATIO // optimization for `kitty * KITTY_RATIO / 100`
             ).min(kitty); // 3. but no more than available
-            seize(KITTY_ADDRESS, kitty, taskId);
+            EscrowLib.seize(KITTY_ADDRESS, kitty, taskId);
         }
-        reward(
+        EscrowLib.reward(
             workerpoolOwner,
             workerPoolPrice - // reward with
                 workerReward + // sheduler base reward
@@ -513,11 +517,11 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow {
         uint96 workerPoolPrice = deal.workerpoolPrice;
         uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
         // Refund the payer of the task by unlocking the locked funds.
-        unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
+        EscrowLib.unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         // Seize task stake from workerpool.
-        seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
+        EscrowLib.seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        rewardAndLock(KITTY_ADDRESS, workerpoolTaskStake, taskId);
+        EscrowLib.rewardAndLock(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit TaskClaimed(taskId);
     }
 

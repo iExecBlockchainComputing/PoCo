@@ -9,10 +9,11 @@ import {IOracleConsumer} from "../external/interfaces/IOracleConsumer.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IexecPoco2} from "../interfaces/IexecPoco2.sol";
-import {IexecEscrow} from "../abstract/IexecEscrow.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
+import {EscrowLib} from "../libs/EscrowLib.sol";
 import {CommonLib} from "../libs/CommonLib.sol";
 
-contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
+contract IexecPoco2Facet is IexecPoco2, FacetBase {
     modifier onlyScheduler(bytes32 _taskId) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require(_msgSender() == $.m_deals[$.m_tasks[_taskId].dealid].workerpool.owner);
@@ -30,17 +31,17 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
         uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
         // Seize the payer of the task
-        seize(deal.sponsor, taskPrice, _taskid);
+        EscrowLib.seize(deal.sponsor, taskPrice, _taskid);
         // dapp reward
         if (deal.app.price > 0) {
-            reward(deal.app.owner, deal.app.price, _taskid);
+            EscrowLib.reward(deal.app.owner, deal.app.price, _taskid);
         }
         // data reward
         if (deal.dataset.price > 0 && deal.dataset.pointer != address(0)) {
-            reward(deal.dataset.owner, deal.dataset.price, _taskid);
+            EscrowLib.reward(deal.dataset.owner, deal.dataset.price, _taskid);
         }
         // unlock pool stake
-        unlock(deal.workerpool.owner, poolstake);
+        EscrowLib.unlock(deal.workerpool.owner, poolstake);
         // pool reward performed by consensus manager
 
         // Retrieve part of the kitty
@@ -48,8 +49,8 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
         if (kitty > 0) {
             // Get a fraction of the kitty where KITTY_MIN <= fraction <= kitty
             kitty = Math.min(Math.max((kitty * KITTY_RATIO) / 100, KITTY_MIN), kitty);
-            seize(KITTY_ADDRESS, kitty, _taskid);
-            reward(deal.workerpool.owner, kitty, _taskid);
+            EscrowLib.seize(KITTY_ADDRESS, kitty, _taskid);
+            EscrowLib.reward(deal.workerpool.owner, kitty, _taskid);
         }
     }
 
@@ -60,10 +61,10 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
         uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
         uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
 
-        unlock(deal.sponsor, taskPrice); // Refund the payer of the task
-        seize(deal.workerpool.owner, poolstake, _taskid);
+        EscrowLib.unlock(deal.sponsor, taskPrice); // Refund the payer of the task
+        EscrowLib.seize(deal.workerpool.owner, poolstake, _taskid);
         // Reward kitty and lock value on it.
-        rewardAndLock(KITTY_ADDRESS, poolstake, _taskid); // → Kitty / Burn
+        EscrowLib.rewardAndLock(KITTY_ADDRESS, poolstake, _taskid); // → Kitty / Burn
     }
 
     /***************************************************************************
@@ -146,7 +147,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
         task.contributors.push(_msgSender());
 
         // Lock contribution.
-        lock(_msgSender(), deal.workerStake);
+        EscrowLib.lock(_msgSender(), deal.workerStake);
 
         emit TaskContribute(_taskid, _msgSender(), _resultHash);
 
@@ -359,7 +360,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
         for (uint256 i = 0; i < task.contributors.length; ++i) {
             address worker = task.contributors[i];
             // Unlock contribution
-            unlock(worker, $.m_deals[task.dealid].workerStake);
+            EscrowLib.unlock(worker, $.m_deals[task.dealid].workerStake);
         }
 
         emit TaskClaimed(_taskid);
@@ -447,9 +448,9 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
                 totalReward = totalReward - workerReward;
 
                 // Unlock contribution
-                unlock(worker, deal.workerStake);
+                EscrowLib.unlock(worker, deal.workerStake);
                 // Reward for contribution
-                reward(worker, workerReward, _taskid);
+                EscrowLib.reward(worker, workerReward, _taskid);
 
                 // Only reward if replication happened
                 if (task.contributors.length > 1) {
@@ -466,7 +467,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
             else {
                 // No Reward
                 // Seize contribution
-                seize(worker, deal.workerStake, _taskid);
+                EscrowLib.seize(worker, deal.workerStake, _taskid);
 
                 // Always punish bad contributors
                 {
@@ -483,7 +484,7 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
         }
         // totalReward now contains the scheduler share
         // Reward for scheduling.
-        reward(deal.workerpool.owner, totalReward, _taskid);
+        EscrowLib.reward(deal.workerpool.owner, totalReward, _taskid);
     }
 
     /*
@@ -498,9 +499,9 @@ contract IexecPoco2Facet is IexecPoco2, IexecEscrow {
         uint256 workerReward = (deal.workerpool.price * (100 - deal.schedulerRewardRatio)) / 100;
         uint256 schedulerReward = deal.workerpool.price - workerReward;
         // Reward for contribution.
-        reward(_msgSender(), workerReward, _taskid);
+        EscrowLib.reward(_msgSender(), workerReward, _taskid);
         // Reward for scheduling.
-        reward(deal.workerpool.owner, schedulerReward, _taskid);
+        EscrowLib.reward(deal.workerpool.owner, schedulerReward, _taskid);
     }
 
     /**

@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import {FacetBase} from "../abstract/FacetBase.sol";
-import {IexecEscrow} from "../abstract/IexecEscrow.sol";
+import {EscrowLib} from "../libs/EscrowLib.sol";
 import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
@@ -24,7 +24,12 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
  * escrow itself (lock, unlock, reward, seize) run over the same ledger.
  */
 // TODO rename to IexecEscrowFacet
-contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecEscrow {
+// TODO move _mint, _burn and _approve into EscrowLib. This contract inherits the
+// escrow events through IexecEscrowToken and also emits Transfer through the
+// library, so its ABI lists Transfer twice and typechain generates duplicate
+// identifiers for it. Moving the three writers into the library lets
+// IexecEscrowToken drop `is IexecEscrowEvents`, which removes the duplicate.
+contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase {
     /***************************************************************************
      *                     Deposit and withdraw functions                      *
      ***************************************************************************/
@@ -217,7 +222,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecEscr
      ***************************************************************************/
 
     function transfer(address recipient, uint256 amount) external override returns (bool) {
-        _transfer(_msgSender(), recipient, amount);
+        EscrowLib.transfer(_msgSender(), recipient, amount);
         return true;
     }
 
@@ -250,7 +255,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, IexecEscr
         uint256 amount
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        _transfer(sender, recipient, amount);
+        EscrowLib.transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()] - amount);
         return true;
     }
