@@ -237,13 +237,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         _transfer(sender, recipient, amount);
-        // TEMPORARY MIGRATION FIX: Check allowance to prevent underflow and revert without reason for backward compatibility
-        // TODO: Remove this in the next major version
-        uint256 currentAllowance = $.m_allowances[sender][_msgSender()];
-        if (currentAllowance < amount) {
-            revert();
-        }
-        _approve(sender, _msgSender(), currentAllowance - amount);
+        _approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()] - amount);
         return true;
     }
 
@@ -261,13 +255,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         uint256 subtractedValue
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        // TEMPORARY MIGRATION FIX: Check allowance to prevent underflow and revert without reason for backward compatibility
-        // TODO: Remove this in the next major version
-        uint256 currentAllowance = $.m_allowances[_msgSender()][spender];
-        if (currentAllowance < subtractedValue) {
-            revert();
-        }
-        _approve(_msgSender(), spender, currentAllowance - subtractedValue);
+        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender] - subtractedValue);
         return true;
     }
 
@@ -275,13 +263,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 senderBalance = $.m_balances[sender];
-        // TEMPORARY MIGRATION FIX: Check balance to prevent underflow and revert without reason for backward compatibility
-        // TODO: Remove this in the next major version
-        if (senderBalance < amount) {
-            revert();
-        }
-        $.m_balances[sender] = senderBalance - amount;
+        $.m_balances[sender] = $.m_balances[sender] - amount;
         $.m_balances[recipient] = $.m_balances[recipient] + amount;
         emit Transfer(sender, recipient, amount);
     }
@@ -301,14 +283,8 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
     function _burn(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: burn from the zero address");
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 accountBalance = $.m_balances[account];
-        // TEMPORARY MIGRATION FIX: Check balance to prevent underflow and revert without reason for backward compatibility
-        // TODO: Remove this in the next major version
-        if (accountBalance < amount) {
-            revert();
-        }
         $.m_totalSupply = $.m_totalSupply - amount;
-        $.m_balances[account] = accountBalance - amount;
+        $.m_balances[account] = $.m_balances[account] - amount;
         emit Transfer(account, address(0), amount);
     }
 
