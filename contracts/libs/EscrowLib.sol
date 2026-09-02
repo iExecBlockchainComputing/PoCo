@@ -6,14 +6,10 @@ import {PocoStorageLib} from "./PocoStorageLib.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.
- * @dev The events are declared here rather than taken from {IexecEscrowEvents}
- * because solc 0.8.21 cannot compile a qualified `emit Other.Event(...)` when
- * userdoc is requested, and docgen always requests it. A library publishes an
- * event in the ABI of every contract that emits it along an inlined path, so
- * {IexecEscrowEvents} stays as the single declaration feeding the aggregate
- * interface.
  */
 library EscrowLib {
+    /// @dev The events are declared here rather than taken from {IexecEscrowEvents}
+    /// because solc 0.8.21 cannot compile `emit Other.Event(...)`.
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Reward(address owner, uint256 amount, bytes32 ref);
     event Seize(address owner, uint256 amount, bytes32 ref);
