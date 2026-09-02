@@ -793,6 +793,16 @@ function broadcastWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrder _work
 function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestorder) external
 ```
 
+## ConstantsLib
+
+The single declaration of every protocol constant. {FacetBase} aliases
+them so the facets keep reading them under their bare names.
+
+_They live in a library, not in a base contract, because a library cannot
+inherit and a contract constant is not readable from outside its own contract
+at any visibility. A library constant carries no such restriction, so both the
+facets and the helper libraries reach the same declaration._
+
 ## EscrowLib
 
 The escrow layers on top of the sRLC ledger: it owns `m_frozens` and
