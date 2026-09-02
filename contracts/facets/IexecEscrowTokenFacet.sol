@@ -4,7 +4,6 @@
 pragma solidity ^0.8.0;
 
 import {FacetBase} from "../abstract/FacetBase.sol";
-import {EscrowLib} from "../libs/EscrowLib.sol";
 import {StakedRlcLib} from "../libs/StakedRlcLib.sol";
 import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";

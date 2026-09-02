@@ -795,18 +795,11 @@ function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestord
 
 ## EscrowLib
 
+The escrow layers on top of the sRLC ledger: it owns `m_frozens` and
+defers every balance move to {StakedRlcLib}.
+
 _The events are declared here rather than taken from {IexecEscrowEvents}
-because solc 0.8.21 cannot compile a qualified `emit Other.Event(...)` when
-userdoc is requested, and docgen always requests it. A library publishes an
-event in the ABI of every contract that emits it along an inlined path, so
-{IexecEscrowEvents} stays as the single declaration feeding the aggregate
-interface._
-
-### Transfer
-
-```solidity
-event Transfer(address from, address to, uint256 value)
-```
+because solc 0.8.21 cannot compile `emit Other.Event(...)`._
 
 ### Reward
 
@@ -1295,6 +1288,27 @@ struct PocoStorage {
   mapping(address => bool) m_v3_scoreImported;
   mapping(bytes32 => struct IexecLibCore_v5.DealBoost) m_dealsBoost;
 }
+```
+
+## StakedRlcLib
+
+sRLC ("Staked RLC") is the internal token of the PoCo protocol. It is
+not a standalone contract: its total supply, balances and allowances live in
+the PoCo storage. This library is the single owner of every write to them.
+
+_The events are declared here rather than taken from {IexecEscrowEvents}
+because solc 0.8.21 cannot compile `emit Other.Event(...)`._
+
+### Transfer
+
+```solidity
+event Transfer(address from, address to, uint256 value)
+```
+
+### Approval
+
+```solidity
+event Approval(address owner, address spender, uint256 value)
 ```
 
 ## IRegistry
