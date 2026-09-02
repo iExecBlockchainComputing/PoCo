@@ -3,14 +3,16 @@
 
 pragma solidity ^0.8.0;
 import {PocoStorageLib} from "./PocoStorageLib.sol";
+import {StakedRlcLib} from "./StakedRlcLib.sol";
 
 /**
  * @title Manage (lock/unlock/reward/seize) user funds.
+ * @notice The escrow layers on top of the sRLC ledger: it owns `m_frozens` and
+ * defers every balance move to {StakedRlcLib}.
+ * @dev The events are declared here rather than taken from {IexecEscrowEvents}
+ * because solc 0.8.21 cannot compile `emit Other.Event(...)`.
  */
 library EscrowLib {
-    /// @dev The events are declared here rather than taken from {IexecEscrowEvents}
-    /// because solc 0.8.21 cannot compile `emit Other.Event(...)`.
-    event Transfer(address indexed from, address indexed to, uint256 value);
     event Reward(address owner, uint256 amount, bytes32 ref);
     event Seize(address owner, uint256 amount, bytes32 ref);
     event Lock(address owner, uint256 amount);
@@ -23,7 +25,7 @@ library EscrowLib {
      */
     function lock(address account, uint256 value) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        transfer(account, address(this), value);
+        StakedRlcLib.transfer(account, address(this), value);
         $.m_frozens[account] += value;
         emit Lock(account, value);
     }
@@ -35,7 +37,7 @@ library EscrowLib {
      */
     function unlock(address account, uint256 value) internal {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        transfer(address(this), account, value);
+        StakedRlcLib.transfer(address(this), account, value);
         $.m_frozens[account] -= value;
         emit Unlock(account, value);
     }
@@ -47,7 +49,7 @@ library EscrowLib {
      * @param ref A reference of the reward context.
      */
     function reward(address account, uint256 value, bytes32 ref) internal {
-        transfer(address(this), account, value);
+        StakedRlcLib.transfer(address(this), account, value);
         emit Reward(account, value, ref);
     }
 
@@ -77,33 +79,5 @@ library EscrowLib {
         $.m_frozens[account] += value;
         emit Reward(account, value, ref);
         emit Lock(account, value);
-    }
-
-    /**
-     * Transfer value from a spender account to a receiver account.
-     * @notice
-     * This is the single implementation of an sRLC balance move. It backs both
-     * the escrow operations declared above (lock, unlock, reward) and the ERC-20
-     * entry points of {IexecEscrowTokenFacet}.
-     * A self-transfer is a no-op on the balances and is not rejected.
-     *
-     * @param from The address of the spender account.
-     * @param to The address of the receiver account.
-     * @param value The value to transfer.
-     */
-    function transfer(address from, address to, uint256 value) internal {
-        require(from != address(0), "IexecEscrow: Transfer from empty address");
-        require(to != address(0), "IexecEscrow: Transfer to empty address");
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        uint256 fromBalance = $.m_balances[from];
-        require(value <= fromBalance, "IexecEscrow: Transfer amount exceeds balance");
-        // This block is guaranteed to not underflow because we check the from balance
-        // and guaranteed to not overflow because the total supply is capped and there
-        // is no minting involved.
-        unchecked {
-            $.m_balances[from] = fromBalance - value;
-            $.m_balances[to] += value;
-        }
-        emit Transfer(from, to, value);
     }
 }

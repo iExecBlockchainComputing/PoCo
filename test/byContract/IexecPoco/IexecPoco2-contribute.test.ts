@@ -519,7 +519,7 @@ describe('IexecPoco2#contribute', () => {
                         scheduler,
                     ),
                 ),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
     });
 });

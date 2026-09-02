@@ -3,9 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import {IexecEscrowEvents} from "./IexecEscrowEvents.sol";
-
-interface IexecEscrowToken is IexecEscrowEvents {
+interface IexecEscrowToken {
     error UnsupportedOperation(bytes4 selector);
     error OperationFailed();
     error CallerIsNotTheRequester();

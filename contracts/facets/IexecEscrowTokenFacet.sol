@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {EscrowLib} from "../libs/EscrowLib.sol";
+import {StakedRlcLib} from "../libs/StakedRlcLib.sol";
 import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
@@ -24,7 +25,6 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
  * escrow itself (lock, unlock, reward, seize) run over the same ledger.
  */
 // TODO rename to IexecEscrowFacet
-// TODO move _mint, _burn and _approve into EscrowLib.
 contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase {
     /***************************************************************************
      *                     Deposit and withdraw functions                      *
@@ -39,13 +39,13 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
 
     function deposit(uint256 amount) external override returns (bool) {
         _deposit(_msgSender(), amount);
-        _mint(_msgSender(), amount);
+        StakedRlcLib.mint(_msgSender(), amount);
         return true;
     }
 
     function depositFor(uint256 amount, address target) external override returns (bool) {
         _deposit(_msgSender(), amount);
-        _mint(target, amount);
+        StakedRlcLib.mint(target, amount);
         return true;
     }
 
@@ -56,19 +56,19 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         require(amounts.length == targets.length, "invalid-array-length");
         for (uint i = 0; i < amounts.length; ++i) {
             _deposit(_msgSender(), amounts[i]);
-            _mint(targets[i], amounts[i]);
+            StakedRlcLib.mint(targets[i], amounts[i]);
         }
         return true;
     }
 
     function withdraw(uint256 amount) external override returns (bool) {
-        _burn(_msgSender(), amount);
+        StakedRlcLib.burn(_msgSender(), amount);
         _withdraw(_msgSender(), amount);
         return true;
     }
 
     function withdrawTo(uint256 amount, address target) external override returns (bool) {
-        _burn(_msgSender(), amount);
+        StakedRlcLib.burn(_msgSender(), amount);
         _withdraw(target, amount);
         return true;
     }
@@ -76,7 +76,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
     function recover() external override onlyOwner returns (uint256) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         uint256 delta = $.m_baseToken.balanceOf(address(this)) - $.m_totalSupply;
-        _mint(owner(), delta);
+        StakedRlcLib.mint(owner(), delta);
         return delta;
     }
 
@@ -142,7 +142,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         require(token == address($.m_baseToken), "wrong-token");
         _deposit(sender, amount);
-        _mint(sender, amount);
+        StakedRlcLib.mint(sender, amount);
         if (data.length > 0) {
             _executeOperation(sender, data);
         }
@@ -218,12 +218,12 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
      ***************************************************************************/
 
     function transfer(address recipient, uint256 amount) external override returns (bool) {
-        EscrowLib.transfer(_msgSender(), recipient, amount);
+        StakedRlcLib.transfer(_msgSender(), recipient, amount);
         return true;
     }
 
     function approve(address spender, uint256 value) external override returns (bool) {
-        _approve(_msgSender(), spender, value);
+        StakedRlcLib.approve(_msgSender(), spender, value);
         return true;
     }
 
@@ -232,7 +232,7 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         uint256 value,
         bytes calldata extraData
     ) external override returns (bool) {
-        _approve(_msgSender(), spender, value);
+        StakedRlcLib.approve(_msgSender(), spender, value);
         require(
             IexecTokenSpender(spender).receiveApproval(
                 _msgSender(),
@@ -251,8 +251,8 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         uint256 amount
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        EscrowLib.transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()] - amount);
+        StakedRlcLib.transfer(sender, recipient, amount);
+        StakedRlcLib.approve(sender, _msgSender(), $.m_allowances[sender][_msgSender()] - amount);
         return true;
     }
 
@@ -261,7 +261,11 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         uint256 addedValue
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender] + addedValue);
+        StakedRlcLib.approve(
+            _msgSender(),
+            spender,
+            $.m_allowances[_msgSender()][spender] + addedValue
+        );
         return true;
     }
 
@@ -270,31 +274,11 @@ contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase
         uint256 subtractedValue
     ) external override returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        _approve(_msgSender(), spender, $.m_allowances[_msgSender()][spender] - subtractedValue);
+        StakedRlcLib.approve(
+            _msgSender(),
+            spender,
+            $.m_allowances[_msgSender()][spender] - subtractedValue
+        );
         return true;
-    }
-
-    function _mint(address account, uint256 amount) internal {
-        require(account != address(0), "ERC20: mint to the zero address");
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        $.m_totalSupply = $.m_totalSupply + amount;
-        $.m_balances[account] = $.m_balances[account] + amount;
-        emit Transfer(address(0), account, amount);
-    }
-
-    function _burn(address account, uint256 amount) internal {
-        require(account != address(0), "ERC20: burn from the zero address");
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        $.m_totalSupply = $.m_totalSupply - amount;
-        $.m_balances[account] = $.m_balances[account] - amount;
-        emit Transfer(account, address(0), amount);
-    }
-
-    function _approve(address owner, address spender, uint256 amount) internal {
-        require(owner != address(0), "ERC20: approve from the zero address");
-        require(spender != address(0), "ERC20: approve to the zero address");
-        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        $.m_allowances[owner][spender] = amount;
-        emit Approval(owner, spender, amount);
     }
 }
