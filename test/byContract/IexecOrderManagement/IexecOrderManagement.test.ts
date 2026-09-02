@@ -5,11 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-    IexecInterfaceToken,
-    IexecInterfaceToken__factory,
-    IexecLibOrders_v5,
-} from '../../../typechain';
+import { IexecInterface, IexecInterface__factory, IexecLibOrders_v5 } from '../../../typechain';
 import { NULL } from '../../../utils/constants';
 import { buildOrders, createOrderOperation } from '../../../utils/createOrders';
 import { OrderOperationEnum, getIexecAccounts } from '../../../utils/poco-tools';
@@ -27,7 +23,7 @@ describe('OrderManagement', async () => {
         iexecPocoAsDatasetProvider,
         iexecPocoAsScheduler,
         iexecPocoAsRequester,
-    ]: IexecInterfaceToken[] = [];
+    ]: IexecInterface[] = [];
     let iexecWrapper: IexecWrapper;
     let [anyone, appProvider, datasetProvider, scheduler, requester]: SignerWithAddress[] = [];
     let appOrder: IexecLibOrders_v5.AppOrderStruct;
@@ -46,7 +42,7 @@ describe('OrderManagement', async () => {
         ({ appProvider, datasetProvider, scheduler, requester, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
-        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         iexecPocoAsAppProvider = iexecPoco.connect(appProvider);
         iexecPocoAsDatasetProvider = iexecPoco.connect(datasetProvider);
         iexecPocoAsScheduler = iexecPoco.connect(scheduler);

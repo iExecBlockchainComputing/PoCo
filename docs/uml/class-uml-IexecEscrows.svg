@@ -37,8 +37,8 @@
 <g id="node2" class="node">
 <title>8</title>
 <polygon fill="#f2f2f2" stroke="black" points="1617.6,-0.5 1617.6,-402.9 2122.3,-402.9 2122.3,-0.5 1617.6,-0.5"/>
-<text text-anchor="middle" x="1869.95" y="-386.3" font-family="Times,serif" font-size="14.00">IexecEscrowTokenFacet</text>
-<text text-anchor="middle" x="1869.95" y="-369.5" font-family="Times,serif" font-size="14.00">contracts/facets/IexecEscrowTokenFacet.sol</text>
+<text text-anchor="middle" x="1869.95" y="-386.3" font-family="Times,serif" font-size="14.00">IexecEscrowFacet</text>
+<text text-anchor="middle" x="1869.95" y="-369.5" font-family="Times,serif" font-size="14.00">contracts/facets/IexecEscrowFacet.sol</text>
 <polyline fill="none" stroke="black" points="1617.6,-361.3 2122.3,-361.3 "/>
 <text text-anchor="start" x="1625.6" y="-344.7" font-family="Times,serif" font-size="14.00">Internal:</text>
 <text text-anchor="start" x="1625.6" y="-327.9" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;_executeOperation(sender: address, data: bytes)</text>
@@ -68,13 +68,13 @@
 <path fill="none" stroke="black" d="M1869.95,-403.01C1869.95,-406.67 1869.95,-410.32 1869.95,-413.98"/>
 <polygon fill="none" stroke="black" points="1859.45,-414.02 1869.95,-444.02 1880.45,-414.02 1859.45,-414.02"/>
 </g>
-<!-- 23 -->
+<!-- 22 -->
 <g id="node3" class="node">
-<title>23</title>
+<title>22</title>
 <polygon fill="#f2f2f2" stroke="black" points="2042.98,-439.9 2042.98,-758.3 2338.93,-758.3 2338.93,-439.9 2042.98,-439.9"/>
 <text text-anchor="middle" x="2190.95" y="-741.7" font-family="Times,serif" font-size="14.00">&lt;&lt;Interface&gt;&gt;</text>
-<text text-anchor="middle" x="2190.95" y="-724.9" font-family="Times,serif" font-size="14.00">IexecEscrowToken</text>
-<text text-anchor="middle" x="2190.95" y="-708.1" font-family="Times,serif" font-size="14.00">contracts/interfaces/IexecEscrowToken.sol</text>
+<text text-anchor="middle" x="2190.95" y="-724.9" font-family="Times,serif" font-size="14.00">IexecEscrow</text>
+<text text-anchor="middle" x="2190.95" y="-708.1" font-family="Times,serif" font-size="14.00">contracts/interfaces/IexecEscrow.sol</text>
 <polyline fill="none" stroke="black" points="2042.98,-699.9 2338.93,-699.9 "/>
 <text text-anchor="start" x="2050.98" y="-683.3" font-family="Times,serif" font-size="14.00">External:</text>
 <text text-anchor="start" x="2050.98" y="-666.5" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&#160;null()</text>
@@ -92,9 +92,9 @@
 <text text-anchor="start" x="2050.98" y="-464.9" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&#160;decreaseAllowance(address, uint256): bool</text>
 <text text-anchor="start" x="2050.98" y="-448.1" font-family="Times,serif" font-size="14.00"> &#160;&#160;&#160;&#160;approveAndCall(address, uint256, bytes): bool</text>
 </g>
-<!-- 8&#45;&gt;23 -->
+<!-- 8&#45;&gt;22 -->
 <g id="edge1" class="edge">
-<title>8&#45;&gt;23</title>
+<title>8&#45;&gt;22</title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M2032.57,-403.01C2036.17,-407.44 2039.77,-411.88 2043.36,-416.3"/>
 <polygon fill="none" stroke="black" points="2035.38,-423.13 2062.44,-439.8 2051.68,-409.89 2035.38,-423.13"/>
 </g>

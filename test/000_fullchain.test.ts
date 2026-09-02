@@ -4,7 +4,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { IexecInterfaceToken, IexecInterfaceToken__factory } from '../typechain';
+import { IexecInterface, IexecInterface__factory } from '../typechain';
 import { TAG_STANDARD, TAG_TEE } from '../utils/constants';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import {
@@ -38,7 +38,7 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
 let proxyAddress: string;
-let iexecPoco: IexecInterfaceToken;
+let iexecPoco: IexecInterface;
 let iexecWrapper: IexecWrapper;
 let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
 let [
@@ -85,7 +85,7 @@ describe('Integration tests', function () {
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,

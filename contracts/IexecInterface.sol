@@ -7,8 +7,8 @@ import {IexecAccessorsABILegacy} from "./interfaces/IexecAccessorsABILegacy.sol"
 import {IexecCategoryManager} from "./interfaces/IexecCategoryManager.sol";
 import {IexecConfiguration} from "./interfaces/IexecConfiguration.sol";
 import {IexecConfigurationExtra} from "./interfaces/IexecConfigurationExtra.sol";
+import {IexecEscrow} from "./interfaces/IexecEscrow.sol";
 import {IexecEscrowEvents} from "./interfaces/IexecEscrowEvents.sol";
-import {IexecEscrowToken} from "./interfaces/IexecEscrowToken.sol";
 import {IexecOrderManagement} from "./interfaces/IexecOrderManagement.sol";
 import {IexecPoco1} from "./interfaces/IexecPoco1.sol";
 import {IexecPoco1Errors} from "./interfaces/IexecPoco1Errors.sol";
@@ -20,23 +20,25 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
 
 // TODO see if Diamond interfaces should be added here ??
 // IDiamond, IDiamondLoupe, IDiamondCut, IERC165, IERC173 (ownership)
-// TODO rename to IexecInterface
 
 /**
  * A global interface that aggregates all the interfaces needed to interact with
- * the PoCo contracts in token mode.
- * @dev Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
+ * the PoCo contracts.
+ * @dev Referenced in the SDK with the path `contracts/IexecInterface.sol`.
  * Changing the name or the path would cause a breaking change in the SDK.
  */
 // TODO Remove the interface `IexecAccessorsABILegacy` when it's not used in the middleware anymore.
 // https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
-interface IexecInterfaceToken is
+// TODO Add the interfaces `IexecPocoBoost` and `IexecPocoBoostAccessors` once the Boost facets
+// are deployed on every network. They are not deployed on Arbitrum mainnet nor on Arbitrum
+// Sepolia today, so aggregating them here would make the SDK advertise functions that revert.
+interface IexecInterface is
     IexecAccessorsABILegacy,
     IexecCategoryManager,
     IexecConfiguration,
     IexecConfigurationExtra,
+    IexecEscrow,
     IexecEscrowEvents,
-    IexecEscrowToken,
     IexecOrderManagement,
     IexecPoco1,
     IexecPoco1Errors,

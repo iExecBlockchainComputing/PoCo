@@ -1,11 +1,11 @@
 # Solidity API
 
-## IexecInterfaceToken
+## IexecInterface
 
 A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in token mode.
+the PoCo contracts.
 
-_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
+_Referenced in the SDK with the path `contracts/IexecInterface.sol`.
 Changing the name or the path would cause a breaking change in the SDK._
 
 ## FacetBase
@@ -68,7 +68,7 @@ function setTeeBroker(address _teebroker) external
 function setCallbackGas(uint256 _callbackgas) external
 ```
 
-## IexecEscrowTokenFacet
+## IexecEscrowFacet
 
 Deposits of the base RLC token are held by the proxy and credited 1:1
 as sRLC (ERC20 "Staked RLC"), managed by this facet manages. sRLC is not a
@@ -304,7 +304,7 @@ Match orders. The requester gets debited.
 This function does not use `msg.sender` to determine who pays for the deal.
 The sponsor is always set to `_requestorder.requester`, regardless of who calls this function.
 This design allows the function to be safely called via delegatecall from other facets
-(e.g., IexecEscrowTokenFacet.receiveApproval) without security concerns.
+(e.g., IexecEscrowFacet.receiveApproval) without security concerns.
 
 #### Parameters
 

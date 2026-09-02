@@ -4,7 +4,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { IexecInterfaceToken, IexecInterfaceToken__factory } from '../../../typechain';
+import { IexecInterface, IexecInterface__factory } from '../../../typechain';
 import config from '../../../utils/config';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
@@ -16,7 +16,7 @@ const args = [name, description, timeRef] as [string, string, number];
 
 describe('CategoryManager', async () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsAnyone]: IexecInterfaceToken[] = [];
+    let [iexecPoco, iexecPocoAsAnyone]: IexecInterface[] = [];
     let [iexecAdmin, anyone]: SignerWithAddress[] = [];
 
     beforeEach('Deploy', async () => {
@@ -29,7 +29,7 @@ describe('CategoryManager', async () => {
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({ iexecAdmin, anyone } = accounts);
-        iexecPoco = IexecInterfaceToken__factory.connect(proxyAddress, iexecAdmin);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, iexecAdmin);
         iexecPocoAsAnyone = iexecPoco.connect(anyone);
     }
 

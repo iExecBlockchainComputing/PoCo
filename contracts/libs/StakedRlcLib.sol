@@ -22,7 +22,7 @@ library StakedRlcLib {
      * @notice
      * This is the single implementation of an sRLC balance move. It backs both
      * the escrow operations of {EscrowLib} and the ERC-20 entry points of
-     * {IexecEscrowTokenFacet}.
+     * {IexecEscrowFacet}.
      * A self-transfer is a no-op on the balances and is not rejected.
      *
      * @param from The address of the spender account.
