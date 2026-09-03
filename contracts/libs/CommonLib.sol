@@ -8,7 +8,6 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IERC734} from "../external/interfaces/IERC734.sol";
-import {Constants} from "./Constants.sol";
 import {PocoStorageLib} from "./PocoStorageLib.sol";
 
 /**
@@ -18,6 +17,9 @@ import {PocoStorageLib} from "./PocoStorageLib.sol";
 library CommonLib {
     using ECDSA for bytes32;
     using Math for uint256;
+
+    // Used with ERC-734 Key Manager identity contract for authorization management.
+    uint256 private constant GROUPMEMBER_PURPOSE = 4;
 
     /**
      * Hash a Typed Data using the configured domain.
@@ -145,7 +147,7 @@ library CommonLib {
             try
                 IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
                         bytes32(uint256(uint160(account))),
-                        Constants.GROUPMEMBER_PURPOSE
+                        GROUPMEMBER_PURPOSE
                     )
             returns (bool success) {
                 return success;

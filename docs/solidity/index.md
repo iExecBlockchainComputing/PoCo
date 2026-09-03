@@ -794,8 +794,6 @@ function broadcastWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrder _work
 function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestorder) external
 ```
 
-## Constants
-
 ## EscrowLib
 
 The escrow layers on top of the sRLC ledger: it owns `m_frozens` and
