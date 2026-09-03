@@ -16,8 +16,8 @@ import {
     IOracleConsumer__factory,
     IexecConfiguration,
     IexecConfiguration__factory,
-    IexecInterfaceToken,
-    IexecInterfaceToken__factory,
+    IexecInterface,
+    IexecInterface__factory,
     IexecOrderManagement__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
@@ -75,7 +75,7 @@ const randomEOAAddress = randomAddress();
 let proxyAddress: string;
 let iexecPocoBoostInstance: IexecPocoBoostFacet;
 let iexecConfigurationAsAdmin: IexecConfiguration;
-let iexecPocoAccessor: IexecInterfaceToken;
+let iexecPocoAccessor: IexecInterface;
 let oracleConsumerInstance: TestClient;
 let gasWasterClientInstance: GasWasterClient;
 let gasWasterClientAddress: string;
@@ -130,7 +130,7 @@ describe('IexecPocoBoost', function () {
             proxyAddress,
             accounts.iexecAdmin,
         );
-        iexecPocoAccessor = IexecInterfaceToken__factory.connect(proxyAddress, ethers.provider);
+        iexecPocoAccessor = IexecInterface__factory.connect(proxyAddress, ethers.provider);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,

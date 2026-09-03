@@ -154,7 +154,7 @@ contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase {
      * @notice This function does not use `msg.sender` to determine who pays for the deal.
      * The sponsor is always set to `_requestorder.requester`, regardless of who calls this function.
      * This design allows the function to be safely called via delegatecall from other facets
-     * (e.g., IexecEscrowTokenFacet.receiveApproval) without security concerns.
+     * (e.g., IexecEscrowFacet.receiveApproval) without security concerns.
      *
      * @param _apporder The app order.
      * @param _datasetorder The dataset order.

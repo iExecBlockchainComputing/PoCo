@@ -18,8 +18,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     IWorkerpool__factory,
-    IexecInterfaceToken,
-    IexecInterfaceToken__factory,
+    IexecInterface,
+    IexecInterface__factory,
     IexecLibOrders_v5,
     IexecPocoBoostAccessors__factory,
     RLC__factory,
@@ -54,13 +54,13 @@ export const DATASET_CHECKSUM =
     '0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321';
 export class IexecWrapper {
     proxyAddress: string;
-    iexecPoco: IexecInterfaceToken;
+    iexecPoco: IexecInterface;
     accounts: IexecAccounts;
     domain: TypedDataDomain;
 
     constructor(proxyAddress: string, accounts: IexecAccounts) {
         this.proxyAddress = proxyAddress;
-        this.iexecPoco = IexecInterfaceToken__factory.connect(this.proxyAddress, ethers.provider);
+        this.iexecPoco = IexecInterface__factory.connect(this.proxyAddress, ethers.provider);
         this.accounts = accounts;
         this.domain = {
             name: 'iExecODB',

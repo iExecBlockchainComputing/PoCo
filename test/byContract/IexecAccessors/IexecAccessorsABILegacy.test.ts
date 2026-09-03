@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { Wallet, ZeroAddress } from 'ethers';
-import { IexecInterfaceToken, IexecInterfaceToken__factory } from '../../../typechain';
+import { IexecInterface, IexecInterface__factory } from '../../../typechain';
 import { TAG_STANDARD } from '../../../utils/constants';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
@@ -30,7 +30,7 @@ const { resultDigest } = buildUtf8ResultAndDigest('result');
 const taskIndex = 0n;
 
 let proxyAddress: string;
-let iexecPocoABILegacy: IexecInterfaceToken;
+let iexecPocoABILegacy: IexecInterface;
 let iexecWrapper: IexecWrapper;
 let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
 let [
@@ -60,7 +60,7 @@ describe('IexecAccessorsABILegacy', function () {
             accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPocoABILegacy = IexecInterfaceToken__factory.connect(proxyAddress, anyone);
+        iexecPocoABILegacy = IexecInterface__factory.connect(proxyAddress, anyone);
         ordersAssets = {
             app: appAddress,
             dataset: datasetAddress,

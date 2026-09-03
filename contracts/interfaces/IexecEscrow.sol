@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-interface IexecEscrowToken {
+interface IexecEscrow {
     error UnsupportedOperation(bytes4 selector);
     error OperationFailed();
     error CallerIsNotTheRequester();

@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {StakedRlcLib} from "../libs/StakedRlcLib.sol";
-import {IexecEscrowToken} from "../interfaces/IexecEscrowToken.sol";
+import {IexecEscrow} from "../interfaces/IexecEscrow.sol";
 import {IexecTokenSpender} from "../interfaces/IexecTokenSpender.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
@@ -23,8 +23,7 @@ import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
  * RLC, and the ERC-20 methods move it between accounts. The balance moves of the
  * escrow itself (lock, unlock, reward, seize) run over the same ledger.
  */
-// TODO rename to IexecEscrowFacet
-contract IexecEscrowTokenFacet is IexecEscrowToken, IexecTokenSpender, FacetBase {
+contract IexecEscrowFacet is IexecEscrow, IexecTokenSpender, FacetBase {
     /***************************************************************************
      *                     Deposit and withdraw functions                      *
      ***************************************************************************/
