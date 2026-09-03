@@ -6,7 +6,7 @@ import {
     IexecCategoryManagerFacet__factory,
     IexecConfigurationExtraFacet__factory,
     IexecConfigurationFacet__factory,
-    IexecEscrowFacet__factory,
+    IexecEscrowTokenFacet__factory,
     IexecOrderManagementFacet__factory,
     IexecPoco1Facet__factory,
     IexecPoco2Facet__factory,
@@ -39,7 +39,7 @@ async function main() {
             IexecConfigurationExtraFacet: '0x7Ff117E7385Ac3E207AF1791fE7e66C7802aeCCd',
             IexecConfigurationFacet: '0x88eb05e62434057d3AA9e41FdaF7300A586b314D',
             IexecERC20Facet: '0xB0152eC6f48E64a92B66D4736aFA1b02d8D45169', // Removed from codebase
-            IexecEscrowFacet: '0xd9EB17A161581FBBAD2Ae998c0C19746EaAD0D6E',
+            IexecEscrowTokenFacet: '0xd9EB17A161581FBBAD2Ae998c0C19746EaAD0D6E',
             IexecOrderManagementFacet: '0x541d532E6C195Ba044a75325F367342f523627fB',
             IexecPoco1Facet: '0xC8dE3913fcdBC576970dCe24eE416CA25681f65f',
             IexecPoco2Facet: '0x5c7B589E6807B554ed278f335215B93bCB692162',
@@ -53,7 +53,7 @@ async function main() {
             IexecConfigurationExtraFacet: '0x7Ff117E7385Ac3E207AF1791fE7e66C7802aeCCd',
             IexecConfigurationFacet: '0x88eb05e62434057d3AA9e41FdaF7300A586b314D',
             IexecERC20Facet: '0xB0152eC6f48E64a92B66D4736aFA1b02d8D45169', // Removed from codebase
-            IexecEscrowFacet: '0xd9EB17A161581FBBAD2Ae998c0C19746EaAD0D6E',
+            IexecEscrowTokenFacet: '0xd9EB17A161581FBBAD2Ae998c0C19746EaAD0D6E',
             IexecOrderManagementFacet: '0x541d532E6C195Ba044a75325F367342f523627fB',
             IexecPoco1Facet: '0x5331c0FC7DD0Cc08047B546675cd1d6d47152AEb',
             IexecPoco2Facet: '0x5c7B589E6807B554ed278f335215B93bCB692162',
@@ -96,8 +96,8 @@ async function main() {
             factory: null,
         },
         {
-            name: 'IexecEscrowFacet',
-            address: addresses['IexecEscrowFacet'],
+            name: 'IexecEscrowTokenFacet',
+            address: addresses['IexecEscrowTokenFacet'],
             factory: null,
         },
         {
@@ -150,9 +150,9 @@ async function main() {
             factory: new IexecConfigurationFacet__factory(iexecLibOrders),
         },
         {
-            name: 'IexecEscrowFacet',
+            name: 'IexecEscrowTokenFacet',
             address: null,
-            factory: new IexecEscrowFacet__factory(),
+            factory: new IexecEscrowTokenFacet__factory(),
         },
         {
             name: 'IexecOrderManagementFacet',
