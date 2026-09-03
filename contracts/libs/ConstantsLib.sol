@@ -4,13 +4,7 @@
 pragma solidity ^0.8.0;
 
 /**
- * @title The protocol constants of PoCo.
- * @notice The single declaration of every protocol constant. {FacetBase} aliases
- * them so the facets keep reading them under their bare names.
- * @dev They live in a library, not in a base contract, because a library cannot
- * inherit and a contract constant is not readable from outside its own contract
- * at any visibility. A library constant carries no such restriction, so both the
- * facets and the helper libraries reach the same declaration.
+ * @title All protocol constants.
  */
 library ConstantsLib {
     // Deadline ratios, expressed as multiples of the category time frame.

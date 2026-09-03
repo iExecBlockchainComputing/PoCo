@@ -24,14 +24,12 @@ import {IOwnable} from "./interfaces/IOwnable.sol";
 /**
  * A global interface that aggregates all the interfaces needed to interact with
  * the PoCo contracts.
- * @dev Referenced in the SDK with the path `contracts/IexecInterface.sol`.
+ * @dev TODO Referenced in the SDK with the old path `contracts/IexecInterfaceToken.sol`.
+ * The SDK should be updated to use the new path `contracts/IexecInterface.sol`.
  * Changing the name or the path would cause a breaking change in the SDK.
  */
 // TODO Remove the interface `IexecAccessorsABILegacy` when it's not used in the middleware anymore.
 // https://github.com/iExecBlockchainComputing/iexec-commons-poco/blob/819cd008/generateContractWrappers#L7
-// TODO Add the interfaces `IexecPocoBoost` and `IexecPocoBoostAccessors` once the Boost facets
-// are deployed on every network. They are not deployed on Arbitrum mainnet nor on Arbitrum
-// Sepolia today, so aggregating them here would make the SDK advertise functions that revert.
 interface IexecInterface is
     IexecAccessorsABILegacy,
     IexecCategoryManager,
