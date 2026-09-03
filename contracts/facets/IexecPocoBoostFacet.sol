@@ -14,10 +14,10 @@ import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
-import {IexecEscrow} from "../abstract/IexecEscrow.sol";
-import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
+import {EscrowLib} from "../libs/EscrowLib.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
+import {CommonLib} from "../libs/CommonLib.sol";
 
 //
 // Not deployed yet!
@@ -27,7 +27,7 @@ import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
  * @title PoCo Boost to reduce latency and increase throughput of deals.
  * @notice Works for deals with requested trust = 0.
  */
-contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, IexecPocoCommon {
+contract IexecPocoBoostFacet is IexecPocoBoost, FacetBase {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
     using Math for uint256;
@@ -161,52 +161,55 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
         // Check all possible restrictions.
         address workerpool = workerpoolOrder.workerpool;
         require(
-            _isAccountAuthorizedByRestriction(requestOrder.workerpool, workerpool),
+            CommonLib.isAccountAuthorizedByRestriction(requestOrder.workerpool, workerpool),
             "PocoBoost: Workerpool restricted by request order"
         );
         require(
-            _isAccountAuthorizedByRestriction(appOrder.datasetrestrict, dataset),
+            CommonLib.isAccountAuthorizedByRestriction(appOrder.datasetrestrict, dataset),
             "PocoBoost: Dataset restricted by app order"
         );
         require(
-            _isAccountAuthorizedByRestriction(appOrder.workerpoolrestrict, workerpool),
+            CommonLib.isAccountAuthorizedByRestriction(appOrder.workerpoolrestrict, workerpool),
             "PocoBoost: Workerpool restricted by app order"
         );
         address requester = requestOrder.requester;
         require(
-            _isAccountAuthorizedByRestriction(appOrder.requesterrestrict, requester),
+            CommonLib.isAccountAuthorizedByRestriction(appOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by app order"
         );
         require(
-            _isAccountAuthorizedByRestriction(datasetOrder.apprestrict, app),
+            CommonLib.isAccountAuthorizedByRestriction(datasetOrder.apprestrict, app),
             "PocoBoost: App restricted by dataset order"
         );
         require(
-            _isAccountAuthorizedByRestriction(datasetOrder.workerpoolrestrict, workerpool),
+            CommonLib.isAccountAuthorizedByRestriction(datasetOrder.workerpoolrestrict, workerpool),
             "PocoBoost: Workerpool restricted by dataset order"
         );
         require(
-            _isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, requester),
+            CommonLib.isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, requester),
             "PocoBoost: Requester restricted by dataset order"
         );
         require(
-            _isAccountAuthorizedByRestriction(workerpoolOrder.apprestrict, app),
+            CommonLib.isAccountAuthorizedByRestriction(workerpoolOrder.apprestrict, app),
             "PocoBoost: App restricted by workerpool order"
         );
         require(
-            _isAccountAuthorizedByRestriction(workerpoolOrder.datasetrestrict, dataset),
+            CommonLib.isAccountAuthorizedByRestriction(workerpoolOrder.datasetrestrict, dataset),
             "PocoBoost: Dataset restricted by workerpool order"
         );
         require(
-            _isAccountAuthorizedByRestriction(workerpoolOrder.requesterrestrict, requester),
+            CommonLib.isAccountAuthorizedByRestriction(
+                workerpoolOrder.requesterrestrict,
+                requester
+            ),
             "PocoBoost: Requester restricted by workerpool order"
         );
         // Check ownership, registration, and signatures for app and dataset.
         require($.m_appregistry.isRegistered(app), "PocoBoost: App not registered");
         address appOwner = IERC5313(app).owner();
-        bytes32 appOrderTypedDataHash = _toTypedDataHash(appOrder.hash());
+        bytes32 appOrderTypedDataHash = CommonLib.toTypedDataHash(appOrder.hash());
         require(
-            _verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, appOrder.sign),
+            CommonLib.verifySignatureOrPresignature(appOwner, appOrderTypedDataHash, appOrder.sign),
             "PocoBoost: Invalid app order signature"
         );
         bool hasDataset = dataset != address(0);
@@ -215,9 +218,9 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
         if (hasDataset) {
             require($.m_datasetregistry.isRegistered(dataset), "PocoBoost: Dataset not registered");
             datasetOwner = IERC5313(dataset).owner();
-            datasetOrderTypedDataHash = _toTypedDataHash(datasetOrder.hash());
+            datasetOrderTypedDataHash = CommonLib.toTypedDataHash(datasetOrder.hash());
             require(
-                _verifySignatureOrPresignature(
+                CommonLib.verifySignatureOrPresignature(
                     datasetOwner,
                     datasetOrderTypedDataHash,
                     datasetOrder.sign
@@ -231,18 +234,22 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
             "PocoBoost: Workerpool not registered"
         );
         address workerpoolOwner = IERC5313(workerpool).owner();
-        bytes32 workerpoolOrderTypedDataHash = _toTypedDataHash(workerpoolOrder.hash());
+        bytes32 workerpoolOrderTypedDataHash = CommonLib.toTypedDataHash(workerpoolOrder.hash());
         require(
-            _verifySignatureOrPresignature(
+            CommonLib.verifySignatureOrPresignature(
                 workerpoolOwner,
                 workerpoolOrderTypedDataHash,
                 workerpoolOrder.sign
             ),
             "PocoBoost: Invalid workerpool order signature"
         );
-        bytes32 requestOrderTypedDataHash = _toTypedDataHash(requestOrder.hash());
+        bytes32 requestOrderTypedDataHash = CommonLib.toTypedDataHash(requestOrder.hash());
         require(
-            _verifySignatureOrPresignature(requester, requestOrderTypedDataHash, requestOrder.sign),
+            CommonLib.verifySignatureOrPresignature(
+                requester,
+                requestOrderTypedDataHash,
+                requestOrder.sign
+            ),
             "PocoBoost: Invalid request order signature"
         );
 
@@ -268,7 +275,7 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
          *   - but trying to use as little gas as possible
          * - Overflows: Solidity 0.8 has built in overflow checking
          */
-        uint256 volume = _computeDealVolume(
+        uint256 volume = CommonLib.computeDealVolume(
             appOrder.volume,
             appOrderTypedDataHash,
             hasDataset,
@@ -328,12 +335,15 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
         $.m_consumed[workerpoolOrderTypedDataHash] = workerpoolOrderConsumed + volume;
         $.m_consumed[requestOrderTypedDataHash] = requestOrderConsumed + volume;
         // Lock deal price from sponsor balance.
-        lock(sponsor, (appPrice + datasetPrice + workerpoolPrice) * volume);
+        EscrowLib.lock(sponsor, (appPrice + datasetPrice + workerpoolPrice) * volume);
         // Lock deal stake from scheduler balance.
         // Order is important here. First get percentage by task then
         // multiply by volume.
         //slither-disable-next-line divide-before-multiply
-        lock(workerpoolOwner, ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume);
+        EscrowLib.lock(
+            workerpoolOwner,
+            ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume
+        );
         // Notify workerpool.
         emit SchedulerNoticeBoost(
             workerpool,
@@ -394,7 +404,7 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
         address workerpoolOwner = deal.workerpoolOwner;
         // Check scheduler or TEE broker signature
         require(
-            _verifySignatureOfEthSignedMessage(
+            CommonLib.verifySignatureOfEthSignedMessage(
                 enclaveChallenge != address(0) && $.m_teebroker != address(0)
                     ? $.m_teebroker
                     : workerpoolOwner,
@@ -407,7 +417,7 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
         // Check enclave signature
         require(
             enclaveChallenge == address(0) ||
-                _verifySignatureOfEthSignedMessage(
+                CommonLib.verifySignatureOfEthSignedMessage(
                     enclaveChallenge,
                     abi.encodePacked(
                         msg.sender,
@@ -434,21 +444,21 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
         uint96 workerPoolPrice = deal.workerpoolPrice;
 
         // Seize requester
-        seize(deal.requester, appPrice + datasetPrice + workerPoolPrice, taskId);
+        EscrowLib.seize(deal.requester, appPrice + datasetPrice + workerPoolPrice, taskId);
         uint96 workerReward = deal.workerReward;
         // Reward worker
-        reward(msg.sender, workerReward, taskId);
+        EscrowLib.reward(msg.sender, workerReward, taskId);
         // Reward app developer
         if (appPrice > 0) {
-            reward(deal.appOwner, appPrice, taskId);
+            EscrowLib.reward(deal.appOwner, appPrice, taskId);
         }
         // Reward dataset provider
         if (datasetPrice > 0) {
-            reward(deal.datasetOwner, datasetPrice, taskId);
+            EscrowLib.reward(deal.datasetOwner, datasetPrice, taskId);
         }
 
         // Unlock scheduler stake
-        unlock(workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
+        EscrowLib.unlock(workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
         // Reward scheduler
         uint256 kitty = $.m_frozens[KITTY_ADDRESS];
         if (kitty > 0) {
@@ -457,9 +467,9 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
                 // @dev As long as `KITTY_RATIO = 10`, we can introduce this small
                 kitty / KITTY_RATIO // optimization for `kitty * KITTY_RATIO / 100`
             ).min(kitty); // 3. but no more than available
-            seize(KITTY_ADDRESS, kitty, taskId);
+            EscrowLib.seize(KITTY_ADDRESS, kitty, taskId);
         }
-        reward(
+        EscrowLib.reward(
             workerpoolOwner,
             workerPoolPrice - // reward with
                 workerReward + // sheduler base reward
@@ -507,11 +517,11 @@ contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, 
         uint96 workerPoolPrice = deal.workerpoolPrice;
         uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
         // Refund the payer of the task by unlocking the locked funds.
-        unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
+        EscrowLib.unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         // Seize task stake from workerpool.
-        seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
+        EscrowLib.seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        rewardAndLock(KITTY_ADDRESS, workerpoolTaskStake, taskId);
+        EscrowLib.rewardAndLock(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit TaskClaimed(taskId);
     }
 

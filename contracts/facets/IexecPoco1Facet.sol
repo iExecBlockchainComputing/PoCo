@@ -11,9 +11,9 @@ import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
 import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
-import {IexecEscrow} from "../abstract/IexecEscrow.sol";
-import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
-import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
+import {EscrowLib} from "../libs/EscrowLib.sol";
+import {CommonLib} from "../libs/CommonLib.sol";
 
 struct Matching {
     bytes32 apporderHash;
@@ -26,13 +26,7 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is
-    IexecPoco1,
-    IexecPoco1Errors,
-    IexecEscrow,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
@@ -47,14 +41,14 @@ contract IexecPoco1Facet is
         bytes32 _hash,
         bytes calldata _signature
     ) external view override returns (bool) {
-        return _verifySignature(_identity, _hash, _signature);
+        return CommonLib.verifySignature(_identity, _hash, _signature);
     }
 
     function verifyPresignature(
         address _identity,
         bytes32 _hash
     ) external view override returns (bool) {
-        return _verifyPresignature(_identity, _hash);
+        return CommonLib.verifyPresignature(_identity, _hash);
     }
 
     function verifyPresignatureOrSignature(
@@ -62,7 +56,7 @@ contract IexecPoco1Facet is
         bytes32 _hash,
         bytes calldata _signature
     ) external view override returns (bool) {
-        return _verifySignatureOrPresignature(_identity, _hash, _signature);
+        return CommonLib.verifySignatureOrPresignature(_identity, _hash, _signature);
     }
 
     /**
@@ -85,7 +79,7 @@ contract IexecPoco1Facet is
         bytes32 dealId
     ) external view override {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
-        bytes32 datasetOrderHash = _toTypedDataHash(datasetOrder.hash());
+        bytes32 datasetOrderHash = CommonLib.toTypedDataHash(datasetOrder.hash());
         // Check if dataset order is not revoked or fully consumed.
         // Note: This should be the first check because it is the most important
         // and the most likely to occur (users revoking their dataset orders).
@@ -94,7 +88,13 @@ contract IexecPoco1Facet is
         }
         // Check dataset order signature (including presign and ERC-1271).
         address datasetOwner = IERC5313(datasetOrder.dataset).owner();
-        if (!_verifySignatureOrPresignature(datasetOwner, datasetOrderHash, datasetOrder.sign)) {
+        if (
+            !CommonLib.verifySignatureOrPresignature(
+                datasetOwner,
+                datasetOrderHash,
+                datasetOrder.sign
+            )
+        ) {
             revert IncompatibleDatasetOrder("Invalid dataset order signature");
         }
         // The deal should exist.
@@ -107,12 +107,14 @@ contract IexecPoco1Facet is
             revert IncompatibleDatasetOrder("Deal already has a dataset");
         }
         // The deal's app should be allowed by order restriction.
-        if (!_isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.app.pointer)) {
+        if (
+            !CommonLib.isAccountAuthorizedByRestriction(datasetOrder.apprestrict, deal.app.pointer)
+        ) {
             revert IncompatibleDatasetOrder("App restriction not satisfied");
         }
         // The deal's workerpool should be allowed by order restriction.
         if (
-            !_isAccountAuthorizedByRestriction(
+            !CommonLib.isAccountAuthorizedByRestriction(
                 datasetOrder.workerpoolrestrict,
                 deal.workerpool.pointer
             )
@@ -120,7 +122,12 @@ contract IexecPoco1Facet is
             revert IncompatibleDatasetOrder("Workerpool restriction not satisfied");
         }
         // The deal's requester should be allowed by order restriction.
-        if (!_isAccountAuthorizedByRestriction(datasetOrder.requesterrestrict, deal.requester)) {
+        if (
+            !CommonLib.isAccountAuthorizedByRestriction(
+                datasetOrder.requesterrestrict,
+                deal.requester
+            )
+        ) {
             revert IncompatibleDatasetOrder("Requester restriction not satisfied");
         }
         // The deal's tag should include all activated tag bits of the dataset order.
@@ -253,58 +260,64 @@ contract IexecPoco1Facet is
         require(_requestorder.app == _apporder.app, "iExecV5-matchOrders-0x10");
         require(_requestorder.dataset == _datasetorder.dataset, "iExecV5-matchOrders-0x11");
         require(
-            _isAccountAuthorizedByRestriction(
+            CommonLib.isAccountAuthorizedByRestriction(
                 _requestorder.workerpool,
                 _workerpoolorder.workerpool
             ),
             "iExecV5-matchOrders-0x12"
         ); // requestorder.workerpool is a restriction
         require(
-            _isAccountAuthorizedByRestriction(_apporder.datasetrestrict, _datasetorder.dataset),
+            CommonLib.isAccountAuthorizedByRestriction(
+                _apporder.datasetrestrict,
+                _datasetorder.dataset
+            ),
             "iExecV5-matchOrders-0x13"
         );
         require(
-            _isAccountAuthorizedByRestriction(
+            CommonLib.isAccountAuthorizedByRestriction(
                 _apporder.workerpoolrestrict,
                 _workerpoolorder.workerpool
             ),
             "iExecV5-matchOrders-0x14"
         );
         require(
-            _isAccountAuthorizedByRestriction(_apporder.requesterrestrict, _requestorder.requester),
+            CommonLib.isAccountAuthorizedByRestriction(
+                _apporder.requesterrestrict,
+                _requestorder.requester
+            ),
             "iExecV5-matchOrders-0x15"
         );
         require(
-            _isAccountAuthorizedByRestriction(_datasetorder.apprestrict, _apporder.app),
+            CommonLib.isAccountAuthorizedByRestriction(_datasetorder.apprestrict, _apporder.app),
             "iExecV5-matchOrders-0x16"
         );
         require(
-            _isAccountAuthorizedByRestriction(
+            CommonLib.isAccountAuthorizedByRestriction(
                 _datasetorder.workerpoolrestrict,
                 _workerpoolorder.workerpool
             ),
             "iExecV5-matchOrders-0x17"
         );
         require(
-            _isAccountAuthorizedByRestriction(
+            CommonLib.isAccountAuthorizedByRestriction(
                 _datasetorder.requesterrestrict,
                 _requestorder.requester
             ),
             "iExecV5-matchOrders-0x18"
         );
         require(
-            _isAccountAuthorizedByRestriction(_workerpoolorder.apprestrict, _apporder.app),
+            CommonLib.isAccountAuthorizedByRestriction(_workerpoolorder.apprestrict, _apporder.app),
             "iExecV5-matchOrders-0x19"
         );
         require(
-            _isAccountAuthorizedByRestriction(
+            CommonLib.isAccountAuthorizedByRestriction(
                 _workerpoolorder.datasetrestrict,
                 _datasetorder.dataset
             ),
             "iExecV5-matchOrders-0x1a"
         );
         require(
-            _isAccountAuthorizedByRestriction(
+            CommonLib.isAccountAuthorizedByRestriction(
                 _workerpoolorder.requesterrestrict,
                 _requestorder.requester
             ),
@@ -319,19 +332,19 @@ contract IexecPoco1Facet is
         ids.hasDataset = _datasetorder.dataset != address(0);
 
         // app
-        ids.apporderHash = _toTypedDataHash(_apporder.hash());
+        ids.apporderHash = CommonLib.toTypedDataHash(_apporder.hash());
         ids.appOwner = IERC5313(_apporder.app).owner();
 
         require($.m_appregistry.isRegistered(_apporder.app), "iExecV5-matchOrders-0x20");
         require(
-            _verifySignatureOrPresignature(ids.appOwner, ids.apporderHash, _apporder.sign),
+            CommonLib.verifySignatureOrPresignature(ids.appOwner, ids.apporderHash, _apporder.sign),
             "iExecV5-matchOrders-0x21"
         );
 
         // dataset
         if (ids.hasDataset) {
             // only check if dataset is enabled
-            ids.datasetorderHash = _toTypedDataHash(_datasetorder.hash());
+            ids.datasetorderHash = CommonLib.toTypedDataHash(_datasetorder.hash());
             ids.datasetOwner = IERC5313(_datasetorder.dataset).owner();
 
             require(
@@ -339,7 +352,7 @@ contract IexecPoco1Facet is
                 "iExecV5-matchOrders-0x30"
             );
             require(
-                _verifySignatureOrPresignature(
+                CommonLib.verifySignatureOrPresignature(
                     ids.datasetOwner,
                     ids.datasetorderHash,
                     _datasetorder.sign
@@ -349,7 +362,7 @@ contract IexecPoco1Facet is
         }
 
         // workerpool
-        ids.workerpoolorderHash = _toTypedDataHash(_workerpoolorder.hash());
+        ids.workerpoolorderHash = CommonLib.toTypedDataHash(_workerpoolorder.hash());
         ids.workerpoolOwner = IERC5313(_workerpoolorder.workerpool).owner();
 
         require(
@@ -357,7 +370,7 @@ contract IexecPoco1Facet is
             "iExecV5-matchOrders-0x40"
         );
         require(
-            _verifySignatureOrPresignature(
+            CommonLib.verifySignatureOrPresignature(
                 ids.workerpoolOwner,
                 ids.workerpoolorderHash,
                 _workerpoolorder.sign
@@ -366,9 +379,9 @@ contract IexecPoco1Facet is
         );
 
         // request
-        ids.requestorderHash = _toTypedDataHash(_requestorder.hash());
+        ids.requestorderHash = CommonLib.toTypedDataHash(_requestorder.hash());
         require(
-            _verifySignatureOrPresignature(
+            CommonLib.verifySignatureOrPresignature(
                 _requestorder.requester,
                 ids.requestorderHash,
                 _requestorder.sign
@@ -379,7 +392,7 @@ contract IexecPoco1Facet is
         /**
          * Check availability
          */
-        uint256 volume = _computeDealVolume(
+        uint256 volume = CommonLib.computeDealVolume(
             _apporder.volume,
             ids.apporderHash,
             ids.hasDataset,
@@ -443,9 +456,12 @@ contract IexecPoco1Facet is
         /**
          * Lock
          */
-        lock(_sponsor, (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume);
+        EscrowLib.lock(
+            _sponsor,
+            (deal.app.price + deal.dataset.price + deal.workerpool.price) * volume
+        );
         //slither-disable-next-line divide-before-multiply
-        lock(
+        EscrowLib.lock(
             deal.workerpool.owner,
             ((deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
         );

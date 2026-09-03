@@ -7,7 +7,7 @@ module.exports = {
     solcOptimizerDetails: {
         yul: true,
         yulDetails: {
-            optimizerSteps: '',
+            optimizerSteps: 'u',
         },
     },
     mocha: {

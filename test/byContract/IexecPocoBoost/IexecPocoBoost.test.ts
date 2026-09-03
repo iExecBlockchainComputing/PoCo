@@ -1277,7 +1277,7 @@ describe('IexecPocoBoost', function () {
             await signOrders(domain, orders, ordersActors);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
@@ -1308,7 +1308,7 @@ describe('IexecPocoBoost', function () {
             await signOrders(domain, orders, ordersActors);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
         it('Should fail when sponsor has insufficient balance', async () => {
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
@@ -1327,7 +1327,7 @@ describe('IexecPocoBoost', function () {
                 iexecPocoBoostInstance
                     .connect(sponsor)
                     .sponsorMatchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
     });
 

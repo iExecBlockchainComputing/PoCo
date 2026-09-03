@@ -338,7 +338,7 @@ describe('IexecEscrowToken-receiveApproval', () => {
                     insufficientAmount,
                     await matchOrdersCalldata(orders),
                 ),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
 
         it('Should revert with unsupported operation error for unknown function selector', async () => {

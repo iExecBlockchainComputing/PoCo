@@ -53,14 +53,14 @@ describe('IexecEscrow', function () {
 
         it('Should not lock funds for empty address', async function () {
             await expect(iexecEscrow.lock_(ZeroAddress, amount)).to.be.revertedWith(
-                'IexecEscrow: Transfer from empty address',
+                'ERC20: Transfer from empty address',
             );
         });
 
         it('Should not lock funds when insufficient balance', async function () {
             await expect(
                 iexecEscrow.lock_(account.address, accountBalance + 1n),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
     });
 
@@ -86,13 +86,13 @@ describe('IexecEscrow', function () {
 
         it('Should not unlock funds for empty address', async function () {
             await expect(iexecEscrow.unlock_(ZeroAddress, amount)).to.be.revertedWith(
-                'IexecEscrow: Transfer to empty address',
+                'ERC20: Transfer to empty address',
             );
         });
 
         it('Should not unlock funds when insufficient balance', async function () {
             await expect(iexecEscrow.unlock_(account.address, amount)).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
+                'ERC20: Transfer amount exceeds balance',
             );
         });
     });
@@ -117,13 +117,13 @@ describe('IexecEscrow', function () {
 
         it('Should not reward empty address', async function () {
             await expect(iexecEscrow.reward_(ZeroAddress, amount, HashZero)).to.be.revertedWith(
-                'IexecEscrow: Transfer to empty address',
+                'ERC20: Transfer to empty address',
             );
         });
 
         it('Should not reward when insufficient balance', async function () {
             await expect(iexecEscrow.reward_(account.address, amount, HashZero)).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
+                'ERC20: Transfer amount exceeds balance',
             );
         });
     });

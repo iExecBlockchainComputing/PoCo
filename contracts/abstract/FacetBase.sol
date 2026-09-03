@@ -13,6 +13,10 @@ import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
  * @dev Every facet must inherit from this contract.
  */
 abstract contract FacetBase {
+    // TODO move these constants to a ConstantsLib library and reference them as
+    // ConstantsLib.<NAME> in the next PR.
+    // CommonLib redeclares GROUPMEMBER_PURPOSE temporarily.
+
     // Poco - Constants
     uint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;
     uint256 internal constant REVEAL_DEADLINE_RATIO = 2;

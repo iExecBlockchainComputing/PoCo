@@ -6,19 +6,26 @@ pragma solidity ^0.8.0;
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-import {FacetBase} from "./FacetBase.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IERC734} from "../external/interfaces/IERC734.sol";
-import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
+import {PocoStorageLib} from "./PocoStorageLib.sol";
 
-// TODO convert to library
-abstract contract SignatureVerifier is FacetBase {
+/**
+ * @title Helpers shared by the PoCo facets (signature verification, address
+ * restriction checks, deal volume computation, ...)
+ */
+library CommonLib {
     using ECDSA for bytes32;
+    using Math for uint256;
+
+    // Used with ERC-734 Key Manager identity contract for authorization management.
+    uint256 private constant GROUPMEMBER_PURPOSE = 4;
 
     /**
      * Hash a Typed Data using the configured domain.
      * @param structHash The original structure hash.
      */
-    function _toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
+    function toTypedDataHash(bytes32 structHash) internal view returns (bytes32) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return MessageHashUtils.toTypedDataHash($.m_eip712DomainSeparator, structHash);
     }
@@ -29,13 +36,13 @@ abstract contract SignatureVerifier is FacetBase {
      * @param message The original message that was signed.
      * @param signature The signature to be verified.
      */
-    function _verifySignatureOfEthSignedMessage(
+    function verifySignatureOfEthSignedMessage(
         address account,
         bytes memory message,
         bytes calldata signature
     ) internal view returns (bool) {
         return
-            _verifySignature(
+            verifySignature(
                 account,
                 MessageHashUtils.toEthSignedMessageHash(keccak256(message)),
                 signature
@@ -54,7 +61,7 @@ abstract contract SignatureVerifier is FacetBase {
      * @param messageHash The message hash that was signed.
      * @param signature The signature to be verified.
      */
-    function _verifySignature(
+    function verifySignature(
         address account,
         bytes32 messageHash,
         bytes calldata signature
@@ -88,10 +95,7 @@ abstract contract SignatureVerifier is FacetBase {
      * @param account The expected presigner account.
      * @param messageHash The message hash that was presigned.
      */
-    function _verifyPresignature(
-        address account,
-        bytes32 messageHash
-    ) internal view returns (bool) {
+    function verifyPresignature(address account, bytes32 messageHash) internal view returns (bool) {
         PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
         return account != address(0) && account == $.m_presigned[messageHash];
     }
@@ -102,14 +106,14 @@ abstract contract SignatureVerifier is FacetBase {
      * @param messageHash The message hash that was signed or presigned.
      * @param signature The signature to be verified. Not required for a presignature.
      */
-    function _verifySignatureOrPresignature(
+    function verifySignatureOrPresignature(
         address account,
         bytes32 messageHash,
         bytes calldata signature
     ) internal view returns (bool) {
         return
-            _verifyPresignature(account, messageHash) ||
-            _verifySignature(account, messageHash, signature);
+            verifyPresignature(account, messageHash) ||
+            verifySignature(account, messageHash, signature);
     }
 
     /**
@@ -129,7 +133,7 @@ abstract contract SignatureVerifier is FacetBase {
      * that might whitelist a given address in a group.
      * @param account An address to be checked.
      */
-    function _isAccountAuthorizedByRestriction(
+    function isAccountAuthorizedByRestriction(
         address restriction,
         address account
     ) internal view returns (bool) {
@@ -150,5 +154,44 @@ abstract contract SignatureVerifier is FacetBase {
             } catch {}
         }
         return false;
+    }
+
+    /**
+     * @notice Compute the deal volume considering the minimum remaining volume
+     * across all provided orders. This ensures that the deal volume does not
+     * exceed the available volume of any individual order.
+     *
+     * @param appOrderVolume The volume of the app order.
+     * @param appOrderTypedDataHash The typed data hash of the app order.
+     * @param hasDataset Indicates if there is a dataset order.
+     * @param datasetOrderVolume The volume of the dataset order.
+     * @param datasetOrderTypedDataHash The typed data hash of the dataset order.
+     * @param workerpoolOrderVolume The volume of the workerpool order.
+     * @param workerpoolOrderTypedDataHash The typed data hash of the workerpool order.
+     * @param requestOrderVolume The volume of the request order.
+     * @param requestOrderTypedDataHash The typed data hash of the request order.
+     * @return The minimum volume available across all orders.
+     */
+    function computeDealVolume(
+        uint256 appOrderVolume,
+        bytes32 appOrderTypedDataHash,
+        bool hasDataset,
+        uint256 datasetOrderVolume,
+        bytes32 datasetOrderTypedDataHash,
+        uint256 workerpoolOrderVolume,
+        bytes32 workerpoolOrderTypedDataHash,
+        uint256 requestOrderVolume,
+        bytes32 requestOrderTypedDataHash
+    ) internal view returns (uint256) {
+        PocoStorageLib.PocoStorage storage $ = PocoStorageLib.getPocoStorage();
+        return
+            (appOrderVolume - $.m_consumed[appOrderTypedDataHash])
+                .min(
+                    hasDataset
+                        ? datasetOrderVolume - $.m_consumed[datasetOrderTypedDataHash]
+                        : type(uint256).max
+                )
+                .min(workerpoolOrderVolume - $.m_consumed[workerpoolOrderTypedDataHash])
+                .min(requestOrderVolume - $.m_consumed[requestOrderTypedDataHash]);
     }
 }
