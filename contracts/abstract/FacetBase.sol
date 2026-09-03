@@ -3,7 +3,6 @@
 
 pragma solidity ^0.8.0;
 
-import {ConstantsLib} from "../libs/ConstantsLib.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
 
@@ -14,19 +13,6 @@ import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
  * @dev Every facet must inherit from this contract.
  */
 abstract contract FacetBase {
-    // Aliases of the protocol constants, so that every facet inheriting this
-    // contract keeps reading them under their bare names. {ConstantsLib} holds
-    // the single declaration; solc folds each alias back to the same literal.
-    uint256 internal constant CONTRIBUTION_DEADLINE_RATIO =
-        ConstantsLib.CONTRIBUTION_DEADLINE_RATIO;
-    uint256 internal constant REVEAL_DEADLINE_RATIO = ConstantsLib.REVEAL_DEADLINE_RATIO;
-    uint256 internal constant FINAL_DEADLINE_RATIO = ConstantsLib.FINAL_DEADLINE_RATIO;
-    uint256 internal constant WORKERPOOL_STAKE_RATIO = ConstantsLib.WORKERPOOL_STAKE_RATIO;
-    uint256 internal constant KITTY_RATIO = ConstantsLib.KITTY_RATIO;
-    uint256 internal constant KITTY_MIN = ConstantsLib.KITTY_MIN;
-    address internal constant KITTY_ADDRESS = ConstantsLib.KITTY_ADDRESS;
-    uint256 internal constant GROUPMEMBER_PURPOSE = ConstantsLib.GROUPMEMBER_PURPOSE;
-
     modifier onlyOwner() {
         require(_msgSender() == owner(), "Ownable: caller is not the owner");
         _;

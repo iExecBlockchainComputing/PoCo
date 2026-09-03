@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
 /**
  * @title All protocol constants.
  */
-library ConstantsLib {
+library Constants {
     // Deadline ratios, expressed as multiples of the category time frame.
     uint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;
     uint256 internal constant REVEAL_DEADLINE_RATIO = 2;

@@ -12,6 +12,7 @@ import {IexecPoco2} from "../interfaces/IexecPoco2.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {EscrowLib} from "../libs/EscrowLib.sol";
 import {CommonLib} from "../libs/CommonLib.sol";
+import {Constants} from "../libs/Constants.sol";
 
 contract IexecPoco2Facet is IexecPoco2, FacetBase {
     modifier onlyScheduler(bytes32 _taskId) {
@@ -28,7 +29,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase {
         IexecLibCore_v5.Deal storage deal = $.m_deals[_dealid];
 
         uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
-        uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 poolstake = (deal.workerpool.price * Constants.WORKERPOOL_STAKE_RATIO) / 100;
 
         // Seize the payer of the task
         EscrowLib.seize(deal.sponsor, taskPrice, _taskid);
@@ -45,11 +46,14 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase {
         // pool reward performed by consensus manager
 
         // Retrieve part of the kitty
-        uint256 kitty = $.m_frozens[KITTY_ADDRESS];
+        uint256 kitty = $.m_frozens[Constants.KITTY_ADDRESS];
         if (kitty > 0) {
             // Get a fraction of the kitty where KITTY_MIN <= fraction <= kitty
-            kitty = Math.min(Math.max((kitty * KITTY_RATIO) / 100, KITTY_MIN), kitty);
-            EscrowLib.seize(KITTY_ADDRESS, kitty, _taskid);
+            kitty = Math.min(
+                Math.max((kitty * Constants.KITTY_RATIO) / 100, Constants.KITTY_MIN),
+                kitty
+            );
+            EscrowLib.seize(Constants.KITTY_ADDRESS, kitty, _taskid);
             EscrowLib.reward(deal.workerpool.owner, kitty, _taskid);
         }
     }
@@ -59,12 +63,12 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase {
         IexecLibCore_v5.Deal memory deal = $.m_deals[_dealid];
 
         uint256 taskPrice = deal.app.price + deal.dataset.price + deal.workerpool.price;
-        uint256 poolstake = (deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 poolstake = (deal.workerpool.price * Constants.WORKERPOOL_STAKE_RATIO) / 100;
 
         EscrowLib.unlock(deal.sponsor, taskPrice); // Refund the payer of the task
         EscrowLib.seize(deal.workerpool.owner, poolstake, _taskid);
         // Reward kitty and lock value on it.
-        EscrowLib.rewardAndLock(KITTY_ADDRESS, poolstake, _taskid); // → Kitty / Burn
+        EscrowLib.rewardAndLock(Constants.KITTY_ADDRESS, poolstake, _taskid); // → Kitty / Burn
     }
 
     /***************************************************************************
@@ -85,8 +89,11 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase {
         task.dealid = _dealid;
         task.idx = idx;
         task.timeref = $.m_categories[deal.category].workClockTimeRef;
-        task.contributionDeadline = deal.startTime + task.timeref * CONTRIBUTION_DEADLINE_RATIO;
-        task.finalDeadline = deal.startTime + task.timeref * FINAL_DEADLINE_RATIO;
+        task.contributionDeadline =
+            deal.startTime +
+            task.timeref *
+            Constants.CONTRIBUTION_DEADLINE_RATIO;
+        task.finalDeadline = deal.startTime + task.timeref * Constants.FINAL_DEADLINE_RATIO;
 
         // setup denominator
         $.m_consensus[taskid].total = 1;
@@ -233,7 +240,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase {
 
         task.status = IexecLibCore_v5.TaskStatusEnum.COMPLETED;
         task.consensusValue = contribution.resultHash;
-        task.revealDeadline = block.timestamp + task.timeref * REVEAL_DEADLINE_RATIO;
+        task.revealDeadline = block.timestamp + task.timeref * Constants.REVEAL_DEADLINE_RATIO;
         task.revealCounter = 1;
         task.winnerCounter = 1;
         task.resultDigest = _resultDigest;
@@ -400,7 +407,7 @@ contract IexecPoco2Facet is IexecPoco2, FacetBase {
             // _msgSender() is a contributor: no need to check
             task.status = IexecLibCore_v5.TaskStatusEnum.REVEALING;
             task.consensusValue = _consensus;
-            task.revealDeadline = block.timestamp + task.timeref * REVEAL_DEADLINE_RATIO;
+            task.revealDeadline = block.timestamp + task.timeref * Constants.REVEAL_DEADLINE_RATIO;
             task.revealCounter = 0;
             task.winnerCounter = winnerCounter;
 

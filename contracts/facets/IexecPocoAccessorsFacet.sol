@@ -13,6 +13,7 @@ import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {CommonLib} from "../libs/CommonLib.sol";
+import {Constants} from "../libs/Constants.sol";
 
 /**
  * @title Getters contract for PoCo facets.
@@ -242,35 +243,35 @@ contract IexecPocoAccessorsFacet is IexecPocoAccessors, FacetBase {
     // ========= Constants Accessors =========
 
     function contribution_deadline_ratio() external pure returns (uint256) {
-        return CONTRIBUTION_DEADLINE_RATIO;
+        return Constants.CONTRIBUTION_DEADLINE_RATIO;
     }
 
     function reveal_deadline_ratio() external pure returns (uint256) {
-        return REVEAL_DEADLINE_RATIO;
+        return Constants.REVEAL_DEADLINE_RATIO;
     }
 
     function final_deadline_ratio() external pure returns (uint256) {
-        return FINAL_DEADLINE_RATIO;
+        return Constants.FINAL_DEADLINE_RATIO;
     }
 
     function workerpool_stake_ratio() external pure returns (uint256) {
-        return WORKERPOOL_STAKE_RATIO;
+        return Constants.WORKERPOOL_STAKE_RATIO;
     }
 
     function kitty_ratio() external pure returns (uint256) {
-        return KITTY_RATIO;
+        return Constants.KITTY_RATIO;
     }
 
     function kitty_min() external pure returns (uint256) {
-        return KITTY_MIN;
+        return Constants.KITTY_MIN;
     }
 
     function kitty_address() external pure returns (address) {
-        return KITTY_ADDRESS;
+        return Constants.KITTY_ADDRESS;
     }
 
     function groupmember_purpose() external pure returns (uint256) {
-        return GROUPMEMBER_PURPOSE;
+        return Constants.GROUPMEMBER_PURPOSE;
     }
 
     function eip712domain_separator() external view returns (bytes32) {

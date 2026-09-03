@@ -8,7 +8,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IERC734} from "../external/interfaces/IERC734.sol";
-import {ConstantsLib} from "./ConstantsLib.sol";
+import {Constants} from "./Constants.sol";
 import {PocoStorageLib} from "./PocoStorageLib.sol";
 
 /**
@@ -145,7 +145,7 @@ library CommonLib {
             try
                 IERC734(restriction).keyHasPurpose( // ERC734 identity contract restriction
                         bytes32(uint256(uint160(account))),
-                        ConstantsLib.GROUPMEMBER_PURPOSE
+                        Constants.GROUPMEMBER_PURPOSE
                     )
             returns (bool success) {
                 return success;

@@ -14,6 +14,7 @@ import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {EscrowLib} from "../libs/EscrowLib.sol";
 import {CommonLib} from "../libs/CommonLib.sol";
+import {Constants} from "../libs/Constants.sol";
 
 struct Matching {
     bytes32 apporderHash;
@@ -463,7 +464,7 @@ contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase {
         //slither-disable-next-line divide-before-multiply
         EscrowLib.lock(
             deal.workerpool.owner,
-            ((deal.workerpool.price * WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
+            ((deal.workerpool.price * Constants.WORKERPOOL_STAKE_RATIO) / 100) * volume // ORDER IS IMPORTANT HERE!
         );
 
         /**

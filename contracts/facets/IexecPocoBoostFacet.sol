@@ -18,6 +18,7 @@ import {FacetBase} from "../abstract/FacetBase.sol";
 import {EscrowLib} from "../libs/EscrowLib.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {CommonLib} from "../libs/CommonLib.sol";
+import {Constants} from "../libs/Constants.sol";
 
 //
 // Not deployed yet!
@@ -300,7 +301,7 @@ contract IexecPocoBoostFacet is IexecPocoBoost, FacetBase {
         deal.botFirst = requestOrderConsumed.toUint16();
         deal.deadline = (block.timestamp +
             $.m_categories[category].workClockTimeRef *
-            CONTRIBUTION_DEADLINE_RATIO).toUint40();
+            Constants.CONTRIBUTION_DEADLINE_RATIO).toUint40();
         deal.botSize = volume.toUint16();
         /**
          * Store right part of tag for later use.
@@ -342,7 +343,7 @@ contract IexecPocoBoostFacet is IexecPocoBoost, FacetBase {
         //slither-disable-next-line divide-before-multiply
         EscrowLib.lock(
             workerpoolOwner,
-            ((workerpoolPrice * WORKERPOOL_STAKE_RATIO) / 100) * volume
+            ((workerpoolPrice * Constants.WORKERPOOL_STAKE_RATIO) / 100) * volume
         );
         // Notify workerpool.
         emit SchedulerNoticeBoost(
@@ -458,16 +459,20 @@ contract IexecPocoBoostFacet is IexecPocoBoost, FacetBase {
         }
 
         // Unlock scheduler stake
-        EscrowLib.unlock(workerpoolOwner, (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100);
+        EscrowLib.unlock(
+            workerpoolOwner,
+            (workerPoolPrice * Constants.WORKERPOOL_STAKE_RATIO) / 100
+        );
         // Reward scheduler
-        uint256 kitty = $.m_frozens[KITTY_ADDRESS];
+        uint256 kitty = $.m_frozens[Constants.KITTY_ADDRESS];
         if (kitty > 0) {
-            kitty = KITTY_MIN // 1. retrieve bare minimum from kitty
+            kitty = Constants
+            .KITTY_MIN // 1. retrieve bare minimum from kitty
             .max( // 2. or eventually a fraction of kitty if bigger
                 // @dev As long as `KITTY_RATIO = 10`, we can introduce this small
-                kitty / KITTY_RATIO // optimization for `kitty * KITTY_RATIO / 100`
+                kitty / Constants.KITTY_RATIO // optimization for `kitty * KITTY_RATIO / 100`
             ).min(kitty); // 3. but no more than available
-            EscrowLib.seize(KITTY_ADDRESS, kitty, taskId);
+            EscrowLib.seize(Constants.KITTY_ADDRESS, kitty, taskId);
         }
         EscrowLib.reward(
             workerpoolOwner,
@@ -515,13 +520,13 @@ contract IexecPocoBoostFacet is IexecPocoBoost, FacetBase {
         task.status = IexecLibCore_v5.TaskStatusEnum.FAILED;
         // Calculate workerpool price and task stake.
         uint96 workerPoolPrice = deal.workerpoolPrice;
-        uint256 workerpoolTaskStake = (workerPoolPrice * WORKERPOOL_STAKE_RATIO) / 100;
+        uint256 workerpoolTaskStake = (workerPoolPrice * Constants.WORKERPOOL_STAKE_RATIO) / 100;
         // Refund the payer of the task by unlocking the locked funds.
         EscrowLib.unlock(deal.sponsor, deal.appPrice + deal.datasetPrice + workerPoolPrice);
         // Seize task stake from workerpool.
         EscrowLib.seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        EscrowLib.rewardAndLock(KITTY_ADDRESS, workerpoolTaskStake, taskId);
+        EscrowLib.rewardAndLock(Constants.KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit TaskClaimed(taskId);
     }
 
