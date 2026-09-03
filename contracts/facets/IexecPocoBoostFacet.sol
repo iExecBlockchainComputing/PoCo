@@ -13,7 +13,6 @@ import {IOracleConsumer} from "../external/interfaces/IOracleConsumer.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
-import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecPocoBoost} from "../interfaces/IexecPocoBoost.sol";
 import {IexecEscrow} from "../abstract/IexecEscrow.sol";
 import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
@@ -28,13 +27,7 @@ import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
  * @title PoCo Boost to reduce latency and increase throughput of deals.
  * @notice Works for deals with requested trust = 0.
  */
-contract IexecPocoBoostFacet is
-    IexecPocoBoost,
-    FacetBase,
-    IexecEscrow,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPocoBoostFacet is IexecPocoBoost, IexecEscrow, SignatureVerifier, IexecPocoCommon {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
     using Math for uint256;
@@ -518,10 +511,7 @@ contract IexecPocoBoostFacet is
         // Seize task stake from workerpool.
         seize(deal.workerpoolOwner, workerpoolTaskStake, taskId);
         // Reward kitty and lock the rewarded amount.
-        $.m_frozens[KITTY_ADDRESS] += workerpoolTaskStake;
-        // Emit events to publish state changes.
-        emit Reward(KITTY_ADDRESS, workerpoolTaskStake, taskId);
-        emit Lock(KITTY_ADDRESS, workerpoolTaskStake);
+        rewardAndLock(KITTY_ADDRESS, workerpoolTaskStake, taskId);
         emit TaskClaimed(taskId);
     }
 

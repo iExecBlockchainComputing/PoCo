@@ -4,13 +4,12 @@
 pragma solidity ^0.8.0;
 
 import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
-import {FacetBase} from "../abstract/FacetBase.sol";
 import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
 import {IexecOrderManagement} from "../interfaces/IexecOrderManagement.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
-contract IexecOrderManagementFacet is IexecOrderManagement, FacetBase, SignatureVerifier {
+contract IexecOrderManagementFacet is IexecOrderManagement, SignatureVerifier {
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
