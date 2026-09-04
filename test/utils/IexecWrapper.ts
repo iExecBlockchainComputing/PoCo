@@ -94,7 +94,6 @@ export class IexecWrapper {
             .then((tx) => tx.wait());
     }
 
-    // TODO rename to computeSchedulerStakePerDeal
     /**
      * Compute the amount of RLCs to be staked by the scheduler
      * for a deal. We first compute the percentage by task
