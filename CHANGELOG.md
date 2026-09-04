@@ -2,6 +2,39 @@
 
 ## vNEXT
 
+## [7.0.0](https://github.com/iExecBlockchainComputing/PoCo/compare/v6.2.0...v7.0.0) (2026-09-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove token suffix ([#356](https://github.com/iExecBlockchainComputing/PoCo/issues/356))
+* remove `setName` function and related tests for reverse registration ([#344](https://github.com/iExecBlockchainComputing/PoCo/issues/344))
+* remove native mode contracts ([#343](https://github.com/iExecBlockchainComputing/PoCo/issues/343))
+
+### 🚀 Added
+
+* remove `setName` function and related tests for reverse registration ([#344](https://github.com/iExecBlockchainComputing/PoCo/issues/344)) ([26772eb](https://github.com/iExecBlockchainComputing/PoCo/commit/26772eb48d9eecc2aedfb7339258daedb509c10c))
+* remove native mode contracts ([#343](https://github.com/iExecBlockchainComputing/PoCo/issues/343)) ([22e1690](https://github.com/iExecBlockchainComputing/PoCo/commit/22e1690baea202cdfdcfef3714d07261f6673d45))
+* remove temporary migration shims ([#351](https://github.com/iExecBlockchainComputing/PoCo/issues/351)) ([7de2258](https://github.com/iExecBlockchainComputing/PoCo/commit/7de2258504155540ef4fe8d24273e2b65eed2eca))
+
+
+### ✍️ Changed
+
+* convert abstract contracts to libraries ([#353](https://github.com/iExecBlockchainComputing/PoCo/issues/353)) ([59d786d](https://github.com/iExecBlockchainComputing/PoCo/commit/59d786d82070df317e964352a50cfe0baaef18d9))
+* merge IexecERC20Base into IexecEscrowTokenFacet ([#345](https://github.com/iExecBlockchainComputing/PoCo/issues/345)) ([774d9dd](https://github.com/iExecBlockchainComputing/PoCo/commit/774d9ddd2ee5c5f6eb3a123054111164ff1bd15c))
+* remove duplication from escrow code ([#352](https://github.com/iExecBlockchainComputing/PoCo/issues/352)) ([64f8e1b](https://github.com/iExecBlockchainComputing/PoCo/commit/64f8e1b83816448ba400a803869f66b8054a4d48))
+* remove token suffix ([#356](https://github.com/iExecBlockchainComputing/PoCo/issues/356)) ([50e5542](https://github.com/iExecBlockchainComputing/PoCo/commit/50e554295558d885397a8abd8f72be2cd16feb80))
+
+
+### 📋 Misc
+
+* add agents file in a progressive disclosure format ([#350](https://github.com/iExecBlockchainComputing/PoCo/issues/350)) ([862c1f7](https://github.com/iExecBlockchainComputing/PoCo/commit/862c1f7b69c6b1abea15a9decb3ca9d62262315d))
+* clean some todos ([#357](https://github.com/iExecBlockchainComputing/PoCo/issues/357)) ([97e34e4](https://github.com/iExecBlockchainComputing/PoCo/commit/97e34e453f696f489825f917b367de25754447b3))
+* Fix release please config and changelog file ([#338](https://github.com/iExecBlockchainComputing/PoCo/issues/338)) ([0a033f4](https://github.com/iExecBlockchainComputing/PoCo/commit/0a033f4fad3c436c6001d4d45f583b2cc5817108))
+* remove bellecour support ([#341](https://github.com/iExecBlockchainComputing/PoCo/issues/341)) ([e69d65c](https://github.com/iExecBlockchainComputing/PoCo/commit/e69d65ca73f6f636ed0ec3c90137b55a5578cb9c))
+* Update owner address in config after multisig transfer ([#339](https://github.com/iExecBlockchainComputing/PoCo/issues/339)) ([fd0c823](https://github.com/iExecBlockchainComputing/PoCo/commit/fd0c823e03f2fb359420bf0fc9bf18039b7d100d))
+* use iexec interface token ([#342](https://github.com/iExecBlockchainComputing/PoCo/issues/342)) ([14d891c](https://github.com/iExecBlockchainComputing/PoCo/commit/14d891cc368d9837ae17e595a267f01af6f81535))
+
 ## [6.2.0](https://github.com/iExecBlockchainComputing/PoCo/compare/v6.1.0...v6.2.0) (2026-01-21)
 
 
