@@ -92,7 +92,6 @@ const config: HardhatUserConfig = {
                         : undefined,
                 },
                 ...arbitrumSepoliaBaseConfig,
-                gasPrice: 100_000_000, // 0.1 Gwei
             }),
 
             ...(isArbitrumFork && {
@@ -100,7 +99,6 @@ const config: HardhatUserConfig = {
                     url: process.env.ARBITRUM_RPC_URL || 'https://arbitrum.gateway.tenderly.co',
                 },
                 ...arbitrumBaseConfig,
-                gasPrice: 100_000_000, // 0.1 Gwei
             }),
         },
         'external-hardhat': {

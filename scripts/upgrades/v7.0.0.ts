@@ -2,16 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-    IexecAccessorsABILegacyFacet__factory,
     IexecCategoryManagerFacet__factory,
     IexecConfigurationExtraFacet__factory,
     IexecConfigurationFacet__factory,
-    IexecEscrowTokenFacet__factory,
+    IexecEscrowFacet__factory,
     IexecOrderManagementFacet__factory,
     IexecPoco1Facet__factory,
     IexecPoco2Facet__factory,
     IexecPocoAccessorsFacet__factory,
-    IexecRelayFacet__factory,
 } from '../../typechain';
 import {
     FacetDetails,
@@ -26,39 +24,40 @@ import {
 import { tryVerify } from '../verify';
 
 async function main() {
-    console.log('Performing Solidity v8 migration upgrade (v6.2.0)...');
+    console.log('Performing native mode removal and escrow consolidation upgrade (v7.0.0)...');
     const { chainId, networkName, deployer, proxyOwner, proxyAddress, iexecLibOrders } =
         await getUpgradeContext();
 
-    // Define all facets to remove (all existing facets except core diamond facets)
+    /**
+     * Facets replaced by this upgrade, at the addresses the v6.2.0 upgrade left
+     * them on. Values are taken from `deployments/<network>/<facet>.json`. The v5
+     * deployer uses CREATE2 with a constant salt, so both chains share the same
+     * addresses.
+     *
+     * `IexecAccessorsABILegacyFacet` and `IexecRelayFacet` are unchanged.
+     */
     const facetAddressesPerChain: { [key: string]: { [key: string]: string } } = {
         // Arbitrum Sepolia
         '421614': {
-            IexecAccessorsABILegacyFacet: '0x56CDC32332648b1220a89172191798852706EB35',
-            IexecCategoryManagerFacet: '0x5f0483b9D7f959816A5CDD4C49E5C91C24561B43',
-            IexecConfigurationExtraFacet: '0x7Ff117E7385Ac3E207AF1791fE7e66C7802aeCCd',
-            IexecConfigurationFacet: '0x88eb05e62434057d3AA9e41FdaF7300A586b314D',
-            IexecERC20Facet: '0xB0152eC6f48E64a92B66D4736aFA1b02d8D45169', // Removed from codebase
-            IexecEscrowTokenFacet: '0xd9EB17A161581FBBAD2Ae998c0C19746EaAD0D6E',
-            IexecOrderManagementFacet: '0x541d532E6C195Ba044a75325F367342f523627fB',
-            IexecPoco1Facet: '0xC8dE3913fcdBC576970dCe24eE416CA25681f65f',
-            IexecPoco2Facet: '0x5c7B589E6807B554ed278f335215B93bCB692162',
-            IexecPocoAccessorsFacet: '0x56625089E6EB6F058DB163025318575AD38781fa',
-            IexecRelayFacet: '0x8cBf58265F74b77f0D9cCA9f7e14685205496d8f',
+            IexecCategoryManagerFacet: '0x1E18624655a680dF645EF4668D303d0e158c3A23',
+            IexecConfigurationExtraFacet: '0x704DD48dFd3123445eE7d71230D099ee5a7fF384',
+            IexecConfigurationFacet: '0x860e131a34FAA9D2c80B5E5608026cf0885C4DD8',
+            IexecEscrowTokenFacet: '0xCB012a87Df7106a155a2DbF63B32936625142319', // Renamed to IexecEscrowFacet
+            IexecOrderManagementFacet: '0xe5e071d9956D650C9DF2231B3C24c929Ae8a6698',
+            IexecPoco1Facet: '0x4F4fceE743Ff87a8e524F51B24FF33132e4d5F06',
+            IexecPoco2Facet: '0x8C75D9a503Cba140a34CB42dB7020B1295cbe39C',
+            IexecPocoAccessorsFacet: '0x4273B5c5f56416302a5FE0DDeB6d7272cDC7faeC',
         },
         // Arbitrum Mainnet
         '42161': {
-            IexecAccessorsABILegacyFacet: '0x56CDC32332648b1220a89172191798852706EB35',
-            IexecCategoryManagerFacet: '0x5f0483b9D7f959816A5CDD4C49E5C91C24561B43',
-            IexecConfigurationExtraFacet: '0x7Ff117E7385Ac3E207AF1791fE7e66C7802aeCCd',
-            IexecConfigurationFacet: '0x88eb05e62434057d3AA9e41FdaF7300A586b314D',
-            IexecERC20Facet: '0xB0152eC6f48E64a92B66D4736aFA1b02d8D45169', // Removed from codebase
-            IexecEscrowTokenFacet: '0xd9EB17A161581FBBAD2Ae998c0C19746EaAD0D6E',
-            IexecOrderManagementFacet: '0x541d532E6C195Ba044a75325F367342f523627fB',
-            IexecPoco1Facet: '0x5331c0FC7DD0Cc08047B546675cd1d6d47152AEb',
-            IexecPoco2Facet: '0x5c7B589E6807B554ed278f335215B93bCB692162',
-            IexecPocoAccessorsFacet: '0x9BCaCA06d5173f4bA02F8ECcb28E227333F1606F',
-            IexecRelayFacet: '0x8cBf58265F74b77f0D9cCA9f7e14685205496d8f',
+            IexecCategoryManagerFacet: '0x1E18624655a680dF645EF4668D303d0e158c3A23',
+            IexecConfigurationExtraFacet: '0x704DD48dFd3123445eE7d71230D099ee5a7fF384',
+            IexecConfigurationFacet: '0x860e131a34FAA9D2c80B5E5608026cf0885C4DD8',
+            IexecEscrowTokenFacet: '0xCB012a87Df7106a155a2DbF63B32936625142319', // Renamed to IexecEscrowFacet
+            IexecOrderManagementFacet: '0xe5e071d9956D650C9DF2231B3C24c929Ae8a6698',
+            IexecPoco1Facet: '0x4F4fceE743Ff87a8e524F51B24FF33132e4d5F06',
+            IexecPoco2Facet: '0x8C75D9a503Cba140a34CB42dB7020B1295cbe39C',
+            IexecPocoAccessorsFacet: '0x4273B5c5f56416302a5FE0DDeB6d7272cDC7faeC',
         },
     };
 
@@ -68,13 +67,12 @@ async function main() {
         throw new Error(`No facet addresses defined for chain ID ${chainId}`);
     }
 
-    // Build list of facets to remove
+    /**
+     * Every changed PoCo facet is replaced. `IexecEscrowTokenFacet` is the only
+     * one removed without a same-name replacement: the escrow is renamed to
+     * `IexecEscrowFacet`.
+     */
     const facetsToRemove: FacetDetails[] = [
-        {
-            name: 'IexecAccessorsABILegacyFacet',
-            address: addresses['IexecAccessorsABILegacyFacet'],
-            factory: null,
-        },
         {
             name: 'IexecCategoryManagerFacet',
             address: addresses['IexecCategoryManagerFacet'],
@@ -88,11 +86,6 @@ async function main() {
         {
             name: 'IexecConfigurationFacet',
             address: addresses['IexecConfigurationFacet'],
-            factory: null,
-        },
-        {
-            name: 'IexecERC20Facet',
-            address: addresses['IexecERC20Facet'],
             factory: null,
         },
         {
@@ -120,20 +113,9 @@ async function main() {
             address: addresses['IexecPocoAccessorsFacet'],
             factory: null,
         },
-        {
-            name: 'IexecRelayFacet',
-            address: addresses['IexecRelayFacet'],
-            factory: null,
-        },
     ];
 
-    // Build list of facets to add (all with Solidity v8)
     const facetsToAdd: FacetDetails[] = [
-        {
-            name: 'IexecAccessorsABILegacyFacet',
-            address: null,
-            factory: new IexecAccessorsABILegacyFacet__factory(),
-        },
         {
             name: 'IexecCategoryManagerFacet',
             address: null,
@@ -150,9 +132,9 @@ async function main() {
             factory: new IexecConfigurationFacet__factory(iexecLibOrders),
         },
         {
-            name: 'IexecEscrowTokenFacet',
+            name: 'IexecEscrowFacet',
             address: null,
-            factory: new IexecEscrowTokenFacet__factory(),
+            factory: new IexecEscrowFacet__factory(),
         },
         {
             name: 'IexecOrderManagementFacet',
@@ -173,11 +155,6 @@ async function main() {
             name: 'IexecPocoAccessorsFacet',
             address: null,
             factory: new IexecPocoAccessorsFacet__factory(iexecLibOrders),
-        },
-        {
-            name: 'IexecRelayFacet',
-            address: null,
-            factory: new IexecRelayFacet__factory(),
         },
     ];
 
