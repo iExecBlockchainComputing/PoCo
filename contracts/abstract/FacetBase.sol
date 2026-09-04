@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
+import {LibDiamond} from "@mudgen/diamond-1/contracts/libraries/LibDiamond.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
 
 /**
  * @title Base contract of all Facet contracts.
@@ -33,8 +33,7 @@ abstract contract FacetBase {
     }
 
     function owner() internal view returns (address) {
-        // TODO use LibDiamond.contractOwner() instead of an external call when migrating all contracts to v8.
-        return IERC5313(address(this)).owner();
+        return LibDiamond.contractOwner();
     }
 
     function _msgSender() internal view returns (address) {
