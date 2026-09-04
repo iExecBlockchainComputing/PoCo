@@ -38,7 +38,7 @@ import {
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
-import { randomAddress } from './utils/utils';
+import { expectProxyBalanceToEqualAllFrozen, randomAddress } from './utils/utils';
 
 const taskIndex = 0n;
 const volume = taskIndex + 1n;
@@ -107,6 +107,10 @@ describe('IexecPocoBoostFacet (IT)', function () {
         };
         // initialize tee broker to address(0)
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
+    });
+
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
     });
 
     async function initFixture() {
