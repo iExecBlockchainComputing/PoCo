@@ -10,7 +10,6 @@ import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
 import {IexecPoco1} from "../interfaces/IexecPoco1.sol";
-import {IexecPoco1Errors} from "../interfaces/IexecPoco1Errors.sol";
 import {FacetBase} from "../abstract/FacetBase.sol";
 import {EscrowLib} from "../libs/EscrowLib.sol";
 import {CommonLib} from "../libs/CommonLib.sol";
@@ -26,7 +25,7 @@ struct Matching {
     bool hasDataset;
 }
 
-contract IexecPoco1Facet is IexecPoco1, IexecPoco1Errors, FacetBase {
+contract IexecPoco1Facet is IexecPoco1, FacetBase {
     using Math for uint256;
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
