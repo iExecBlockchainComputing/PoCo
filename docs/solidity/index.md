@@ -11,7 +11,7 @@ Changing the name or the path would cause a breaking change in the SDK._
 
 ## FacetBase
 
-_Every facet must inherit from this contract._
+_Every facet should inherit from this contract._
 
 ## IexecCategoryManagerFacet
 
