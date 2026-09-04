@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-    IexecAccessorsABILegacyFacet__factory,
     IexecCategoryManagerFacet__factory,
     IexecConfigurationExtraFacet__factory,
     IexecConfigurationFacet__factory,
@@ -11,7 +10,6 @@ import {
     IexecPoco1Facet__factory,
     IexecPoco2Facet__factory,
     IexecPocoAccessorsFacet__factory,
-    IexecRelayFacet__factory,
 } from '../../typechain';
 import {
     FacetDetails,
@@ -31,14 +29,16 @@ async function main() {
         await getUpgradeContext();
 
     /**
-     * Facets currently linked to the diamond, as deployed by the v6.2.0 upgrade.
-     * Values are taken from `deployments/<network>/<facet>.json`. The v5 deployer
-     * uses CREATE2 with a constant salt, so both chains share the same addresses.
+     * Facets replaced by this upgrade, at the addresses the v6.2.0 upgrade left
+     * them on. Values are taken from `deployments/<network>/<facet>.json`. The v5
+     * deployer uses CREATE2 with a constant salt, so both chains share the same
+     * addresses.
+     *
+     * `IexecAccessorsABILegacyFacet` and `IexecRelayFacet` are unchanged.
      */
     const facetAddressesPerChain: { [key: string]: { [key: string]: string } } = {
         // Arbitrum Sepolia
         '421614': {
-            IexecAccessorsABILegacyFacet: '0xeF6Be73d45922af8192ba467230d2D05f5C22810',
             IexecCategoryManagerFacet: '0x1E18624655a680dF645EF4668D303d0e158c3A23',
             IexecConfigurationExtraFacet: '0x704DD48dFd3123445eE7d71230D099ee5a7fF384',
             IexecConfigurationFacet: '0x860e131a34FAA9D2c80B5E5608026cf0885C4DD8',
@@ -47,11 +47,9 @@ async function main() {
             IexecPoco1Facet: '0x4F4fceE743Ff87a8e524F51B24FF33132e4d5F06',
             IexecPoco2Facet: '0x8C75D9a503Cba140a34CB42dB7020B1295cbe39C',
             IexecPocoAccessorsFacet: '0x4273B5c5f56416302a5FE0DDeB6d7272cDC7faeC',
-            IexecRelayFacet: '0xFA962e5EF5fe7D1b5e3622fd1e5432101866c10f',
         },
         // Arbitrum Mainnet
         '42161': {
-            IexecAccessorsABILegacyFacet: '0xeF6Be73d45922af8192ba467230d2D05f5C22810',
             IexecCategoryManagerFacet: '0x1E18624655a680dF645EF4668D303d0e158c3A23',
             IexecConfigurationExtraFacet: '0x704DD48dFd3123445eE7d71230D099ee5a7fF384',
             IexecConfigurationFacet: '0x860e131a34FAA9D2c80B5E5608026cf0885C4DD8',
@@ -60,7 +58,6 @@ async function main() {
             IexecPoco1Facet: '0x4F4fceE743Ff87a8e524F51B24FF33132e4d5F06',
             IexecPoco2Facet: '0x8C75D9a503Cba140a34CB42dB7020B1295cbe39C',
             IexecPocoAccessorsFacet: '0x4273B5c5f56416302a5FE0DDeB6d7272cDC7faeC',
-            IexecRelayFacet: '0xFA962e5EF5fe7D1b5e3622fd1e5432101866c10f',
         },
     };
 
@@ -71,16 +68,11 @@ async function main() {
     }
 
     /**
-     * Every PoCo facet is replaced. `IexecEscrowTokenFacet` is the only one
-     * removed without a same-name replacement: the escrow is renamed to
+     * Every changed PoCo facet is replaced. `IexecEscrowTokenFacet` is the only
+     * one removed without a same-name replacement: the escrow is renamed to
      * `IexecEscrowFacet`.
      */
     const facetsToRemove: FacetDetails[] = [
-        {
-            name: 'IexecAccessorsABILegacyFacet',
-            address: addresses['IexecAccessorsABILegacyFacet'],
-            factory: null,
-        },
         {
             name: 'IexecCategoryManagerFacet',
             address: addresses['IexecCategoryManagerFacet'],
@@ -121,19 +113,9 @@ async function main() {
             address: addresses['IexecPocoAccessorsFacet'],
             factory: null,
         },
-        {
-            name: 'IexecRelayFacet',
-            address: addresses['IexecRelayFacet'],
-            factory: null,
-        },
     ];
 
     const facetsToAdd: FacetDetails[] = [
-        {
-            name: 'IexecAccessorsABILegacyFacet',
-            address: null,
-            factory: new IexecAccessorsABILegacyFacet__factory(),
-        },
         {
             name: 'IexecCategoryManagerFacet',
             address: null,
@@ -173,11 +155,6 @@ async function main() {
             name: 'IexecPocoAccessorsFacet',
             address: null,
             factory: new IexecPocoAccessorsFacet__factory(iexecLibOrders),
-        },
-        {
-            name: 'IexecRelayFacet',
-            address: null,
-            factory: new IexecRelayFacet__factory(),
         },
     ];
 
