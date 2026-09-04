@@ -11,15 +11,11 @@ import {IexecEscrow} from "./interfaces/IexecEscrow.sol";
 import {IexecEscrowEvents} from "./interfaces/IexecEscrowEvents.sol";
 import {IexecOrderManagement} from "./interfaces/IexecOrderManagement.sol";
 import {IexecPoco1} from "./interfaces/IexecPoco1.sol";
-import {IexecPoco1Errors} from "./interfaces/IexecPoco1Errors.sol";
 import {IexecPoco2} from "./interfaces/IexecPoco2.sol";
 import {IexecPocoAccessors} from "./interfaces/IexecPocoAccessors.sol";
 import {IexecRelay} from "./interfaces/IexecRelay.sol";
 import {IexecTokenSpender} from "./interfaces/IexecTokenSpender.sol";
 import {IOwnable} from "./interfaces/IOwnable.sol";
-
-// TODO see if Diamond interfaces should be added here ??
-// IDiamond, IDiamondLoupe, IDiamondCut, IERC165, IERC173 (ownership)
 
 /**
  * A global interface that aggregates all the interfaces needed to interact with
@@ -39,7 +35,6 @@ interface IexecInterface is
     IexecEscrowEvents,
     IexecOrderManagement,
     IexecPoco1,
-    IexecPoco1Errors,
     IexecPoco2,
     IexecPocoAccessors,
     IexecRelay,

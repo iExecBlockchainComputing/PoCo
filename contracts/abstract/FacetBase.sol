@@ -3,20 +3,14 @@
 
 pragma solidity ^0.8.0;
 
+import {LibDiamond} from "@mudgen/diamond-1/contracts/libraries/LibDiamond.sol";
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {IERC5313} from "@openzeppelin/contracts/interfaces/IERC5313.sol";
-
-// TODO use LibDiamond.contractOwner() when migrating all contracts to v8.
 
 /**
  * @title Base contract of all Facet contracts.
- * @dev Every facet must inherit from this contract.
+ * @dev Every facet should inherit from this contract.
  */
 abstract contract FacetBase {
-    // TODO move these constants to a ConstantsLib library and reference them as
-    // ConstantsLib.<NAME> in the next PR.
-    // CommonLib redeclares GROUPMEMBER_PURPOSE temporarily.
-
     // Poco - Constants
     uint256 internal constant CONTRIBUTION_DEADLINE_RATIO = 7;
     uint256 internal constant REVEAL_DEADLINE_RATIO = 2;
@@ -39,8 +33,7 @@ abstract contract FacetBase {
     }
 
     function owner() internal view returns (address) {
-        // TODO use LibDiamond.contractOwner() instead of an external call when migrating all contracts to v8.
-        return IERC5313(address(this)).owner();
+        return LibDiamond.contractOwner();
     }
 
     function _msgSender() internal view returns (address) {

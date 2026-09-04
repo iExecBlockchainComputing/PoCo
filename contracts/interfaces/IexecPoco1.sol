@@ -5,6 +5,8 @@ pragma solidity ^0.8.0;
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 
 interface IexecPoco1 {
+    error IncompatibleDatasetOrder(string reason);
+
     event SchedulerNotice(address indexed workerpool, bytes32 dealid);
     event OrdersMatched(
         bytes32 dealid,

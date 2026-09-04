@@ -32,13 +32,10 @@
     "/contracts",
     "!/contracts/tools/testing/**/*",
     "!/contracts/tools/diagrams/**/*",
-    "/deployments",
-    "/artifacts/contracts",
-    "!/artifacts/contracts/**/*.dbg.json"
+    "/deployments"
   ],
   "__filesComment": [
-    "!!! @dev Update `abiExporter` config if this is modified",
-    "TODO [Major] remove artifacts/ from NPM package when releasing a major version"
+    "!!! @dev Update `abiExporter` config if this is modified"
   ],
   "lint-staged": {
     "*.{js,ts,sol,json,yml}": [
