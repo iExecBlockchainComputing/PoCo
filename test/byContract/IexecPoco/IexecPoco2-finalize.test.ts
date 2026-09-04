@@ -24,6 +24,7 @@ import {
 import { getPocoStorageSlotLocation } from '../../../utils/proxy-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { expectProxyBalanceToEqualAllFrozen } from '../../utils/utils';
 
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const hexResults = ethers.hexlify(results);
@@ -61,6 +62,10 @@ describe('IexecPoco2#finalize', async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
         // Initialize test environment
         await loadFixture(initFixture);
+    });
+
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
     });
 
     async function initFixture() {
