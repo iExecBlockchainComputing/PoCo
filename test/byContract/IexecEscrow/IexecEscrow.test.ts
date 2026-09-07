@@ -9,7 +9,7 @@ import { ethers } from 'hardhat';
 import { IexecInterface, IexecInterface__factory, RLC, RLC__factory } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { setZeroAddressBalance } from '../../utils/utils';
+import { expectProxyBalanceToEqualAllFrozen, setZeroAddressBalance } from '../../utils/utils';
 
 const amount = ethers.parseUnits('100', 9);
 
@@ -22,6 +22,10 @@ describe('IexecEscrow', () => {
     beforeEach('Deploy', async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
         await loadFixture(initFixture);
+    });
+
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
     });
 
     async function initFixture() {

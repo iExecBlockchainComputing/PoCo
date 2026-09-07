@@ -15,7 +15,7 @@ import {
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { setZeroAddressBalance } from '../../utils/utils';
+import { expectProxyBalanceToEqualAllFrozen, setZeroAddressBalance } from '../../utils/utils';
 
 const value = 100n;
 
@@ -31,6 +31,10 @@ describe('ERC20', async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
         // Initialize test environment
         await loadFixture(initFixture);
+    });
+
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
     });
 
     async function initFixture() {

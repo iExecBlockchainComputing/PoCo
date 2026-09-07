@@ -16,7 +16,7 @@ import {
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
-import { randomAddress } from './utils/utils';
+import { expectProxyBalanceToEqualAllFrozen, randomAddress } from './utils/utils';
 
 //  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
 //  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |              Type                           |
@@ -65,6 +65,10 @@ describe('Integration tests', function () {
         proxyAddress = await loadHardhatFixtureDeployment();
         // Initialize test environment
         await loadFixture(initFixture);
+    });
+
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
     });
 
     async function initFixture() {

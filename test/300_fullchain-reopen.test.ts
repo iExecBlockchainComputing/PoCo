@@ -9,6 +9,7 @@ import { ZeroAddress } from 'ethers';
 import { IexecInterface, IexecInterface__factory } from '../typechain';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
+import { expectProxyBalanceToEqualAllFrozen } from './utils/utils';
 
 import { TAG_STANDARD } from '../utils/constants';
 import {
@@ -50,6 +51,10 @@ describe('Integration tests', function () {
         proxyAddress = await loadHardhatFixtureDeployment();
         // Initialize test environment
         await loadFixture(initFixture);
+    });
+
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
     });
 
     async function initFixture() {

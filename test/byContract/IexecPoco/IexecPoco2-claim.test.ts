@@ -17,6 +17,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { expectProxyBalanceToEqualAllFrozen } from '../../utils/utils';
 import * as constants from './../../../utils/constants';
 
 const categoryTime = 300n;
@@ -44,6 +45,10 @@ describe('IexecPoco2#claim', async () => {
         proxyAddress = await loadHardhatFixtureDeployment();
         // Initialize test environment
         await loadFixture(initFixture);
+    });
+
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
     });
 
     async function initFixture() {
