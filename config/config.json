@@ -72,6 +72,16 @@
         "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
       }
     },
+    "31337": {
+      "name": "Hardhat network (also PoCo chain)",
+      "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "asset": "Token",
+      "v3": {},
+      "v5": {
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
     "42161": {
       "name": "Arbitrum One Mainnet",
       "deployer": "0x111167a21d2bdb8e10b84aee3501059d50756b67",
@@ -87,6 +97,16 @@
         "IexecLibOrders_v5": "0x1Ecf986A719271846a04F095c426D90d564e4842"
       }
     },
+    "65535": {
+      "name": "PoCo chain native",
+      "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "asset": "Native",
+      "v3": {},
+      "v5": {
+        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
     "421614": {
       "name": "Arbitrum Sepolia Testnet",
       "deployer": "0x87bdca5F82cD5B138cD12a724d6c0eC7e3114dA6",
@@ -98,29 +118,9 @@
       "v5": {
         "factory": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed",
         "factoryType": "createx",
-        "DiamondProxy": "0xB2157BF2fAb286b2A4170E3491Ac39770111Da3E",
+        "DiamondProxy": "0x3dE59589482e88605253C01097fBF35A29cD8de4",
         "salt": "0xb666e4f843d6d021fdfedae575c3e99fa2dd98f9d7aaab0f6ad987dc6bdd1826",
-        "IexecLibOrders_v5": "0x1Ecf986A719271846a04F095c426D90d564e4842"
-      }
-    },
-    "31337": {
-      "name": "Hardhat network (also PoCo chain)",
-      "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-      "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-      "asset": "Token",
-      "v3": {},
-      "v5": {
-        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
-      }
-    },
-    "65535": {
-      "name": "PoCo chain native",
-      "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-      "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-      "asset": "Native",
-      "v3": {},
-      "v5": {
-        "salt": "0x0000000000000000000000000000000000000000000000000000000000000000"
+        "IexecLibOrders_v5": "0xABDBB9C2314e7C7D8100cfb8f4730E4D81827022"
       }
     },
     "<networkId>": {
