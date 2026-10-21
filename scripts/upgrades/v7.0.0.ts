@@ -39,14 +39,14 @@ async function main() {
     const facetAddressesPerChain: { [key: string]: { [key: string]: string } } = {
         // Arbitrum Sepolia
         '421614': {
-            IexecCategoryManagerFacet: '0x1E18624655a680dF645EF4668D303d0e158c3A23',
-            IexecConfigurationExtraFacet: '0x704DD48dFd3123445eE7d71230D099ee5a7fF384',
-            IexecConfigurationFacet: '0x860e131a34FAA9D2c80B5E5608026cf0885C4DD8',
-            IexecEscrowTokenFacet: '0xCB012a87Df7106a155a2DbF63B32936625142319', // Renamed to IexecEscrowFacet
-            IexecOrderManagementFacet: '0xe5e071d9956D650C9DF2231B3C24c929Ae8a6698',
-            IexecPoco1Facet: '0x4F4fceE743Ff87a8e524F51B24FF33132e4d5F06',
-            IexecPoco2Facet: '0x8C75D9a503Cba140a34CB42dB7020B1295cbe39C',
-            IexecPocoAccessorsFacet: '0x4273B5c5f56416302a5FE0DDeB6d7272cDC7faeC',
+            IexecCategoryManagerFacet: '0x68cb0E51C54bF8e2E0Ad6a30226833253836c50E',
+            IexecConfigurationExtraFacet: '0x200A726D47FEE6f9E29DcB8E6E34F27cA7Bcf41d',
+            IexecConfigurationFacet: '0x0a704f7E98E8DB6F86Caf922713B000114292ac1',
+            IexecEscrowTokenFacet: '0x1cC6bF1e76B22211796d1d07519c546d0538042f', // Renamed to IexecEscrowFacet
+            IexecOrderManagementFacet: '0xd1cb2d058E07BD8f0b57deacE6D677dfF85799C8',
+            IexecPoco1Facet: '0x33348270C75766668D7B76E3034964BFdd9C2f2B',
+            IexecPoco2Facet: '0x11e03df4D5c71678024b06b00B4aaD7fFFC05186',
+            IexecPocoAccessorsFacet: '0xE72B340DD37Ae1096C4b5B3b84aB2DDAC97F4d9C',
         },
         // Arbitrum Mainnet
         '42161': {

@@ -1,30 +1,30 @@
 
 💎 Diamond proxy has 13 facets with 98 total functions.
 Facets:
-   - DiamondCutFacet: 0x6A4ccf4414c438424d3FB5183f9048EDfbB47847
-   - DiamondLoupeFacet: 0xf509a2221FCB63645d5b24c3740E35f219f30db9
-   - IexecAccessorsABILegacyFacet: 0xeF6Be73d45922af8192ba467230d2D05f5C22810
-   - IexecCategoryManagerFacet: 0x1E18624655a680dF645EF4668D303d0e158c3A23
-   - IexecConfigurationExtraFacet: 0x704DD48dFd3123445eE7d71230D099ee5a7fF384
-   - IexecConfigurationFacet: 0x860e131a34FAA9D2c80B5E5608026cf0885C4DD8
-   - IexecEscrowTokenFacet: 0xCB012a87Df7106a155a2DbF63B32936625142319
-   - IexecOrderManagementFacet: 0xe5e071d9956D650C9DF2231B3C24c929Ae8a6698
-   - IexecPoco1Facet: 0x4F4fceE743Ff87a8e524F51B24FF33132e4d5F06
-   - IexecPoco2Facet: 0x8C75D9a503Cba140a34CB42dB7020B1295cbe39C
-   - IexecPocoAccessorsFacet: 0x4273B5c5f56416302a5FE0DDeB6d7272cDC7faeC
-   - IexecRelayFacet: 0xFA962e5EF5fe7D1b5e3622fd1e5432101866c10f
-   - OwnershipFacet: 0x606CfE8BabBd286329281f14895634F913BfdB76
+   - 0x3Ac6B38885db50555cF8C4E8149305CaBe5D321D: 0x3Ac6B38885db50555cF8C4E8149305CaBe5D321D
+   - 0x83451710bbdcb7A4d1CA3a68db6C060fe12E77ea: 0x83451710bbdcb7A4d1CA3a68db6C060fe12E77ea
+   - 0xbf11A747D9C0D0D640b1164328112Fa02D8C2f83: 0xbf11A747D9C0D0D640b1164328112Fa02D8C2f83
+   - 0xd0E5Adb6682154e1749cF3550259F67c438f0d8B: 0xd0E5Adb6682154e1749cF3550259F67c438f0d8B
+   - 0xD82d9671e5832c4102BBEc0da8C84ABe54B57683: 0xD82d9671e5832c4102BBEc0da8C84ABe54B57683
+   - IexecCategoryManagerFacet: 0x97BC7F408992920dBc8cAb99ca984Bd500F0c6bb
+   - IexecConfigurationExtraFacet: 0xABbe3CC6801C965be030Ba522a677d3fD2de254F
+   - IexecConfigurationFacet: 0xdD4359d179bEE00C844E064AeC9bb768b8aAD681
+   - IexecEscrowFacet: 0xE646859f8c95B0ca240769C74E4a6668F58cA19E
+   - IexecOrderManagementFacet: 0xae4de46425923AA61Ad97A233bBa30154ffCb20A
+   - IexecPoco1Facet: 0x11EC0Ccaf820f637c11f50BA6E45e79207a6c265
+   - IexecPoco2Facet: 0x71976960245C1A337b6F36f996a0694B91e913E9
+   - IexecPocoAccessorsFacet: 0xA026f0852C3BB342622F7a6db415a5Fd0f0c6B87
 Functions:
    - allowance -> IexecPocoAccessorsFacet
    - appregistry -> IexecPocoAccessorsFacet
-   - approve -> IexecEscrowTokenFacet
-   - approveAndCall -> IexecEscrowTokenFacet
+   - approve -> IexecEscrowFacet
+   - approveAndCall -> IexecEscrowFacet
    - assertDatasetDealCompatibility -> IexecPoco1Facet
    - balanceOf -> IexecPocoAccessorsFacet
-   - broadcastAppOrder -> IexecRelayFacet
-   - broadcastDatasetOrder -> IexecRelayFacet
-   - broadcastRequestOrder -> IexecRelayFacet
-   - broadcastWorkerpoolOrder -> IexecRelayFacet
+   - broadcastAppOrder -> 0x83451710bbdcb7A4d1CA3a68db6C060fe12E77ea
+   - broadcastDatasetOrder -> 0x83451710bbdcb7A4d1CA3a68db6C060fe12E77ea
+   - broadcastRequestOrder -> 0x83451710bbdcb7A4d1CA3a68db6C060fe12E77ea
+   - broadcastWorkerpoolOrder -> 0x83451710bbdcb7A4d1CA3a68db6C060fe12E77ea
    - callbackgas -> IexecPocoAccessorsFacet
    - changeRegistries -> IexecConfigurationExtraFacet
    - claim -> IexecPoco2Facet
@@ -38,24 +38,24 @@ Functions:
    - createCategory -> IexecCategoryManagerFacet
    - datasetregistry -> IexecPocoAccessorsFacet
    - decimals -> IexecPocoAccessorsFacet
-   - decreaseAllowance -> IexecEscrowTokenFacet
-   - deposit -> IexecEscrowTokenFacet
-   - depositFor -> IexecEscrowTokenFacet
-   - depositForArray -> IexecEscrowTokenFacet
-   - diamondCut -> DiamondCutFacet
+   - decreaseAllowance -> IexecEscrowFacet
+   - deposit -> IexecEscrowFacet
+   - depositFor -> IexecEscrowFacet
+   - depositForArray -> IexecEscrowFacet
+   - diamondCut -> 0xD82d9671e5832c4102BBEc0da8C84ABe54B57683
    - domain -> IexecConfigurationFacet
    - eip712domain_separator -> IexecPocoAccessorsFacet
-   - facetAddress -> DiamondLoupeFacet
-   - facetAddresses -> DiamondLoupeFacet
-   - facetFunctionSelectors -> DiamondLoupeFacet
-   - facets -> DiamondLoupeFacet
-   - fallback -> IexecEscrowTokenFacet
+   - facetAddress -> 0x3Ac6B38885db50555cF8C4E8149305CaBe5D321D
+   - facetAddresses -> 0x3Ac6B38885db50555cF8C4E8149305CaBe5D321D
+   - facetFunctionSelectors -> 0x3Ac6B38885db50555cF8C4E8149305CaBe5D321D
+   - facets -> 0x3Ac6B38885db50555cF8C4E8149305CaBe5D321D
+   - fallback -> IexecEscrowFacet
    - final_deadline_ratio -> IexecPocoAccessorsFacet
    - finalize -> IexecPoco2Facet
    - frozenOf -> IexecPocoAccessorsFacet
    - groupmember_purpose -> IexecPocoAccessorsFacet
    - importScore -> IexecConfigurationFacet
-   - increaseAllowance -> IexecEscrowTokenFacet
+   - increaseAllowance -> IexecEscrowFacet
    - initialize -> IexecPoco2Facet
    - initializeAndClaimArray -> IexecPoco2Facet
    - initializeArray -> IexecPoco2Facet
@@ -68,10 +68,10 @@ Functions:
    - manageWorkerpoolOrder -> IexecOrderManagementFacet
    - matchOrders -> IexecPoco1Facet
    - name -> IexecPocoAccessorsFacet
-   - owner -> OwnershipFacet
-   - receive -> IexecEscrowTokenFacet
-   - receiveApproval -> IexecEscrowTokenFacet
-   - recover -> IexecEscrowTokenFacet
+   - owner -> 0xbf11A747D9C0D0D640b1164328112Fa02D8C2f83
+   - receive -> IexecEscrowFacet
+   - receiveApproval -> IexecEscrowFacet
+   - recover -> IexecEscrowFacet
    - reopen -> IexecPoco2Facet
    - resultFor -> IexecPocoAccessorsFacet
    - reveal -> IexecPoco2Facet
@@ -79,37 +79,37 @@ Functions:
    - setCallbackGas -> IexecConfigurationFacet
    - setTeeBroker -> IexecConfigurationFacet
    - sponsorMatchOrders -> IexecPoco1Facet
-   - supportsInterface -> DiamondLoupeFacet
+   - supportsInterface -> 0x3Ac6B38885db50555cF8C4E8149305CaBe5D321D
    - symbol -> IexecPocoAccessorsFacet
    - teebroker -> IexecPocoAccessorsFacet
    - token -> IexecPocoAccessorsFacet
    - totalSupply -> IexecPocoAccessorsFacet
-   - transfer -> IexecEscrowTokenFacet
-   - transferFrom -> IexecEscrowTokenFacet
-   - transferOwnership -> OwnershipFacet
+   - transfer -> IexecEscrowFacet
+   - transferFrom -> IexecEscrowFacet
+   - transferOwnership -> 0xbf11A747D9C0D0D640b1164328112Fa02D8C2f83
    - updateDomainSeparator -> IexecConfigurationFacet
    - verifyPresignature -> IexecPoco1Facet
    - verifyPresignatureOrSignature -> IexecPoco1Facet
    - verifySignature -> IexecPoco1Facet
    - viewAccount -> IexecPocoAccessorsFacet
-   - viewAccountABILegacy -> IexecAccessorsABILegacyFacet
+   - viewAccountABILegacy -> 0xd0E5Adb6682154e1749cF3550259F67c438f0d8B
    - viewApp -> IexecPocoAccessorsFacet
    - viewCategory -> IexecPocoAccessorsFacet
-   - viewCategoryABILegacy -> IexecAccessorsABILegacyFacet
-   - viewConfigABILegacy -> IexecAccessorsABILegacyFacet
+   - viewCategoryABILegacy -> 0xd0E5Adb6682154e1749cF3550259F67c438f0d8B
+   - viewConfigABILegacy -> 0xd0E5Adb6682154e1749cF3550259F67c438f0d8B
    - viewConsumed -> IexecPocoAccessorsFacet
    - viewContribution -> IexecPocoAccessorsFacet
-   - viewContributionABILegacy -> IexecAccessorsABILegacyFacet
+   - viewContributionABILegacy -> 0xd0E5Adb6682154e1749cF3550259F67c438f0d8B
    - viewDataset -> IexecPocoAccessorsFacet
    - viewDeal -> IexecPocoAccessorsFacet
-   - viewDealABILegacy_pt1 -> IexecAccessorsABILegacyFacet
-   - viewDealABILegacy_pt2 -> IexecAccessorsABILegacyFacet
+   - viewDealABILegacy_pt1 -> 0xd0E5Adb6682154e1749cF3550259F67c438f0d8B
+   - viewDealABILegacy_pt2 -> 0xd0E5Adb6682154e1749cF3550259F67c438f0d8B
    - viewPresigned -> IexecPocoAccessorsFacet
    - viewScore -> IexecPocoAccessorsFacet
    - viewTask -> IexecPocoAccessorsFacet
-   - viewTaskABILegacy -> IexecAccessorsABILegacyFacet
+   - viewTaskABILegacy -> 0xd0E5Adb6682154e1749cF3550259F67c438f0d8B
    - viewWorkerpool -> IexecPocoAccessorsFacet
-   - withdraw -> IexecEscrowTokenFacet
-   - withdrawTo -> IexecEscrowTokenFacet
+   - withdraw -> IexecEscrowFacet
+   - withdrawTo -> IexecEscrowFacet
    - workerpool_stake_ratio -> IexecPocoAccessorsFacet
    - workerpoolregistry -> IexecPocoAccessorsFacet
