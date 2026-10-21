@@ -18,8 +18,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     IWorkerpool__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterface,
+    IexecInterface__factory,
     IexecLibOrders_v5,
     IexecPocoBoostAccessors__factory,
     RLC__factory,
@@ -28,7 +28,6 @@ import {
     WorkerpoolRegistry__factory,
 } from '../../typechain';
 import { TransferEvent } from '../../typechain/contracts/registries/IRegistry';
-import config from '../../utils/config';
 import {
     IexecOrders,
     OrderOperation,
@@ -55,13 +54,13 @@ export const DATASET_CHECKSUM =
     '0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321';
 export class IexecWrapper {
     proxyAddress: string;
-    iexecPoco: IexecInterfaceNative;
+    iexecPoco: IexecInterface;
     accounts: IexecAccounts;
     domain: TypedDataDomain;
 
     constructor(proxyAddress: string, accounts: IexecAccounts) {
         this.proxyAddress = proxyAddress;
-        this.iexecPoco = IexecInterfaceNative__factory.connect(this.proxyAddress, ethers.provider);
+        this.iexecPoco = IexecInterface__factory.connect(this.proxyAddress, ethers.provider);
         this.accounts = accounts;
         this.domain = {
             name: 'iExecODB',
@@ -85,15 +84,6 @@ export class IexecWrapper {
      * @param account Deposit value for an account.
      */
     async depositInIexecAccount(account: SignerWithAddress, value: bigint) {
-        if (config.isNativeChain()) {
-            await this.iexecPoco
-                .connect(account)
-                .deposit({
-                    value: (value * 10n ** 9n).toString(),
-                })
-                .then((tx) => tx.wait());
-            return;
-        }
         const rlc = RLC__factory.connect(await this.iexecPoco.token(), this.accounts.iexecAdmin);
         // Transfer RLC from owner to recipient
         await rlc.transfer(account.address, value).then((tx) => tx.wait());
@@ -104,7 +94,6 @@ export class IexecWrapper {
             .then((tx) => tx.wait());
     }
 
-    // TODO rename to computeSchedulerStakePerDeal
     /**
      * Compute the amount of RLCs to be staked by the scheduler
      * for a deal. We first compute the percentage by task

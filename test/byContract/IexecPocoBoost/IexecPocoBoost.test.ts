@@ -16,8 +16,8 @@ import {
     IOracleConsumer__factory,
     IexecConfiguration,
     IexecConfiguration__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterface,
+    IexecInterface__factory,
     IexecOrderManagement__factory,
     IexecPoco2__factory,
     IexecPocoAccessors__factory,
@@ -59,7 +59,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { randomAddress } from '../../utils/utils';
+import { expectProxyBalanceToEqualAllFrozen, randomAddress } from '../../utils/utils';
 
 const taskIndex = 0n;
 const volume = taskIndex + 1n;
@@ -75,7 +75,7 @@ const randomEOAAddress = randomAddress();
 let proxyAddress: string;
 let iexecPocoBoostInstance: IexecPocoBoostFacet;
 let iexecConfigurationAsAdmin: IexecConfiguration;
-let iexecPocoAccessor: IexecInterfaceNative;
+let iexecPocoAccessor: IexecInterface;
 let oracleConsumerInstance: TestClient;
 let gasWasterClientInstance: GasWasterClient;
 let gasWasterClientAddress: string;
@@ -108,6 +108,10 @@ describe('IexecPocoBoost', function () {
         await loadFixture(initFixture);
     });
 
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
+    });
+
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({
@@ -130,7 +134,7 @@ describe('IexecPocoBoost', function () {
             proxyAddress,
             accounts.iexecAdmin,
         );
-        iexecPocoAccessor = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
+        iexecPocoAccessor = IexecInterface__factory.connect(proxyAddress, ethers.provider);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,
@@ -1277,7 +1281,7 @@ describe('IexecPocoBoost', function () {
             await signOrders(domain, orders, ordersActors);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
 
         it('Should fail when scheduler has insufficient balance', async () => {
@@ -1308,7 +1312,7 @@ describe('IexecPocoBoost', function () {
             await signOrders(domain, orders, ordersActors);
             await expect(
                 iexecPocoBoostInstance.matchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
         it('Should fail when sponsor has insufficient balance', async () => {
             const dealPrice = (appPrice + datasetPrice + workerpoolPrice) * volume;
@@ -1327,7 +1331,7 @@ describe('IexecPocoBoost', function () {
                 iexecPocoBoostInstance
                     .connect(sponsor)
                     .sponsorMatchOrdersBoost(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
     });
 

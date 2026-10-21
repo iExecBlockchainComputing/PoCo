@@ -1,94 +1,17 @@
 # Solidity API
 
-## IexecInterfaceNative
+## IexecInterface
 
 A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in native mode.
+the PoCo contracts.
 
-_Referenced in the SDK with the current path `contracts/IexecInterfaceNative.sol`.
-Changing the name or the path would cause a breaking change in the SDK._
-
-## IexecInterfaceToken
-
-A global interface that aggregates all the interfaces needed to interact with
-the PoCo contracts in token mode.
-
-_Referenced in the SDK with the current path `contracts/IexecInterfaceToken.sol`.
+_TODO Referenced in the SDK with the old path `contracts/IexecInterfaceToken.sol`.
+The SDK should be updated to use the new path `contracts/IexecInterface.sol`.
 Changing the name or the path would cause a breaking change in the SDK._
 
 ## FacetBase
 
-_Every facet must inherit from this contract._
-
-## IexecERC20Base
-
-### transfer
-
-```solidity
-function transfer(address recipient, uint256 amount) external returns (bool)
-```
-
-### approve
-
-```solidity
-function approve(address spender, uint256 value) external returns (bool)
-```
-
-### approveAndCall
-
-```solidity
-function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
-```
-
-### transferFrom
-
-```solidity
-function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
-```
-
-### increaseAllowance
-
-```solidity
-function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
-```
-
-### decreaseAllowance
-
-```solidity
-function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
-```
-
-## IexecEscrow
-
-### Transfer
-
-```solidity
-event Transfer(address from, address to, uint256 value)
-```
-
-### Lock
-
-```solidity
-event Lock(address owner, uint256 amount)
-```
-
-### Unlock
-
-```solidity
-event Unlock(address owner, uint256 amount)
-```
-
-### Reward
-
-```solidity
-event Reward(address owner, uint256 amount, bytes32 ref)
-```
-
-### Seize
-
-```solidity
-event Seize(address owner, uint256 amount, bytes32 ref)
-```
+_Every facet should inherit from this contract._
 
 ## IexecCategoryManagerFacet
 
@@ -146,57 +69,17 @@ function setTeeBroker(address _teebroker) external
 function setCallbackGas(uint256 _callbackgas) external
 ```
 
-## IexecEscrowNativeFacet
+## IexecEscrowFacet
 
-### receive
+Deposits of the base RLC token are held by the proxy and credited 1:1
+as sRLC (ERC20 "Staked RLC"), managed by this facet manages. sRLC is not a
+standalone contract: its balances, allowances and total supply live in the PoCo
+storage, and every account that funds a deal, stakes as a worker or collects a
+reward is paid in it.
 
-```solidity
-receive() external payable
-```
-
-### fallback
-
-```solidity
-fallback() external payable
-```
-
-### deposit
-
-```solidity
-function deposit() external payable returns (bool)
-```
-
-### depositFor
-
-```solidity
-function depositFor(address target) external payable returns (bool)
-```
-
-### depositForArray
-
-```solidity
-function depositForArray(uint256[] amounts, address[] targets) external payable returns (bool)
-```
-
-### withdraw
-
-```solidity
-function withdraw(uint256 amount) external returns (bool)
-```
-
-### withdrawTo
-
-```solidity
-function withdrawTo(uint256 amount, address target) external returns (bool)
-```
-
-### recover
-
-```solidity
-function recover() external returns (uint256)
-```
-
-## IexecEscrowTokenFacet
+`deposit` mints sRLC against transferred RLC, `withdraw` burns it and returns the
+RLC, and the ERC-20 methods move it between accounts. The balance moves of the
+escrow itself (lock, unlock, reward, seize) run over the same ledger.
 
 ### receive
 
@@ -289,6 +172,42 @@ matchOrders specific notes:
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | [0] | bool | success True if operation succeeded @custom:example ```solidity // Compute deal cost uint256 dealCost = (appPrice + datasetPrice + workerpoolPrice) * volume; // Encode matchOrders operation with selector bytes memory data = abi.encodeWithSelector(     IexecPoco1.matchOrders.selector,     appOrder,     datasetOrder,     workerpoolOrder,     requestOrder ); // Call the RLC contract with the encoded data. RLC(token).approveAndCall(iexecProxy, dealCost, data); ``` |
+
+### transfer
+
+```solidity
+function transfer(address recipient, uint256 amount) external returns (bool)
+```
+
+### approve
+
+```solidity
+function approve(address spender, uint256 value) external returns (bool)
+```
+
+### approveAndCall
+
+```solidity
+function approveAndCall(address spender, uint256 value, bytes extraData) external returns (bool)
+```
+
+### transferFrom
+
+```solidity
+function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
+```
+
+### increaseAllowance
+
+```solidity
+function increaseAllowance(address spender, uint256 addedValue) external returns (bool)
+```
+
+### decreaseAllowance
+
+```solidity
+function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)
+```
 
 ## IexecOrderManagementFacet
 
@@ -386,7 +305,7 @@ Match orders. The requester gets debited.
 This function does not use `msg.sender` to determine who pays for the deal.
 The sponsor is always set to `_requestorder.requester`, regardless of who calls this function.
 This design allows the function to be safely called via delegatecall from other facets
-(e.g., IexecEscrowTokenFacet.receiveApproval) without security concerns.
+(e.g., IexecEscrowFacet.receiveApproval) without security concerns.
 
 #### Parameters
 
@@ -875,6 +794,38 @@ function broadcastWorkerpoolOrder(struct IexecLibOrders_v5.WorkerpoolOrder _work
 function broadcastRequestOrder(struct IexecLibOrders_v5.RequestOrder _requestorder) external
 ```
 
+## EscrowLib
+
+The escrow layers on top of the sRLC ledger: it owns `m_frozens` and
+defers every balance move to {StakedRlcLib}.
+
+_The events are declared here rather than taken from {IexecEscrowEvents}
+because solc 0.8.21 cannot compile `emit Other.Event(...)`._
+
+### Reward
+
+```solidity
+event Reward(address owner, uint256 amount, bytes32 ref)
+```
+
+### Seize
+
+```solidity
+event Seize(address owner, uint256 amount, bytes32 ref)
+```
+
+### Lock
+
+```solidity
+event Lock(address owner, uint256 amount)
+```
+
+### Unlock
+
+```solidity
+event Unlock(address owner, uint256 amount)
+```
+
 ## IexecLibCore_v5
 
 ### Account
@@ -1340,6 +1291,27 @@ struct PocoStorage {
 }
 ```
 
+## StakedRlcLib
+
+sRLC ("Staked RLC") is the internal token of the PoCo protocol. It is
+not a standalone contract: its total supply, balances and allowances live in
+the PoCo storage. This library is the single owner of every write to them.
+
+_The events are declared here rather than taken from {IexecEscrowEvents}
+because solc 0.8.21 cannot compile `emit Other.Event(...)`._
+
+### Transfer
+
+```solidity
+event Transfer(address from, address to, uint256 value)
+```
+
+### Approval
+
+```solidity
+event Approval(address owner, address spender, uint256 value)
+```
+
 ## IRegistry
 
 ### isRegistered
@@ -1409,18 +1381,6 @@ automatically added as a prefix in {tokenURI} to each token's ID._
 function isRegistered(address _entry) external view returns (bool)
 ```
 
-### setName
-
-```solidity
-function setName(address, string) external
-```
-
-Sets the reverse registration name for a registry contract.
-
-_This functionality is supported only on Bellecour Sidechain, calls on other chains
-will revert. The function is kept as nonpayable to maintain retrocompatibility with the
-iExec SDK._
-
 ## RegistryEntry
 
 _Referenced in the SDK with the current path `contracts/registries/RegistryEntry.sol`.
@@ -1437,18 +1397,6 @@ contract IRegistry registry
 ```solidity
 function owner() public view returns (address)
 ```
-
-### setName
-
-```solidity
-function setName(address, string) external
-```
-
-Sets the reverse registration name for a registry entry contract.
-
-_This functionality is supported only on Bellecour Sidechain, calls on other chains
-will revert. The function is kept as nonpayable to maintain retrocompatibility with the
-iExec SDK._
 
 ## App
 

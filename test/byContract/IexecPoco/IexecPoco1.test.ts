@@ -9,8 +9,8 @@ import { ethers } from 'hardhat';
 import {
     ERC1271Mock__factory,
     IERC721__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterface,
+    IexecInterface__factory,
     IexecLibOrders_v5,
     IexecPocoAccessors,
     IexecPocoAccessors__factory,
@@ -66,8 +66,8 @@ const someWallet = Wallet.createRandom();
 
 describe('IexecPoco1', () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsRequester]: IexecInterfaceNative[] = [];
-    let iexecPocoAsSponsor: IexecInterfaceNative;
+    let [iexecPoco, iexecPocoAsRequester]: IexecInterface[] = [];
+    let iexecPocoAsSponsor: IexecInterface;
     let iexecPocoAccessors: IexecPocoAccessors;
     let iexecPocoContract: Contract;
     let iexecWrapper: IexecWrapper;
@@ -113,7 +113,7 @@ describe('IexecPoco1', () => {
             accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         iexecPocoAsRequester = iexecPoco.connect(requester);
         iexecPocoAsSponsor = iexecPoco.connect(sponsor);
         iexecPocoAccessors = IexecPocoAccessors__factory.connect(proxyAddress, ethers.provider);
@@ -999,7 +999,7 @@ describe('IexecPoco1', () => {
             expect(await iexecPoco.balanceOf(scheduler.address)).to.equal(schedulerStake);
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
+                'ERC20: Transfer amount exceeds balance',
             );
         });
 
@@ -1016,7 +1016,7 @@ describe('IexecPoco1', () => {
             expect(await iexecPoco.balanceOf(scheduler.address)).to.be.lessThan(schedulerStake);
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             await expect(iexecPocoAsRequester.matchOrders(...orders.toArray())).to.be.revertedWith(
-                'IexecEscrow: Transfer amount exceeds balance',
+                'ERC20: Transfer amount exceeds balance',
             );
         });
     });
@@ -1099,7 +1099,7 @@ describe('IexecPoco1', () => {
             await signOrders(iexecWrapper.getDomain(), orders, ordersActors);
             await expect(
                 iexecPocoAsSponsor.sponsorMatchOrders(...orders.toArray()),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
     });
 

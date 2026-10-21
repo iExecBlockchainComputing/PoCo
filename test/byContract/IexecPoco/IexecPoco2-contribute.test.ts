@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { assert, expect } from 'chai';
 import { ZeroAddress } from 'ethers';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import { IexecInterface, IexecInterface__factory } from '../../../typechain';
 import config from '../../../utils/config';
 import { NULL, TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 import { IexecOrders, OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -32,7 +32,7 @@ const emptyEnclaveSignature = NULL.SIGNATURE;
 
 describe('IexecPoco2#contribute', () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsWorker]: IexecInterfaceNative[] = [];
+    let [iexecPoco, iexecPocoAsWorker]: IexecInterface[] = [];
     let iexecWrapper: IexecWrapper;
     let [
         anyone,
@@ -71,7 +71,7 @@ describe('IexecPoco2#contribute', () => {
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
         const appPrice = 1000n;
         const datasetPrice = 1_000_000n;
@@ -519,7 +519,7 @@ describe('IexecPoco2#contribute', () => {
                         scheduler,
                     ),
                 ),
-            ).to.be.revertedWith('IexecEscrow: Transfer amount exceeds balance');
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
     });
 });

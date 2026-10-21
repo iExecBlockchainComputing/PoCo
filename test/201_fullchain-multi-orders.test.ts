@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
+import { IexecInterface, IexecInterface__factory } from '../typechain';
 import { TAG_STANDARD } from '../utils/constants';
 import {
     IexecOrders,
@@ -23,6 +23,7 @@ import {
 import { maxBigInt, minBigInt } from '../utils/tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
+import { expectProxyBalanceToEqualAllFrozen } from './utils/utils';
 
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
@@ -31,7 +32,7 @@ const workerpoolPrice2 = 1_000_000_025n;
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
-let iexecPoco: IexecInterfaceNative;
+let iexecPoco: IexecInterface;
 let iexecWrapper: IexecWrapper;
 let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
 let [requester, appProvider, datasetProvider, scheduler, anyone, worker1]: SignerWithAddress[] = [];
@@ -47,12 +48,16 @@ describe('Integration tests', function () {
         await loadFixture(initFixture);
     });
 
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
+    });
+
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({ requester, appProvider, datasetProvider, scheduler, anyone, worker1 } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, ethers.provider);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, ethers.provider);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,

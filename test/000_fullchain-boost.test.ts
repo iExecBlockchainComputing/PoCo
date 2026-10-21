@@ -8,8 +8,8 @@ import { TypedDataDomain } from 'ethers';
 import hre from 'hardhat';
 import {
     IWorkerpool__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterface,
+    IexecInterface__factory,
     IexecOrderManagement__factory,
     IexecPocoBoostAccessorsFacet__factory,
     IexecPocoBoostFacet,
@@ -38,7 +38,7 @@ import {
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
-import { randomAddress } from './utils/utils';
+import { expectProxyBalanceToEqualAllFrozen, randomAddress } from './utils/utils';
 
 const taskIndex = 0n;
 const volume = taskIndex + 1n;
@@ -50,7 +50,7 @@ const workerpoolPrice = 1_000_000_000n;
 describe('IexecPocoBoostFacet (IT)', function () {
     let domain: TypedDataDomain;
     let proxyAddress: string;
-    let iexecInstance: IexecInterfaceNative;
+    let iexecInstance: IexecInterface;
     let iexecPocoBoostInstance: IexecPocoBoostFacet;
     let iexecWrapper: IexecWrapper;
     let appAddress = '';
@@ -88,7 +88,7 @@ describe('IexecPocoBoostFacet (IT)', function () {
             requester: requester,
         };
         iexecPocoBoostInstance = IexecPocoBoostFacet__factory.connect(proxyAddress, owner);
-        iexecInstance = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecInstance = IexecInterface__factory.connect(proxyAddress, anyone);
         domain = {
             name: 'iExecODB',
             version: '5.0.0',
@@ -107,6 +107,10 @@ describe('IexecPocoBoostFacet (IT)', function () {
         };
         // initialize tee broker to address(0)
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
+    });
+
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
     });
 
     async function initFixture() {

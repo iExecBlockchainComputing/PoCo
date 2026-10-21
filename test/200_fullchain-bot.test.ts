@@ -4,19 +4,20 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
+import { IexecInterface, IexecInterface__factory } from '../typechain';
 import { TAG_STANDARD } from '../utils/constants';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import { TaskStatusEnum, buildUtf8ResultAndDigest, getIexecAccounts } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
+import { expectProxyBalanceToEqualAllFrozen } from './utils/utils';
 
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
 const workerpoolPrice = 1_000_000_000n;
 
 let proxyAddress: string;
-let iexecPoco: IexecInterfaceNative;
+let iexecPoco: IexecInterface;
 let iexecWrapper: IexecWrapper;
 let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
 let [
@@ -43,6 +44,10 @@ describe('Integration tests', function () {
         await loadFixture(initFixture);
     });
 
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
+    });
+
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({
@@ -59,7 +64,7 @@ describe('Integration tests', function () {
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,

@@ -7,8 +7,8 @@ import { expect } from 'chai';
 import { AbiCoder, Wallet, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterface,
+    IexecInterface__factory,
     OwnableMock__factory,
     TestClient__factory,
 } from '../../../typechain';
@@ -24,6 +24,7 @@ import {
 import { getPocoStorageSlotLocation } from '../../../utils/proxy-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { expectProxyBalanceToEqualAllFrozen } from '../../utils/utils';
 
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const hexResults = ethers.hexlify(results);
@@ -38,7 +39,7 @@ const emptyEnclaveSignature = '0x';
 
 describe('IexecPoco2#finalize', async () => {
     let proxyAddress: string;
-    let [iexecPoco, iexecPocoAsScheduler]: IexecInterfaceNative[] = [];
+    let [iexecPoco, iexecPocoAsScheduler]: IexecInterface[] = [];
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [
@@ -63,6 +64,10 @@ describe('IexecPoco2#finalize', async () => {
         await loadFixture(initFixture);
     });
 
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
+    });
+
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({
@@ -80,7 +85,7 @@ describe('IexecPoco2#finalize', async () => {
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         iexecPocoAsScheduler = iexecPoco.connect(scheduler);
         ordersAssets = {
             app: appAddress,

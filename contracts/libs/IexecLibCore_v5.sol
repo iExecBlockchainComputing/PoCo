@@ -3,6 +3,7 @@
 
 pragma solidity ^0.8.0;
 
+// TODO rename to CoreLib
 library IexecLibCore_v5 {
     /**
      * Tools

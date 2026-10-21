@@ -7,22 +7,22 @@ import { expect } from 'chai';
 import { AddressLike, ZeroAddress } from 'ethers';
 import { ethers } from 'hardhat';
 import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterface,
+    IexecInterface__factory,
     TestReceiver,
     TestReceiver__factory,
 } from '../../../typechain';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { setZeroAddressBalance } from '../../utils/utils';
+import { expectProxyBalanceToEqualAllFrozen, setZeroAddressBalance } from '../../utils/utils';
 
 const value = 100n;
 
 describe('ERC20', async () => {
     let proxyAddress: string;
     let iexecWrapper: IexecWrapper;
-    let [iexecPoco, iexecPocoAsHolder, iexecPocoAsSpender]: IexecInterfaceNative[] = [];
+    let [iexecPoco, iexecPocoAsHolder, iexecPocoAsSpender]: IexecInterface[] = [];
     let [holder, recipient, spender, anyone, zeroAddressSigner]: SignerWithAddress[] = [];
     let totalSupplyBeforeFirstDeposit: bigint;
 
@@ -33,6 +33,10 @@ describe('ERC20', async () => {
         await loadFixture(initFixture);
     });
 
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
+    });
+
     async function initFixture() {
         const accounts = await getIexecAccounts();
         // Setup current test accounts from some arbitrary iExec accounts
@@ -41,7 +45,7 @@ describe('ERC20', async () => {
         zeroAddressSigner = await ethers.getImpersonatedSigner(ZeroAddress);
         await setZeroAddressBalance();
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         iexecPocoAsHolder = iexecPoco.connect(holder);
         iexecPocoAsSpender = iexecPoco.connect(spender);
         totalSupplyBeforeFirstDeposit = await iexecPoco.totalSupply();
@@ -87,17 +91,17 @@ describe('ERC20', async () => {
         it('Should not transfer from the zero address', async () => {
             await expect(
                 iexecPoco.connect(zeroAddressSigner).transfer(recipient.address, value),
-            ).to.be.revertedWith('ERC20: transfer from the zero address');
+            ).to.be.revertedWith('ERC20: Transfer from empty address');
         });
         it('Should not transfer to the zero address', async () => {
             await expect(iexecPocoAsHolder.transfer(ZeroAddress, value)).to.be.revertedWith(
-                'ERC20: transfer to the zero address',
+                'ERC20: Transfer to empty address',
             );
         });
         it('Should not transfer when sender balance is too low', async () => {
             await expect(
                 iexecPocoAsHolder.transfer(recipient.address, value + 1n),
-            ).to.be.revertedWithoutReason();
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
     });
 
@@ -191,23 +195,23 @@ describe('ERC20', async () => {
         it('Should not transferFrom when owner is the zero address', async () => {
             await expect(
                 iexecPocoAsSpender.transferFrom(ZeroAddress, spender.address, value),
-            ).to.be.revertedWith('ERC20: transfer from the zero address');
+            ).to.be.revertedWith('ERC20: Transfer from empty address');
         });
         it('Should not transferFrom to the zero address', async () => {
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, ZeroAddress, value),
-            ).to.be.revertedWith('ERC20: transfer to the zero address');
+            ).to.be.revertedWith('ERC20: Transfer to empty address');
         });
         it('Should not transferFrom when owner balance is too low', async () => {
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, spender.address, value + 1n),
-            ).to.be.revertedWithoutReason();
+            ).to.be.revertedWith('ERC20: Transfer amount exceeds balance');
         });
         it('Should not transferFrom when spender allowance is too low', async () => {
             await iexecPocoAsHolder.approve(spender.address, value - 1n).then((tx) => tx.wait());
             await expect(
                 iexecPocoAsSpender.transferFrom(holder.address, spender.address, value),
-            ).to.be.revertedWithoutReason();
+            ).to.be.revertedWithPanic(0x11);
         });
     });
 
@@ -260,7 +264,7 @@ describe('ERC20', async () => {
         it('Should not decrease allowance of a value greater than old allowance', async () => {
             await expect(
                 iexecPocoAsHolder.decreaseAllowance(spender.address, 1),
-            ).to.be.revertedWithoutReason();
+            ).to.be.revertedWithPanic(0x11);
         });
         it('Should not decrease allowance from the zero address', async () => {
             await expect(

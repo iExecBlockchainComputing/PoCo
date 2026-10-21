@@ -4,7 +4,7 @@
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../typechain';
+import { IexecInterface, IexecInterface__factory } from '../typechain';
 import { TAG_STANDARD, TAG_TEE } from '../utils/constants';
 import { OrdersActors, OrdersAssets, OrdersPrices, buildOrders } from '../utils/createOrders';
 import {
@@ -16,7 +16,7 @@ import {
 } from '../utils/poco-tools';
 import { IexecWrapper } from './utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from './utils/hardhat-fixture-deployer';
-import { randomAddress } from './utils/utils';
+import { expectProxyBalanceToEqualAllFrozen, randomAddress } from './utils/utils';
 
 //  +---------+-------------+-------------+-------------+----------+-----+---------------------------------------------+
 //  |         | Sponsorship | Replication | Beneficiary | Callback | BoT |              Type                           |
@@ -38,7 +38,7 @@ const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 const { resultsCallback, callbackResultDigest } = buildResultCallbackAndDigest(123);
 
 let proxyAddress: string;
-let iexecPoco: IexecInterfaceNative;
+let iexecPoco: IexecInterface;
 let iexecWrapper: IexecWrapper;
 let [appAddress, workerpoolAddress, datasetAddress]: string[] = [];
 let [
@@ -67,6 +67,10 @@ describe('Integration tests', function () {
         await loadFixture(initFixture);
     });
 
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
+    });
+
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({
@@ -85,7 +89,7 @@ describe('Integration tests', function () {
         } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         ordersActors = {
             appOwner: appProvider,
             datasetOwner: datasetProvider,

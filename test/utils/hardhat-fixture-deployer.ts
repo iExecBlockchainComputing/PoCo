@@ -5,7 +5,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployments, ethers } from 'hardhat';
 import deploy from '../../deploy/0_deploy';
 import { RLC__factory } from '../../typechain';
-import config, { isArbitrumSepoliaFork, isLocalFork } from '../../utils/config';
+import config, { isArbitrumSepoliaFork } from '../../utils/config';
 import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixture-helpers';
 
 /**
@@ -15,22 +15,6 @@ import { fundAccounts, saveToDeployments, transferAllOwnerships } from './fixtur
 async function deployAll() {
     await deploy();
     return (await deployments.get('Diamond')).address;
-}
-
-/**
- * Sets up local fork in native mode
- * @returns proxy address
- */
-async function setUpLocalForkInNativeMode() {
-    const chainId = (await ethers.provider.getNetwork()).chainId;
-    const proxyAddress = config.getChainConfig(chainId).v5.DiamondProxy;
-    if (!proxyAddress) {
-        throw new Error('DiamondProxy is required');
-    }
-    await fundAccounts(proxyAddress, proxyAddress, true);
-    await transferAllOwnerships(config.getChainConfig(chainId));
-
-    return proxyAddress;
 }
 
 /**
@@ -44,7 +28,7 @@ async function setUpLocalForkInTokenMode() {
         await saveToDeployments('RLC', new RLC__factory(), chainConfig.token);
     }
     if (chainConfig.token && chainConfig.richman) {
-        await fundAccounts(chainConfig.token, chainConfig.richman, false);
+        await fundAccounts(chainConfig.token, chainConfig.richman);
     }
     await transferAllOwnerships(chainConfig);
 
@@ -67,9 +51,6 @@ async function setUpLocalForkInTokenMode() {
  * @returns proxy address
  */
 export const loadHardhatFixtureDeployment = async () => {
-    if (isLocalFork()) {
-        return await loadFixture(setUpLocalForkInNativeMode);
-    }
     if (isArbitrumSepoliaFork()) {
         return await loadFixture(setUpLocalForkInTokenMode);
     }

@@ -15,8 +15,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterface,
+    IexecInterface__factory,
     Workerpool,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
@@ -25,7 +25,6 @@ import {
 import { MULTIADDR_BYTES } from '../../../utils/constants';
 import { getIexecAccounts } from '../../../utils/poco-tools';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
-import { randomAddress } from '../../utils/utils';
 
 const createAppParams = {
     name: 'My app',
@@ -56,7 +55,7 @@ const createWorkerpoolArgs = Object.values(createWorkerpoolParams) as [string];
 
 describe('Assets', () => {
     let proxyAddress: string;
-    let iexecPoco: IexecInterfaceNative;
+    let iexecPoco: IexecInterface;
     let [appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let appRegistry: AppRegistry;
@@ -75,7 +74,7 @@ describe('Assets', () => {
     async function initFixture() {
         ({ appProvider, datasetProvider, scheduler, anyone } = await getIexecAccounts());
 
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
 
         appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
         datasetRegistry = DatasetRegistry__factory.connect(
@@ -182,23 +181,6 @@ describe('Assets', () => {
                         .changePolicy(100, 150, { from: scheduler.address }),
                 ).to.be.revertedWithoutReason();
             });
-        });
-    });
-
-    describe('Common', () => {
-        it('Should revert when setName is called for reverse registration', async () => {
-            const randomEnsContract = randomAddress();
-            const randomEnsName = 'random.eth';
-            const txs = [
-                app.connect(appProvider).setName(randomEnsContract, randomEnsName),
-                dataset.connect(datasetProvider).setName(randomEnsContract, randomEnsName),
-                workerpool.connect(scheduler).setName(randomEnsContract, randomEnsName),
-            ];
-            await Promise.all(
-                txs.map((tx) =>
-                    expect(tx).to.be.revertedWith('Operation not supported on this chain'),
-                ),
-            );
         });
     });
 

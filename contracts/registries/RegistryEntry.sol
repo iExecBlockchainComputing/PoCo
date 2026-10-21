@@ -26,18 +26,6 @@ abstract contract RegistryEntry {
         return registry.ownerOf(uint256(uint160(address(this))));
     }
 
-    /**
-     * Sets the reverse registration name for a registry entry contract.
-     * @dev This functionality is supported only on Bellecour Sidechain, calls on other chains
-     * will revert. The function is kept as nonpayable to maintain retrocompatibility with the
-     * iExec SDK.
-     */
-    // TODO remove this function when Bellecour is deprecated.
-    function setName(address /* _ens */, string calldata /* _name */) external onlyOwner {
-        registry = registry; // Remove solidity state mutability warning.
-        revert("Operation not supported on this chain");
-    }
-
     function _initialize(address _registry) internal {
         require(address(registry) == address(0), "already initialized");
         registry = IRegistry(_registry);

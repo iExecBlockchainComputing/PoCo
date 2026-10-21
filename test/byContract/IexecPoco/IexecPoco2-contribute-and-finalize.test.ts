@@ -5,11 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { Wallet, ZeroAddress, ethers } from 'ethers';
-import {
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
-    TestClient__factory,
-} from '../../../typechain';
+import { IexecInterface, IexecInterface__factory, TestClient__factory } from '../../../typechain';
 import config from '../../../utils/config';
 import { TAG_STANDARD, TAG_TEE } from '../../../utils/constants';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
@@ -26,6 +22,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { expectProxyBalanceToEqualAllFrozen } from '../../utils/utils';
 
 const appPrice = 1000n;
 const datasetPrice = 1_000_000n;
@@ -41,7 +38,7 @@ const noResultsData = '0x';
 const { results, resultDigest } = buildUtf8ResultAndDigest('result');
 
 let proxyAddress: string;
-let [iexecPoco, iexecPocoAsWorker]: IexecInterfaceNative[] = [];
+let [iexecPoco, iexecPocoAsWorker]: IexecInterface[] = [];
 let iexecWrapper: IexecWrapper;
 let [
     requester,
@@ -64,13 +61,17 @@ describe('IexecPoco2#contributeAndFinalize', () => {
         await loadFixture(initFixture);
     });
 
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
+    });
+
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({ requester, appProvider, datasetProvider, scheduler, sms, enclave, worker, anyone } =
             accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         const { appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets();
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
         iexecPocoAsWorker = iexecPoco.connect(worker);
         const appPrice = 1000n;
         const datasetPrice = 1_000_000n;

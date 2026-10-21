@@ -5,7 +5,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ZeroAddress, ethers } from 'ethers';
-import { IexecInterfaceNative, IexecInterfaceNative__factory } from '../../../typechain';
+import { IexecInterface, IexecInterface__factory } from '../../../typechain';
 import { OrdersAssets, OrdersPrices, buildOrders } from '../../../utils/createOrders';
 import {
     TaskStatusEnum,
@@ -17,6 +17,7 @@ import {
 } from '../../../utils/poco-tools';
 import { IexecWrapper } from '../../utils/IexecWrapper';
 import { loadHardhatFixtureDeployment } from '../../utils/hardhat-fixture-deployer';
+import { expectProxyBalanceToEqualAllFrozen } from '../../utils/utils';
 import * as constants from './../../../utils/constants';
 
 const categoryTime = 300n;
@@ -30,8 +31,8 @@ const enclaveAddress = ZeroAddress;
 
 describe('IexecPoco2#claim', async () => {
     let proxyAddress: string;
-    let iexecPoco: IexecInterfaceNative;
-    let iexecPocoAsAnyone: IexecInterfaceNative;
+    let iexecPoco: IexecInterface;
+    let iexecPocoAsAnyone: IexecInterface;
     let iexecWrapper: IexecWrapper;
     let [appAddress, datasetAddress, workerpoolAddress]: string[] = [];
     let [iexecAdmin, requester, sponsor, scheduler, worker1, worker2, anyone]: SignerWithAddress[] =
@@ -46,13 +47,17 @@ describe('IexecPoco2#claim', async () => {
         await loadFixture(initFixture);
     });
 
+    afterEach('Check escrow invariant', async () => {
+        await expectProxyBalanceToEqualAllFrozen(proxyAddress);
+    });
+
     async function initFixture() {
         const accounts = await getIexecAccounts();
         ({ iexecAdmin, requester, sponsor, scheduler, worker1, worker2, anyone } = accounts);
         iexecWrapper = new IexecWrapper(proxyAddress, accounts);
         ({ appAddress, datasetAddress, workerpoolAddress } = await iexecWrapper.createAssets());
         await iexecWrapper.setTeeBroker('0x0000000000000000000000000000000000000000');
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, iexecAdmin);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, iexecAdmin);
         iexecPocoAsAnyone = iexecPoco.connect(anyone);
         ordersAssets = {
             app: appAddress,

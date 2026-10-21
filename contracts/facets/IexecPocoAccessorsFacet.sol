@@ -4,7 +4,6 @@
 pragma solidity ^0.8.0;
 
 import {PocoStorageLib} from "../libs/PocoStorageLib.sol";
-import {FacetBase} from "../abstract/FacetBase.sol";
 import {IexecLibCore_v5} from "../libs/IexecLibCore_v5.sol";
 import {IexecLibOrders_v5} from "../libs/IexecLibOrders_v5.sol";
 import {IDataset} from "../registries/datasets/IDataset.v8.sol";
@@ -12,18 +11,13 @@ import {IApp} from "../registries/apps/IApp.v8.sol";
 import {IWorkerpool} from "../registries/workerpools/IWorkerpool.v8.sol";
 import {IexecPocoAccessors} from "../interfaces/IexecPocoAccessors.sol";
 import {IRegistry} from "../registries/IRegistry.sol";
-import {IexecPocoCommon} from "../abstract/IexecPocoCommon.sol";
-import {SignatureVerifier} from "../abstract/SignatureVerifier.sol";
+import {FacetBase} from "../abstract/FacetBase.sol";
+import {CommonLib} from "../libs/CommonLib.sol";
 
 /**
  * @title Getters contract for PoCo facets.
  */
-contract IexecPocoAccessorsFacet is
-    IexecPocoAccessors,
-    FacetBase,
-    SignatureVerifier,
-    IexecPocoCommon
-{
+contract IexecPocoAccessorsFacet is IexecPocoAccessors, FacetBase {
     using IexecLibOrders_v5 for IexecLibOrders_v5.AppOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.DatasetOrder;
     using IexecLibOrders_v5 for IexecLibOrders_v5.WorkerpoolOrder;
@@ -66,16 +60,16 @@ contract IexecPocoAccessorsFacet is
         IexecLibOrders_v5.RequestOrder calldata requestOrder
     ) external view override returns (uint256) {
         return
-            _computeDealVolume(
+            CommonLib.computeDealVolume(
                 appOrder.volume,
-                _toTypedDataHash(appOrder.hash()),
+                CommonLib.toTypedDataHash(appOrder.hash()),
                 datasetOrder.dataset != address(0),
                 datasetOrder.volume,
-                _toTypedDataHash(datasetOrder.hash()),
+                CommonLib.toTypedDataHash(datasetOrder.hash()),
                 workerpoolOrder.volume,
-                _toTypedDataHash(workerpoolOrder.hash()),
+                CommonLib.toTypedDataHash(workerpoolOrder.hash()),
                 requestOrder.volume,
-                _toTypedDataHash(requestOrder.hash())
+                CommonLib.toTypedDataHash(requestOrder.hash())
             );
     }
 

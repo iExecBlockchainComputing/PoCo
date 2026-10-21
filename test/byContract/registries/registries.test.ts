@@ -13,8 +13,8 @@ import {
     DatasetRegistry,
     DatasetRegistry__factory,
     Dataset__factory,
-    IexecInterfaceNative,
-    IexecInterfaceNative__factory,
+    IexecInterface,
+    IexecInterface__factory,
     InitializableUpgradeabilityProxy__factory,
     WorkerpoolRegistry,
     WorkerpoolRegistry__factory,
@@ -29,7 +29,7 @@ import { randomAddress } from '../../utils/utils';
 
 describe('Registries', () => {
     let proxyAddress: string;
-    let iexecPoco: IexecInterfaceNative;
+    let iexecPoco: IexecInterface;
     let [iexecAdmin, appProvider, datasetProvider, scheduler, anyone]: SignerWithAddress[] = [];
 
     let [appRegistry, appRegistryAsAdmin]: AppRegistry[] = [];
@@ -48,7 +48,7 @@ describe('Registries', () => {
         ({ iexecAdmin, appProvider, datasetProvider, scheduler, anyone } =
             await getIexecAccounts());
 
-        iexecPoco = IexecInterfaceNative__factory.connect(proxyAddress, anyone);
+        iexecPoco = IexecInterface__factory.connect(proxyAddress, anyone);
 
         appRegistry = AppRegistry__factory.connect(await iexecPoco.appregistry(), anyone);
         appRegistryAddress = await appRegistry.getAddress();
@@ -97,14 +97,17 @@ describe('Registries', () => {
         });
 
         it('Should not initialize when user is not the owner', async () => {
-            await expect(appRegistry.initialize(ZeroAddress)).to.be.revertedWith(
-                'Ownable: caller is not the owner',
+            await expect(appRegistry.initialize(ZeroAddress)).to.be.revertedWithCustomError(
+                appRegistry,
+                'OwnableUnauthorizedAccount',
             );
-            await expect(datasetRegistry.initialize(ZeroAddress)).to.be.revertedWith(
-                'Ownable: caller is not the owner',
+            await expect(datasetRegistry.initialize(ZeroAddress)).to.be.revertedWithCustomError(
+                datasetRegistry,
+                'OwnableUnauthorizedAccount',
             );
-            await expect(workerpoolRegistry.initialize(ZeroAddress)).to.be.revertedWith(
-                'Ownable: caller is not the owner',
+            await expect(workerpoolRegistry.initialize(ZeroAddress)).to.be.revertedWithCustomError(
+                workerpoolRegistry,
+                'OwnableUnauthorizedAccount',
             );
         });
 
@@ -131,15 +134,15 @@ describe('Registries', () => {
         });
 
         it('Should not set base URI when user is not the owner', async () => {
-            await expect(appRegistry.setBaseURI(`https://new.url.iex.ec/app/`)).to.be.revertedWith(
-                'Ownable: caller is not the owner',
-            );
+            await expect(
+                appRegistry.setBaseURI(`https://new.url.iex.ec/app/`),
+            ).to.be.revertedWithCustomError(appRegistry, 'OwnableUnauthorizedAccount');
             await expect(
                 datasetRegistry.setBaseURI(`https://new.url.iex.ec/dataset/`),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
+            ).to.be.revertedWithCustomError(datasetRegistry, 'OwnableUnauthorizedAccount');
             await expect(
                 workerpoolRegistry.setBaseURI(`https://new.url.iex.ec/workerpool/`),
-            ).to.be.revertedWith('Ownable: caller is not the owner');
+            ).to.be.revertedWithCustomError(workerpoolRegistry, 'OwnableUnauthorizedAccount');
         });
     });
 
@@ -280,7 +283,7 @@ describe('Registries', () => {
 
             await expect(
                 appRegistry.createApp(appProvider.address, ...createAppArgs),
-            ).to.be.revertedWith('Create2: Failed on deploy');
+            ).to.be.revertedWithCustomError(appRegistry, 'Create2FailedDeployment');
         });
 
         it('Should check that a new app is well registered on new app registry', async () => {
@@ -385,7 +388,7 @@ describe('Registries', () => {
 
             await expect(
                 datasetRegistry.createDataset(datasetProvider.address, ...createDatasetArgs),
-            ).to.be.revertedWith('Create2: Failed on deploy');
+            ).to.be.revertedWithCustomError(datasetRegistry, 'Create2FailedDeployment');
         });
     });
 
@@ -469,24 +472,7 @@ describe('Registries', () => {
 
             await expect(
                 workerpoolRegistry.createWorkerpool(scheduler.address, ...createWorkerpoolArgs),
-            ).to.be.revertedWith('Create2: Failed on deploy');
-        });
-    });
-
-    describe('Common', () => {
-        it('Should revert when setName is called for reverse registration', async () => {
-            const randomEnsContract = randomAddress();
-            const randomEnsName = 'random.eth';
-            const txs = [
-                appRegistryAsAdmin.setName(randomEnsContract, randomEnsName),
-                datasetRegistryAsAdmin.setName(randomEnsContract, randomEnsName),
-                workerpoolRegistryAsAdmin.setName(randomEnsContract, randomEnsName),
-            ];
-            await Promise.all(
-                txs.map((tx) =>
-                    expect(tx).to.be.revertedWith('Operation not supported on this chain'),
-                ),
-            );
+            ).to.be.revertedWithCustomError(workerpoolRegistry, 'Create2FailedDeployment');
         });
     });
 });

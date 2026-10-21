@@ -33,14 +33,6 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
         proxyCodeHash = keccak256(proxyCode);
     }
 
-    // TEMPORARY MIGRATION FIX: Override _checkOwner to catch custom errors and throw string errors for backward compatibility
-    // TODO: Remove this override in the next major version
-    function _checkOwner() internal view override {
-        if (owner() != _msgSender()) {
-            revert("Ownable: caller is not the owner");
-        }
-    }
-
     function initialize(address _previous) external onlyOwner {
         require(!initialized);
         initialized = true;
@@ -68,28 +60,10 @@ abstract contract Registry is IRegistry, ERC721Enumerable, Ownable {
             (address(previous) != address(0) && previous.isRegistered(_entry));
     }
 
-    /**
-     * Sets the reverse registration name for a registry contract.
-     * @dev This functionality is supported only on Bellecour Sidechain, calls on other chains
-     * will revert. The function is kept as nonpayable to maintain retrocompatibility with the
-     * iExec SDK.
-     */
-    // TODO remove this function when Bellecour is deprecated.
-    function setName(address /* _ens */, string calldata /* _name */) external onlyOwner {
-        initialized = initialized; // Remove solidity state mutability warning.
-        revert("Operation not supported on this chain");
-    }
-
     /* Factory */
     function _mintCreate(address _owner, bytes memory _args) internal returns (address) {
-        // TEMPORARY MIGRATION FIX: Check if contract already exists to revert without custom error for backward compatibility
-        // TODO: Remove this in the next major version
-        address entry = _mintPredict(_owner, _args);
-        if (entry.code.length > 0) {
-            revert("Create2: Failed on deploy");
-        }
         // Create entry (proxy)
-        entry = Create2.deploy(0, keccak256(abi.encodePacked(_args, _owner)), proxyCode);
+        address entry = Create2.deploy(0, keccak256(abi.encodePacked(_args, _owner)), proxyCode);
         InitializableUpgradeabilityProxy(payable(entry)).initialize(master, _args);
         // Mint corresponding token
         _mint(_owner, uint256(uint160(entry)));
